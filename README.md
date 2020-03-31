@@ -3,7 +3,7 @@
 
 ***Versions***
 > - Versió Estable: -
-> - Versió en Desenvolupament: __archiuma-1.0.0__ (branca [arxium-1.0](https://github.com/GovernIB/arxium/tree/arxium-1.0))
+> - Versió en Desenvolupament: __archium-1.0.0__ (branca [archium-1.0](https://github.com/GovernIB/archium/tree/archium-1.0))
 
 ***Descripció***
 

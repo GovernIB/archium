@@ -1,0 +1,408 @@
+<ui:composition 
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+>
+  <!-- SCRIPT -->
+  <script type="text/javascript">
+	    PrimeFaces.locales['es'] = {
+	        closeText: 'Cerrar',
+	        prevText: 'Anterior',
+	        nextText: 'Siguiente',
+	        monthNames: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
+	        monthNamesShort: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'],
+	        dayNames: ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'],
+	        dayNamesShort: ['Dom', 'Lun', 'Mar', 'Mie', 'Jue', 'Vie', 'Sab'],
+	        dayNamesMin: ['D', 'L', 'M', 'X', 'J', 'V', 'S'],
+	        weekHeader: 'Semana',
+	        firstDay: 1,
+	        isRTL: false,
+	        showMonthAfterYear: false,
+	        yearSuffix: '',
+	        timeOnlyTitle: 'Sólo hora',
+	        timeText: 'Tiempo',
+	        hourText: 'Hora',
+	        minuteText: 'Minuto',
+	        secondText: 'Segundo',
+	        currentText: 'Fecha actual',
+	        ampm: false,
+	        month: 'Mes',
+	        week: 'Semana',
+	        day: 'Día',
+	        allDayText: 'Todo el día'
+	    };
+	    PrimeFaces.locales ['de'] = {
+	        closeText: 'Schließen',
+	        prevText: 'Zurück',
+	        nextText: 'Weiter',
+	        monthNames: ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember' ],
+	        monthNamesShort: ['Jan', 'Feb', 'Mär', 'Apr', 'Mai', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dez' ],
+	        dayNames: ['Sonntag', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag'],
+	        dayNamesShort: ['Son', 'Mon', 'Die', 'Mit', 'Don', 'Fre', 'Sam'],
+	        dayNamesMin: ['S', 'M', 'D', 'M ', 'D', 'F ', 'S'],
+	        weekHeader: 'Woche',
+	        firstDay: 1,
+	        isRTL: false,
+	        showMonthAfterYear: false,
+	        yearSuffix:'',
+	        timeOnlyTitle: 'Nur Zeit',
+	        timeText: 'Zeit',
+	        hourText: 'Stunde',
+	        minuteText: 'Minute',
+	        secondText: 'Sekunde',
+	        currentText: 'Aktuelles Datum',
+	        ampm: false,
+	        month: 'Monat',
+	        week: 'Woche',
+	        day: 'Tag',
+	        allDayText: 'Ganzer Tag'
+	    };
+	</script>
+	 
+	<script type="text/javascript">
+	    //<![CDATA[
+	    function dateTemplateFunc(date) {
+	        return '<span style="background-color:' + ((date.day < 21 && date.day > 10) ? '#81C784' : 'inherit') + ';border-radius:50%;padding: .25em;width: 1.75em; height:1.75em; display:block;">' + date.day + '</span>';
+	    }
+	    //]]>
+	</script>
+	<!-- CONTENIDO -->
+	<p:dialog id="procedimentModalDialogId" header="Dictamen" showEffect="fade" widgetVar="procedimentModalDialog" modal="true" resizable="true" style="max-width:1000px; min-width:1000px; max-height: 550px; overflow-y: scroll;">		
+	  <div class="views_3">
+	  	<div class="content_4 modfseries modfuncion dictamen procedimiento">
+		  	<h:form id="form2">
+		  		<ui:fragment rendered="#{procedimentController.id!=null}">
+	  				<h2 class="title_first">#{messages['nuevoprocediment.modificaProcedimient']}</h2>
+		  		</ui:fragment>
+		  		<ui:fragment rendered="#{procedimentController.id==null}">
+		  			<h2 class="title_first">#{messages['nuevoprocediment.nouProcedimient']}</h2>
+		  		</ui:fragment>
+	  		<div class="separador_rojo"></div>
+				<div class="ui-g form_new">
+					<p:panel id="panel">
+					    <p:tabView id="tabProcediment">
+		        			<p:tab title="#{messages['nuevoprocediment.Datosbasicos']}">		        				
+							    <div class="ui-g-12">
+								    <div class="ui-g-6 item_1">
+								    	<label class="ui-g-4">#{messages['nuevoprocediment.nom']} *</label>
+						    			<p:inputText id="Nom" value="#{procedimentController.nom}" class="ui-g-8" required="true"
+						    				validatorMessage="#{messages['nuevoprocediment.validate.nom']}"
+		    								requiredMessage="#{messages['nuevoprocediment.require.nom']}">
+						    				<f:validateLength minimum="0" maximum="2000" />
+						    			</p:inputText>
+								    </div>						    
+								    <div class="ui-g-6 item_1">
+								    	<label class="ui-g-4">#{messages['nuevoprocediment.Objecte']} *</label>
+						    			<p:inputText id="objecte" value="#{procedimentController.objecte}" class="ui-g-8" required="true"
+						    				validatorMessage="#{messages['nuevoprocediment.validate.objecte']}"
+		    								requiredMessage="#{messages['nuevoprocediment.require.objecte']}">
+						    				<f:validateLength minimum="0" maximum="4000" />
+						    			</p:inputText>				    			
+								    </div>
+								</div>
+								
+							    <div class="ui-g-12">
+							    
+								    <div class="ui-g-6 item_1">
+								    	<label class="ui-g-4">#{messages['nuevoprocediment.CodiSIA']}</label>
+						    			<p:inputText id="restingits" value="#{procedimentController.codisia}" class="ui-g-8"
+						    				validatorMessage="#{messages['nuevoprocediment.validate.codisia']}">
+						    				<f:validateLength minimum="0" maximum="30" />
+						    			</p:inputText>				    			
+								    </div> 
+								     
+							    	<div class="ui-g-6 item_1">
+								    	<label class="ui-g-4">#{messages['nuevoprocediment.CodiRolsac']}</label>
+						    			<p:inputText id="codirolsac" value="#{procedimentController.codirolsac}" class="ui-g-8"
+						    				validatorMessage="#{messages['nuevoprocediment.validate.codirolsac']}">
+						    				
+						    				<f:validateLength minimum="0" maximum="32" />
+						    			</p:inputText>				    			
+								    </div>
+								    
+								  </div>
+								  
+								  <div class="ui-g-12">
+								  
+								    <div class="ui-g-6 item_1">
+								    	<label class="ui-g-4">#{messages['nuevoprocediment.FormaInici']} *</label>		    			
+							        	<p:selectOneMenu class="ui-g-8" id="formainici" value="#{procedimentController.formainici}" label="FormaInici" converter="FormaIniciConverter"
+								                              panelStyle="">
+								            <f:selectItems value="#{procedimentController.listaFormainici}"  var="n" itemLabel="#{n.nom}"  itemValue="#{n}"/>
+								        </p:selectOneMenu>
+								    </div>
+								    
+							    	<div class="ui-g-6 item_1">
+								    	<label class="ui-g-4">#{messages['nuevoprocediment.Silenci']} *</label>		    			
+							        	<p:selectOneMenu class="ui-g-8" id="silenci" value="#{procedimentController.silenci}" label="silenci" converter="SilenciConverter"
+								                              panelStyle="">
+								            <f:selectItems value="#{procedimentController.listaSilenci}"  var="n" itemLabel="#{n.nom}"  itemValue="#{n}"/>
+								        </p:selectOneMenu>
+								    </div>
+								    
+						    	</div>
+						    	
+						    	<div class="ui-g-12">
+						    	
+							    	<div class="ui-g-6 item_1">
+								    	<label class="ui-g-4">#{messages['nuevoprocediment.Destinatari']}</label>
+						    			<p:inputTextarea style="border:1px solid #333!important; width:80%;" id="destinatari" value="#{procedimentController.destinataris}" class="ui-g-8"
+						    				validatorMessage="#{messages['nuevoprocediment.validate.destinatari']}"	>
+						    				<f:validateLength minimum="0" maximum="4000" />
+						    			</p:inputTextarea >				    			
+								    </div>
+								    
+								    <div class="ui-g-6 item_1">
+								    	<label class="ui-g-4">#{messages['nuevoprocediment.Dir3Instructor']}</label>
+						    			<p:inputText id="dir3instrutor" value="#{procedimentController.dir3Instructor}" class="ui-g-8"
+						    				validatorMessage="#{messages['nuevoprocediment.validate.dir3instrutor']}"	>
+						    				<f:validateLength minimum="0" maximum="9" />
+						    			</p:inputText>				    			
+								    </div>
+								    
+							   	</div>
+							   	
+							   	<div class="ui-g-12">
+								    
+								    <div class="ui-g-6 item_1">
+								    	<label class="ui-g-4">#{messages['nuevoprocediment.Dir3Resolvent']}</label>
+						    			<p:inputText id="dir3resolvent" value="#{procedimentController.dir3Resolvent}" class="ui-g-8"
+						    				validatorMessage="#{messages['nuevoprocediment.validate.dir3resolvent']}">
+						    				<f:validateLength minimum="0" maximum="9" />
+						    			</p:inputText>				    			
+								    </div>  
+								    
+								    <div class="ui-g-6 item_1">
+								    	<label class="ui-g-4">#{messages['nuevoprocediment.SerieDocumental']}</label>		    			
+							        	<p:selectOneMenu class="ui-g-8" id="seriedocumental" value="#{procedimentController.seriedocumental}" label="SerieDocumental" converter="SerieDocumentalConverter" 
+							        					 panelStyle="">
+								            <f:selectItems value="#{procedimentController.listaSerieDocumental}"  var="n" itemLabel="#{n.nom}"  itemValue="#{n}"/>
+								        </p:selectOneMenu>
+								    </div>
+								    
+							    </div>
+							    
+							    <div class="ui-g-12">
+								    
+								    <div class="ui-g-6 item_1 item_3">
+								    	<label class="ui-g-4">#{messages['nuevoprocediment.Termini']}</label>
+								    	 <p:inputNumber  class="ui-g-4" id="plazo1" value="#{procedimentController.plazo1}" decimalPlaces="0"
+								    	  	validatorMessage="#{messages['nuevoprocediment.validate.termini']}">
+								    	 	<f:validateLength minimum="0" maximum="5"/>
+								    	 </p:inputNumber>
+								    	 
+						    			<p:selectOneMenu style="width: 50%!important; margin-left:10px!important;" class="ui-g-4" id="plazo1a" value="#{procedimentController.plazo1a}" label="plazos1" panelStyle="width:10px">
+								            <f:selectItems value="#{procedimentController.plazos1}"  var="n" itemLabel="#{n}"  itemValue="#{n}"/>
+								        </p:selectOneMenu>
+								    </div>
+								    
+								     <div class="ui-g-6 item_1 item_3">
+								    	<label class="ui-g-4">#{messages['nuevoprocediment.Termininotif']}</label>
+						    			<p:inputNumber class="ui-g-4" id="plazo2" value="#{procedimentController.plazo2}" decimalPlaces="0" 
+						    				validatorMessage="#{messages['nuevoprocediment.validate.termininotif']}">
+								    	 	<f:validateLength minimum="0" maximum="5" />
+								    	 </p:inputNumber>
+								    	 
+						    			<p:selectOneMenu style="width: 50%!important; margin-left:10px!important;" class="ui-g-4" id="plazo2a" value="#{procedimentController.plazo2a}" label="plazos2" panelStyle="width:10px">
+								            <f:selectItems value="#{procedimentController.plazos2}"  var="x" itemLabel="#{x}"  itemValue="#{x}"/>
+								        </p:selectOneMenu>
+								    </div>
+								    
+							    </div>
+								    
+						    	
+						    	<div class="ui-g-12">
+								    
+								    <div class="ui-g-6 item_1">
+								    	<label class="ui-g-4">#{messages['nuevoprocediment.Gestor']}</label>
+						    			<p:inputText id="gestor" value="#{procedimentController.gestor}" class="ui-g-8"
+						    				validatorMessage="#{messages['nuevoprocediment.validate.gestor']}">
+						    				<f:validateLength minimum="0" maximum="100" />
+						    			</p:inputText>
+								    </div>
+								    
+								      <div class="ui-g-6 item_1">
+								    	<label class="ui-g-4">#{messages['nuevoprocediment.Uri']}</label>
+						    			<p:inputText id="uri" value="#{procedimentController.uri}" class="ui-g-8"
+						    				validatorMessage="#{messages['nuevoprocediment.validate.uri']}">
+						    				<f:validateLength minimum="0" maximum="400" />
+						    			</p:inputText>						    
+								    </div>
+								    
+							    </div>
+							    
+							    <div class="ui-g-12">
+							    
+								    <div class="ui-g-6 item_1">
+									   	<label class="ui-g-4">#{messages['nuevoprocediment.Estat']}</label>
+									   	<p:selectOneMenu class="ui-g-8" id="estado" value="#{procedimentController.estat}" label="estados" panelStyle="">
+								            <f:selectItems value="#{procedimentController.estados}"  var="n" itemLabel="#{n}"  itemValue="#{n}"/>
+								        </p:selectOneMenu>					    		
+								   </div>
+
+								    <div class="ui-g-6 item_1">
+								    	<label class="ui-g-4">#{messages['nuevoprocediment.Caducitat']}</label>
+						    			<p:datePicker style="width: 100%;margin-left: 20px;" id="inici" value="#{procedimentController.caducitat}" locale="es" appendTo="@(body)" class="ui-g-8" 
+						    			pattern="yyyy-MM-dd" validatorMessage="#{messages['validate.formatoFecha']}"></p:datePicker>
+								    </div>	
+								    
+							    </div>
+							    
+							    <div class="ui-g-12">
+							        
+								    <div class="ui-g-6 item_1">
+								    	<label class="ui-g-4">#{messages['nuevoprocediment.Publicacio']}</label>
+						    			<p:datePicker style="width: 100%;margin-left: 20px;" id="publicacio" value="#{procedimentController.publicacio}" locale="es" appendTo="@(body)" class="ui-g-8" 
+						    			pattern="yyyy-MM-dd" validatorMessage="#{messages['validate.formatoFecha']}"></p:datePicker>
+								    </div>				
+								    
+								    <div class="ui-g-5 item_1">
+								    	<label class="ui-g-4">#{messages['nuevoprocediment.Observacions']}</label>
+						    			<p:inputTextarea style="border:1px solid #333!important; width:100%; margin-left: 30px;" id="observacion" value="#{procedimentController.observacions}" class="ui-g-8"
+						    				validatorMessage="#{messages['nuevoprocediment.validate.observacions']}">
+						    				<f:validateLength minimum="0" maximum="4000" />
+						    			</p:inputTextarea >				    			
+								    </div>
+							    </div> 
+						    </p:tab>
+						    <p:tab title="#{messages['nuevoprocediment.Normatives']}">
+						    	<div class="ui-g-12">
+								    	<!--  <label class="ui-g-2">Normativas</label> -->
+										<p:pickList class="ui-g-12 relacionarseries" id="listaNormativas" value="#{procedimentController.normativaRelacionada}" var="seri"   converter="NormativaRelacionadaConverter" 
+													itemValue="#{seri}"  itemLabel="#{seri.nomMostrar}" showSourceFilter="true" showTargetFilter="true"
+													filterMatchMode="contains" showCheckbox="true">
+											    <p:column style="width:100%;">
+						            				<h:outputText value="#{seri.nomMostrar}" />
+						        				</p:column>
+										</p:pickList>
+								    </div>
+						    </p:tab>
+						    <p:tab title="#{messages['nuevoprocediment.PublicObjectiu']}">
+						    	<div class="ui-g-12">
+							    	<!-- <label class="ui-g-2">Public Objectiu</label>-->
+									<p:pickList class="ui-g-12 relacionarseries"  id="ListaPublic" value="#{procedimentController.tipusPublicRelacionada}" var="publi"  converter="tipusPublicConverter" 
+												itemValue="#{publi}" itemLabel="#{publi.nom}" showSourceFilter="true" showTargetFilter="true" filterMatchMode="contains" showCheckbox="true">
+										    <p:column style="width:100%;">
+					            				<h:outputText value="#{publi.nom}" />
+					        				</p:column>
+									</p:pickList>
+							    </div>
+						    </p:tab>
+						    <p:tab title="#{messages['nuevoprocediment.Materies']}">
+						    	<div class="ui-g-12">
+							    	<!-- <label class="ui-g-2">Materias</label>-->
+									<p:pickList class="ui-g-12 relacionarseries" id="listaMaterias" value="#{procedimentController.materiaRelacionada}" var="mate"  converter="materiaRelacionadaConverter" 
+												itemValue="#{mate}" itemLabel="#{mate.nom}" showSourceFilter="true" showTargetFilter="true" filterMatchMode="contains" showCheckbox="true">
+										    <p:column style="width:100%;">
+					            				<h:outputText value="#{mate.nom}" />
+					        				</p:column>
+									</p:pickList>
+							    </div>
+						    </p:tab>
+						    <p:tab title="#{messages['nuevoprocediment.Tipusdocumentals']}">
+						    	<div class="ui-g-12 ">
+							   
+							    	
+									
+									<div class="ui-g-12 item_1">
+					    				<label class="ui-g-2">#{messages['nuevoprocediment.Tipusdocumental']}:</label>
+					    				<p:selectOneMenu id="selectTipoDocumental" value="#{procedimentController.selectedTipoDocumental}" filter="true" filterMatchMode="contains">
+								             <f:converter converterId="tiposDocumentalRelacionadoConverter"/>
+								             <f:selectItem itemLabel="Seleccioni tipus documental" itemValue="#{null}" noSelectionOption="true" />
+								             <f:selectItems value="#{procedimentController.listatipoDocumental}"  var="n" itemLabel="#{n.nom}"  itemValue="#{n}"/>
+								             <p:ajax event="valueChange" listener="#{procedimentController.onTipoDocumentalSelectedListener}" update="selectTipoDocumental, listaTiposDocumentales" />
+								        </p:selectOneMenu>
+						    		</div>
+									
+									<div class="ui-g-12 item_1">
+										<p:messages id="mensaje-estado"  closable="true">
+									        <p:autoUpdate />
+									    </p:messages>
+									</div>
+									<p:accordionPanel class="ui-g-12 acordeonnormativas" id="listaTiposDocumentales" value="#{procedimentController.listaTDP}" var="tdp" >
+								        <p:tab id="tab" title="#{tdp.tipusDocumental.nom}">
+								        	<f:facet name="title">
+								        		<h:outputText class="accordion-title" value="#{tdp.tipusDocumental.nom}"/>
+												<h:panelGrid columnClasses="alignRightFullWidth, alignRight, alignRight" columns="3">							
+													
+												</h:panelGrid>
+												<p:commandButton class="botton_library" icon="pi pi-trash" onclick="event.stopPropagation();" partialSubmit="true" process="@this" update="listaTiposDocumentales" actionListener="#{procedimentController.deleteTDP(tdp)}"/>
+											</f:facet>
+											
+											<div class="ui-g-12 ">
+											
+								            	 <div class="ui-g-4" style="display: flex; align-items:center;">
+											    	<label class="ui-g-4">#{messages['nuevoprocediment.Obligatori']}</label>
+									    			<p:selectBooleanCheckbox style="margin: 0 10px;" id="obligatori" value="#{tdp.obligatori}"/>				    			
+												</div>
+											    <div class="ui-g-4" style="display: flex; align-items:center;">
+											    	<label class="ui-g-4">#{messages['nuevoprocediment.Recapitulatiu']}</label>
+									    			<p:selectBooleanCheckbox style="margin: 0 10px;" id="recap" value="#{tdp.recapitulatiu}"/>				    			
+											    </div>	
+											    
+												<div class="ui-g-4" style="padding:0!important;">
+													<p:commandButton style="margin: 0;padding: 0px 10px;" class="boton_modal botton_red button_aceptar" partialSubmit="true" process="@this obligatori, recap" update="@this" value="Aceptado"  actionListener="#{procedimentController.saveTDP(tdp)}" ></p:commandButton> 
+												</div>
+											</div>
+								        </p:tab>
+									</p:accordionPanel>
+									
+							    </div>
+						    </p:tab>
+						    <p:tab title="#{messages['nuevoprocediment.Relacions']}">
+				    			<div class="ui-g-12">
+					    	
+								    <div class="ui-g-6 item_1" style="display: flex; align-items:center;">
+								    	<label class="ui-g-4">#{messages['nuevoprocediment.Taxa']}</label>
+						    			<p:selectBooleanCheckbox value="#{procedimentController.taxa}"/>				    			
+									</div>
+								    <div class="ui-g-6 item_1" style="display: flex; align-items:center;">
+								    	<label class="ui-g-4">#{messages['nuevoprocediment.fiViaAdministrativa']}</label>
+						    			<p:selectBooleanCheckbox value="#{procedimentController.fiViaAdministrativa}"/>				    			
+								    </div>
+			
+								</div>
+								<div class="ui-g-12">
+								
+									<div class="ui-g-6 item_1">
+								    	<label class="ui-g-4">#{messages['nuevoprocediment.Familiaprocediment']}" *</label>		    			
+							        	<p:selectOneMenu id="familiaprocediment" value="#{procedimentController.familiaprocediment}" label="familia" converter="FamiliaConverter">
+								            <f:selectItems value="#{procedimentController.listaFamiliaprocediment}"  var="n" itemLabel="#{n.nom}"  itemValue="#{n}"/>
+								        </p:selectOneMenu>
+								    </div>
+									
+							    	<div class="ui-g-6 item_1">
+								    	<label class="ui-g-4">#{messages['nuevoprocediment.Aplicacio']} *</label>		    			
+							        	<p:selectOneMenu id="aplicacio" value="#{procedimentController.aplicacio}" label="Serie" converter="AplicacioConverter"
+								                              panelStyle="width:450px">
+								            <f:selectItems value="#{procedimentController.listaAplicacio}"  var="n" itemLabel="#{n.nom}"  itemValue="#{n}"/>
+								        </p:selectOneMenu>
+								    </div>
+								    
+							    </div>
+							    
+							    <div class="ui-g-12">
+							    
+							    	<div class="ui-g-6 item_1">
+								    	<label class="ui-g-4">#{messages['nuevoprocediment.NivelElectronic']}" *</label>		    			
+							        	<p:selectOneMenu id="nivelelectronic" value="#{procedimentController.nivellelectronic}" label="nivel" converter="NivelConverter">
+								            <f:selectItems value="#{procedimentController.listaNivellelectronic}"  var="n" itemLabel="#{n.nom}"  itemValue="#{n}"/>
+								        </p:selectOneMenu>
+								    </div>							    
+								</div>		
+							</p:tab>	    	
+				    	</p:tabView>
+
+					    <div class="ui-g-12 button_new" align="justify">
+					    	<p:commandButton class="boton_modal button_red" update="panel1" value="#{messages['guardar']}" action="#{procedimentController.saveUpdate}" oncomplete="if (args &amp;&amp; !args.validationFailed) PF('procedimentModalDialog').hide()" style="margin-rigth: 0px;" onstart="PF('cuadros').clearFilters()" ></p:commandButton>					 
+					    </div>
+				    </p:panel>
+				</div>
+			</h:form>	    
+	  	</div>
+	  </div>
+	</p:dialog>
+  <!-- FIN DEL CONTENIDO -->
+</ui:composition>

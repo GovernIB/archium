@@ -1,0 +1,138 @@
+<ui:composition 
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+>
+  <!-- SCRIPT -->
+  <script type="text/javascript">
+	    PrimeFaces.locales['es'] = {
+	        closeText: 'Cerrar',
+	        prevText: 'Anterior',
+	        nextText: 'Siguiente',
+	        monthNames: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
+	        monthNamesShort: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'],
+	        dayNames: ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'],
+	        dayNamesShort: ['Dom', 'Lun', 'Mar', 'Mie', 'Jue', 'Vie', 'Sab'],
+	        dayNamesMin: ['D', 'L', 'M', 'X', 'J', 'V', 'S'],
+	        weekHeader: 'Semana',
+	        firstDay: 1,
+	        isRTL: false,
+	        showMonthAfterYear: false,
+	        yearSuffix: '',
+	        timeOnlyTitle: 'Sólo hora',
+	        timeText: 'Tiempo',
+	        hourText: 'Hora',
+	        minuteText: 'Minuto',
+	        secondText: 'Segundo',
+	        currentText: 'Fecha actual',
+	        ampm: false,
+	        month: 'Mes',
+	        week: 'Semana',
+	        day: 'Día',
+	        allDayText: 'Todo el día'
+	    };
+	    PrimeFaces.locales ['de'] = {
+	        closeText: 'Schließen',
+	        prevText: 'Zurück',
+	        nextText: 'Weiter',
+	        monthNames: ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember' ],
+	        monthNamesShort: ['Jan', 'Feb', 'Mär', 'Apr', 'Mai', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dez' ],
+	        dayNames: ['Sonntag', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag'],
+	        dayNamesShort: ['Son', 'Mon', 'Die', 'Mit', 'Don', 'Fre', 'Sam'],
+	        dayNamesMin: ['S', 'M', 'D', 'M ', 'D', 'F ', 'S'],
+	        weekHeader: 'Woche',
+	        firstDay: 1,
+	        isRTL: false,
+	        showMonthAfterYear: false,
+	        yearSuffix:'',
+	        timeOnlyTitle: 'Nur Zeit',
+	        timeText: 'Zeit',
+	        hourText: 'Stunde',
+	        minuteText: 'Minute',
+	        secondText: 'Sekunde',
+	        currentText: 'Aktuelles Datum',
+	        ampm: false,
+	        month: 'Monat',
+	        week: 'Woche',
+	        day: 'Tag',
+	        allDayText: 'Ganzer Tag'
+	    };
+	</script>
+	 
+	<script type="text/javascript">
+	    //<![CDATA[
+	    function dateTemplateFunc(date) {
+	        return '<span style="background-color:' + ((date.day < 21 && date.day > 10) ? '#81C784' : 'inherit') + ';border-radius:50%;padding: .25em;width: 1.75em; height:1.75em; display:block;">' + date.day + '</span>';
+	    }
+	    //]]>
+	</script>
+  <!-- CONTENIDO -->
+  <p:dialog id="quadreModalUpdateId" header="#{messages['updatecuadro.titulo']}" showEffect="fade" widgetVar="quadreModalUpdate" modal="true" resizable="true" style="max-width:1000px">
+	  
+	  <div class="views_3">
+	  	<div class="content_4">
+		  	<h:form>
+		  		<h2 class="title_first">#{messages['updatecuadro.actualizacion']}</h2>
+		  		<div class="separador_rojo"></div>
+				<div class="ui-g form_new">
+					<p:panel id="panel">
+				        <p:messages id="messages" />		        
+				   
+					    <div class="ui-g-12 item_1">
+					    	<label class="ui-g-3">#{messages['updatecuadro.nombre']}</label>
+			    			<p:inputText id="Nom" value="#{quadreController.nombreNuevo}"  class="ui-g-9" required="true" 			    				
+			    									requiredMessage="#{messages['nuevoQuadro.require.nom']}" 
+			    									validatorMessage="#{messages['nuevoQuadro.validate.nom']}" >
+			    				<f:validateRequired  />
+			    				<f:validateLength minimum="0" maximum="200" />
+			    			</p:inputText>			    							    						    			
+					    </div>		    
+					    <div class="ui-g-12 item_1">
+					    	<label class="ui-g-3">#{messages['updatecuadro.nombrecas']}</label>
+			    			<p:inputText id="NomCast" value="#{quadreController.nombreNuevoCast}"  class="ui-g-9"
+			    						validatorMessage="#{messages['nuevoQuadro.validate.nomcas']}">
+			    						<f:validateLength minimum="0" maximum="200" />
+			    			</p:inputText>
+			    						
+					    </div>	
+					    <div class="ui-g-12 item_1">
+					    	<label class="ui-g-3">#{messages['updatecuadro.estado']}</label>		    			
+				        	<p:selectOneMenu id="estado" value="#{quadreController.nouEstat}"  label="Estats" panelStyle="width:450px">                           
+					            <f:selectItems value="#{quadreController.listaEstats}"  var="n" itemLabel="#{n}"/>
+					        </p:selectOneMenu>
+					    </div>	
+						<div class="ui-g-12 item_1">
+	                		<label class="ui-g-3">#{messages['updatecuadro.fechaini']}</label>
+			    			<p:datePicker  value="#{quadreController.nouInici}" locale="es" appendTo="@(body)" class="ui-g-9" required="true" 			    				 
+			    																	requiredMessage="#{messages['updateQuadro.require.inici']}" pattern="yyyy-MM-dd"/>
+
+			    			<h:message for="nouInici" style="color: red"/>
+					    </div>
+			        	<div class="ui-g-12 item_1">
+	                		<label class="ui-g-3">#{messages['updatecuadro.fechafin']}</label>
+			    			<p:datePicker  value="#{quadreController.nouFi}" locale="es" appendTo="@(body)" class="ui-g-9" pattern="yyyy-MM-dd"/>
+			    			<h:message for="noiFi" style="color: red"/>
+					    </div>
+			        	<div class="ui-g-12 item_1">
+					    	<label class="ui-g-3">#{messages['updatecuadro.versio']}</label>
+			    			<p:inputText id="versio" value="#{quadreController.nouVersio}" class="ui-g-9" required="true" 	
+			    												validatorMessage="#{messages['updateQuadro.validate.versio']}"		    				 
+			    												requiredMessage="#{messages['updateQuadro.require.versio']}">
+			    												<f:validateRequired  />
+			    												<f:validateLength minimum="0" maximum="10" />
+			    			</p:inputText>
+			    			<h:message for="Versio" style="color: red"/>
+					    </div>	    
+					    <div class="ui-g-12 button_new" align="justify">
+					    	<p:commandButton class="boton_modal button_red" update="panel1" value="#{messages['guardar']}" action="#{quadreController.update}" oncomplete="if (args &amp;&amp; !args.validationFailed) PF('quadreModalUpdate').hide()" style="margin-rigth: 0px;" />
+					    </div>
+				    </p:panel>
+				</div>
+			</h:form>	    
+	  	</div>
+	  </div>
+	</p:dialog>
+	  <!-- FIN DEL CONTENIDO -->
+</ui:composition>

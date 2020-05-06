@@ -12,7 +12,7 @@ public interface Constants {
     /**
      * Constant pel rol d'Administrador
      */
-    String ACH_ADMIN = "ACH_ADMIN";
+    String ACH_ADMIN = "ACH_GESTOR";
 
     /**
      * Constant pel rol d'Usuari

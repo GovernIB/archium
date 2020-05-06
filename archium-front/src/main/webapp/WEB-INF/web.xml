@@ -13,5 +13,26 @@
     <servlet-name>Faces Servlet</servlet-name>
     <url-pattern>*.xhtml</url-pattern>
   </servlet-mapping>
-    	
+ 	<security-constraint>
+        <web-resource-collection>
+            <web-resource-name>platform</web-resource-name>
+            <url-pattern>*.xhtml</url-pattern>
+        </web-resource-collection>
+        <auth-constraint>
+            <role-name>ACH_GESTOR</role-name>
+        </auth-constraint>
+        <user-data-constraint>
+            <transport-guarantee>CONFIDENTIAL</transport-guarantee>
+        </user-data-constraint>
+    </security-constraint>
+
+    <login-config>
+        <auth-method>KEYCLOAK</auth-method>
+        <realm-name>ARCHIUM</realm-name>
+ 		
+    </login-config>
+
+    <security-role>
+        <role-name>ACH_GESTOR</role-name>
+    </security-role>
 </web-app>

@@ -1,14 +1,14 @@
 <subsystem xmlns="urn:jboss:domain:keycloak:1.1">
-    <realm name="ARCHIUM">
-        <auth-server-url>http://localhost:8180/auth</auth-server-url>
-        <ssl-required>EXTERNAL</ssl-required>
-    </realm>
-    <secure-deployment name="archium-front-1.0.0.war">
-        <realm>ARCHIUM</realm>
-        <resource>archium-default</resource>
-        <use-resource-role-mappings>true</use-resource-role-mappings>
-        <principal-attribute>preferred_username</principal-attribute>
-        <verify-token-audience>true</verify-token-audience>
-		<credential name="secret">eba4151d-2f7a-4e61-84c2-8ba9f67a2560</credential>
-    </secure-deployment>
+	<realm name="ARCHIUM">
+		<auth-server-url>http://localhost:8180/auth</auth-server-url>
+		<ssl-required>EXTERNAL</ssl-required>
+	</realm>
+	<secure-deployment name="archium-front-1.0.0.war">
+		<realm>ARCHIUM</realm>
+		<resource>archium-default</resource>
+		<use-resource-role-mappings>true</use-resource-role-mappings>
+		<principal-attribute>preferred_username</principal-attribute>
+		<verify-token-audience>true</verify-token-audience>
+		<credential name="secret">b2bb3d83-8835-4cdf-8b77-01c7feb0dcc3</credential>
+	</secure-deployment>
 </subsystem>

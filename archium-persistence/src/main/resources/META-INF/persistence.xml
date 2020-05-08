@@ -9,7 +9,8 @@
          data source, this example data source is just for development and testing! -->
       <!-- The datasource is deployed as ${ds-deployment-location}, you
          can find it in the source at src/main/resources/archiumDS-ds.xml -->
-      <jta-data-source>java:/Archium2DS</jta-data-source>
+      <jta-data-source>es.caib.archium.ds</jta-data-source>
+
       <class>es.caib.archium.persistence.model.Aplicacio</class>
       <class>es.caib.archium.persistence.model.AplicacioSerie</class>
       <class>es.caib.archium.persistence.model.AplicacioSeriePK</class>
@@ -62,13 +63,11 @@
          <property name="hibernate.hbm2ddl.auto" value="create-drop" />
          -->
           <property name="hibernate.dialect" value="org.hibernate.dialect.Oracle12cDialect"/>
+ 			<property name="hibernate.default_schema" value="ARCHIUM"/>
+	         <!-- Print's out the SQL statement Hibernate is using to the console, useful for debugging -->
+          <property name="hibernate.show_sql" value="false" />
          
-         <!-- Print's out the SQL statement Hibernate is using to the console, useful for debugging -->
-         <property name="hibernate.show_sql" value="false" />
-         <property name="hibernate.connection.driver_class" value="oracle"/>
-         <property name="hibernate.connection.url" value="jdbc:oracle:thin:@localhost:1521:xe"/>
-         <property name="hibernate.connection.username" value="ARCHIUM2"/>
-         <property name="hibernate.connection.password" value="archium2"/>
+         
       </properties>
    </persistence-unit>
    

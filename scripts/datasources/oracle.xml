@@ -1,22 +1,21 @@
-<xa-datasource jndi-name="java:/ArchiumDS" pool-name="ArchiumDS">
+<xa-datasource jndi-name="java:/es.caib.archium.ds" pool-name="es.caib.archium.ds">
 	<xa-datasource-property name="URL">
-		jdbc:oracle:thin:@localhost:1521:XE
+		jdbc:oracle:thin:@localhost:1521:xe
 	</xa-datasource-property>
 	<xa-datasource-property name="user">
-		ARCHIUM
+		WWW_ARCHIUM
 	</xa-datasource-property>
 	<xa-datasource-property name="password">
-		archium
+		www_archium
 	</xa-datasource-property>
-	<xa-datasource-class>oracle.jdbc.xa.client.OracleXADataSource</xa-datasource-class>
 	<driver>oracle</driver>
 	<xa-pool>
 		<is-same-rm-override>false</is-same-rm-override>
 		<no-tx-separate-pools>true</no-tx-separate-pools>
 	</xa-pool>
 	<security>
-		<user-name>ARCHIUM</user-name>
-		<password>archium</password>
+		<user-name>WWW_ARCHIUM</user-name>
+		<password>www_archium</password>
 	</security>
 	<validation>
 		<valid-connection-checker class-name="org.jboss.jca.adapters.jdbc.extensions.oracle.OracleValidConnectionChecker"/>

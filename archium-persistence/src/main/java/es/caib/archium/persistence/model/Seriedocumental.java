@@ -40,7 +40,9 @@ public class Seriedocumental implements Serializable {
 	private String estat;
 
 	//bi-directional many-to-one association to AplicacioSerie
-	@OneToMany(mappedBy="achSeriedocumental")
+	@OneToMany(mappedBy="achSeriedocumental",
+			cascade = CascadeType.ALL,
+	        orphanRemoval = true)
 	private List<AplicacioSerie> achAplicacioSeries;
 
 	//bi-directional many-to-one association to Dictamen
@@ -48,11 +50,15 @@ public class Seriedocumental implements Serializable {
 	private List<Dictamen> achDictamens;
 
 	//bi-directional many-to-one association to LimitacioNormativaSerie
-	@OneToMany(mappedBy="achSeriedocumental")
+	@OneToMany(mappedBy="achSeriedocumental",
+			cascade = CascadeType.ALL,
+	        orphanRemoval = true)
 	private List<LimitacioNormativaSerie> achLimitacioNormativaSeries;
 
 	//bi-directional many-to-one association to NormativaSeriedocumental
-	@OneToMany(mappedBy="achSeriedocumental")
+	@OneToMany(mappedBy="achSeriedocumental",
+			cascade = CascadeType.ALL,
+	        orphanRemoval = true)
 	private List<NormativaSeriedocumental> achNormativaSeriedocumentals;
 
 	//bi-directional many-to-one association to Procediment
@@ -88,11 +94,15 @@ public class Seriedocumental implements Serializable {
 	private Tipusserie achTipusserie;
 
 	//bi-directional many-to-one association to Serierelacionada
-	@OneToMany(mappedBy="achSeriedocumental1")
+	@OneToMany(mappedBy="achSeriedocumental1",
+			cascade = CascadeType.ALL,
+	        orphanRemoval = true)
 	private List<Serierelacionada> achSerierelacionadas1;
 
 	//bi-directional many-to-one association to Serierelacionada
-	@OneToMany(mappedBy="achSeriedocumental2")
+	@OneToMany(mappedBy="achSeriedocumental2",
+			cascade = CascadeType.ALL,
+	        orphanRemoval = true)
 	private List<Serierelacionada> achSerierelacionadas2;
 
 	//bi-directional many-to-one association to Transferencia

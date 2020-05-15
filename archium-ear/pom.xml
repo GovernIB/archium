@@ -28,7 +28,7 @@
         <!-- FRONT START -->
         <dependency>
             <groupId>es.caib.archium</groupId>
-            <artifactId>archium-front</artifactId>
+            <artifactId>archium-back</artifactId>
             <version>1.0.0</version>
             <type>war</type>
         </dependency>
@@ -83,8 +83,8 @@
                         <!-- FRONT START -->
                         <webModule>
                             <groupId>es.caib.archium</groupId>
-                            <artifactId>archium-front</artifactId>
-                            <contextRoot>/archiumfront</contextRoot>
+                            <artifactId>archium-back</artifactId>
+                            <contextRoot>/archiumback</contextRoot>
                         </webModule>
                         <!-- FRONT END -->
                         

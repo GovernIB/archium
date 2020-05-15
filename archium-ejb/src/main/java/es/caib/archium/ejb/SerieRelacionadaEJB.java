@@ -1,25 +1,35 @@
 package es.caib.archium.ejb;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.ejb.Local;
+import javax.annotation.security.DeclareRoles;
+import javax.annotation.security.RolesAllowed;
+import javax.ejb.Stateless;
+import javax.inject.Inject;
 
 import es.caib.archium.commons.i18n.I18NException;
+import es.caib.archium.ejb.service.SerieDocumentalService;
 import es.caib.archium.ejb.service.SerieRelacionadaService;
 import es.caib.archium.persistence.dao.AbstractDAO;
 import es.caib.archium.persistence.model.Serieargen;
 import es.caib.archium.persistence.model.Seriedocumental;
 import es.caib.archium.persistence.model.Serierelacionada;
 
-@Local
+@Stateless
+@RolesAllowed({"ACH_GESTOR"})
 public class SerieRelacionadaEJB extends AbstractDAO<Serierelacionada, Long> implements SerieRelacionadaService{
 
-	public Serierelacionada findByRel(Seriedocumental serie1,Seriedocumental serie2) throws I18NException {
+	@Inject 
+	private SerieDocumentalService serieService;
+	
+	@Override
+	public Serierelacionada findByRel(Long serie1Id, Long serie2Id) throws I18NException {
 		Map<String,Object> filters = new HashMap<>();
-		filters.put("achSeriedocumental1", serie1);
-		filters.put("achSeriedocumental2", serie2);
+		filters.put("achSeriedocumental1", serieService.getReference(serie1Id));
+		filters.put("achSeriedocumental2", serieService.getReference(serie2Id));
 		List<Serierelacionada> res = findFiltered(filters);
 		if(res.size()!=0)
 			return res.get(0);
@@ -27,15 +37,47 @@ public class SerieRelacionadaEJB extends AbstractDAO<Serierelacionada, Long> imp
 		return null;
 		
 	}
-	public Serierelacionada findByRelArgen(Seriedocumental serie1,Serieargen serie2) throws I18NException {
+	
+	@Override
+	public Serierelacionada findByRelArgen(Long serie1Id, Long serieArgenId) throws I18NException {
 		Map<String,Object> filters = new HashMap<>();
-		filters.put("achSeriedocumental1", serie1);
-		filters.put("achSerieargen", serie2);
+		filters.put("achSeriedocumental1", serieService.getReference(serie1Id));
+		filters.put("achSerieargen", serieService.getReference(serieArgenId));
 		List<Serierelacionada> res = findFiltered(filters);
 		if(res.size()!=0)
 			return res.get(0);
 		
 		return null;
+		
+	}
+	
+	@Override
+	public List<Serierelacionada> findSeriesBySerie(Long serieId) throws I18NException {
+		
+		if(serieId!=null) {
+			Map<String,Object> filters = new HashMap<>();
+			filters.put("achSeriedocumental1", serieService.getReference(serieId) );
+			//filters.put("achSeriedocumental2",null);
+			filters.put("achSerieargen",null);
+			return this.findFiltered(filters);
+		}
+		
+		return new ArrayList<Serierelacionada>();
+		
+	}
+	
+	@Override
+	public List<Serierelacionada> findArgenBySerie(Long serieId) throws I18NException {
+		
+		if(serieId!=null) {
+			Map<String,Object> filters = new HashMap<>();
+			filters.put("achSeriedocumental1", serieService.getReference(serieId) );
+			filters.put("achSeriedocumental2",null);
+			//filters.put("achSerieargen",null);
+			return this.findFiltered(filters);
+		}
+		
+		return new ArrayList<Serierelacionada>();
 		
 	}
 }

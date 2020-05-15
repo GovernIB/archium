@@ -26,16 +26,19 @@ public class LimitacioNormativaSerie implements Serializable {
 
 	//bi-directional many-to-one association to Causalimitacio
 	@ManyToOne
+	@MapsId("causalimitacioId")
 	@JoinColumn(name="CAUSALIMITACIO_ID",insertable=false,updatable=false)
 	private Causalimitacio achCausalimitacio;
 
 	//bi-directional many-to-one association to Normativa
 	@ManyToOne
+	@MapsId("normativaId")
 	@JoinColumn(name="NORMATIVA_ID" ,insertable=false,updatable=false)
 	private Normativa achNormativa;
 
 	//bi-directional many-to-one association to Seriedocumental
 	@ManyToOne
+	@MapsId("seriedocumentalId")
 	@JoinColumn(name="SERIEDOCUMENTAL_ID" ,insertable=false,updatable=false)
 	private Seriedocumental achSeriedocumental;
 

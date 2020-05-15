@@ -308,7 +308,7 @@
         <module>archium-commons</module>
         <module>archium-persistence</module>
         <module>archium-ejb</module>
-        <module>archium-front</module>
+        <module>archium-back</module>
         <module>archium-ear</module>
     </modules>
 </project>

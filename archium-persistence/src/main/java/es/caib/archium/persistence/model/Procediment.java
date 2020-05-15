@@ -124,7 +124,9 @@ public class Procediment implements Serializable {
 	private Silenci achSilenci;
 
 	//bi-directional many-to-one association to TipusdocumentProcediment
-	@OneToMany(mappedBy="achProcediment")
+	@OneToMany(mappedBy="achProcediment",
+			cascade = CascadeType.ALL,
+	        orphanRemoval = true)
 	private List<TipusdocumentProcediment> achTipusdocumentProcediments;
 
 	//bi-directional many-to-many association to Tipuspublic

@@ -4,9 +4,12 @@ import es.caib.archium.ejb.service.SerieDocumentalService;
 import es.caib.archium.persistence.dao.AbstractDAO;
 import es.caib.archium.persistence.model.Seriedocumental;
 
-import javax.ejb.Local;
+import javax.annotation.security.DeclareRoles;
+import javax.annotation.security.RolesAllowed;
+import javax.ejb.Stateless;
 
-@Local
+@Stateless
+@RolesAllowed({"ACH_GESTOR"})
 public class SerieDocumentalEJB extends AbstractDAO<Seriedocumental, Long> implements SerieDocumentalService  {
 
 	

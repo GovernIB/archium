@@ -26,11 +26,13 @@ public class NormativaSeriedocumental implements Serializable {
 
 	//bi-directional many-to-one association to Normativa
 	@ManyToOne
+	@MapsId("normativaId")
 	@JoinColumn(name="NORMATIVA_ID" ,insertable=false,updatable=false)
 	private Normativa achNormativa;
 
 	//bi-directional many-to-one association to Seriedocumental
 	@ManyToOne
+	@MapsId("seriedocumentalId")
 	@JoinColumn(name="SERIEDOCUMENTAL_ID"  ,insertable=false,updatable=false)
 	private Seriedocumental achSeriedocumental;
 

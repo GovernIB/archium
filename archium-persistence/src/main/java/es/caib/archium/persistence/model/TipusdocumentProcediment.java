@@ -24,11 +24,13 @@ public class TipusdocumentProcediment implements Serializable {
 
 	//bi-directional many-to-one association to Procediment
 	@ManyToOne
+	@MapsId("procedimentId")
 	@JoinColumn(name="PROCEDIMENT_ID"  ,insertable=false,updatable=false)
 	private Procediment achProcediment;
 
 	//bi-directional many-to-one association to Tipusdocumental
 	@ManyToOne
+	@MapsId("tipusdocumentalId")
 	@JoinColumn(name="TIPUSDOCUMENTAL_ID"  ,insertable=false,updatable=false)
 	private Tipusdocumental achTipusdocumental;
 

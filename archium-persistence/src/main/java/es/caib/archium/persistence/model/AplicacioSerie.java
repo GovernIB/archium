@@ -28,11 +28,13 @@ public class AplicacioSerie implements Serializable {
 
 	//bi-directional many-to-one association to Aplicacio
 	@ManyToOne
+	@MapsId("aplicacioId")
 	@JoinColumn(name="APLICACIO_ID" ,insertable=false,updatable=false)
 	private Aplicacio achAplicacio;
 
 	//bi-directional many-to-one association to Seriedocumental
 	@ManyToOne
+	@MapsId("seriedocumentalId")
 	@JoinColumn(name="SERIEDOCUMENTAL_ID" ,insertable=false,updatable=false)
 	private Seriedocumental achSeriedocumental;
 

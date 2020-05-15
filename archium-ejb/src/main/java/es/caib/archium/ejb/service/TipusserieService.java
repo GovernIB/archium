@@ -6,6 +6,6 @@ import es.caib.archium.persistence.model.Funcio;
 import es.caib.archium.persistence.model.Tipusserie;
 
 @Local
-public interface TipusserieService extends DAO<Tipusserie, Long> {
+public interface TipusSerieService extends DAO<Tipusserie, Long> {
 	
 }

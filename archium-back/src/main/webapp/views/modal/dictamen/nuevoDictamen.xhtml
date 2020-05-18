@@ -1,0 +1,232 @@
+<ui:composition 
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+>
+  <!-- SCRIPT -->
+  <script type="text/javascript">
+	    PrimeFaces.locales['es'] = {
+	        closeText: 'Cerrar',
+	        prevText: 'Anterior',
+	        nextText: 'Siguiente',
+	        monthNames: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
+	        monthNamesShort: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'],
+	        dayNames: ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'],
+	        dayNamesShort: ['Dom', 'Lun', 'Mar', 'Mie', 'Jue', 'Vie', 'Sab'],
+	        dayNamesMin: ['D', 'L', 'M', 'X', 'J', 'V', 'S'],
+	        weekHeader: 'Semana',
+	        firstDay: 1,
+	        isRTL: false,
+	        showMonthAfterYear: false,
+	        yearSuffix: '',
+	        timeOnlyTitle: 'Sólo hora',
+	        timeText: 'Tiempo',
+	        hourText: 'Hora',
+	        minuteText: 'Minuto',
+	        secondText: 'Segundo',
+	        currentText: 'Fecha actual',
+	        ampm: false,
+	        month: 'Mes',
+	        week: 'Semana',
+	        day: 'Día',
+	        allDayText: 'Todo el día'
+	    };
+	    PrimeFaces.locales ['de'] = {
+	        closeText: 'Schließen',
+	        prevText: 'Zurück',
+	        nextText: 'Weiter',
+	        monthNames: ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember' ],
+	        monthNamesShort: ['Jan', 'Feb', 'Mär', 'Apr', 'Mai', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dez' ],
+	        dayNames: ['Sonntag', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag'],
+	        dayNamesShort: ['Son', 'Mon', 'Die', 'Mit', 'Don', 'Fre', 'Sam'],
+	        dayNamesMin: ['S', 'M', 'D', 'M ', 'D', 'F ', 'S'],
+	        weekHeader: 'Woche',
+	        firstDay: 1,
+	        isRTL: false,
+	        showMonthAfterYear: false,
+	        yearSuffix:'',
+	        timeOnlyTitle: 'Nur Zeit',
+	        timeText: 'Zeit',
+	        hourText: 'Stunde',
+	        minuteText: 'Minute',
+	        secondText: 'Sekunde',
+	        currentText: 'Aktuelles Datum',
+	        ampm: false,
+	        month: 'Monat',
+	        week: 'Woche',
+	        day: 'Tag',
+	        allDayText: 'Ganzer Tag'
+	    };
+	</script>
+	 
+	<script type="text/javascript">
+	    //<![CDATA[
+	    function dateTemplateFunc(date) {
+	        return '<span style="background-color:' + ((date.day < 21 && date.day > 10) ? '#81C784' : 'inherit') + ';border-radius:50%;padding: .25em;width: 1.75em; height:1.75em; display:block;">' + date.day + '</span>';
+	    }
+	    //]]>
+	</script>
+	<!-- CONTENIDO -->
+	<p:dialog id="dictamenModalDialogId" header="#{messages['nuevodictamen.dictamen']}" showEffect="fade" widgetVar="dictamenModalDialog" modal="true" resizable="true" style="max-width:1000px; min-width:1000px; max-height: 550px; overflow-y: scroll;">
+	  <div class="views_3">
+	  	<div class="content_4 modfseries modfuncion dictamen">
+		  	<h:form>
+		  		<ui:fragment rendered="#{dictamenController.id!=null}">
+	  				<h2 class="title_first">#{messages['nuevodictamen.modifica']}</h2>
+		  		</ui:fragment>
+		  		<ui:fragment rendered="#{dictamenController.id==null}">
+		  			<h2 class="title_first">#{messages['nuevodictamen.nou']}</h2>
+		  		</ui:fragment>
+		  		<div class="separador_rojo"></div>
+				<div class="ui-g form_new">
+					<p:panel id="panel">
+						<div class="ui-g-12">
+							<div class="ui-g-6 item_1">
+							   	<label class="ui-g-4">#{messages['nuevodictamen.codi']}</label>
+					    		<p:inputText id="codi" value="#{dictamenController.codi}" class="ui-g-8" required="true" 
+					    			validatorMessage="#{messages['nuevodictamen.validate.codi']}"
+					    			requiredMessage="#{messages['nuevodictamen.require.codi']}">				    					
+					    			<f:validateLength minimum="0" maximum="10"/>
+					    		</p:inputText>				    									    	
+						    </div>
+							<div class="ui-g-6 item_1">
+								<label class="ui-g-4">#{messages['nuevodictamen.estat']}</label>
+								<p:selectOneMenu class="ui-g-8" id="estado" value="#{dictamenController.estat}" label="estados" panelStyle="">
+								<f:selectItems value="#{dictamenController.estados}"  var="n" itemLabel="#{n}"  itemValue="#{n}"/>
+								</p:selectOneMenu>					    		
+							</div>	
+						</div>
+					    <div class="ui-g-12">							
+						    <div class="ui-g-6 item_1">
+						    	<label class="ui-g-4">#{messages['nuevodictamen.inici']}</label>
+				    			<p:datePicker id="inici" value="#{dictamenController.inici}" locale="es" appendTo="@(body)" class="ui-g-8" required="true" pattern="yyyy-MM-dd" 
+				    				validatorMessage="#{messages['validate.formatoFecha']}"
+				    				requiredMessage="#{messages['nuevodictamen.require.inici']}"></p:datePicker>
+						    </div>	
+						    <div class="ui-g-6 item_1">
+						    	<label class="ui-g-4">#{messages['nuevodictamen.aprovacio']}</label>
+				    			<p:datePicker id="aprobacio" value="#{dictamenController.aprovacio}" locale="es" appendTo="@(body)" class="ui-g-8"  pattern="yyyy-MM-dd" validatorMessage="#{messages['validate.formatoFecha']}"></p:datePicker>
+				    			
+						    </div>					    						    
+					    </div>
+					     
+						<div class="ui-g-12">
+							<div class="ui-g-6 item_1">
+						    	<label class="ui-g-4">#{messages['nuevodictamen.fi']}</label>
+				    			<p:datePicker id="fi" value="#{dictamenController.fin}" locale="es" appendTo="@(body)" class="ui-g-8" pattern="yyyy-MM-dd" validatorMessage="#{messages['validate.formatoFecha']}"></p:datePicker>
+				    			
+						    </div>					     				
+						   	<div class="ui-g-6 item_1">
+						    	<label class="ui-g-4">#{messages['nuevodictamen.codiSerie']}</label>		
+						    	<h:outputText class="ui-g-8" value="#{dictamenController.serieDocumental.nom}" rendered="#{dictamenController.serieDocumental!=null}" />    			
+					        	<!-- 
+					        		<p:selectOneMenu id="Serie" value="#{dictamenController.serieDocumental}" label="Serie" 
+						                              panelStyle="width:450px">
+							             <f:converter converterId="SeriesConverter"/>
+							            <f:selectItems value="#{dictamenController.listaDocumental}"  var="n" itemLabel="#{n.nom}" itemValue="#{n}"/>
+							        </p:selectOneMenu>
+					        	 -->
+						    </div>	
+											    
+					    </div>
+					    <div class="ui-g-12">
+					    	<div class="ui-g-6 item_1">
+						    	<label class="ui-g-4">#{messages['nuevodictamen.tipoDictamen']}</label>
+					        	<p:selectOneMenu class="ui-g-8" id="TipoDictamen" value="#{dictamenController.tipuDictamen}" label="Serie" 
+						                              panelStyle="">
+						             <f:converter converterId="TipusDictamenConverter"/>
+						            <f:selectItems value="#{dictamenController.listatipuDictamen}"  var="n" itemLabel="#{n.nom}"  itemValue="#{n}"/>
+						        </p:selectOneMenu>
+						    </div>
+						    <div class="ui-g-6 item_1">
+						    	<label class="ui-g-4">#{messages['nuevodictamen.tipoAcceso']}</label>		    			
+					        	<p:selectOneMenu class="ui-g-8" id="TipoAcceso" value="#{dictamenController.tipuAcces}" label="Serie" 
+						                              panelStyle="">
+						             <f:converter converterId="TipusAccesConverter"/>
+						            <f:selectItems value="#{dictamenController.listaTipuAcces}"  var="n" itemLabel="#{n.nom}"  itemValue="#{n}"/>
+						        </p:selectOneMenu>
+						    </div>
+					    </div>
+					    <div class="ui-g-12">
+					    	<div class="ui-g-6 item_1">
+						    	<label class="ui-g-4">#{messages['nuevodictamen.normativaA']}</label>
+				    			<p:selectOneMenu class="ui-g-8 selector_6" id="Normativa" value="#{dictamenController.normativaAprovacio}" label="Normativa" 
+						                              panelStyle="" require="true"
+						                              validatorMessage="#{messages['nuevodictamen.require.normaprob']}">
+						             <f:converter converterId="NormativaConverter"/>
+						            <f:selectItems value="#{dictamenController.listaNormativaAprovacio}"  var="n" itemLabel="#{n.nom}"/>
+						        </p:selectOneMenu>
+						    </div>
+						    <div class="ui-g-6 item_1">
+						    	<label class="ui-g-4">#{messages['nuevodictamen.ens']}</label>
+				    			<p:selectOneMenu class="ui-g-8" id="ens" value="#{dictamenController.ens}" label="Ens" 
+						                              panelStyle="">
+						             <f:converter converterId="EnsConverter"/>
+						            <f:selectItems value="#{dictamenController.listaEns}"  var="n" itemLabel="#{n.nom}"  itemValue="#{n}"/>
+						        </p:selectOneMenu>
+						    </div>
+					    </div>
+					    <div class="ui-g-12">
+					    	<div class="ui-g-6 item_1">
+						    	<label class="ui-g-4">#{messages['nuevodictamen.lopd']}</label>
+				    			<p:selectOneMenu class="ui-g-8" id="lopd" value="#{dictamenController.lopd}" label="Lopd" 
+						                              panelStyle="">
+						             <f:converter converterId="LopdConverter"/>
+						            <f:selectItems value="#{dictamenController.listaLopd}"  var="n" itemLabel="#{n.nom}"  itemValue="#{n}"/>
+						        </p:selectOneMenu>
+						    </div>
+						    <div class="ui-g-6 item_1">
+						    	<label class="ui-g-4">#{messages['nuevodictamen.termini']}</label>
+				    			<p:inputText id="Termini" value="#{dictamenController.termini}" class="ui-g-8"  required="true" 
+				    				requiredMessage="#{messages['nuevodictamen.require.termini']}"
+				    				validatorMessage="#{messages['nuevodictamen.validate.termini']}">
+				    				<f:validateLength minimum="0" maximum="6" />
+				    			</p:inputText>
+						    </div>
+					    </div>
+   					    <div class="ui-g-12">
+   					    	<div class="ui-g-6 item_1">
+						    	<label class="ui-g-4">#{messages['nuevodictamen.accio']}</label>
+				    			<p:inputText id="Dictaminada" value="#{dictamenController.accioDictaminada}" class="ui-g-8"
+				    				validatorMessage="#{messages['nuevodictamen.validate.accio']}">
+				    				<f:validateLength minimum="0" maximum="200" />
+				    			</p:inputText>
+				    			
+						    </div>
+						    <div class="ui-g-6 item_1">
+						    	<label class="ui-g-4">#{messages['nuevodictamen.condicio']}</label>
+				    			<p:inputText id="reutilitzacio" value="#{dictamenController.condicioReutilizacio}" class="ui-g-8" 
+				    				validatorMessage="#{messages['nuevodictamen.validate.condi']}">
+				    				<f:validateLength minimum="0" maximum="4000" />
+				    			</p:inputText>
+						    </div>
+					    </div>
+					    
+					    <div class="ui-g-12">
+					    	<div class="ui-g-6 item_1">
+						    	<label class="ui-g-4">#{messages['nuevodictamen.destinatariRes']}</label>
+				    			<p:inputText id="restingits" value="#{dictamenController.destinatariRestringits}" class="ui-g-8"
+				    				validatorMessage="#{messages['nuevodictamen.validate.dest']}">
+				    				<f:validateLength minimum="0" maximum="4000" />
+				    			</p:inputText>				    			
+						    </div>
+						    <div class="ui-g-6 item_1">
+						     	<label class="ui-g-4">#{messages['nuevodictamen.serieEsencial']}</label>
+        						<p:selectBooleanButton class="selectosino" id="serieEsencial" value="#{dictamenController.serieEsencial}" onLabel="#{messages['si']}" offLabel="#{messages['no']}" style="width:60px" />
+						    </div>
+					    </div>
+					    
+					    <div class="ui-g-12 button_new" align="justify">
+					    	<p:commandButton class="boton_modal button_red" update="panel1" value="#{messages['guardar']}" action="#{dictamenController.saveUpdate}" oncomplete="if (args &amp;&amp; !args.validationFailed) PF('dictamenModalDialog').hide()" style="margin-rigth: 0px;" ></p:commandButton>
+					    	
+					    </div>
+				    </p:panel>
+				</div>
+			</h:form>	    
+	  	</div>
+	  </div>
+	</p:dialog>
+  <!-- FIN DEL CONTENIDO -->
+</ui:composition>

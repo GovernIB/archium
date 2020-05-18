@@ -1,0 +1,46 @@
+<ui:composition
+ xmlns="http://www.w3.org/1999/xhtml"
+ xmlns:h="http://xmlns.jcp.org/jsf/html"
+ xmlns:f="http://java.sun.com/jsf/core"
+ xmlns:p="http://primefaces.org/ui"
+ xmlns:ui="http://java.sun.com/jsf/facelets"
+>
+	
+	<!-- PREHEADER -->
+	<div class="pre-header">
+  		<h:panelGrid columns="1" cellpadding="5">
+  			<p:commandButton class="out_sesion" value="#{messages['datos.cerrarsession']}" type="button" onclick="PF('dlg1').show();" />
+		</h:panelGrid>
+		<p:dialog class="content_modal" header="Cerrar Sesión" widgetVar="dlg1" modal="true" height="100">
+			<h:form>
+			    <h:outputText class="text_modal" value="#{messages['datos.cerrarsessionconfirmacion']}" />
+		    	<p:commandButton class="boton_modal" action="#{login.logOff}"  value="#{messages['datos.cerrarsession']}" ></p:commandButton >
+		    </h:form>	
+   		</p:dialog>   
+  	</div>
+  	
+  	<!-- MENU PRINCIPAL -->
+  	<div class="main_principal">
+  		<h:graphicImage class="logo_vertical" library="img" name="logo_02.png"/>		
+		<div class="box_items">
+		
+			<a id="quadre" class="" href="../views/quadre.xhtml">
+		    	<h:graphicImage class="logo_vertical" library="img" name="icono_quadres.png"/>
+		    </a>
+		    
+		    <a id="funciones" class="" href="../views/funciones.xhtml">
+		    	<h:graphicImage class="logo_vertical" library="img" name="icono_funciones.png"/>
+		    </a>
+		    
+		    <a id="procediment" class="" href="../views/procediment.xhtml">
+		    	<h:graphicImage class="logo_vertical" library="img" name="icono_series.png"/>
+		    </a>
+		    
+		    <a id="tablas" class="" href="../views/tablasmaestras.xhtml">
+		    	<h:graphicImage class="logo_vertical" library="img" name="icono_panel.png"/>
+		    </a>
+		</div>    
+  	</div>
+  	<!-- FIN MENU PRINCIPAL -->
+
+</ui:composition>

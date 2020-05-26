@@ -69,7 +69,7 @@
 	    }
 	    //]]>
 	</script>
-<p:dialog id="serieModalDialogId" header="Serie Documental" showEffect="fade" widgetVar="serieModalDialog" modal="true" resizable="false" style="max-width:1000px; min-width:1000px;">
+<p:dialog id="serieModalDialogId" header="Serie Documental" showEffect="fade" widgetVar="serieModalDialog" modal="true" resizable="false" style="max-width:1100px; min-width:1100px;">
 	
   <!-- CONTENIDO -->
   <div class="views_3">
@@ -284,32 +284,33 @@
 		        	<h:panelGroup id="tabValors">
 						<div class="ui-g-12">
 							<div class="ui-g-12">
-							    <label class="ui-g-12">#{messages['nuevaserie.valorsprimari']}</label>	
+							    <label class="ui-g-12 title_valores">#{messages['nuevaserie.valorsprimari']}</label>	
 							</div>
-							<div class="ui-g-12">
-								<p:repeat value="#{nuevaSerieController.valoracio.achValorprimaris}" var="valor">
-									<div class="ui-g-4">
-										<label class="ui-g-4">#{valor.achTipusvalor.nom}</label>
-									    <p:selectBooleanCheckbox style="margin: 0 10px;" id="recap" value="#{valor.selected}"/>		
+							
+							<p:repeat value="#{nuevaSerieController.valoracio.achValorprimaris}" var="valor">
+								<div class="ui-g-12" style="padding:0px;">
+									<div class="ui-g-3">
+										<label class="ui-g-8">#{valor.achTipusvalor.nom}</label>
+									    <p:selectBooleanCheckbox style="margin: 0 10px;displey:flex;aling-items:center;" id="recap" value="#{valor.selected}"/>		
 									</div>
 									<div class="ui-g-8">
-										<p:inputNumber  class="ui-g-4" id="plazo1" value="#{valor.terminiVal}" decimalPlaces="0"
+										<p:inputNumber  class="ui-g-5 input_valores" id="plazo1" value="#{valor.terminiVal}" decimalPlaces="0"
 						    				validatorMessage="#{messages['nuevodictamen.validate.termini']}">
 								    	 	<f:validateLength minimum="0" maximum="5"/>
 								    	</p:inputNumber>
 								    	 
-						    			<p:selectOneMenu style="width: 50%!important; margin-left:10px!important;" class="ui-g-4" value="#{valor.terminiType}" label="plazos1" panelStyle="width:10px">
+						    			<p:selectOneMenu style="width: 50%!important; margin-left:10px!important;" class="ui-g-5" value="#{valor.terminiType}" label="plazos1" panelStyle="width:10px">
 								            <f:selectItems value="#{dictamenController.plazos1}"  var="n" itemLabel="#{n}"  itemValue="#{n}"/>
 								        </p:selectOneMenu>
 									</div>
-									
-								</p:repeat>
-							</div>
+								</div>
+							</p:repeat>
+							
 							
 							
 							<div class="ui-g-12">
-							    <label class="ui-g-4">#{messages['nuevaserie.valorsecundari']}</label>	
-					        	<p:selectOneMenu  class="ui-g-8" id="valorSecundari" value="#{nuevaSerieController.valoracio.achValorsecundari}">
+							    <label class="ui-g-12 title_valores">#{messages['nuevaserie.valorsecundari']}</label>	
+					        	<p:selectOneMenu  class="ui-g-12" id="valorSecundari" value="#{nuevaSerieController.valoracio.achValorsecundari}" style="margin-top:15px;">
 						             <f:converter converterId="valorSecundariConverter"/>
 						             <f:selectItem itemLabel="-- #{messages['nuevaserie.valorsecundari']} -- " itemValue="#{null}" noSelectionOption="true"/>
 						             <f:selectItems value="#{nuevaSerieController.listaValoresSecundarios}"  var="n" itemLabel="#{n.nom}"  itemValue="#{n}"/>

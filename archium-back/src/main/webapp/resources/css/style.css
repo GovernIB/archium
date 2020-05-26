@@ -16,6 +16,18 @@ button{
 	position: absolute;
 	width: 100%;
 }
+.input_valores{
+	padding: 0!important;
+}
+.input_valores input{
+	width:95%;
+	padding:5px!important;
+}
+.title_valores{
+	font-weight:600;
+	text-transform:uppercase;
+	border-bottom:1px solid #ccc;
+}
 .box_login{
 	width: 90%;
 	background: #fff;
@@ -1092,6 +1104,7 @@ a{
     background: #eee;
     border: none;
     color: #333;
+    padding: 0px 30px;
 }
 .content_4 .relacionarseries li{
 	margin: 5px 0!important;

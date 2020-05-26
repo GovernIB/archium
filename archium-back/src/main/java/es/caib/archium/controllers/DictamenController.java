@@ -45,7 +45,7 @@ public class DictamenController implements Serializable {
 	    //private List<DictamenObject> ensList		 		= new ArrayList<>();
 	    //private List<DictamenObject> tiposAccessList 		= new ArrayList<>();
 	    
-	    private Date 	inici;
+	    private Date inici;
 	    private Date 	aprovacio;
 	    private Date 	fin;
 	    private String 	termini;
@@ -82,8 +82,11 @@ public class DictamenController implements Serializable {
 		private List<String>				estados	= new ArrayList<>();
 		
 		private Document<DictamenObject> miObjeto  = new Document<DictamenObject>();
-		 
-	
+		
+		private List<String>						plazos1		= 	new ArrayList<>();
+		private String 		plazoTermini;
+		private Integer 	plazoTerminiVal;
+		
 	    @Inject
 	    private DictamenFrontService 			serviceDictamen;	    
     
@@ -108,6 +111,12 @@ public class DictamenController implements Serializable {
 	    		this.estados.add("Publicable");
 	    		this.estados.add("Vigent");
 	    		this.estados.add("Obsolet");
+	    		
+	    		this.plazos1.add("Hores");
+	    		this.plazos1.add("Dies");
+	    		this.plazos1.add("Setmanes");
+	    		this.plazos1.add("Mesos");
+	    		this.plazos1.add("Anys");
 	    	}
 	    	catch(Exception e) 
 	    	{	
@@ -123,12 +132,15 @@ public class DictamenController implements Serializable {
 	    	Map<String, Object> viewMap = FacesContext.getCurrentInstance().getViewRoot().getViewMap();
 			FuncionesController funcBean = (FuncionesController) viewMap.get("funciones");
 	    	
+			if (this.plazoTerminiVal != null) {
+				this.setTermini(this.plazoTerminiVal.toString().concat(this.plazoTermini.substring(0,1)));
+			}
+			
 			try {
 				DictamenObject newD = this.serviceDictamen.create(this.serieDocumental,
 										  	this.tipuDictamen,
 										  	this.accioDictaminada,
 										  	this.termini,
-										  	this.inici,
 										  	this.destinatariRestringits,
 										  	this.fin,
 										  	this.tipuAcces,
@@ -156,6 +168,10 @@ public class DictamenController implements Serializable {
 	    	Map<String, Object> viewMap = FacesContext.getCurrentInstance().getViewRoot().getViewMap();
 			FuncionesController funcBean = (FuncionesController) viewMap.get("funciones");
 	    	
+			if (this.plazoTerminiVal != null) {
+				this.setTermini(this.plazoTerminiVal.toString().concat(this.plazoTermini.substring(0,1)));
+			}
+			
 	    	try {
 	    		
 	    		DictamenObject obj = new DictamenObject();
@@ -164,8 +180,8 @@ public class DictamenController implements Serializable {
 		    	obj.setTipusdictamen(this.getTipuDictamen());
 		    	obj.setAccioDictaminada(this.getAccioDictaminada());
 		    	obj.setTermini(this.getTermini());
-		    	obj.setInici(this.getInici());
 		    	obj.setDestinatarisRestrigits(this.getDestinatariRestringits());
+		    	obj.setInici(this.getInici());
 		    	obj.setFi(this.getFin());
 		    	obj.setTipusAcces(this.getTipuAcces());
 		    	obj.setEns(this.getEns());
@@ -209,8 +225,8 @@ public class DictamenController implements Serializable {
 	    	this.tipuDictamen = null;
 	    	this.accioDictaminada = null;
 	    	this.termini = null;
-	    	this.inici = null;
 	    	this.destinatariRestringits = null;
+	    	this.inici = null;
 	    	this.fin = null;
 	    	this.tipuAcces = null;
 	    	this.ens = null;
@@ -221,6 +237,8 @@ public class DictamenController implements Serializable {
 	    	this.aprovacio = null;
 	    	this.codi = null;
 	    	this.estat = null;
+	    	this.plazoTermini = null;
+	    	this.plazoTerminiVal = null;
 	    }
 	    
 	    public void updateDictament(Document<DictamenObject> obj)
@@ -229,9 +247,25 @@ public class DictamenController implements Serializable {
 	    	this.setSerieDocumental(obj.getObject().getSerieDocumental());
 	    	this.setTipuDictamen(obj.getObject().getTipusdictamen());
 	    	this.setAccioDictaminada(obj.getObject().getAccioDictaminada());
+	    
+	    	if (this.termini != null) {
+				String a 	= this.termini.substring(this.termini.length() - 1, this.termini.length());
+				if (a.equals("H"))
+					this.setPlazoTermini("Hores");
+				if (a.equals("D"))
+					this.setPlazoTermini("Dies");
+				if (a.equals("S"))
+					this.setPlazoTermini("Setmanes");
+				if (a.equals("M"))
+					this.setPlazoTermini("Mesos");
+				if (a.equals("A"))
+					this.setPlazoTermini("Anys");
+				this.plazoTerminiVal 	= Integer.parseInt(this.termini.substring(0,this.termini.length() - 1));
+			}
+	    	
 	    	this.setTermini(obj.getObject().getTermini());	    	
-	    	this.setInici(obj.getObject().getInici());
 	    	this.setDestinatariRestringits(obj.getObject().getDestinatarisRestrigits());
+	    	this.setInici(obj.getObject().getInici());
 	    	this.setFin(obj.getObject().getFi());
 	    	this.setTipuAcces(obj.getObject().getTipusAcces());
 	    	this.setEns(obj.getObject().getEns());
@@ -290,20 +324,6 @@ public class DictamenController implements Serializable {
 		public void setAccioDictaminada(String accioDictaminada) {
 			this.accioDictaminada = accioDictaminada;
 		}
-
-
-
-		public Date getInici() {
-			return inici;
-		}
-
-
-
-		public void setInici(Date inici) {
-			this.inici = inici;
-		}
-
-
 
 		public Date getAprovacio() {
 			return aprovacio;
@@ -657,6 +677,46 @@ public class DictamenController implements Serializable {
 			this.estados = estados;
 		}
 
-	  
+
+		public List<String> getPlazos1() {
+			return plazos1;
+		}
+
+
+		public void setPlazos1(List<String> plazos1) {
+			this.plazos1 = plazos1;
+		}
+
+
+		public String getPlazoTermini() {
+			return plazoTermini;
+		}
+
+
+		public void setPlazoTermini(String plazoTermini) {
+			this.plazoTermini = plazoTermini;
+		}
+
+
+		public Integer getPlazoTerminiVal() {
+			return plazoTerminiVal;
+		}
+
+
+		public void setPlazoTerminiVal(Integer plazoTerminiVal) {
+			this.plazoTerminiVal = plazoTerminiVal;
+		}
+
+
+		public Date getInici() {
+			return inici;
+		}
+
+
+		public void setInici(Date inici) {
+			this.inici = inici;
+		}
+
+		
 
 	}

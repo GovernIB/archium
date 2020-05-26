@@ -16,6 +16,8 @@ import javax.inject.Named;
 import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
 
+import org.primefaces.model.DualListModel;
+
 import es.caib.archium.commons.i18n.I18NException;
 import es.caib.archium.ejb.AplicacioSerieEJB;
 import es.caib.archium.ejb.AplicacioEJB;
@@ -41,6 +43,9 @@ import es.caib.archium.ejb.service.SerieArgenService;
 import es.caib.archium.ejb.service.SerieDocumentalService;
 import es.caib.archium.ejb.service.SerieRelacionadaService;
 import es.caib.archium.ejb.service.TipusSerieService;
+import es.caib.archium.ejb.service.TipusValorService;
+import es.caib.archium.ejb.service.ValorSecundariService;
+import es.caib.archium.ejb.service.ValoracioService;
 import es.caib.archium.objects.AplicacionObject;
 import es.caib.archium.objects.CatalegSeriesObject;
 import es.caib.archium.objects.CausaLimitacioObject;
@@ -49,7 +54,11 @@ import es.caib.archium.objects.LimitacioNormativaSerieObject;
 import es.caib.archium.objects.NormativaAprobacioObject;
 import es.caib.archium.objects.SerieArgenObject;
 import es.caib.archium.objects.SerieDocumentalObject;
+import es.caib.archium.objects.TipuValorObject;
 import es.caib.archium.objects.TipusSerieObject;
+import es.caib.archium.objects.ValorPrimariObject;
+import es.caib.archium.objects.ValorSecundariObject;
+import es.caib.archium.objects.ValoracioObject;
 import es.caib.archium.persistence.model.Aplicacio;
 import es.caib.archium.persistence.model.AplicacioSerie;
 import es.caib.archium.persistence.model.AplicacioSeriePK;
@@ -65,6 +74,10 @@ import es.caib.archium.persistence.model.Serieargen;
 import es.caib.archium.persistence.model.Seriedocumental;
 import es.caib.archium.persistence.model.Serierelacionada;
 import es.caib.archium.persistence.model.Tipusserie;
+import es.caib.archium.persistence.model.Tipusvalor;
+import es.caib.archium.persistence.model.Valoracio;
+import es.caib.archium.persistence.model.Valorprimari;
+import es.caib.archium.persistence.model.Valorsecundari;
 
 @Named
 @ApplicationScoped
@@ -97,6 +110,37 @@ public class SerieFrontService {
 	private SerieArgenService serieArgenService;
 	@Inject
 	private NormativaSerieService normativaSerieEJB;
+	@Inject 
+	private TipusValorService tipusValorEJB;
+	@Inject 
+	private ValorSecundariService valorSecundariEJB;
+	@Inject
+	private ValoracioService valoracioEJB;
+	
+	@Transactional
+	public ValoracioObject getValoracioSerie(Long serieId) throws I18NException{
+		return new ValoracioObject(valoracioEJB.getBySerie(serieId));
+	}
+	
+	public List<TipuValorObject> getListaTipusValor() throws I18NException {
+		List<TipuValorObject> res = new ArrayList<TipuValorObject>();
+		
+		for(Tipusvalor db: tipusValorEJB.findAll()) {
+			res.add(new TipuValorObject(db));
+		}
+		
+		return res;
+	}
+	
+	public List<ValorSecundariObject> getListaValorsSecundari() throws I18NException {
+		List<ValorSecundariObject> res = new ArrayList<ValorSecundariObject>();
+		
+		for(Valorsecundari db: valorSecundariEJB.findAll()) {
+			res.add(new ValorSecundariObject(db));
+		}
+		
+		return res;
+	}
 	
 	public List<FuncioObject> getListaFunciones() throws I18NException{
 		List<FuncioObject> res = new ArrayList<>();
@@ -265,12 +309,16 @@ public class SerieFrontService {
 		List<LimitacioNormativaSerieObject> res = new ArrayList<>();
 		List<LimitacioNormativaSerie> list = limitacioNormativaSerieService.getBySerie(serieId);
 
-		int i=0;
 		for(LimitacioNormativaSerie lns : list) {
-			LimitacioNormativaSerieObject lnsOb = new LimitacioNormativaSerieObject(lns);
-			lnsOb.setId(i);
-			res.add(lnsOb);
-			i++;
+			int index = res.indexOf(new LimitacioNormativaSerieObject(lns));
+			if(index>=0) {
+				res.get(index).addCausaLimitacio(new CausaLimitacioObject(lns.getAchCausalimitacio()));
+			} else {
+				LimitacioNormativaSerieObject lnsOb = new LimitacioNormativaSerieObject(lns);
+				lnsOb.addCausaLimitacio(new CausaLimitacioObject(lns.getAchCausalimitacio()));
+				lnsOb.setDualListCausas(new DualListModel<CausaLimitacioObject>(new ArrayList<>(), new ArrayList<>()));
+				res.add(lnsOb);
+			}
 		}
 		return res;
 	}
@@ -279,7 +327,7 @@ public class SerieFrontService {
 	public SerieDocumentalObject createNuevaSerie(String codi, String nom, String nomCas, Long catalegSeriId, Long idFuncio,
 			String descripcio, String descripcioCas, String resumMigracio, String dir3Promotor, String estat, Long tipusSerieId,
 			String codiIecisa,List<AplicacionObject> listaApps,List<SerieDocumentalObject> relateds,List<SerieArgenObject> argensList, List<LimitacioNormativaSerieObject> listaLNS
-			,List<NormativaAprobacioObject> normativasList) throws I18NException {
+			,List<NormativaAprobacioObject> normativasList, ValoracioObject valoracio) throws I18NException {
 		Seriedocumental toPersist = new Seriedocumental();
 		
 		//Primero persistimos la Serie Documental
@@ -346,13 +394,34 @@ public class SerieFrontService {
 		
 		toPersist.setAchLimitacioNormativaSeries(new ArrayList<LimitacioNormativaSerie>());
 		for(LimitacioNormativaSerieObject lns : listaLNS) {
-			//lns.setSeriedocumental(new SerieDocumentalObject(res));
-			LimitacioNormativaSerie lnsDB = lns.toDbObject();
-			lnsDB.setAchNormativa(normativaService.getReference(lnsDB.getId().getNormativaId()));
-			lnsDB.setAchCausalimitacio(causaLimitacioService.getReference(lnsDB.getId().getCausalimitacioId()));
-			//lnsDB.setAchSeriedocumental(res);
-			toPersist.addAchLimitacioNormativaSery(lnsDB);
+			for(CausaLimitacioObject cl: lns.getDualListCausas().getTarget()) {
+				//lns.setSeriedocumental(new SerieDocumentalObject(res));
+				LimitacioNormativaSerie lnsDB = lns.toDbObject();
+				lnsDB.setAchNormativa(normativaService.getReference(lnsDB.getId().getNormativaId()));
+				lnsDB.setAchCausalimitacio(causaLimitacioService.getReference(cl.getId()));
+				lnsDB.setInici(new Date());
+				toPersist.addAchLimitacioNormativaSery(lnsDB);
+			}
 		}
+		
+		
+		
+		toPersist.setAchValoracios(new ArrayList<Valoracio>());
+		if(valoracio!=null && valoracio.getAchValorsecundari()!=null && valoracio.getAchValorprimaris()!=null) {
+			Valoracio v = new Valoracio();
+			v.setAchValorprimaris(new ArrayList<Valorprimari>());
+			v.setAchValorsecundari(valorSecundariEJB.getReference(valoracio.getAchValorsecundari().getId()));
+			v.setInici(new Date());					
+			for(ValorPrimariObject vp: valoracio.getAchValorprimaris()) {
+				if(vp.getSelected()==true) {
+					Valorprimari valorPrimari = vp.toDbObject();
+					valorPrimari.setAchTipusvalor(tipusValorEJB.getReference(vp.getAchTipusvalor().getId()));
+					v.addAchValorprimari(valorPrimari);
+				}
+			}
+			toPersist.addAchValoracio(v);			
+		}
+		
 		
 		Seriedocumental res = serieService.create(toPersist);
 		
@@ -363,7 +432,7 @@ public class SerieFrontService {
 	public SerieDocumentalObject updateSerieDocumental(Long idSerie,String codi, String nom, String nomCas, Long catalegSeriId, Long funcioId,
 			String descripcio, String descripcioCas, String resumMigracio, String dir3Promotor, String estat, Long tipusSerieId,
 			String codiIecisa,List<AplicacionObject> listaApps,List<SerieDocumentalObject> relateds,List<SerieArgenObject> argenRelateds ,List<LimitacioNormativaSerieObject> listaLNS
-			,List<NormativaAprobacioObject> normativasList) throws Exception {
+			,List<NormativaAprobacioObject> normativasList, ValoracioObject valoracio) throws Exception {
 		Seriedocumental toPersist = serieService.getReference(idSerie);
 		System.out.println("Updating");
 		if(toPersist == null)
@@ -383,9 +452,7 @@ public class SerieFrontService {
 		if(nom!= null)toPersist.setNom(nom);
 		if(nomCas!= null)toPersist.setNomcas(nomCas);
 		if(estat!= null)toPersist.setEstat(estat);
-		
-		//toPersist.setAchAplicacioSeries(new ArrayList<AplicacioSerie>());
-		
+				
 		
 		toPersist.getAchAplicacioSeries().clear();
 		for(AplicacionObject b : listaApps)
@@ -436,14 +503,44 @@ public class SerieFrontService {
 			toPersist.addAchNormativaSeriedocumental(normSerie);
 		}
 		
-		toPersist.getAchLimitacioNormativaSeries().clear();;
+		toPersist.getAchLimitacioNormativaSeries().clear();
 		for(LimitacioNormativaSerieObject lns : listaLNS) {
-			lns.setSeriedocumental(new SerieDocumentalObject(toPersist));
-			LimitacioNormativaSerie lnsDB = lns.toDbObject();
-			lnsDB.setAchNormativa(normativaService.getReference(lnsDB.getId().getNormativaId()));
-			lnsDB.setAchCausalimitacio(causaLimitacioService.getReference(lnsDB.getId().getCausalimitacioId()));
-			lnsDB.setAchSeriedocumental(toPersist);
-			toPersist.addAchLimitacioNormativaSery(lnsDB);
+			for(CausaLimitacioObject cl: lns.getDualListCausas().getTarget()) {
+				lns.setSeriedocumental(new SerieDocumentalObject(toPersist));
+				System.out.println("lns:" + lns.toString());
+				LimitacioNormativaSerie lnsDB = lns.toDbObject();
+				lnsDB.getId().setCausalimitacioId(cl.getId());
+				lnsDB.setInici(new Date());
+				lnsDB.setAchNormativa(normativaService.getReference(lnsDB.getId().getNormativaId()));
+				lnsDB.setAchCausalimitacio(causaLimitacioService.getReference(cl.getId()));
+				lnsDB.setAchSeriedocumental(toPersist);
+				toPersist.addAchLimitacioNormativaSery(lnsDB);
+			}
+			
+		}
+		
+		toPersist.getAchValoracios().clear();
+		if(valoracio!=null && valoracio.getAchValorsecundari()!=null && valoracio.hashValorPrimariSelected()==true) {
+			Valoracio v = (valoracio.getId()!=null ? valoracioEJB.getReference(valoracio.getId()) : new Valoracio());
+
+			v.setAchSeriedocumental(toPersist);
+			if(v.getAchValorprimaris()!=null) {
+				v.getAchValorprimaris().clear();
+			} else {
+				v.setAchValorprimaris(new ArrayList<Valorprimari>());
+			}
+			
+			if(v.getInici()==null) v.setInici(new Date());
+			
+			v.setAchValorsecundari(valorSecundariEJB.getReference(valoracio.getAchValorsecundari().getId()));
+			for(ValorPrimariObject vp: valoracio.getAchValorprimaris()) {
+				if(vp.getSelected()==true) {
+					Valorprimari valorPrimari = vp.toDbObject();
+					valorPrimari.setAchTipusvalor(tipusValorEJB.getReference(vp.getAchTipusvalor().getId()));
+					v.addAchValorprimari(valorPrimari);
+				}
+			}
+			toPersist.addAchValoracio(v);			
 		}
 		
 		Seriedocumental res = this.serieService.update(toPersist);

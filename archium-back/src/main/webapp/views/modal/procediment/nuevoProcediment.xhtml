@@ -345,7 +345,7 @@
 											    </div>	
 											    
 												<div class="ui-g-4" style="padding:0!important;">
-													<p:commandButton style="margin: 0;padding: 0px 10px;" class="boton_modal botton_red button_aceptar" partialSubmit="true" process="@this obligatori, recap" update="@this" value="Aceptado"  actionListener="#{procedimentController.saveTDP(tdp)}" ></p:commandButton> 
+													<p:commandButton style="margin: 0;padding: 0px 10px;" class="boton_modal botton_red button_aceptar" partialSubmit="true" process="@this obligatori, recap" update="@this" value="#{messages['aceptar']}"  actionListener="#{procedimentController.saveTDP(tdp)}" ></p:commandButton> 
 												</div>
 											</div>
 								        </p:tab>
@@ -358,11 +358,19 @@
 					    	
 								    <div class="ui-g-6 item_1" style="display: flex; align-items:center;">
 								    	<label class="ui-g-4">#{messages['nuevoprocediment.Taxa']}</label>
-						    			<p:selectBooleanCheckbox value="#{procedimentController.taxa}"/>				    			
+								    	<p:selectOneMenu id="taxa" value="#{procedimentController.taxa}" label="familia">
+							        		<f:selectItem itemLabel="#{messages['sinasignar']}" itemValue="#{null}" noSelectionOption="true"/>
+							        		<f:selectItem itemLabel="#{messages['si']}" itemValue="#{true}"/>
+							        		<f:selectItem itemLabel="#{messages['no']}" itemValue="#{false}"/>
+								        </p:selectOneMenu>
 									</div>
 								    <div class="ui-g-6 item_1" style="display: flex; align-items:center;">
 								    	<label class="ui-g-4">#{messages['nuevoprocediment.fiViaAdministrativa']}</label>
-						    			<p:selectBooleanCheckbox value="#{procedimentController.fiViaAdministrativa}"/>				    			
+								    	<p:selectOneMenu id="viaAdministrativa" value="#{procedimentController.fiViaAdministrativa}" label="familia">
+							        		<f:selectItem itemLabel="#{messages['sinasignar']}" itemValue="#{null}" noSelectionOption="true"/>
+							        		<f:selectItem itemLabel="#{messages['si']}" itemValue="#{true}"/>
+							        		<f:selectItem itemLabel="#{messages['no']}" itemValue="#{false}"/>
+								        </p:selectOneMenu>
 								    </div>
 			
 								</div>

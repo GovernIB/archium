@@ -84,7 +84,7 @@
 					<p:panel id="panel">
 						<div class="ui-g-12">
 							<div class="ui-g-6 item_1">
-							   	<label class="ui-g-4">#{messages['nuevodictamen.codi']}</label>
+							   	<label class="ui-g-4">#{messages['nuevodictamen.codi']}*</label>
 					    		<p:inputText id="codi" value="#{dictamenController.codi}" class="ui-g-8" required="true" 
 					    			validatorMessage="#{messages['nuevodictamen.validate.codi']}"
 					    			requiredMessage="#{messages['nuevodictamen.require.codi']}">				    					
@@ -92,7 +92,7 @@
 					    		</p:inputText>				    									    	
 						    </div>
 							<div class="ui-g-6 item_1">
-								<label class="ui-g-4">#{messages['nuevodictamen.estat']}</label>
+								<label class="ui-g-4">#{messages['nuevodictamen.estat']}*</label>
 								<p:selectOneMenu class="ui-g-8" id="estado" value="#{dictamenController.estat}" label="estados" panelStyle="">
 								<f:selectItems value="#{dictamenController.estados}"  var="n" itemLabel="#{n}"  itemValue="#{n}"/>
 								</p:selectOneMenu>					    		
@@ -100,34 +100,20 @@
 						</div>
 					    <div class="ui-g-12">							
 						    <div class="ui-g-6 item_1">
-						    	<label class="ui-g-4">#{messages['nuevodictamen.inici']}</label>
-				    			<p:datePicker id="inici" value="#{dictamenController.inici}" locale="es" appendTo="@(body)" class="ui-g-8" required="true" pattern="yyyy-MM-dd" 
-				    				validatorMessage="#{messages['validate.formatoFecha']}"
-				    				requiredMessage="#{messages['nuevodictamen.require.inici']}"></p:datePicker>
-						    </div>	
-						    <div class="ui-g-6 item_1">
 						    	<label class="ui-g-4">#{messages['nuevodictamen.aprovacio']}</label>
 				    			<p:datePicker id="aprobacio" value="#{dictamenController.aprovacio}" locale="es" appendTo="@(body)" class="ui-g-8"  pattern="yyyy-MM-dd" validatorMessage="#{messages['validate.formatoFecha']}"></p:datePicker>
-				    			
-						    </div>					    						    
+						    </div>		
+						    <div class="ui-g-6 item_1">
+						    	<label class="ui-g-4">#{messages['nuevodictamen.fi']}</label>
+				    			<p:datePicker id="fi" value="#{dictamenController.fin}" locale="es" appendTo="@(body)" class="ui-g-8" pattern="yyyy-MM-dd" validatorMessage="#{messages['validate.formatoFecha']}"></p:datePicker>
+						    </div>				    						    
 					    </div>
 					     
 						<div class="ui-g-12">
-							<div class="ui-g-6 item_1">
-						    	<label class="ui-g-4">#{messages['nuevodictamen.fi']}</label>
-				    			<p:datePicker id="fi" value="#{dictamenController.fin}" locale="es" appendTo="@(body)" class="ui-g-8" pattern="yyyy-MM-dd" validatorMessage="#{messages['validate.formatoFecha']}"></p:datePicker>
-				    			
-						    </div>					     				
+											     				
 						   	<div class="ui-g-6 item_1">
 						    	<label class="ui-g-4">#{messages['nuevodictamen.codiSerie']}</label>		
 						    	<h:outputText class="ui-g-8" value="#{dictamenController.serieDocumental.nom}" rendered="#{dictamenController.serieDocumental!=null}" />    			
-					        	<!-- 
-					        		<p:selectOneMenu id="Serie" value="#{dictamenController.serieDocumental}" label="Serie" 
-						                              panelStyle="width:450px">
-							             <f:converter converterId="SeriesConverter"/>
-							            <f:selectItems value="#{dictamenController.listaDocumental}"  var="n" itemLabel="#{n.nom}" itemValue="#{n}"/>
-							        </p:selectOneMenu>
-					        	 -->
 						    </div>	
 											    
 					    </div>
@@ -137,6 +123,7 @@
 					        	<p:selectOneMenu class="ui-g-8" id="TipoDictamen" value="#{dictamenController.tipuDictamen}" label="Serie" 
 						                              panelStyle="">
 						             <f:converter converterId="TipusDictamenConverter"/>
+						             <f:selectItem itemLabel="-- #{messages['nuevodictamen.tipoDictamen']} -- " itemValue="#{null}" noSelectionOption="true"/>
 						            <f:selectItems value="#{dictamenController.listatipuDictamen}"  var="n" itemLabel="#{n.nom}"  itemValue="#{n}"/>
 						        </p:selectOneMenu>
 						    </div>
@@ -145,6 +132,7 @@
 					        	<p:selectOneMenu class="ui-g-8" id="TipoAcceso" value="#{dictamenController.tipuAcces}" label="Serie" 
 						                              panelStyle="">
 						             <f:converter converterId="TipusAccesConverter"/>
+						             <f:selectItem itemLabel="-- #{messages['nuevodictamen.tipoAcceso']} -- " itemValue="#{null}" noSelectionOption="true"/>
 						            <f:selectItems value="#{dictamenController.listaTipuAcces}"  var="n" itemLabel="#{n.nom}"  itemValue="#{n}"/>
 						        </p:selectOneMenu>
 						    </div>
@@ -156,6 +144,7 @@
 						                              panelStyle="" require="true"
 						                              validatorMessage="#{messages['nuevodictamen.require.normaprob']}">
 						             <f:converter converterId="NormativaConverter"/>
+						             <f:selectItem itemLabel="-- #{messages['nuevodictamen.normativaA']} -- " itemValue="#{null}" noSelectionOption="true"/>
 						            <f:selectItems value="#{dictamenController.listaNormativaAprovacio}"  var="n" itemLabel="#{n.nom}"/>
 						        </p:selectOneMenu>
 						    </div>
@@ -164,7 +153,8 @@
 				    			<p:selectOneMenu class="ui-g-8" id="ens" value="#{dictamenController.ens}" label="Ens" 
 						                              panelStyle="">
 						             <f:converter converterId="EnsConverter"/>
-						            <f:selectItems value="#{dictamenController.listaEns}"  var="n" itemLabel="#{n.nom}"  itemValue="#{n}"/>
+						             <f:selectItem itemLabel="-- #{messages['nuevodictamen.ens']} -- " itemValue="#{null}" noSelectionOption="true"/>
+						             <f:selectItems value="#{dictamenController.listaEns}"  var="n" itemLabel="#{n.nom}"  itemValue="#{n}"/>
 						        </p:selectOneMenu>
 						    </div>
 					    </div>
@@ -174,16 +164,21 @@
 				    			<p:selectOneMenu class="ui-g-8" id="lopd" value="#{dictamenController.lopd}" label="Lopd" 
 						                              panelStyle="">
 						             <f:converter converterId="LopdConverter"/>
+						            <f:selectItem itemLabel="-- #{messages['nuevodictamen.lopd']} -- " itemValue="#{null}" noSelectionOption="true"/>
 						            <f:selectItems value="#{dictamenController.listaLopd}"  var="n" itemLabel="#{n.nom}"  itemValue="#{n}"/>
 						        </p:selectOneMenu>
 						    </div>
 						    <div class="ui-g-6 item_1">
-						    	<label class="ui-g-4">#{messages['nuevodictamen.termini']}</label>
-				    			<p:inputText id="Termini" value="#{dictamenController.termini}" class="ui-g-8"  required="true" 
-				    				requiredMessage="#{messages['nuevodictamen.require.termini']}"
+						    	<label class="ui-g-4">#{messages['nuevodictamen.termini']}*</label>
+				    			<p:inputNumber  class="ui-g-4" id="plazo1" value="#{dictamenController.plazoTerminiVal}" required="true" decimalPlaces="0"
+						    	  	requiredMessage="#{messages['nuevodictamen.require.termini']}"
 				    				validatorMessage="#{messages['nuevodictamen.validate.termini']}">
-				    				<f:validateLength minimum="0" maximum="6" />
-				    			</p:inputText>
+						    	 	<f:validateLength minimum="0" maximum="5"/>
+						    	 </p:inputNumber>
+						    	 
+				    			<p:selectOneMenu style="width: 50%!important; margin-left:10px!important;" class="ui-g-4" id="plazo1a" value="#{dictamenController.plazoTermini}" label="plazos1" panelStyle="width:10px">
+						            <f:selectItems value="#{dictamenController.plazos1}"  var="n" itemLabel="#{n}"  itemValue="#{n}"/>
+						        </p:selectOneMenu>
 						    </div>
 					    </div>
    					    <div class="ui-g-12">

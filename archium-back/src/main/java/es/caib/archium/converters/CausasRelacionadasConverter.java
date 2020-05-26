@@ -2,6 +2,7 @@ package es.caib.archium.converters;
 
 import java.util.List;
 
+import javax.faces.application.FacesMessage;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
@@ -11,20 +12,24 @@ import javax.faces.convert.FacesConverter;
 import org.primefaces.component.picklist.PickList;
 import org.primefaces.model.DualListModel;
 
+import es.caib.archium.controllers.DictamenController;
+import es.caib.archium.objects.CausaLimitacioObject;
+import es.caib.archium.objects.DictamenObject;
 import es.caib.archium.objects.SerieArgenObject;
 import es.caib.archium.objects.SerieDocumentalObject;
-@FacesConverter("seriesArgenConverter")
-public class SeriesArgenConverter implements Converter<SerieArgenObject>{
+
+@FacesConverter("causasRelacionadasConverter")
+public class CausasRelacionadasConverter implements Converter<CausaLimitacioObject> {
 
 	@Override
-	public SerieArgenObject getAsObject(FacesContext context, UIComponent component, String value) {
+	public CausaLimitacioObject getAsObject(FacesContext context, UIComponent component, String value) {
 		// TODO Auto-generated method stub
-		System.out.println("LLEGA AS OBJECT");
+		System.out.println("VALUE: " + value);
 		return getObjectFromUIPickListComponent(component, value);
 	}
 
 	@Override
-	public String getAsString(FacesContext context, UIComponent component, SerieArgenObject value) {
+	public String getAsString(FacesContext context, UIComponent component, CausaLimitacioObject value) {
 		String string;
 		if (value == null) {
 			string = "";
@@ -32,15 +37,16 @@ public class SeriesArgenConverter implements Converter<SerieArgenObject>{
 			string = String.valueOf(value.getId());
 			
 		}
+		System.out.println("STRING: " + string);
 		return string;
 	}
 
 	@SuppressWarnings("unchecked")
-	private SerieArgenObject getObjectFromUIPickListComponent(UIComponent component, String value) {
-		final DualListModel<SerieArgenObject> dualList;
+	private CausaLimitacioObject getObjectFromUIPickListComponent(UIComponent component, String value) {
+		final DualListModel<CausaLimitacioObject> dualList;
 		try {
-			dualList = (DualListModel<SerieArgenObject>) ((PickList) component).getValue();
-			SerieArgenObject resource = getObjectFromList(dualList.getSource(), Long.valueOf(value));
+			dualList = (DualListModel<CausaLimitacioObject>) ((PickList) component).getValue();
+			CausaLimitacioObject resource = getObjectFromList(dualList.getSource(), Long.valueOf(value));
 			if (resource == null) {
 				resource = getObjectFromList(dualList.getTarget(), Long.valueOf(value));
 			}
@@ -53,9 +59,10 @@ public class SeriesArgenConverter implements Converter<SerieArgenObject>{
 		}
 	}
 
-	private SerieArgenObject getObjectFromList(final List<?> list, final Long identifier) {
+	private CausaLimitacioObject getObjectFromList(final List<?> list, final Long identifier) {
 		for (final Object object : list) {
-			final SerieArgenObject resource = (SerieArgenObject) object;
+			final CausaLimitacioObject resource = (CausaLimitacioObject) object;
+			System.out.println("CONVERTER : " + resource.getNom());
 			if (resource.getId().equals(identifier)) {
 				return resource;
 			}

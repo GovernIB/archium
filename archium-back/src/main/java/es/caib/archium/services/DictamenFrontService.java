@@ -172,14 +172,14 @@ public class DictamenFrontService {
 	
 	
 	@Transactional
-	public DictamenObject create(SerieDocumentalObject serieDocumental, TipuDictamenObject tipuDictamen, String accioDictaminada, String termini, Date inici, String destinatariRestringits, Date fin, 
+	public DictamenObject create(SerieDocumentalObject serieDocumental, TipuDictamenObject tipuDictamen, String accioDictaminada, String termini, String destinatariRestringits, Date fin, 
 								TipuAccesObject tipuAcces, EnsObject ens, LopdObject lopd, String condicioReutilizacio, Boolean serieEsencial, NormativaAprobacioObject normativaAprovacio, Date aprovacio,
 								String codi, String estat) throws I18NException {	
 		
 		DictamenObject ob = new DictamenObject();
 		ob.setAccioDictaminada(accioDictaminada);
 		ob.setTermini(termini);
-		ob.setInici(inici);
+		ob.setInici(new Date());
 		ob.setDestinatarisRestrigits(destinatariRestringits);
 		ob.setFi(fin);
 		ob.setCondicioReutilitzacio(condicioReutilizacio);

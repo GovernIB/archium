@@ -110,7 +110,9 @@ public class Seriedocumental implements Serializable {
 	private List<Transferencia> achTransferencias;
 
 	//bi-directional many-to-one association to Valoracio
-	@OneToMany(mappedBy="achSeriedocumental")
+	@OneToMany(mappedBy="achSeriedocumental",
+			cascade = CascadeType.ALL,
+	        orphanRemoval = true)
 	private List<Valoracio> achValoracios;
 
 	public Seriedocumental() {

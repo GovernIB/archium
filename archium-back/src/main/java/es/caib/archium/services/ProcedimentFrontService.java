@@ -320,8 +320,10 @@ public class ProcedimentFrontService {
 			db.setCodirolsac(i.getCodirolsac());
 			db.setTermini(i.getTermine());
 			db.setTermininotif(i.getTermininotif());
-			db.setFiviaadministrativa(i.getFiViaAdministrativa()?new BigDecimal(1):new BigDecimal(0));
-			db.setTaxa(i.getTaxa()?new BigDecimal(1):new BigDecimal(0));
+			if(i.getFiViaAdministrativa()!=null)
+				db.setFiviaadministrativa(i.getFiViaAdministrativa()?new BigDecimal(1):new BigDecimal(0));
+			if(i.getTaxa()!=null)
+				db.setTaxa(i.getTaxa()?new BigDecimal(1):new BigDecimal(0));
 			db.setDir3Resolvent(i.getDir3Resolvent());
 			db.setDir3Instructor(i.getDir3Instructor());
 			db.setPublicacio(i.getPublicacio());
@@ -401,8 +403,10 @@ public class ProcedimentFrontService {
 			db.setCodirolsac(i.getCodirolsac());
 			db.setTermini(i.getTermine());
 			db.setTermininotif(i.getTermininotif());
-			db.setFiviaadministrativa(i.getFiViaAdministrativa()?new BigDecimal(1):new BigDecimal(0));
-			db.setTaxa(i.getTaxa()?new BigDecimal(1):new BigDecimal(0));
+			if(i.getFiViaAdministrativa()!=null)
+				db.setFiviaadministrativa(i.getFiViaAdministrativa()?new BigDecimal(1):new BigDecimal(0));
+			if(i.getTaxa()!=null)
+				db.setTaxa(i.getTaxa()?new BigDecimal(1):new BigDecimal(0));
 			db.setDir3Resolvent(i.getDir3Resolvent());
 			db.setDir3Instructor(i.getDir3Instructor());
 			db.setPublicacio(i.getPublicacio());

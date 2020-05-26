@@ -91,7 +91,7 @@
 		        	<div class="ui-g">
 		        
 		                <div class="ui-g-12 item_1" style="margin-bottom: 10px;">
-					    	<label class="ui-g-2" >#{messages['nuevaserie.nombreserie']}</label>
+					    	<label class="ui-g-2" >#{messages['nuevaserie.nombreserie']} *</label>
 			    			<p:inputText id="nom" class="ui-g-10" value="#{nuevaSerieController.nom}" required="true" 
 			    				validatorMessage="#{messages['nuevaserie.validate.nom']}" 
 			    				requiredMessage="#{messages['nuevaserie.require.nom']}" style="height: 100%!important;">
@@ -101,7 +101,7 @@
 					    </div>
 					    
 					      <div class="ui-g-6">
-					    	<label class="ui-g-5">#{messages['nuevaserie.codiserie']}</label>
+					    	<label class="ui-g-5">#{messages['nuevaserie.codiserie']} *</label>
 			    			<p:inputText id="codi" class="ui-g-7" value="#{nuevaSerieController.codi}" required="true" 
 			    				requiredMessage="#{messages['nuevaserie.require.codi']}"
 			    				validatorMessage="#{messages['nuevaserie.validate.codi']}" style="height: 100%!important;">
@@ -110,7 +110,7 @@
 			    			<p:message for="codi" />
 					    </div>
 					    <div class="ui-g-6">
-					    	<label class="ui-g-5">#{messages['nuevaserie.codifuncion']}</label>
+					    	<label class="ui-g-5">#{messages['nuevaserie.codifuncion']} *</label>
 					    	<h:outputText value="#{nuevaSerieController.serieFuncio.nom}" rendered="#{nuevaSerieController.serieFuncio!=null}" style="height: 100%!important;"/>
 					    	<!-- 
 					    		<p:selectOneMenu class="ui-g-7" id="funcioList" value="#{nuevaSerieController.funcioId}">
@@ -121,7 +121,7 @@
 					    </div>
 					    
 					    <div class="ui-g-6 item_1" style="padding: 0 7px!important;">
-					    	<label class="ui-g-5">#{messages['nuevaserie.tiposerie']}</label>
+					    	<label class="ui-g-5">#{messages['nuevaserie.tiposerie']} *</label>
 					    	<p:selectOneMenu panelStyle="width:450px" class="ui-g-7 selector_4"  id="tipusSerieList" value="#{nuevaSerieController.tipusSerieId}">
 					    		<f:selectItem itemLabel="Tipu Serie" itemValue="#{nuevaSerieController.tipusSerieId}" noSelectionOption="true" />
 					            <f:selectItems value="#{nuevaSerieController.listaTipusSerie}" var="tipusSerie" 
@@ -130,7 +130,7 @@
 					    </div>
 					    
 					    <div class="ui-g-6 item_1" style="padding: 0 7px;!important;">
-					    	<label class="ui-g-5">#{messages['nuevaserie.catalogoserie']}</label>
+					    	<label class="ui-g-5">#{messages['nuevaserie.catalogoserie']} *</label>
 					    	<p:selectOneMenu panelStyle="width:450px" class="ui-g-7 selector_4" id="catalegSerieList" value="#{nuevaSerieController.catalegSeriId}" style="width: 260px!important;">
 					            <f:selectItems value="#{nuevaSerieController.listaCatalegSerie}" var="catalegSeri" 
 					            	itemValue="#{catalegSeri.id}" itemLabel="#{catalegSeri.nom}" />
@@ -146,7 +146,7 @@
 					    </div>
 					    
 					    <div class="ui-g-6">
-					    	<label class="ui-g-5">#{messages['nuevaserie.descripcio']}</label>
+					    	<label class="ui-g-5">#{messages['nuevaserie.descripcio']} *</label>
 			    			<p:inputText class="ui-g-7" id="desc" value="#{nuevaSerieController.descripcio}"   required="true"  
 			    				requiredMessage="#{messages['nuevaserie.require.desc']}"
 			    				validatorMessage="#{messages['nuevaserie.validate.desc']}" style="height: 100%!important;">
@@ -180,7 +180,7 @@
 					    </div>
 					    
 					    <div class="ui-g-6">
-					    	<label class="ui-g-5">#{messages['nuevaserie.estat']}</label>
+					    	<label class="ui-g-5">#{messages['nuevaserie.estat']} *</label>
 			    			<p:selectOneMenu class="ui-g-7" id="estado" value="#{nuevaSerieController.serieEstat}" label="Estats" 
 					                              panelStyle="width:450px" style="height: 100%!important;">
 					            <f:selectItems value="#{funciones.listaEstats}"  var="n"  itemValue="#{n}" itemLabel="#{n}"/>
@@ -237,13 +237,13 @@
 		        </p:tab>
 		        <p:tab  title="#{messages['nuevaserie.acceso']}">
 		        	<h:panelGroup id="tabNormativas">
-			        	<div class="ui-g">
+			        	<div class="ui-g-12">
 			        	
 			        		<div class="ui-g-12 item_1">
 			    				<label class="ui-g-2">#{messages['nuevaserie.normativa']}:</label>
 			    				<p:selectOneMenu id="selectNormativa" value="#{nuevaSerieController.selectedNormativa}" filter="true" filterMatchMode="contains" style="max-width:500px;">
 						             <f:converter converterId="serieNormativaAprobacionConverter"/>
-						             <f:selectItem itemLabel="Normativa" itemValue="#{nuevaSerieController.selectedNormativa}" noSelectionOption="true" />
+						             <f:selectItem itemLabel="-- #{messages['nuevaserie.normativa']} --" itemValue="#{nuevaSerieController.selectedNormativa}" noSelectionOption="true" />
 						             <f:selectItems value="#{nuevaSerieController.listaNormativaAprobacio}"  var="n" itemLabel="#{n.nom}"  itemValue="#{n}"/>
 						             <p:ajax event="valueChange" listener="#{nuevaSerieController.onLimitacioSelectedListener}" update="selectNormativa, listadoRelaciones" />
 						        </p:selectOneMenu>
@@ -251,6 +251,7 @@
 				    		</div>
 				    		<div class="ui-g-12 item_1">
 								<p:messages id="mensaje-estado" closable="true">
+									<p:autoUpdate />
 							    </p:messages>
 							</div>
 				        	<p:accordionPanel id="listadoRelaciones" class="ui-g-12 acordeonnormativas" value="#{nuevaSerieController.listaRelacionLNS}" var="lnsitem" varStatus="estado" >
@@ -262,29 +263,60 @@
 										</h:panelGrid>
 									</f:facet>
 									
-									
-						            	<div class="ui-g-12">
-						    				<label class="ui-g-3">#{messages['nuevaserie.inicio']}</label>
-						    				<p:datePicker id="inici" value="#{lnsitem.inici}" locale="es" appendTo="@(body)" class="ui-g-7" required="true" pattern="yyyy-MM-dd"
-				    				requiredMessage="#{messages['nuevaserie.require.norm.inici']}"></p:datePicker>
-							    			
-							    		</div>
-							    		
-							    		<div class="ui-g-12">
-							    			<label class="ui-g-3">#{messages['nuevaserie.causalimitacion']}</label>		    			
-								        	<p:selectOneMenu  class="ui-g-7" id="causa" value="#{lnsitem.causaLimitacio}" label="Causa limitacio:">
-									             <f:converter converterId="causaLimitacioConverter"/>
-									             <f:selectItems value="#{nuevaSerieController.listaCausaLimitacio}"  var="n" itemLabel="#{n.nom}"  itemValue="#{n}"/>
-									        </p:selectOneMenu>
-									    </div>	
+									<p:pickList class="ui-g-12 relacionarseries"  id="listaCausas" value="#{lnsitem.dualListCausas}" var="causa" converter="causasRelacionadasConverter" 
+												itemValue="#{causa}" itemLabel="#{causa.nom}" showSourceFilter="true" showTargetFilter="true"
+												filterMatchMode="contains" showCheckbox="true">
+										    <p:column style="width:100%;">
+					            				<h:outputText value="#{causa.nom}" />
+					        				</p:column>
+									</p:pickList>
 									    
-										 <div class="ui-g-12" style="text-align: center;">
-											<p:commandButton class="boton_modal botton_red button_aceptar" partialSubmit="true" process="@this inici, causa" update="@this" value="#{messages['aceptar']}" actionListener="#{nuevaSerieController.saveLNS(lnsitem)}"></p:commandButton> 
-										</div>
+									<div class="ui-g-12" style="text-align: center;">
+										<p:commandButton class="boton_modal botton_red button_aceptar" partialSubmit="true" process="@this listaCausas" update="@this" value="#{messages['aceptar']}" actionListener="#{nuevaSerieController.saveLNS(lnsitem)}"></p:commandButton> 
+									</div>
 						        </p:tab>
 							</p:accordionPanel>
 				          
 						</div>
+					</h:panelGroup>
+		        </p:tab>
+		        <p:tab  title="#{messages['nuevaserie.valors']}">
+		        	<h:panelGroup id="tabValors">
+						<div class="ui-g-12">
+							<div class="ui-g-12">
+							    <label class="ui-g-12">#{messages['nuevaserie.valorsprimari']}</label>	
+							</div>
+							<div class="ui-g-12">
+								<p:repeat value="#{nuevaSerieController.valoracio.achValorprimaris}" var="valor">
+									<div class="ui-g-4">
+										<label class="ui-g-4">#{valor.achTipusvalor.nom}</label>
+									    <p:selectBooleanCheckbox style="margin: 0 10px;" id="recap" value="#{valor.selected}"/>		
+									</div>
+									<div class="ui-g-8">
+										<p:inputNumber  class="ui-g-4" id="plazo1" value="#{valor.terminiVal}" decimalPlaces="0"
+						    				validatorMessage="#{messages['nuevodictamen.validate.termini']}">
+								    	 	<f:validateLength minimum="0" maximum="5"/>
+								    	</p:inputNumber>
+								    	 
+						    			<p:selectOneMenu style="width: 50%!important; margin-left:10px!important;" class="ui-g-4" value="#{valor.terminiType}" label="plazos1" panelStyle="width:10px">
+								            <f:selectItems value="#{dictamenController.plazos1}"  var="n" itemLabel="#{n}"  itemValue="#{n}"/>
+								        </p:selectOneMenu>
+									</div>
+									
+								</p:repeat>
+							</div>
+							
+							
+							<div class="ui-g-12">
+							    <label class="ui-g-4">#{messages['nuevaserie.valorsecundari']}</label>	
+					        	<p:selectOneMenu  class="ui-g-8" id="valorSecundari" value="#{nuevaSerieController.valoracio.achValorsecundari}">
+						             <f:converter converterId="valorSecundariConverter"/>
+						             <f:selectItem itemLabel="-- #{messages['nuevaserie.valorsecundari']} -- " itemValue="#{null}" noSelectionOption="true"/>
+						             <f:selectItems value="#{nuevaSerieController.listaValoresSecundarios}"  var="n" itemLabel="#{n.nom}"  itemValue="#{n}"/>
+						        </p:selectOneMenu>
+							</div>
+						</div>
+						
 					</h:panelGroup>
 		        </p:tab>
 		        <p:tab  title="#{messages['nuevaserie.normativa']}">

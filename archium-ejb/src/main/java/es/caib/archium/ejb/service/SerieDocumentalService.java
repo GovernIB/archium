@@ -10,4 +10,4 @@ import es.caib.archium.persistence.model.Seriedocumental;
 public interface SerieDocumentalService extends DAO<Seriedocumental, Long> {
 
 
-	}
+}

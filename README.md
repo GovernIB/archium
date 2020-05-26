@@ -13,7 +13,7 @@ Nom | Descripció | Enllaç
 ------------ | ------------- | -------------
 (ESP) ANA005_Analisis Funcional Archium_20200415_v1.1.docx | Documento de Análisis y Diseño | [Document](./doc/ANA005_Analisis Funcional Archium_20200415_v1.1.docx)
 (ESP) PRUFUN01_Pruebas Funcional Archium_20200430_v1.0.docx | Manual de pruebas funcionales | [Document](./doc/PRUFUN01_Pruebas Funcional Archium_20200430_v1.0.docx)
-(ESP) INS001_Manual installacion Archium_v1.1.docx | Manual de instalación | [Document](./doc/INS001_Manual installacion Archium_v1.1.docx)
+(ESP) INS001_Manual instalacion Archium_v1.3.docx | Manual de instalación | [Document](./doc/INS001_Manual instalacion Archium_v1.3.docx)
 
 
 ***Descripció***

@@ -21,11 +21,13 @@ public class Valorprimari implements Serializable {
 
 	//bi-directional many-to-one association to Tipusvalor
 	@ManyToOne
+	@MapsId("tipusvalorId")
 	@JoinColumn(name="TIPUSVALOR_ID"  ,insertable=false,updatable=false)
 	private Tipusvalor achTipusvalor;
 
 	//bi-directional many-to-one association to Valoracio
 	@ManyToOne
+	@MapsId("valoracioId")
 	@JoinColumn(name="VALORACIO_ID"  ,insertable=false,updatable=false)
 	private Valoracio achValoracio;
 

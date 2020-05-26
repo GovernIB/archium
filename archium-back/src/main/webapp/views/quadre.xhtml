@@ -30,7 +30,7 @@
 		        </p:column>  -->
 		 
 		        <p:column class="first-column" headerText="#{messages['cuadro.nombre']}" sortBy="#{cuadro.nom}"   style="width: 25%;"> 
-		        	<h:outputLink value="funciones.xhtml">
+		        	<h:outputLink value="#{request.contextPath}/views/funciones.xhtml">
 						<h:outputText value="#{cuadro.nom}" />
 						<f:param  name="quadreId" value="#{cuadro.id}" />
 					</h:outputLink>
@@ -38,38 +38,38 @@
 		        </p:column>
 		 		
 		 		<p:column class="first-column" headerText="#{messages['cuadro.nombrecas']}" sortBy="#{cuadro.nomCas}" style="width: 25%;">
-					<h:outputLink value="funciones.xhtml">
+					<h:outputLink value="#{request.contextPath}/views/funciones.xhtml">
 						<h:outputText value="#{cuadro.nomCas}" />
 						<f:param  name="quadreId" value="#{cuadro.id}" />
 					</h:outputLink>
 		        </p:column>
 		 		
 		        <p:column class="first-column" headerText="#{messages['cuadro.estado']}" sortBy="#{cuadro.estat}" style="width: 8%;">
-					<h:outputLink value="funciones.xhtml">
+					<h:outputLink value="#{request.contextPath}/views/funciones.xhtml">
 					<h:outputText value="#{cuadro.estat}" />
 					<f:param  name="quadreId" value="#{cuadro.id}" />
 					</h:outputLink>
 		        </p:column>
 		        <p:column class="first-column" headerText="#{messages['cuadro.fechaini']}" sortBy="#{cuadro.inici}" style="width: 10%;">
-					<h:outputLink value="funciones.xhtml">
+					<h:outputLink value="#{request.contextPath}/views/funciones.xhtml">
 					<h:outputText value="#{cuadro.inici}" />
 					<f:param  name="quadreId" value="#{cuadro.id}" />
 					</h:outputLink>
 		        </p:column>
 		        <p:column class="first-column" headerText="#{messages['cuadro.fechamodificacion']}" sortBy="#{cuadro.modificacio}" style="width: 10%;">
-		            <h:outputLink value="funciones.xhtml">
+		            <h:outputLink value="#{request.contextPath}/views/funciones.xhtml">
 		            <h:outputText value="#{cuadro.modificacio}" pattern="dd-MMM-yyyy"/>
 		            <f:param  name="quadreId" value="#{cuadro.id}" />
 					</h:outputLink>
 		        </p:column>
 		        <p:column class="first-column" headerText="#{messages['cuadro.fechafin']}" sortBy="#{cuadro.fi}" style="width: 10%;">
-		            <h:outputLink value="funciones.xhtml">
+		            <h:outputLink value="#{request.contextPath}/views/funciones.xhtml">
 		            <h:outputText value="#{cuadro.fi}" pattern="dd-MMM-yyyy" />
 		            <f:param  name="quadreId" value="#{cuadro.id}" />
 					</h:outputLink>
 		        </p:column>
 		        <p:column class="first-column" headerText="#{messages['cuadro.version']}" sortBy="#{cuadro.versio}" filterBy="multiple2" style="width: 7%;">
-		        	<h:outputLink value="funciones.xhtml">
+		        	<h:outputLink value="#{request.contextPath}/views/funciones.xhtml">
 		        	<h:outputText value="#{cuadro.versio}" />   
 		        	<f:param  name="quadreId" value="#{cuadro.id}" />
 					</h:outputLink>             	

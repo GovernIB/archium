@@ -329,9 +329,9 @@ public class ProcedimentController implements Serializable {
 		this.taxa			= null;
 		this.dir3Resolvent 	= null;
 		this.dir3Instructor = null;
-		this.publicacio 	= new Date();
+		this.publicacio 	= null;
 		this.caducitat		= null;
-		this.modificacio	= new Date();
+		this.modificacio	= null;
 		this.gestor 		= null;
 
 		this.materiaRelacionada.setSource(this.listaMateria);

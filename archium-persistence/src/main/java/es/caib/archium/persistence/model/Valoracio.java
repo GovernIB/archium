@@ -16,7 +16,10 @@ import java.util.List;
 public class Valoracio implements Serializable {
 	private static final long serialVersionUID = 1L;
 
+	
 	@Id
+	@SequenceGenerator(name="ACH_VALORACIO_ID_GENERATOR", sequenceName="ACH_VALORACIO_SEQ", allocationSize = 1)
+	@GeneratedValue(strategy=GenerationType.SEQUENCE, generator="ACH_VALORACIO_ID_GENERATOR")
 	private Long id;
 
 	@Temporal(TemporalType.DATE)
@@ -36,7 +39,9 @@ public class Valoracio implements Serializable {
 	private Valorsecundari achValorsecundari;
 
 	//bi-directional many-to-one association to Valorprimari
-	@OneToMany(mappedBy="achValoracio")
+	@OneToMany(mappedBy="achValoracio",
+			cascade = CascadeType.ALL,
+	        orphanRemoval = true)
 	private List<Valorprimari> achValorprimaris;
 
 	public Valoracio() {

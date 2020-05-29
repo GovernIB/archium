@@ -123,7 +123,7 @@
 					        	<p:selectOneMenu class="ui-g-8" id="TipoDictamen" value="#{dictamenController.tipuDictamen}" label="Serie" 
 						                              panelStyle="">
 						             <f:converter converterId="TipusDictamenConverter"/>
-						             <f:selectItem itemLabel="-- #{messages['nuevodictamen.tipoDictamen']} -- " itemValue="#{null}" noSelectionOption="true"/>
+						             <f:selectItem itemLabel="-- #{messages['selecciona']} #{messages['nuevodictamen.tipoDictamen']} -- " itemValue="#{null}" noSelectionOption="true"/>
 						            <f:selectItems value="#{dictamenController.listatipuDictamen}"  var="n" itemLabel="#{n.nom}"  itemValue="#{n}"/>
 						        </p:selectOneMenu>
 						    </div>
@@ -132,7 +132,7 @@
 					        	<p:selectOneMenu class="ui-g-8" id="TipoAcceso" value="#{dictamenController.tipuAcces}" label="Serie" 
 						                              panelStyle="">
 						             <f:converter converterId="TipusAccesConverter"/>
-						             <f:selectItem itemLabel="-- #{messages['nuevodictamen.tipoAcceso']} -- " itemValue="#{null}" noSelectionOption="true"/>
+						             <f:selectItem itemLabel="-- #{messages['selecciona']} #{messages['nuevodictamen.tipoAcceso']} -- " itemValue="#{null}" noSelectionOption="true"/>
 						            <f:selectItems value="#{dictamenController.listaTipuAcces}"  var="n" itemLabel="#{n.nom}"  itemValue="#{n}"/>
 						        </p:selectOneMenu>
 						    </div>
@@ -144,7 +144,7 @@
 						                              panelStyle="" require="true"
 						                              validatorMessage="#{messages['nuevodictamen.require.normaprob']}">
 						             <f:converter converterId="NormativaConverter"/>
-						             <f:selectItem itemLabel="-- #{messages['nuevodictamen.normativaA']} -- " itemValue="#{null}" noSelectionOption="true"/>
+						             <f:selectItem itemLabel="-- #{messages['selecciona']} #{messages['nuevodictamen.normativaA']} -- " itemValue="#{null}" noSelectionOption="true"/>
 						            <f:selectItems value="#{dictamenController.listaNormativaAprovacio}"  var="n" itemLabel="#{n.nom}"/>
 						        </p:selectOneMenu>
 						    </div>
@@ -153,7 +153,7 @@
 				    			<p:selectOneMenu class="ui-g-8" id="ens" value="#{dictamenController.ens}" label="Ens" 
 						                              panelStyle="">
 						             <f:converter converterId="EnsConverter"/>
-						             <f:selectItem itemLabel="-- #{messages['nuevodictamen.ens']} -- " itemValue="#{null}" noSelectionOption="true"/>
+						             <f:selectItem itemLabel="-- #{messages['selecciona']} #{messages['nuevodictamen.ens']} -- " itemValue="#{null}" noSelectionOption="true"/>
 						             <f:selectItems value="#{dictamenController.listaEns}"  var="n" itemLabel="#{n.nom}"  itemValue="#{n}"/>
 						        </p:selectOneMenu>
 						    </div>
@@ -164,7 +164,7 @@
 				    			<p:selectOneMenu class="ui-g-8" id="lopd" value="#{dictamenController.lopd}" label="Lopd" 
 						                              panelStyle="">
 						             <f:converter converterId="LopdConverter"/>
-						            <f:selectItem itemLabel="-- #{messages['nuevodictamen.lopd']} -- " itemValue="#{null}" noSelectionOption="true"/>
+						            <f:selectItem itemLabel="-- #{messages['selecciona']} #{messages['nuevodictamen.lopd']} -- " itemValue="#{null}" noSelectionOption="true"/>
 						            <f:selectItems value="#{dictamenController.listaLopd}"  var="n" itemLabel="#{n.nom}"  itemValue="#{n}"/>
 						        </p:selectOneMenu>
 						    </div>

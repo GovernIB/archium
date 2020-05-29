@@ -2,6 +2,7 @@ package es.caib.archium.objects;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.ResourceBundle;
 
 import es.caib.archium.persistence.model.Dictamen;
 import es.caib.archium.persistence.model.Ens;
@@ -33,6 +34,7 @@ public class DictamenObject {
 	private Date 	aprovacio;
 	private Date 	fi;
 	
+	ResourceBundle messageBundle = ResourceBundle.getBundle("messages.messages");
 	
 	public DictamenObject() {
 		super();
@@ -195,7 +197,30 @@ public class DictamenObject {
 		this.codi = codi;
 	}
 	
-	
+	public String getTerminiFormat() {
+		
+		if (this.termini != null) {
+			
+			String formatTermini = "";
+			String valueTermini	= this.termini.substring(0,this.termini.length() - 1);
+			String a 	= this.termini.substring(this.termini.length() - 1, this.termini.length());
+			if (a.equals("H"))
+				formatTermini = messageBundle.getString("general.plazos.hores");
+			if (a.equals("D"))
+				formatTermini = messageBundle.getString("general.plazos.dies");
+			if (a.equals("S"))
+				formatTermini = messageBundle.getString("general.plazos.setmanes");
+			if (a.equals("M"))
+				formatTermini = messageBundle.getString("general.plazos.mesos");
+			if (a.equals("A"))
+				formatTermini = messageBundle.getString("general.plazos.anys");
+			
+			return valueTermini + " " + formatTermini;
+			
+		}
+		
+		return "";
+	}
 	
 	public Dictamen toDbObject(Tipusdictamen td, Ens e, Lopd l, Normativa n, Seriedocumental s, Tipusacce t){
 	

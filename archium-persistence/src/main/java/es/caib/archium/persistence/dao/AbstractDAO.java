@@ -69,7 +69,6 @@ public abstract class AbstractDAO<E extends Serializable, PK> implements DAO<E, 
 
     @Override
     public E create(@NotNull E entity) throws I18NException {
-    	System.out.println("Salvar un dato");
         try {
             entityManager.persist(entity);
         } catch (javax.persistence.EntityExistsException eee) {
@@ -135,7 +134,6 @@ public abstract class AbstractDAO<E extends Serializable, PK> implements DAO<E, 
     @Override
     @PermitAll
     public List<E> findAll(OrderBy... orderBy) throws I18NException {
-    	//System.out.println("Dao abstracto findAll");
         return select(null, null, null, orderBy);
     }
 
@@ -181,18 +179,14 @@ public abstract class AbstractDAO<E extends Serializable, PK> implements DAO<E, 
     protected List<E> select(Map<String, Object> filters, Integer firstResult, Integer maxResults,
                              OrderBy... orderByList) throws I18NException {
 
-    	//System.out.println("Dao abstracto select");
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
-        //System.out.println("Dao abstracto metodo select query     ");
         CriteriaQuery<E> cq = cb.createQuery(entityClass);
         final Root<E> root = cq.from(entityClass);  
-        //System.out.println("entityClass  "+entityClass.toString());
         cq.select(root);
 
         if (filters != null && !filters.isEmpty()) {
             cq.where(getFilterPredicate(root, filters));
         }
-        //System.out.println("filters     "+(filters== null?"null":filters.toString()));
         
         if (orderByList != null && orderByList.length != 0) {
             List<Order> orderList = new ArrayList<>();
@@ -216,7 +210,6 @@ public abstract class AbstractDAO<E extends Serializable, PK> implements DAO<E, 
         }
 
         try {        	
-        	//System.out.println("Dao abstracto metodo select resultado "+query.getResultList());
             return query.getResultList();
         } catch (Throwable e) {
             log.error("Error executant la consulta: " + query.toString());

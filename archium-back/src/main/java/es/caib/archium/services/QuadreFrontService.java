@@ -50,100 +50,68 @@ public class QuadreFrontService {
 		
 		return listaQuadres;
 	}
-	
-	/*private QuadreObject parseDbO2bject(Quadreclassificacio dbQuadre) {
-				
-		QuadreObject quadre = new QuadreObject();
-		quadre.setEstat(dbQuadre.getEstat());
-		quadre.setFi(dbQuadre.getFi());
-		quadre.setId(dbQuadre.getId());
-		quadre.setInici(dbQuadre.getInici());
-		quadre.setModificacio(dbQuadre.getModificacio());
-		quadre.setNom(dbQuadre.getNom());
-		quadre.setNomCas(dbQuadre.getNomcas());
-		quadre.setVersio(dbQuadre.getVersio());				
-		
-		return quadre;
-	}*/
-	
+
 	@Transactional
-    public boolean save(List<QuadreObject> listaCuadros, QuadreObject object ) {    
-	    	boolean b = true;
-	    	for(QuadreObject i:  listaCuadros)
-			{
-	    		if (i.getNom().equalsIgnoreCase(object.getNom().trim())) {
-	    			b = false;
-	    		}    		
-			}
-	    	if (b) {
-	    		QuadreObject nuevo = new QuadreObject();
-				nuevo.setNom(object.getNom().trim());
-				nuevo.setNomCas(object.getNomCas() != null? object.getNomCas(): null);
-				nuevo.setEstat(object.getEstat());
-				nuevo.setInici(new Date());
-				nuevo.setModificacio(new Date());
-				nuevo.setVersio("1.0");
-				nuevo.setFi(null);
-				//listaCuadros.add(services.);
-				
-				try {
-					Quadreclassificacio nuevoBD = new Quadreclassificacio();
-					nuevoBD.setNom(nuevo.getNom());
-					nuevoBD.setNomcas(nuevo.getNomCas());
-					//System.out.println("nombre-"+nuevo.getNom() );
-					if ((nuevoBD.getNom() == null) || (nuevoBD.getNom() == "")){
-						FacesMessage message = new FacesMessage();
-			    		message.setSeverity(FacesMessage.SEVERITY_ERROR);
-			    		message.setSummary("Error Salvants Dades");
-			    		message.setDetail("Error Salvants Dades");
-			    		FacesContext.getCurrentInstance().addMessage(null, message);
-						//System.out.println("nombre nulo");
-					}
-					nuevoBD.setEstat(nuevo.getEstat());
-					nuevoBD.setInici(nuevo.getInici());
-					nuevoBD.setModificacio(nuevo.getModificacio());
-					nuevoBD.setVersio(nuevo.getVersio());
-					nuevoBD.setFi(nuevo.getFi());
-					listaCuadros.add(nuevo);
-					quadreEjb.create(nuevoBD);	
-					
-					FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Dades Salvats"));
-					return true;
-				} catch (I18NException e) {
-					// TODO Auto-generated catch block
-					FacesMessage message = new FacesMessage();
+    public boolean save(QuadreObject object ) {    
+
+    		QuadreObject nuevo = new QuadreObject();
+			nuevo.setNom(object.getNom().trim());
+			nuevo.setNomCas(object.getNomCas() != null? object.getNomCas(): null);
+			nuevo.setEstat(object.getEstat());
+			nuevo.setInici(new Date());
+			nuevo.setModificacio(new Date());
+			nuevo.setVersio("1.0");
+			nuevo.setFi(null);
+			//listaCuadros.add(services.);
+			
+			try {
+				Quadreclassificacio nuevoBD = new Quadreclassificacio();
+				nuevoBD.setNom(nuevo.getNom());
+				nuevoBD.setNomcas(nuevo.getNomCas());
+				if ((nuevoBD.getNom() == null) || (nuevoBD.getNom() == "")){
+					/*FacesMessage message = new FacesMessage();
 		    		message.setSeverity(FacesMessage.SEVERITY_ERROR);
 		    		message.setSummary("Error Salvants Dades");
 		    		message.setDetail("Error Salvants Dades");
-		    		FacesContext.getCurrentInstance().addMessage(null, message);
-					e.printStackTrace();
-				} catch (Exception eee) {
-					FacesMessage message = new FacesMessage();
-					message.setSeverity(FacesMessage.SEVERITY_ERROR);
-					message.setSummary("Error Salvants Dades");
-					message.setDetail("Error Salvants Dades");
-					FacesContext.getCurrentInstance().addMessage(null, message);
-					//eee.printStackTrace();
+		    		FacesContext.getCurrentInstance().addMessage(null, message);*/
+					return false;
 				}
-
-				FacesContext ctxt = FacesContext.getCurrentInstance(); //get your hands on the current request context
-				ctxt.getPartialViewContext().getRenderIds().add("panel");
-	    	}
-	    	else {
-	    		FacesContext.getCurrentInstance().validationFailed();
-	    		FacesMessage message = new FacesMessage();
+				nuevoBD.setEstat(nuevo.getEstat());
+				nuevoBD.setInici(nuevo.getInici());
+				nuevoBD.setModificacio(nuevo.getModificacio());
+				nuevoBD.setVersio(nuevo.getVersio());
+				nuevoBD.setFi(nuevo.getFi());
+				//listaCuadros.add(nuevo);
+				quadreEjb.create(nuevoBD);	
+				
+				//FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Dades Salvats"));
+				return true;
+			} catch (I18NException e) {
+				// TODO Auto-generated catch block
+				/*FacesMessage message = new FacesMessage();
 	    		message.setSeverity(FacesMessage.SEVERITY_ERROR);
-	    		message.setSummary("Error Salvants Dades: Nom repetit");
-	    		message.setDetail("Error Salvants Dades: Nom repetit");
+	    		message.setSummary("Error Salvants Dades");
+	    		message.setDetail("Error Salvants Dades");
 	    		FacesContext.getCurrentInstance().addMessage(null, message);
-	    		return false;
-	    	}
-			return false;
-	    }
+				e.printStackTrace();*/
+				return false;
+			} catch (Exception eee) {
+				/*FacesMessage message = new FacesMessage();
+				message.setSeverity(FacesMessage.SEVERITY_ERROR);
+				message.setSummary("Error Salvants Dades");
+				message.setDetail("Error Salvants Dades");
+				FacesContext.getCurrentInstance().addMessage(null, message);*/
+				return false;
+				//eee.printStackTrace();
+			}
+
+				//FacesContext ctxt = FacesContext.getCurrentInstance(); //get your hands on the current request context
+				//ctxt.getPartialViewContext().getRenderIds().add("panel");
+
+	   }
 	 
 	 @Transactional
-	 public QuadreObject update(List<QuadreObject> lista,  QuadreObject object) {
-	    	//System.out.println("update"+ object.toString());
+	 public QuadreObject update(QuadreObject object) {
 	    	try {
 	    		//QuadreObject update =new QuadreObject();
 	        	/*
@@ -155,34 +123,23 @@ public class QuadreFrontService {
 	        		}	        		
 	        	}
 	        	
-	        	System.out.println("posicion "+pos);	
 	        	*/
-	    		Quadreclassificacio baseDato = new Quadreclassificacio();
-	        	//if (update.getNom().equals(object.getNom()))
-	        		baseDato.setNom(object.getNom());
-	        	//if (update.getNomCast().equals(object.getNomCast()))
-	        		baseDato.setNomcas(object.getNomCas());
-	        	//if (update.getEstat().equals(object.getEstat()))
-	        		baseDato.setEstat(object.getEstat());
-	        	//if (update.getInici().equals(object.getInici()))
-	        		baseDato.setInici(object.getInici());
-	        	//if (update.getFi().equals(object.getFi()))
-	        		baseDato.setFi(object.getFi());
-	        	//if (update.getVersio().equals(object.getVersio()))
-	        		baseDato.setVersio(object.getVersio());
+	    		Quadreclassificacio baseDato = this.quadreEjb.getReference(object.getId());
+	        	baseDato.setNom(object.getNom());
+	        	baseDato.setNomcas(object.getNomCas());
+	        	baseDato.setEstat(object.getEstat());
+	        	baseDato.setFi(object.getFi());
+	        	baseDato.setVersio(object.getVersio());
 	        	baseDato.setModificacio(new Date());
-	        	baseDato.setId(object.getId());
-	        	//System.out.println("A persistis los datos en la base de datos.");
-	        	//System.out.println(baseDato.toString());
-	        	FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Dades Actualitzades"));
+	        	/*FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Dades Actualitzades"));*/
 	        	return new QuadreObject(quadreEjb.update(baseDato));
 	
 		    }
 	    	catch (Exception e) {
 	 			// TODO Auto-generated catch block
-	    		FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Error en Actualitzad Quadre"));
+	    		/*FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Error en Actualitzad Quadre"));
 	    		FacesMessage msg = new FacesMessage("Error en Actualitzad Quadre");
-	 			e.printStackTrace();
+	 			e.printStackTrace();*/
 	 			return null;
 	 		}	    	
 	    }

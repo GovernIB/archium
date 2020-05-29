@@ -424,6 +424,24 @@ th.first-column.buscador{
     top: 10px!important;
     right: 10px!important;
 }
+
+.button_add2{
+	background: #cc0033!important;
+    color: #fff!important;
+    padding: 5px!important;
+    text-transform: uppercase!important;
+    font-weight: 400!important;
+    width: auto!important;
+    min-width: 300px!important;
+    border-radius: 0!important;
+    border: 1px solid!important;
+    font-size: 14px!important;
+    height: 34px!important;
+    position: absolute!important;
+    top: 54px!important;
+    right: 10px!important;
+}
+
 .content_1 .ui-selectonemenu-trigger.ui-state-default.ui-corner-right{
 	background: transparent;
     border: none;	
@@ -1077,12 +1095,20 @@ a{
 .panelInfo .info_body .ui-g>div{
 	padding: 5px;
 }
-.content_4 input{
+.content_4 input, .content_4 textarea{
 	border: 1px solid #333!important;
 }
 .content_4 .ui-selectonemenu.ui-widget.ui-state-default.ui-corner-all{
 	width: 250px;
 }
+.content_4 .ui-inputtextarea{
+	box-shadow:none!important;
+	font-size:14px;
+	padding: 10px 10px!important;
+	background:transparent!important;
+	border-radius: 0px;
+}
+
 .content_4 .ui-inputfield, .content_4 .ui-widget-content .ui-inputfield, .content_4 .ui-widget-header .ui-inputfield{
 	box-shadow:none!important;
 	font-size:14px;

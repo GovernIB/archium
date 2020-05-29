@@ -15,7 +15,6 @@ public class QuadreclassificacioConverter implements Converter {
 
     @Override
     public Object getAsObject(FacesContext context, UIComponent component, String newValue) {
-	    // System.out.println("GET AS OBJECT ");
 	    if(newValue == null)
 	    return null;
 	    QuadreController data = context.getApplication().evaluateExpressionGet(context, "#{quadreController}", QuadreController.class);
@@ -30,14 +29,12 @@ public class QuadreclassificacioConverter implements Converter {
 
     @Override
     public String getAsString(FacesContext context, UIComponent component, Object object) {
-   	 //System.out.println("GET AS STRING");
     	if (object == null) {
             return "";
         }
         if (object instanceof QuadreObject) {
         	QuadreObject quadre= (QuadreObject) object;
             String name = quadre.getNom();
-            //System.out.println("Quadre :" + name);
             return name;
         } else {
             throw new ConverterException(new FacesMessage(object + " is not a valid quadre"));

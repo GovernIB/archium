@@ -74,6 +74,7 @@ public class FuncioFrontService {
 		
 	}
 	
+	
 	private List<Funcio> getFuncioByParent(QuadreObject quadre, Funcio f) throws I18NException{		
 		Long idFuncio = (f!=null ? f.getId() : null);
 		return funcionesEJB.getByParentAndQuadre(idFuncio, quadre.getId());
@@ -103,14 +104,13 @@ public class FuncioFrontService {
 				if (resD.size()>0) {
 					for(Dictamen d : resD)
 					{	
-						TreeNode dictamenNode = new DefaultTreeNode(new Document<DictamenObject>(d.getId(), "ID"+d.getId(), d.getAcciodictaminada(), "Dictamen", new DictamenObject(d)), serieNode);
+						TreeNode dictamenNode = new DefaultTreeNode(new Document<DictamenObject>(d.getId(), d.getCodi(), d.getAcciodictaminada(), "Dictamen", new DictamenObject(d)), serieNode);
 					}
 				}
 			}
 		}
 		
 		if (resF.size()>0) {
-			System.out.println("ENTRAAAA");
 			for(Funcio f : resF)
 			{				
 				TreeNode funcioNode = new DefaultTreeNode(new Document<FuncioObject>(f.getId(), f.getCodi(), f.getNom(), "Funcio", new FuncioObject(f)), node);
@@ -158,6 +158,30 @@ public class FuncioFrontService {
 		return listaFunciones;
 	}
 	
+	public List<FuncioObject> loadTree(Long quadreId, Long fromFuncioId) throws I18NException{	
+		
+		List<FuncioObject> listaFunciones = new ArrayList<FuncioObject>();
+		
+		List<Funcio> res= funcionesEJB.loadTree(quadreId, fromFuncioId);
+		
+		this.recursiveTreeFuncios(res, listaFunciones, 0);
+		
+		return listaFunciones;
+		
+	}
+	
+	private void recursiveTreeFuncios(List<Funcio> listaDb, List<FuncioObject> lista, int nivel) {
+				
+		for(Funcio f:listaDb) {
+			FuncioObject fObj = new FuncioObject(f);
+			fObj.setNumTabs(nivel);
+			lista.add(fObj);
+			this.recursiveTreeFuncios(f.getAchFuncios(), lista, nivel+1);
+			
+		}
+		
+	}
+	
 	@Transactional
 	public FuncioObject create(FuncioObject funcioObject, QuadreObject fkQuadreObject, FuncioObject fkFuncioObject, TipusSerieObject fkTipusserie) throws I18NException {		
 		Funcio funcio = funcioObject.toDbObject(null, null, null);
@@ -197,63 +221,5 @@ public class FuncioFrontService {
 		return listaTipusserie;
 	}
 	
-	/*private Funcio parseObject2Db(FuncioObject obFuncio){
-		
-		Funcio f = new Funcio();
-		f.setCodi(obFuncio.getCodi());
-		f.setNom(obFuncio.getNom());
-		f.setNomcas(obFuncio.getNomcas());
-		f.setEstat(obFuncio.getEstat());
-		f.setOrdre(obFuncio.getOrdre());
-		f.setInici(obFuncio.getInici());
-		f.setModificacio(obFuncio.getModificacio());
-		f.setFi(obFuncio.getFi());
-		
-		return f;
-	}
-	
-	private FuncioObject parseDbO2bject(Funcio dbFuncio) {
-		
-		QuadreObject q = null;
-		FuncioObject fp = null;
-		TipusSerieObject ts = null;
-		
-		
-		if(dbFuncio.getAchQuadreclassificacio()!=null) {
-			q = new QuadreObject();
-			q.setId(dbFuncio.getAchQuadreclassificacio().getId());
-			q.setNom(dbFuncio.getAchQuadreclassificacio().getNom());
-		}
-		
-		if(dbFuncio.getAchFuncio()!=null) {
-			fp = new FuncioObject();
-			fp.setId(dbFuncio.getAchFuncio().getId());
-			fp.setCodi(dbFuncio.getAchFuncio().getCodi());
-			fp.setNom(dbFuncio.getAchFuncio().getNom());
-		}
-		
-		if(dbFuncio.getAchTipusserie()!=null) {
-			ts = new TipusSerieObject();
-			ts.setId(dbFuncio.getAchTipusserie().getId());
-			ts.setNom(dbFuncio.getAchTipusserie().getNom());
-		}
-		
-		FuncioObject f = new FuncioObject(dbFuncio.getId(), 
-								dbFuncio.getCodi(), 
-								dbFuncio.getNom(), 
-								dbFuncio.getNomcas(), 
-								dbFuncio.getEstat(), 
-								dbFuncio.getOrdre(), 
-								dbFuncio.getInici(), 
-								dbFuncio.getModificacio(),
-								dbFuncio.getFi(), 
-								ts,
-								q, 
-								fp
-				);
-		
-		return f;
-	}*/
-
 	
 }

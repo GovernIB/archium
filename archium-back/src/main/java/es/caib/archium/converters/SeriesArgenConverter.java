@@ -18,8 +18,6 @@ public class SeriesArgenConverter implements Converter<SerieArgenObject>{
 
 	@Override
 	public SerieArgenObject getAsObject(FacesContext context, UIComponent component, String value) {
-		// TODO Auto-generated method stub
-		System.out.println("LLEGA AS OBJECT");
 		return getObjectFromUIPickListComponent(component, value);
 	}
 

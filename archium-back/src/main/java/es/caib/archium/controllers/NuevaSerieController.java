@@ -30,6 +30,7 @@ import es.caib.archium.ejb.service.SerieService;
 import es.caib.archium.objects.AplicacionObject;
 import es.caib.archium.objects.CatalegSeriesObject;
 import es.caib.archium.objects.CausaLimitacioObject;
+import es.caib.archium.objects.Dir3Object;
 import es.caib.archium.objects.Document;
 import es.caib.archium.objects.FuncioObject;
 import es.caib.archium.objects.LimitacioNormativaSerieObject;
@@ -80,6 +81,8 @@ public class NuevaSerieController implements Serializable {
 	/*@ManagedProperty("#{messages}")
 	private ResourceBundle messages;*/
 	
+	private List<Dir3Object> listaDir3;
+	
 	private List<CatalegSeriesObject> listaCatalegSerie;
 	private List<FuncioObject> listaFunciones;
 	private List<TipusSerieObject> listaTipusSerie;
@@ -116,6 +119,7 @@ public class NuevaSerieController implements Serializable {
 	@PostConstruct
 	public void init() throws I18NException {
 
+		listaDir3 = service.getListaDir3();
 		listaTiposValor = service.getListaTipusValor();
 		listaValoresSecundarios = service.getListaValorsSecundari();
 		
@@ -172,7 +176,6 @@ public class NuevaSerieController implements Serializable {
 		serieId= obj.getId();
 		codi = modify.getCodi();
 		nom = modify.getNom();
-		System.out.println(modify.toString());
 		nomCas = modify.getNomCas();
 		catalegSeriId = modify.getCatalegSeriId();
 		//funcioId =  modify.getFuncioId();
@@ -229,9 +232,7 @@ public class NuevaSerieController implements Serializable {
 			normativasSerie.setSource(filteredNormativas);
 			
 			ValoracioObject dbValoracio = service.getValoracioSerie(serieId);
-			System.out.println("dbValoracio-> " + dbValoracio.getId());
 			valoracio = new ValoracioObject(dbValoracio);
-			System.out.println("valoracio-> " + valoracio.getId());
 			valoracio.getAchValorprimaris().clear();
 			for(TipuValorObject tv: listaTiposValor) {
 				
@@ -262,9 +263,7 @@ public class NuevaSerieController implements Serializable {
 			e.printStackTrace();
 		} 
 	}
-	public void save() throws Exception {
-		System.out.println("SERIE ID" + serieId);
-		
+	public void save() throws Exception {	
 		
 		if(this.validateValoracion()) {
 			//if(this.validateNormativas()) {
@@ -288,7 +287,7 @@ public class NuevaSerieController implements Serializable {
 					funcBean.getNodeFromFunctionId(serieId, "Serie", "update", upS);
 				}
 				clearForm();
-				FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Dades Salvats"));
+				FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(messageBundle.getString("nuevaserie.ok")));
 			/*} else {
 				FacesContext.getCurrentInstance().validationFailed();
 				FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_ERROR, messageBundle.getString("nuevaserie.validate.duplicateNLS"), null);
@@ -305,9 +304,7 @@ public class NuevaSerieController implements Serializable {
 	}
 	
 	private Boolean validateValoracion() {
-		
-		System.out.println(valoracio.toString());
-		
+				
 		if(valoracio.getAchValorsecundari()==null 
 			&& (valoracio.getAchValorprimaris()==null || valoracio.hashValorPrimariSelected()==false)){
 			return true;
@@ -434,12 +431,7 @@ public class NuevaSerieController implements Serializable {
 	}
 	
 	public void saveLNS(LimitacioNormativaSerieObject lnsitem) {
-
-		if(listaRelacionLNS.size()>0) {
-			System.out.println("VISTA1: " + lnsitem.getDualListCausas().getTarget());
-		}
-		
-		
+			
 		if(lnsitem.getDualListCausas().getTarget().size()>0) {
 			/*int index = listaRelacionLNS.indexOf(lnsitem);
 			if(serieId!=null) lnsitem.setSeriedocumental(modify);
@@ -777,6 +769,14 @@ public class NuevaSerieController implements Serializable {
 
 	public void setValoracio(ValoracioObject valoracio) {
 		this.valoracio = valoracio;
+	}
+
+	public List<Dir3Object> getListaDir3() {
+		return listaDir3;
+	}
+
+	public void setListaDir3(List<Dir3Object> listaDir3) {
+		this.listaDir3 = listaDir3;
 	}
 
 	

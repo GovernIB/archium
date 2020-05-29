@@ -26,7 +26,9 @@ import es.caib.archium.ejb.SilenciEJB;
 import es.caib.archium.ejb.TipusDocumentProcedimentEJB;
 import es.caib.archium.ejb.TipusDocumentalEJB;
 import es.caib.archium.ejb.TipusPublicEJB;
+import es.caib.archium.ejb.objects.Dir3;
 import es.caib.archium.ejb.service.AplicacioService;
+import es.caib.archium.ejb.service.Dir3Service;
 import es.caib.archium.ejb.service.FamiliaProcedimentService;
 import es.caib.archium.ejb.service.FormaIniciService;
 import es.caib.archium.ejb.service.MateriaService;
@@ -39,6 +41,7 @@ import es.caib.archium.ejb.service.TipusDocumentProcedimentService;
 import es.caib.archium.ejb.service.TipusDocumentalService;
 import es.caib.archium.ejb.service.TipusPublicService;
 import es.caib.archium.objects.AplicacioObject;
+import es.caib.archium.objects.Dir3Object;
 import es.caib.archium.objects.FamiliaprocedimentObject;
 import es.caib.archium.objects.FormainiciObject;
 import es.caib.archium.objects.LimitacioNormativaSerieObject;
@@ -98,10 +101,23 @@ public class ProcedimentFrontService {
 	TipusDocumentProcedimentService tipusDocumentProcedimentEJB;
 	@Inject
 	TipusPublicService 				tipusPublicEJB;
+	@Inject 
+	private Dir3Service dir3EJB;
+	
+	public List<Dir3Object> getListaDir3(){
+		List<Dir3Object> lista = new ArrayList<Dir3Object>();
+		
+		for(Dir3 dir3:dir3EJB.getAll()) {
+			lista.add(new Dir3Object(dir3.getCodi(), dir3.getNom()));
+		}
+		
+		return lista;
+		
+	}
+	
 	
 	@Transactional
 	public List<ProcedimentObject> findAllProcedimiento() throws I18NException{	
-		//System.out.println("SErvice del front find all");
 		List<Procediment> res= procedimentEJB.findAll();
 		List<ProcedimentObject> lista = new ArrayList<ProcedimentObject>();
 		for(Procediment i : res)
@@ -338,7 +354,6 @@ public class ProcedimentFrontService {
 			db.setAchMaterias(listb1);
 			List<Tipuspublic> listb2 = new ArrayList<>();
 			for (tipusPublicObject var : lista2) {
-				System.out.println("TYPO PUBLIC:" + var.getId());
 				Tipuspublic b = tipusPublicEJB.getReference(var.getId());
 				listb2.add(b);
 			}
@@ -353,7 +368,6 @@ public class ProcedimentFrontService {
 			db.setAchTipusdocumentProcediments(new ArrayList<TipusdocumentProcediment>());
 			for(TipuDocumentalProcedimentObject tdp : listaTDP) {
 				TipusdocumentProcediment tdpDB = tdp.toDbObject();
-				System.out.println("TDP: " + tdp.toString());
 				tdpDB.setAchTipusdocumental(tipusDocumentaEJB.getReference(tdp.getTipusDocumental().getId()));;
 				db.addAchTipusdocumentProcediment(tdpDB);
 			}
@@ -363,7 +377,6 @@ public class ProcedimentFrontService {
 			
 		}
 		catch (Exception e){
-			System.err.println("Error persistiendo en base dados Salvar ");
 			e.printStackTrace();
 		}		
 	}
@@ -446,7 +459,6 @@ public class ProcedimentFrontService {
 			
 		} catch (Exception e) {
 			e.printStackTrace();
-			System.err.println("Error persistiendo en base dados Salvar");
 		}
 		
 	}

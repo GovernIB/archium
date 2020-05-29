@@ -32,15 +32,12 @@ public class TablasMaestrasController implements Serializable {
 	
 	@PostConstruct
     public void init() throws I18NException {   
-    	//System.out.println("init del Taules mestres");
     	try 
     	{
     		this.listaTabla = iniTablas();
     	}
     	catch(Exception e) 
     	{	
-    		System.err.println("fallo al  Init controler Taules Mestres");
-    		System.err.println(e);
     		e.printStackTrace();
     	}        
     }
@@ -50,7 +47,6 @@ public class TablasMaestrasController implements Serializable {
 	    	listarTabla ();
 		}
 		catch (Exception e) {
-			System.err.println("Error en el evento de cambiar");
 			e.printStackTrace();
 			// TODO: handle exception
 		}
@@ -73,12 +69,8 @@ public class TablasMaestrasController implements Serializable {
 		//this.columns.add("Nom");
 		try {
 			this.setTablaMaestra(tablaMaestraServices.findAll(option));
-			//System.out.println("tabla maestra "+this.getTablaMaestra());
-			//clonar();
-			//System.out.println("tabla maestra filter"+ this.getTablaMaestrafilter());
 		} catch (I18NException e) {
 			// TODO Auto-generated catch block
-			System.err.println("Error construyendo la tabla a mostrar.");
 			e.printStackTrace();
 		}
 	}

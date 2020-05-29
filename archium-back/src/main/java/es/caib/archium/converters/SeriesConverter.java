@@ -16,20 +16,14 @@ public class SeriesConverter implements Converter {
 
     @Override
     public Object getAsObject(FacesContext context, UIComponent component, String newValue) {
-	    //System.out.println("GET AS OBJECT "+newValue);
     	if ((null == newValue) || (newValue.trim().isEmpty())) {
-            // Return null
             return null;
         }
-    	try {
-            // Try to parse the value as long
-    		//final Long SerieId = Long.valueOf(newValue);
-    		
+    	try {    		
     		DictamenController data = context.getApplication().evaluateExpressionGet(context, "#{dictamenController}", DictamenController.class);
 		    for(SerieDocumentalObject compLovDtgrid : data.getListaDocumental())
 		    {
 			    if(compLovDtgrid.getSerieId()== Long.parseLong((newValue),10))
-			    //if(compLovDtgrid.getId()== Long.parseLong((newValue),10))
 			    	return compLovDtgrid;
 		    }
 		    	throw new ConverterException(new FacesMessage(String.format("Cannot convert %s to SeriesObject", newValue)));
@@ -44,7 +38,6 @@ public class SeriesConverter implements Converter {
 
     @Override
     public String getAsString(FacesContext context, UIComponent component, Object object) {
-   	 //System.out.println("GET AS STRING");
     	if (object == null) {
             return "";
         }
@@ -53,7 +46,6 @@ public class SeriesConverter implements Converter {
         	SerieDocumentalObject quadre= (SerieDocumentalObject) object;
             Long name = quadre.getSerieId();
         	//Long name = quadre.getId();
-            System.out.println("Serie converter name :" + name);
             return name.toString();
         } else {
             throw new ConverterException(new FacesMessage(object + " is not a valid serie documental"));

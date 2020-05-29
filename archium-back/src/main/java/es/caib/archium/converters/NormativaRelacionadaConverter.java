@@ -19,21 +19,18 @@ public class NormativaRelacionadaConverter implements Converter{
 
 	    @Override
 	    public Object getAsObject(FacesContext context, UIComponent component, String value) {
-	    	// TODO Auto-generated method stub
 	    	return getObjectFromUIPickListComponent(component, value);
 	    	
 		}
 
 	    @Override
 	    public String getAsString(FacesContext context, UIComponent component, Object object) {
-	   	 //System.out.println("GET AS STRING");
 	    	if (object == null) {
 	            return "";
 	        }
 	        if (object instanceof NormativaObject) {
 	        	NormativaObject quadre= (NormativaObject) object;
 	            Long name = quadre.getId();
-	            //System.out.println("Ens Object :" + name);
 	            return name.toString();
 	        } else {
 	            throw new ConverterException(new FacesMessage(object + " is not a valid MateriaO "));

@@ -81,7 +81,7 @@
 				        <p:messages id="messages" />		        
 				   
 					    <div class="ui-g-12 item_1">
-					    	<label class="ui-g-3">#{messages['updatecuadro.nombre']}</label>
+					    	<label class="ui-g-3">#{messages['updatecuadro.nombre']}*</label>
 			    			<p:inputText id="Nom" value="#{quadreController.nombreNuevo}"  class="ui-g-9" required="true" 			    				
 			    									requiredMessage="#{messages['nuevoQuadro.require.nom']}" 
 			    									validatorMessage="#{messages['nuevoQuadro.validate.nom']}" >
@@ -98,25 +98,18 @@
 			    						
 					    </div>	
 					    <div class="ui-g-12 item_1">
-					    	<label class="ui-g-3">#{messages['updatecuadro.estado']}</label>		    			
+					    	<label class="ui-g-3">#{messages['updatecuadro.estado']}*</label>		    			
 				        	<p:selectOneMenu id="estado" value="#{quadreController.nouEstat}"  label="Estats" panelStyle="width:450px">                           
 					            <f:selectItems value="#{quadreController.listaEstats}"  var="n" itemLabel="#{n}"/>
 					        </p:selectOneMenu>
 					    </div>	
-						<div class="ui-g-12 item_1">
-	                		<label class="ui-g-3">#{messages['updatecuadro.fechaini']}</label>
-			    			<p:datePicker  value="#{quadreController.nouInici}" locale="es" appendTo="@(body)" class="ui-g-9" required="true" 			    				 
-			    																	requiredMessage="#{messages['updateQuadro.require.inici']}" pattern="yyyy-MM-dd"/>
-
-			    			<h:message for="nouInici" style="color: red"/>
-					    </div>
 			        	<div class="ui-g-12 item_1">
 	                		<label class="ui-g-3">#{messages['updatecuadro.fechafin']}</label>
 			    			<p:datePicker  value="#{quadreController.nouFi}" locale="es" appendTo="@(body)" class="ui-g-9" pattern="yyyy-MM-dd"/>
 			    			<h:message for="noiFi" style="color: red"/>
 					    </div>
 			        	<div class="ui-g-12 item_1">
-					    	<label class="ui-g-3">#{messages['updatecuadro.versio']}</label>
+					    	<label class="ui-g-3">#{messages['updatecuadro.versio']}*</label>
 			    			<p:inputText id="versio" value="#{quadreController.nouVersio}" class="ui-g-9" required="true" 	
 			    												validatorMessage="#{messages['updateQuadro.validate.versio']}"		    				 
 			    												requiredMessage="#{messages['updateQuadro.require.versio']}">

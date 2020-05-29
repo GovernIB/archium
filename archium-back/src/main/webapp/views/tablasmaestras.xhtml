@@ -6,7 +6,7 @@
       xmlns:ui="http://java.sun.com/jsf/facelets"
 >
 
-	<ui:param name="title" value="Taules Mestres | Archium" />
+	<ui:param name="title" value="#{messages['page.tmaestras.title']}" />
 	
 	<ui:define name="content">
   
@@ -33,9 +33,15 @@
 			
 			    <!-- Tabla contenido -->
 			
-				<p:dataTable class="estilos-tabla" var="taule" value="#{tablasMaestras.tablaMaestra}" rows="10" paginator="true"
-	                 paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
-	                 currentPageReportTemplate="{startRecord}-{endRecord} of {totalRecords} records"  >
+				<p:dataTable class="estilos-tabla" 
+					var="taule" 
+					value="#{tablasMaestras.tablaMaestra}" 
+					emptyMessage="#{messages['datos.nohaydatos']}"
+					rows="10" 
+					paginator="true"
+	                paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+	                currentPageReportTemplate="{startRecord}-{endRecord} of {totalRecords} records"  >
+	                
 				     <f:facet name="header">
 	            		<h:outputText id="selectedItemText" value="#{tablasMaestras.tabla}"/>
 	        		</f:facet>

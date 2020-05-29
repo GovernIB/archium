@@ -5,7 +5,7 @@
       xmlns:p="http://primefaces.org/ui"
       xmlns:ui="http://java.sun.com/jsf/facelets"
 >
-    <ui:param name="title" value="Funciones | Archium" />
+    <ui:param name="title" value="#{messages['page.visorjerarquico.title']}" />
     
     <ui:define name="content">
     	<p:panel id="panelRoot">
@@ -17,7 +17,7 @@
        	<p:panel rendered="#{funciones.quadreId==null}" id="panelInfo">
        		<div class="ui-g">
        			<div class="ui-g-12">
-			        <p:staticMessage severity="error" summary="ERROR!" detail="#{messages['funciones.require.quadre']}" />
+			        <p:staticMessage severity="error" summary="#{messages['funciones.require.quadre']}!" detail="#{messages['funciones.require.quadre']}" />
 			    </div>
        		</div>
         </p:panel>
@@ -39,31 +39,42 @@
 	       <div class="separador_rojo"></div>
         
         
-       	
-        	<p:commandButton class="button_add" resetValues="true" value="#{messages['funciones.nuevafuncion']}" icon="icono_add" update="dialog" action="#{funciones.setFuncioSeleccionada(null)}" oncomplete="PF('documentDialog').show()">
-        		
+       		<p:commandButton class="button_add" resetValues="true" value="#{messages['funciones.nuevafuncion']}" icon="icono_add" update="dialog" action="#{funciones.setFuncioSeleccionada(null)}" oncomplete="PF('documentDialog').show()">
         	</p:commandButton> 
+        	
+        	<p:commandButton class="button_add2" resetValues="true" value="#{messages['funciones.nuevaserie']}" icon="icono_add" update="serieModalDialogId" action="#{nuevaSerieController.loadFromFunction(null)}" oncomplete="PF('serieModalDialog').show()">
+        	</p:commandButton> 
+        	
         	<p:growl>
 		    </p:growl>
-		    <p:treeTable id="tabla" class="table_action estilos-tabla" widgetVar="treeTable" value="#{funciones.root}" var="document" 
-        	style="margin-top:0" paginator="true" rows="10"
-        	rowStyleClass="row_type_#{document.type}"
-        	filteredNode="#{funciones.filterNode}"
-        	selectionMode="single" selection="#{funciones.selectedNode}" 
-        	 draggable="true" droppable="true" dragdropScope="demo">
+		    <p:treeTable id="tabla" 
+		    	class="table_action estilos-tabla" 
+		    	widgetVar="treeTable" 
+		    	value="#{funciones.root}" 
+		    	var="document" 
+		    	emptyMessage="#{messages['datos.nohaydatos']}"
+	        	style="margin-top:0" 
+	        	paginator="true" 
+	        	rows="10"
+	        	rowStyleClass="row_type_#{document.type}"
+	        	filteredNode="#{funciones.filterNode}"
+	        	selectionMode="single" 
+	        	selection="#{funciones.selectedNode}">
+	        	
         		<p:ajax event="select" listener="#{funciones.onNodeSelect}"  update="tabla :info" />
         		<p:ajax event="unselect" listener="#{funciones.onNodeUnselect}" update="tabla :info" />
         		<p:ajax event="collapse" listener="#{funciones.onCollapseTree}" update="tabla :info" />
         		<p:ajax event="expand" listener="#{funciones.onExpandTree}" update="tabla :info" />
         		<p:ajax event="sort" listener="#{funciones.onSortTree}" update="tabla :info" />
         		<p:ajax event="page" listener="#{funciones.onPageTree}" update="tabla :info" />
-		        <p:column headerText="#{messages['funciones.codi']}" filterBy="#{document.codi}" sortBy="#{document.codi}" filterMatchMode="contains">
+        		
+		        <p:column headerText="#{messages['funciones.codi']}" style="width:200px;" filterBy="#{document.codi}" sortBy="#{document.codi}" filterMatchMode="contains">
 		            <h:outputText value="#{document.codi}" />
 		        </p:column>
 		        <p:column headerText="#{messages['funciones.nom']}" filterBy="#{document.nom}" sortBy="#{document.nom}" filterMatchMode="contains">
 		            <h:outputText value="#{document.nom}" />
 		        </p:column>
-		        <p:column headerText="#{messages['funciones.tipu']}"  sortBy="#{document.type}" >
+		        <p:column headerText="#{messages['funciones.tipu']}" style="width:160px;text-align:center;"  sortBy="#{document.type}" >
 			        <!-- <f:facet name="filter">
 		                <p:selectOneMenu onchange="PF('treeTable').filter()" styleClass="custom-filter">
 		                    <f:selectItem itemLabel="Select One" itemValue="#{null}" noSelectionOption="true" />
@@ -71,8 +82,10 @@
 		                    <f:selectItem itemLabel="Serie" itemValue="Serie" />
 		                    <f:selectItem itemLabel="Dictamen" itemValue="Dictamen" />
 		                </p:selectOneMenu>
-		            </f:facet>-->
-		            <h:outputText value="#{document.type}" />
+		            </f:facet> -->
+		            <h:outputText rendered="#{document.type=='Funcio'}" value="#{messages['funciones.tree.type.funcio']}" />
+		            <h:outputText rendered="#{document.type=='Serie'}" value="#{messages['funciones.tree.type.serie']}" />
+		            <h:outputText rendered="#{document.type=='Dictamen'}" value="#{messages['funciones.tree.type.dictamen']}" />
 		        </p:column>
 		        <p:column class="acciones-t" headerText="#{messages['funciones.acciones']}" style="width:210px; padding:0px;">
 		            <p:commandButton class="botton_library" rendered="#{document.type=='Funcio'}" icon="pi pi-pencil" resetValues="true" title="#{messages['funciones.modificafuncion']}" update="dialog" action="#{funciones.setFuncioActualizar(document)}" oncomplete="PF('documentDialog').show()"></p:commandButton>

@@ -5,7 +5,7 @@
       xmlns:p="http://primefaces.org/ui"
       xmlns:ui="http://java.sun.com/jsf/facelets">
 
-	<ui:param name="title" value="Quadres de clasificació | Archium" />
+	<ui:param name="title" value="#{messages['page.quadre.title']}" />
 	
 	<ui:define name="content">
 	<ui:include src="/views/modal/cuadro/nuevoQuadre.xhtml" />
@@ -21,13 +21,15 @@
 		        <p:autoUpdate />
 		    </p:growl>
 
-			<p:dataTable class="estilos-tabla" var="cuadro" id="Cuadros" value="#{quadreController.listaCuadros}" rows="10" paginator="true" 
-			paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
-                 currentPageReportTemplate="{startRecord}-{endRecord} of {totalRecords} records" >
-                 
-		         <!-- <p:column class="first-column" headerText="Quadre de classificació " sortBy="#{cuadro.id}"  style="width: 20%;">
-		            <h:outputText value="#{cuadro.id}" />
-		        </p:column>  -->
+			<p:dataTable class="estilos-tabla" 
+				var="cuadro" 
+				id="Cuadros" 
+				value="#{quadreController.listaCuadros}" 
+				rows="10" 
+				emptyMessage="#{messages['datos.nohaydatos']}"
+				paginator="true" 
+				paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                currentPageReportTemplate="{startRecord}-{endRecord} of {totalRecords} records" >
 		 
 		        <p:column class="first-column" headerText="#{messages['cuadro.nombre']}" sortBy="#{cuadro.nom}"   style="width: 25%;"> 
 		        	<h:outputLink value="#{request.contextPath}/views/funciones.xhtml">
@@ -52,19 +54,25 @@
 		        </p:column>
 		        <p:column class="first-column" headerText="#{messages['cuadro.fechaini']}" sortBy="#{cuadro.inici}" style="width: 10%;">
 					<h:outputLink value="#{request.contextPath}/views/funciones.xhtml">
-					<h:outputText value="#{cuadro.inici}" />
+					<h:outputText value="#{cuadro.inici}">
+						<f:convertDateTime pattern="dd-MM-yyyy HH:mm" />
+					</h:outputText>
 					<f:param  name="quadreId" value="#{cuadro.id}" />
 					</h:outputLink>
 		        </p:column>
 		        <p:column class="first-column" headerText="#{messages['cuadro.fechamodificacion']}" sortBy="#{cuadro.modificacio}" style="width: 10%;">
 		            <h:outputLink value="#{request.contextPath}/views/funciones.xhtml">
-		            <h:outputText value="#{cuadro.modificacio}" pattern="dd-MMM-yyyy"/>
+		            <h:outputText value="#{cuadro.modificacio}">
+		            	<f:convertDateTime pattern="dd-MM-yyyy HH:mm" />
+		            </h:outputText>
 		            <f:param  name="quadreId" value="#{cuadro.id}" />
 					</h:outputLink>
 		        </p:column>
 		        <p:column class="first-column" headerText="#{messages['cuadro.fechafin']}" sortBy="#{cuadro.fi}" style="width: 10%;">
 		            <h:outputLink value="#{request.contextPath}/views/funciones.xhtml">
-		            <h:outputText value="#{cuadro.fi}" pattern="dd-MMM-yyyy" />
+		            <h:outputText value="#{cuadro.fi}">
+		            	<f:convertDateTime pattern="dd-MM-yyyy HH:mm" />
+		            </h:outputText>
 		            <f:param  name="quadreId" value="#{cuadro.id}" />
 					</h:outputLink>
 		        </p:column>

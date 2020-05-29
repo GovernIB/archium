@@ -22,7 +22,7 @@
 				<div class="ui-g form_new">
 				
 				    <div class="ui-g-4 item_1">
-				    	<label class="ui-g-3">#{messages['nuevafuncion.codi']}</label>
+				    	<label class="ui-g-3">#{messages['nuevafuncion.codi']}*</label>
 		    			<p:inputText class="ui-g-9" value="#{funciones.nuevoCodi}" required="true" 
 		    				validatorMessage="#{messages['nuevafuncion.validate.codi']}" 
 		    				requiredMessage="#{messages['nuevafuncion.require.codi']}">
@@ -31,7 +31,7 @@
 				    </div>
 				    
 				    <div class="ui-g-4 item_1">
-				    	<label class="ui-g-3">#{messages['nuevafuncion.nom']}</label>
+				    	<label class="ui-g-3">#{messages['nuevafuncion.nom']}*</label>
 		    			<p:inputText class="ui-g-9" value="#{funciones.nuevoNom}" required="true" 
 		    				validatorMessage="#{messages['nuevafuncion.validate.nom']}" 
 		    				requiredMessage="#{messages['nuevafuncion.require.nom']}">
@@ -51,7 +51,7 @@
 				    	<label class="ui-g-5">#{messages['nuevafuncion.tiposerie']}</label>
 		    			<h:panelGrid columns="2" cellpadding="5">	            
 				            <p:selectOneMenu id="IdTipuSerie" value="#{funciones.nuevoTipusserie}" converter="FuncioTipusserieConverter" style="margin-left:-5px;">
-				                <f:selectItem itemLabel="Tipu Serie" itemValue="#{funciones.tipusserieSeleccionado.nom}" noSelectionOption="true" />
+				                <f:selectItem itemLabel="-- #{messages['selecciona']} #{messages['nuevafuncion.tiposerie']} -- " itemValue="#{funciones.tipusserieSeleccionado.nom}" noSelectionOption="true" />
 				                <f:selectItems value="#{funciones.listaTipusserie}" var="n" itemLabel="#{n.nom}" itemValue="#{n}" />
 				                <f:converter converterId="FuncioTipusserieConverter"/>
 				            </p:selectOneMenu>
@@ -63,11 +63,18 @@
 		    			<h:panelGrid columns="2" cellpadding="5">	            
 				        	<!-- <h:outputText value="#{funciones.funcionSeleccionada.nom}" rendered="#{funciones.funcionSeleccionada!=null}" /> -->
    							<!-- <h:outputText value="Función padre" rendered="#{funciones.funcionSeleccionada==null}" /> -->
-   							 <p:selectOneMenu id="listaFuncn" value="#{funciones.funcioPare}" style="margin-left:-5px;" required="false" >
-				                <f:selectItem itemLabel="-- Función padre-- " itemValue="#{null}"/>
-				                <f:selectItems value="#{funciones.listaFunciones}" var="n" itemLabel="#{n.nom}" itemValue="#{n}" />
+   							 <p:selectOneMenu id="listaFuncn" 
+   							 	value="#{funciones.funcioPare}" 
+   							 	class="ui-g-7 selector_4"
+   							 	style="max-width:450px!important;"
+   							 	panelStyle="width:450px"
+   							 	required="false" 
+   							 	filter="true"
+   							 	filterMatchMode="contains">
+   							 	<p:ajax update="panel1" listener="#{funciones.changeFuncioPare}" />
+				                <f:selectItem itemLabel="-- #{messages['selecciona']} #{messages['nuevafuncion.funcionpadre']} --" itemValue="#{null}"/>
+				                <f:selectItems value="#{funciones.listaFunciones}" var="n" itemLabel="#{n.printTab().replace(' ', '&#160;')}#{n.codi} - #{n.nom}" itemValue="#{n}" />
    					             <f:converter converterId="FuncioConverter"/>
-				             
 				            </p:selectOneMenu>
 				        </h:panelGrid>
 				    </div>
@@ -80,7 +87,7 @@
 				    </div>
 				    
 				    <div class="ui-g-4 item_1">
-				    	<label class="ui-g-5">#{messages['nuevafuncion.estado']}</label>
+				    	<label class="ui-g-5">#{messages['nuevafuncion.estado']}*</label>
 				    	<h:panelGrid columns="2" cellpadding="5">
 		    			<p:selectOneMenu id="estado" value="#{funciones.nuevoEstat}" label="Estats" style="margin-left:-5px;">
 				            <f:selectItems value="#{funciones.listaEstats}"  var="n"  itemValue="#{n}" itemLabel="#{n}"/>
@@ -89,7 +96,7 @@
 				    </div>
 			    
 				    <div class="ui-g-4 item_1">
-				    	<label class="ui-g-3">#{messages['nuevafuncion.orden']}</label>
+				    	<label class="ui-g-3">#{messages['nuevafuncion.orden']}*</label>
 		    			<p:inputNumber decimalPlaces="0" class="ui-g-9" value="#{funciones.nuevoOrdre}" required="true" 
 		    				requiredMessage="#{messages['nuevafuncion.require.ordre']}" />
 				    </div>

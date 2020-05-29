@@ -24,12 +24,10 @@ public class ValorSecundariConverter implements Converter{
 	@Override
     public Object getAsObject(FacesContext context, UIComponent component, String newValue) {
     	if ((null == newValue) || (newValue.trim().isEmpty())) {
-            // Return null
             return null;
         }
     	
         try {
-            // Try to parse the value as long
             final Long id = Long.valueOf(newValue);
             
             NuevaSerieController data = context.getApplication().evaluateExpressionGet(context, "#{nuevaSerieController}", NuevaSerieController.class);
@@ -41,7 +39,6 @@ public class ValorSecundariConverter implements Converter{
             }
 			
         } catch (final NumberFormatException ex) {
-            // Throw again
             throw new ConverterException(ex);
         } catch(final Exception e) {
         	throw new ConverterException(e);

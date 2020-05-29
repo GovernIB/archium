@@ -3,6 +3,7 @@ import java.util.Date;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ResourceBundle;
 
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
@@ -29,13 +30,11 @@ public class QuadreController implements Serializable{
 	private static final long serialVersionUID = -8853876271578469058L;
 	
 	private Long  	 nouId;
-	@NotNull(message = "El Nom no pot ser nul")
     private String 	 nombreNuevo;
     private String 	 nombreNuevoCast;
     private String 	 nouEstat;
    
 
-	private Date 	 nouInici;
     private Date 	 nouFi;
     private String 	 nouVersio;
     
@@ -57,7 +56,7 @@ public class QuadreController implements Serializable{
     private  List<String> listaEstats;
     private  List<String> selectedEstats;
     
-    
+    ResourceBundle messageBundle = ResourceBundle.getBundle("messages.messages");
     
 	@PostConstruct
     public void init() {
@@ -66,47 +65,71 @@ public class QuadreController implements Serializable{
     		listaCuadros = services.findAll();
     		listaQuadreFilter = listaCuadros;
 			listaEstats = new ArrayList<>();
-			listaEstats.add("Esborrany"); 
-			listaEstats.add("Revisat");
-			listaEstats.add("Publicable");
-			listaEstats.add("Vigent");
-			listaEstats.add("Obsolet");
+			listaEstats.add(messageBundle.getString("general.estats.esborrany")); 
+			listaEstats.add(messageBundle.getString("general.estats.revisat"));
+			listaEstats.add(messageBundle.getString("general.estats.publicable"));
+			listaEstats.add(messageBundle.getString("general.estats.vigent"));
+			listaEstats.add(messageBundle.getString("general.estats.obsolet"));
 			selectedCuadros = new ArrayList<>();
 			selectedEstats = new ArrayList<>();
     		
     	}
     	catch(Exception e) 
     	{	
-    		System.out.println("fallo al  Init controler quadre");
-    		System.err.println(e);
     	}
     	FacesContext ctxt = FacesContext.getCurrentInstance(); //get your hands on the current request context
         ctxt.getPartialViewContext().getRenderIds().add("panel");
     }
 
-	public void onItemUnselect(UnselectEvent event) {
+	/*public void onItemUnselect(UnselectEvent event) {
         FacesContext context = FacesContext.getCurrentInstance(); 
         FacesMessage msg = new FacesMessage();
         msg.setSummary("Item unselected: " + event.getObject().toString());
         msg.setSeverity(FacesMessage.SEVERITY_INFO);
          
         context.addMessage(null, msg);
-    }
+    }*/
     
 	public void save() {
 		QuadreObject object = new QuadreObject();
 		object.setNom(this.getNombreNuevo());
 		object.setNomCas(this.getNombreNuevoCast());		
 		object.setEstat(this.getNouEstat());
-        if (services.save(this.getListaCuadros(), object)) {
-        	try {
-				listaCuadros = services.findAll();
-				listaQuadreFilter = listaCuadros;
-			} catch (I18NException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-        }
+		
+		boolean b = true;
+    	for(QuadreObject i:  listaCuadros)
+		{
+    		if (i.getNom().equalsIgnoreCase(object.getNom().trim())) {
+    			b = false;
+    		}    		
+		}
+		
+    	if(b) {
+    		if (services.save(object)) {
+	        	try {
+					listaCuadros = services.findAll();
+					listaQuadreFilter = listaCuadros;
+					FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(messageBundle.getString("nuevocuadro.ok")));
+				} catch (I18NException e) {
+					e.printStackTrace();
+				}
+	        } else {
+	        	FacesMessage message = new FacesMessage();
+	    		message.setSeverity(FacesMessage.SEVERITY_ERROR);
+	    		message.setSummary(messageBundle.getString("nuevocuadro.error"));
+	    		message.setDetail(messageBundle.getString("nuevocuadro.error"));
+	    		FacesContext.getCurrentInstance().addMessage(null, message);
+	        }
+    	} else {
+    		FacesContext.getCurrentInstance().validationFailed();
+    		FacesMessage message = new FacesMessage();
+    		message.setSeverity(FacesMessage.SEVERITY_ERROR);
+    		message.setSummary(messageBundle.getString("nuevocuadro.nom.repetido"));
+    		message.setDetail(messageBundle.getString("nuevocuadro.nom.repetido"));
+    		FacesContext.getCurrentInstance().addMessage(null, message);
+    	}
+    	
+       
         this.setNombreNuevo("");    	
     	this.setNombreNuevoCast("");
     }
@@ -118,38 +141,62 @@ public class QuadreController implements Serializable{
 		obj.setNom(this.getNombreNuevo().trim());
 		obj.setNomCas(this.getNombreNuevoCast().trim());
 		obj.setFi(this.getNouFi());
-		obj.setInici(this.getNouInici());
 		obj.setModificacio(new Date());
 		obj.setVersio(this.getNouVersio());
-        services.update(this.getListaCuadros(),obj);
-        try {
-			listaCuadros = services.findAll();
-			listaQuadreFilter = listaCuadros;
-		} catch (I18NException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		
+		boolean b = true;
+    	for(QuadreObject i:  listaCuadros)
+		{
+    		if (i.getNom().equalsIgnoreCase(obj.getNom().trim()) && i.getId()!=obj.getId()) {
+    			b = false;
+    		}    		
 		}
+		
+    	if(b) {
+		
+			QuadreObject up = services.update(obj);
+			if(up==null) {
+				FacesContext.getCurrentInstance().addMessage(null, 
+					new FacesMessage(FacesMessage.SEVERITY_ERROR, 
+							messageBundle.getString("updatecuadro.error"), 
+							messageBundle.getString("updatecuadro.error")
+					)
+				);
+			} else {
+				FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(messageBundle.getString("updatecuadro.ok")));
+			}
+	        try {
+				listaCuadros = services.findAll();
+				listaQuadreFilter = listaCuadros;
+			} catch (I18NException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+    	} else {
+    		FacesContext.getCurrentInstance().validationFailed();
+    		FacesMessage message = new FacesMessage();
+    		message.setSeverity(FacesMessage.SEVERITY_ERROR);
+    		message.setSummary(messageBundle.getString("updatecuadro.nom.repetido"));
+    		message.setDetail(messageBundle.getString("updatecuadro.nom.repetido"));
+    		FacesContext.getCurrentInstance().addMessage(null, message);
+    	}
     }	
 	
     public void abrirModal() {
-    	//System.out.println("Abrir modal");
     	this.setNouId(null);
     	this.setNombreNuevo("");    	
     	this.setNombreNuevoCast("");    	
     	this.setNouFi(null);
-    	this.setNouInici(null);
     	this.setNouVersio(null);
         
     }
     
     public void abrirModalUpdate(QuadreObject object) {
-    	//System.out.println("Abrir modal Update");
     	this.setNouId(object.getId());
     	this.setNombreNuevo(object.getNom());    	
     	this.setNombreNuevoCast(object.getNomCas());
     	this.setNouEstat(object.getEstat());
     	this.setNouFi(object.getFi());
-    	this.setNouInici(object.getInici());
     	this.setNouVersio(object.getVersio());
     	
     }
@@ -193,14 +240,6 @@ public class QuadreController implements Serializable{
 		}
 
 
-	public Date getNouInici() {
-		return nouInici;
-	}
-
-
-	public void setNouInici(Date nouInici) {
-		this.nouInici = nouInici;
-	}
 
 
 	public Date getNouFi() {

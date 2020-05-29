@@ -11,11 +11,13 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.ResourceBundle;
 
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.faces.event.AjaxBehaviorEvent;
+import javax.faces.event.ValueChangeEvent;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -92,16 +94,17 @@ public class FuncionesController implements Serializable{
     
     private Long quadreId;
     
+    ResourceBundle messageBundle = ResourceBundle.getBundle("messages.messages");
 
 	@PostConstruct
     public void init() throws I18NException {   
     	try 
     	{
-    		listaEstats.add("Esborrany"); 
-    		listaEstats.add("Revisat");
-    		listaEstats.add("Publicable");
-    		listaEstats.add("Vigent");
-    		listaEstats.add("Obsolet");
+    		listaEstats.add(messageBundle.getString("general.estats.esborrany")); 
+			listaEstats.add(messageBundle.getString("general.estats.revisat"));
+			listaEstats.add(messageBundle.getString("general.estats.publicable"));
+			listaEstats.add(messageBundle.getString("general.estats.vigent"));
+			listaEstats.add(messageBundle.getString("general.estats.obsolet"));
     		
     		this.listaCuadrosClasificacion = this.servicesCuadroClasificacion.findAll();
     		
@@ -122,11 +125,10 @@ public class FuncionesController implements Serializable{
     			
     		} else {
     			this.cuadroSeleccionado = this.servicesCuadroClasificacion.getQuadreById(quadreId);
-    			System.out.println("Cuadroseleccionado" + cuadroSeleccionado);
         		this.root = this.servicesFunciones.getContent(cuadroSeleccionado);
         		this.filterNode = this.root.getParent();
-        		this.listaFunciones = this.servicesFunciones.findAllByQuadre(this.cuadroSeleccionado);
-        		
+        		//this.listaFunciones = this.servicesFunciones.findAllByQuadre(this.cuadroSeleccionado);
+        		this.listaFunciones = this.servicesFunciones.loadTree(quadreId, null);
         		this.listaTipusserie = this.servicesFunciones.findAllTipusSerie();    	
     		}
     		
@@ -134,8 +136,7 @@ public class FuncionesController implements Serializable{
     	}
     	catch(Exception e) 
     	{	
-    		System.out.println("fallo al  Init controler funcion");
-    		System.err.println(e);
+    		e.printStackTrace();
     	}        
     }
     
@@ -179,13 +180,13 @@ public class FuncionesController implements Serializable{
     	} else {
     		this.funcionSeleccionada = d.getObject();
     		this.funcioPare = d.getObject();
-    		System.out.println("FUNCION CONTROLLER (Seleccionada): Funcio: " + funcioPare.toString());
     	}    	
     }
     
     public void update() {    
-    	System.out.println("Salvar dato");
 		
+    	
+    	
 		try {
 			//TreeNode oldParent = this.getNodeFromFunctionId(funcionActualizar.getFuncioPare() == null ? null:  funcionActualizar.getFuncioPare().getId(), "Funcio", "insert", null);
 			FuncioObject f = this.funcionActualizar;
@@ -205,53 +206,54 @@ public class FuncionesController implements Serializable{
 			f.setFi(null);
 			f.setTipoSerie(nuevoTipusserie);
 			f.setFuncioPare(funcioPare);
-			FuncioObject upF = this.servicesFunciones.update(f);
+			
+			if(!this.checkFuncioPareValid(f, funcioPare)) {
+				FacesContext.getCurrentInstance().validationFailed();
+				FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_ERROR, messageBundle.getString("funciones.funciopare.conflict"), null);
+				FacesContext.getCurrentInstance().addMessage(null, message);
+			} else {
+				FuncioObject upF = this.servicesFunciones.update(f);
 
-			this.listaFunciones = this.servicesFunciones.findAllByQuadre(this.cuadroSeleccionado);
-			
-			
-			if(oldParent != null)
-			{
-				TreeNode node = this.getNodeFromFunctionId(upF.getId(), "Funcio", "update", f);
-				oldParent.getChildren().remove(node);
-				TreeNode parentNode;
-				if(funcioPare != null)
-				{
-					parentNode = getNodeFromFunctionId(this.funcioPare.getId(), "Funcio", "insert", null);
-				}
-				else
-				{
-					parentNode = root;
-				}
-				node.setParent(parentNode);
-				parentNode.getChildren().add(node);
-			}
-			else
-			{
-				TreeNode node = this.getNodeFromFunctionId(upF.getId(), "Funcio", "update", f);
-				if(funcioPare!= null)
-				{
-					root.getChildren().remove(node);
-					TreeNode parentNode= getNodeFromFunctionId(this.funcioPare.getId(), "Funcio", "insert", null);
-					parentNode.getChildren().add(node);
+				this.listaFunciones = this.servicesFunciones.loadTree(quadreId, null);
+				
+				if(oldParent != null) {
+					TreeNode node = this.getNodeFromFunctionId(upF.getId(), "Funcio", "update", f);
+					oldParent.getChildren().remove(node);
+					TreeNode parentNode;
+					if(funcioPare != null) {
+						parentNode = getNodeFromFunctionId(this.funcioPare.getId(), "Funcio", "insert", null);
+					} else {
+						parentNode = root;
+					}
 					node.setParent(parentNode);
+					parentNode.getChildren().add(node);
+				} else {
+					TreeNode node = this.getNodeFromFunctionId(upF.getId(), "Funcio", "update", f);
+					if(funcioPare!= null) {
+						root.getChildren().remove(node);
+						TreeNode parentNode= getNodeFromFunctionId(this.funcioPare.getId(), "Funcio", "insert", null);
+						parentNode.getChildren().add(node);
+						node.setParent(parentNode);
+					}
 				}
+				
+				//oldParent.getChildren().remove(node);
+		        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(messageBundle.getString("funciones.update.ok")));
 			}
 			
-			//oldParent.getChildren().remove(node);
-	        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Dades Salvats"));
+			
+			
 	        
 		} catch (I18NException e) {
 			e.printStackTrace();
-			FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Error Salvants Dades 1"));
+			FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, messageBundle.getString("funciones.update.error"), null));
 		} catch (Exception e) {
 			e.printStackTrace();
-			FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Error Salvants Dades 2"));
+			FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, messageBundle.getString("funciones.update.error"), null));
 		}
     }
 
     public void save() {    
-    	System.out.println("Salvar dato");
 		
 		try {
 			FuncioObject f = new FuncioObject();
@@ -264,17 +266,17 @@ public class FuncionesController implements Serializable{
 			f.setModificacio(new Date());
 			f.setFi(null);
 			FuncioObject newF = this.servicesFunciones.create(f, this.cuadroSeleccionado, this.funcioPare, this.nuevoTipusserie);
-			this.listaFunciones = this.servicesFunciones.findAll();
-			TreeNode node = new DefaultTreeNode(new Document<FuncioObject>(newF.getId(), newF.getCodi(), newF.getNom(), "Funcio", newF), (this.funcionSeleccionada!=null) ? this.getNodeFromFunctionId(this.funcionSeleccionada.getId(), "Funcio", "insert", null) : this.root);
+			this.listaFunciones = this.servicesFunciones.loadTree(quadreId, null);
+			TreeNode node = new DefaultTreeNode(new Document<FuncioObject>(newF.getId(), newF.getCodi(), newF.getNom(), "Funcio", newF), (this.funcioPare!=null) ? this.getNodeFromFunctionId(this.funcioPare.getId(), "Funcio", "insert", null) : this.root);
 
-	        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Dades Salvats"));
+	        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(messageBundle.getString("funciones.insert.ok")));
 	        
 		} catch (I18NException e) {
-			FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Error Salvants Dades"));
+			FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, messageBundle.getString("funciones.insert.error"), null));
 			e.printStackTrace();
 		} catch (Exception e) {
 			e.printStackTrace();
-			FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Error Salvants Dades"));
+			FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, messageBundle.getString("funciones.insert.error"), null));
 		}
     }
     
@@ -306,7 +308,7 @@ public class FuncionesController implements Serializable{
 						break;
 					case "DictamenObject":
 						DictamenObject di = (DictamenObject) updateObject;
-						Document<DictamenObject> fun = new Document<DictamenObject>(di.getId(), "ID"+di.getId(), di.getAccioDictaminada(), "Dictamen", di);
+						Document<DictamenObject> fun = new Document<DictamenObject>(di.getId(), di.getCodi(), di.getAccioDictaminada(), "Dictamen", di);
 						((DefaultTreeNode) node).setData(fun);
 						break;
 				default:
@@ -345,53 +347,53 @@ public class FuncionesController implements Serializable{
 	    	
 	    	if (type=="Funcio") {
 	    		Document<FuncioObject> f = (Document<FuncioObject>) dataObject;
-	    		this.infoSelectedElement.put("type", "FUNCIO");
+	    		this.infoSelectedElement.put("type", messageBundle.getString("nuevafuncion.type"));
 	    		this.infoSelectedElement.put("id", String.valueOf(f.getObject().getId()));
-	    		this.infoSelectedElement.put("Codi", String.valueOf(f.getObject().getCodi()));
-	    		this.infoSelectedElement.put("Nom", String.valueOf(f.getObject().getNom()));
+	    		this.infoSelectedElement.put(messageBundle.getString("nuevafuncion.codi"), String.valueOf(f.getObject().getCodi()));
+	    		this.infoSelectedElement.put(messageBundle.getString("nuevafuncion.nom"), String.valueOf(f.getObject().getNom()));
 	    		
 	    		String nomcas = f.getObject().getNomcas();
 	    		if(nomcas!=null) {
-	    			this.infoSelectedElement.put("Nom cas", nomcas);
+	    			this.infoSelectedElement.put(messageBundle.getString("nuevafuncion.nomcas"), nomcas);
 	    		}
 	    		
-	    		this.infoSelectedElement.put("Quadre", f.getObject().getCodigoCuadro().getNom());
+	    		this.infoSelectedElement.put(messageBundle.getString("nuevafuncion.cuadro"), f.getObject().getCodigoCuadro().getNom());
 	    		
 	    		FuncioObject fpare = f.getObject().getFuncioPare();
 	    		if(fpare!=null) {
-	    			this.infoSelectedElement.put("Funcio pare", fpare.getNom());
+	    			this.infoSelectedElement.put(messageBundle.getString("nuevafuncion.funcionpadre"), fpare.getNom());
 	    		}
 	    		
 	    		TipusSerieObject tserie = f.getObject().getTipoSerie();
 	    		if(tserie!=null) {
-	    			this.infoSelectedElement.put("Tipu serie", tserie.getNom());
+	    			this.infoSelectedElement.put(messageBundle.getString("nuevafuncion.tiposerie"), tserie.getNom());
 	    		}
 	    		
-	    		this.infoSelectedElement.put("Estat", f.getObject().getEstat());
-	    		this.infoSelectedElement.put("Ordre", String.valueOf(f.getObject().getOrdre()));
-	    		this.infoSelectedElement.put("Inici", String.valueOf(f.getObject().getInici()));
-	    		this.infoSelectedElement.put("Modificacio", String.valueOf(f.getObject().getModificacio()));
+	    		this.infoSelectedElement.put(messageBundle.getString("nuevafuncion.estado"), f.getObject().getEstat());
+	    		this.infoSelectedElement.put(messageBundle.getString("nuevafuncion.orden"), String.valueOf(f.getObject().getOrdre()));
+	    		this.infoSelectedElement.put(messageBundle.getString("nuevafuncion.inici"), String.valueOf(f.getObject().getInici()));
+	    		this.infoSelectedElement.put(messageBundle.getString("nuevafuncion.modificacio"), String.valueOf(f.getObject().getModificacio()));
 	    		
 	    		Date fi = f.getObject().getFi();
 	    		if(fi!=null) {
-	    			this.infoSelectedElement.put("Fi", String.valueOf(fi));
+	    			this.infoSelectedElement.put(messageBundle.getString("nuevafuncion.fi"), String.valueOf(fi));
 	    		}
 	    		this.nodoSeleccionado = event.getTreeNode();
 	    	} else if (type=="Serie") {
 	    		Document<SerieDocumentalObject> f = (Document<SerieDocumentalObject>) dataObject;
-	    		this.infoSelectedElement.put("type", "SERIE DOCUMENTAL");
+	    		this.infoSelectedElement.put("type", messageBundle.getString("nuevaserie.type"));
 	    		this.infoSelectedElement.put("id", String.valueOf(f.getObject().getSerieId()));
-	    		this.infoSelectedElement.put("Codi", String.valueOf(f.getObject().getCodi()));
-	    		this.infoSelectedElement.put("Nom", String.valueOf(f.getObject().getNom()));
+	    		this.infoSelectedElement.put(messageBundle.getString("nuevaserie.codiserie"), String.valueOf(f.getObject().getCodi()));
+	    		this.infoSelectedElement.put(messageBundle.getString("nuevaserie.nombreserie"), String.valueOf(f.getObject().getNom()));
 	    		//Seriedocumental data = serie
 	    		String nomcas = f.getObject().getNomCas();
 	    		if(nomcas!=null) {
-	    			this.infoSelectedElement.put("Nom cas", nomcas);
+	    			this.infoSelectedElement.put(messageBundle.getString("nuevaserie.nombrecastellano"), nomcas);
 	    		}
 	    			    		
-	    		Long codiFnc= f.getObject().getFuncio().getId();
-	    		if(codiFnc!=null) {
-	    			this.infoSelectedElement.put("Codi funcio", String.valueOf(codiFnc));
+	    		FuncioObject fnc= f.getObject().getFuncio();
+	    		if(fnc!=null) {
+	    			this.infoSelectedElement.put(messageBundle.getString("nuevaserie.codifuncion"), String.valueOf(fnc.getCodi() + "-" + fnc.getNom()));
 	    		}
 	    		
 	    		/*TipusserieObject tserie = f.getObject().getTipoSerie();
@@ -399,70 +401,82 @@ public class FuncionesController implements Serializable{
 	    			this.infoSelectedElement.put("Tipu serie", tserie.getNom());
 	    		}*/
 	    		
-	    		this.infoSelectedElement.put("Descripcio", f.getObject().getDescripcio());
-	    		this.infoSelectedElement.put("Descripcio Castellá", String.valueOf(f.getObject().getDescripcioCas()));
-	    		this.infoSelectedElement.put("Dir3 promotor", f.getObject().getDir3Promotor());
-	    		this.infoSelectedElement.put("Codi IECISA", f.getObject().getCodiIecisa());
+	    		this.infoSelectedElement.put(messageBundle.getString("nuevaserie.descripcio"), f.getObject().getDescripcio());
+	    		if(f.getObject().getDescripcioCas()!=null) {
+	    			this.infoSelectedElement.put(messageBundle.getString("nuevaserie.descripciocas"), String.valueOf(f.getObject().getDescripcioCas()));
+	    		}
+	    		
+	    		if(f.getObject().getDir3Promotor()!=null) {
+	    			this.infoSelectedElement.put(messageBundle.getString("nuevaserie.dir3prom"), f.getObject().getDir3Promotor());
+	    		}
+	    		
+	    		if(f.getObject().getCodiIecisa()!=null) {	
+	    			this.infoSelectedElement.put(messageBundle.getString("nuevaserie.codiiecisa"), f.getObject().getCodiIecisa());
+	    		}
+	    		
+	    		this.infoSelectedElement.put(messageBundle.getString("nuevaserie.estat"), f.getObject().getEstat());
 	    		
 	    		this.nodoSeleccionado = event.getTreeNode();
 	    	} else if (type=="Dictamen") {
 	    		Document<DictamenObject> d = (Document<DictamenObject>) dataObject;
-	    		this.infoSelectedElement.put("type", "DICTAMEN");
+	    		this.infoSelectedElement.put("type", messageBundle.getString("dictamen.type"));
 	    		this.infoSelectedElement.put("id", String.valueOf(d.getObject().getId()));
-	    		
-	    		this.infoSelectedElement.put("Serie Documental", String.valueOf(d.getObject().getSerieDocumental().getCodi()));
+	    		this.infoSelectedElement.put(messageBundle.getString("nuevodictamen.codi"), String.valueOf(d.getObject().getCodi()));
+	    		this.infoSelectedElement.put(messageBundle.getString("dictamen.serieDoc"), String.valueOf(d.getObject().getSerieDocumental().getCodi()));
 	    		
 	    		TipuDictamenObject td = d.getObject().getTipusdictamen();
 	    		if(td!=null) {
-	    			this.infoSelectedElement.put("Tipu dictamen", td.getNom());
+	    			this.infoSelectedElement.put(messageBundle.getString("dictamen.tipuDic"), td.getNom());
 	    		}
 	    		
 	    		TipuAccesObject ta = d.getObject().getTipusAcces();
 	    		if(ta!=null) {
-	    			this.infoSelectedElement.put("Tipu acces", ta.getNom());
+	    			this.infoSelectedElement.put(messageBundle.getString("dictamen.tipuAcc"), ta.getNom());
 	    		}
 	    		
-	    		this.infoSelectedElement.put("Normativa aprobacio", d.getObject().getNormativaAprovacio().getCodi());
+	    		this.infoSelectedElement.put(messageBundle.getString("dictamen.normApro"), d.getObject().getNormativaAprovacio().getCodi());
 	    		
 	    		EnsObject ens = d.getObject().getEns();
 	    		if(ens!=null) {
-	    			this.infoSelectedElement.put("Ens", ens.getNom());
+	    			this.infoSelectedElement.put(messageBundle.getString("dictamen.ens"), ens.getNom());
 	    		}
 	    		
 	    		LopdObject lopd = d.getObject().getLopd();
 	    		if(lopd!=null) {
-	    			this.infoSelectedElement.put("Lopd", lopd.getNom());
+	    			this.infoSelectedElement.put(messageBundle.getString("dictamen.lopd"), lopd.getNom());
 	    		}
 	    		
-	    		this.infoSelectedElement.put("Termini", d.getObject().getTermini());
+	    		this.infoSelectedElement.put(messageBundle.getString("dictamen.termini"), d.getObject().getTerminiFormat());
 	    		
 	    		
 	    		String accd = d.getObject().getAccioDictaminada();
 	    		if(accd!=null) {
-	    			this.infoSelectedElement.put("Accio Dictaminada", accd);
+	    			this.infoSelectedElement.put(messageBundle.getString("dictamen.accion"), accd);
 	    		}
 	    		
 	    		String cr = d.getObject().getCondicioReutilitzacio();
 	    		if(cr!=null) {
-	    			this.infoSelectedElement.put("Concicion de reutilitzacio", cr);
+	    			this.infoSelectedElement.put(messageBundle.getString("dictamen.condicioReu"), cr);
 	    		}
 	    		
 	    		String dr = d.getObject().getDestinatarisRestrigits();
 	    		if(dr!=null) {
-	    			this.infoSelectedElement.put("Destinataris Restingits", dr);
+	    			this.infoSelectedElement.put(messageBundle.getString("dictamen.destRest"), dr);
 	    		}
 	    		
 	    		Boolean se = d.getObject().getSerieEsencial();
 	    		if(se!=null) {
-	    			this.infoSelectedElement.put("Serie Esencial", (se ? "SI": "NO"));
+	    			this.infoSelectedElement.put(messageBundle.getString("nuevodictamen.serieEsencial"), (se ? messageBundle.getString("si"): messageBundle.getString("no")));
 	    		}
 	    		
-	    		this.infoSelectedElement.put("Inici", String.valueOf(d.getObject().getInici()));
-	    		this.infoSelectedElement.put("Aprobacio", String.valueOf(d.getObject().getAprovacio()));
+	    		this.infoSelectedElement.put(messageBundle.getString("dictamen.dataIni"), String.valueOf(d.getObject().getInici()));
 	    		
+	    		if(d.getObject().getAprovacio()!=null) {
+	    			this.infoSelectedElement.put(messageBundle.getString("dictamen.dataApro"), String.valueOf(d.getObject().getAprovacio()));
+	    		}
 	    		Date fi = d.getObject().getFi();
 	    		if(fi!=null) {
-	    			this.infoSelectedElement.put("Fi", String.valueOf(fi));
+	    			this.infoSelectedElement.put(messageBundle.getString("dictamen.dataIni"), String.valueOf(fi));
 	    		}
 	    		this.nodoSeleccionado = event.getTreeNode();
 	    	}
@@ -530,6 +544,24 @@ public class FuncionesController implements Serializable{
 			e.printStackTrace();
 		}
     }
+    
+    public void changeFuncioPare(){  
+    	if(!this.checkFuncioPareValid(this.funcionActualizar, funcioPare)) {
+    		FacesContext.getCurrentInstance().validationFailed();
+    		FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, messageBundle.getString("funciones.funciopare.conflict"), null));
+    	}
+    }
+    
+    private Boolean checkFuncioPareValid(FuncioObject funcio, FuncioObject funcioPare) {
+    	if(funcio.equals(funcioPare)) return false;
+    	try {
+			if(this.servicesFunciones.loadTree(cuadroSeleccionado.getId(), funcio.getId()).contains(funcioPare)) return false;
+		} catch (I18NException e) {
+			return false;
+		}    	
+    	return true;
+    }
+    
     
 	public FuncioObject getFuncionSeleccionada() {
 		return funcionSeleccionada;

@@ -17,7 +17,6 @@ public class SerieNormativaAprobacionConverter implements Converter {
 
     @Override
     public Object getAsObject(FacesContext context, UIComponent component, String newValue) {
-	    // System.out.println("GET AS OBJECT ");
 	    if(newValue == null)
 	    return null;
 	    NuevaSerieController data = context.getApplication().evaluateExpressionGet(context, "#{nuevaSerieController}", NuevaSerieController.class);
@@ -31,14 +30,12 @@ public class SerieNormativaAprobacionConverter implements Converter {
 
     @Override
     public String getAsString(FacesContext context, UIComponent component, Object object) {
-   	 //System.out.println("GET AS STRING");
     	if (object == null) {
             return "";
         }
         if (object instanceof NormativaAprobacioObject) {
         	NormativaAprobacioObject quadre= (NormativaAprobacioObject) object;
             Long name = quadre.getId();
-            //System.out.println("Normativa Object :" + name);
             return name.toString();
         } else {
             throw new ConverterException(new FacesMessage(object + " is not a valid normativa aprobacio"));

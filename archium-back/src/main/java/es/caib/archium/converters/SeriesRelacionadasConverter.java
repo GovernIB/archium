@@ -18,7 +18,6 @@ public class SeriesRelacionadasConverter implements Converter<SerieDocumentalObj
 
 	@Override
 	public SerieDocumentalObject getAsObject(FacesContext context, UIComponent component, String value) {
-		// TODO Auto-generated method stub
 		return getObjectFromUIPickListComponent(component, value);
 	}
 

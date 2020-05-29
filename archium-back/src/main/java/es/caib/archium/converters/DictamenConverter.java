@@ -15,7 +15,6 @@ public class DictamenConverter implements Converter {
 
     @Override
     public Object getAsObject(FacesContext context, UIComponent component, String newValue) {
-	    // System.out.println("GET AS OBJECT ");
 	    if(newValue == null)
 	    return null;
 	    DictamenController data = context.getApplication().evaluateExpressionGet(context, "#{dictamenController}", DictamenController.class);
@@ -29,14 +28,12 @@ public class DictamenConverter implements Converter {
 
     @Override
     public String getAsString(FacesContext context, UIComponent component, Object object) {
-   	 //System.out.println("GET AS STRING");
     	if (object == null) {
             return "";
         }
         if (object instanceof DictamenObject) {
         	DictamenObject quadre= (DictamenObject) object;
             Long name = quadre.getId();
-            //System.out.println("Dictamen  Object :" + name);
             return name.toString();
         } else {
             throw new ConverterException(new FacesMessage(object + " is not a valid quadre"));

@@ -69,7 +69,7 @@
 	    //]]>
 	</script>
 	<!-- CONTENIDO -->
-	<p:dialog id="procedimentModalDialogId" header="Dictamen" showEffect="fade" widgetVar="procedimentModalDialog" modal="true" resizable="true" style="max-width:1000px; min-width:1000px; max-height: 550px; overflow-y: scroll;">		
+	<p:dialog id="procedimentModalDialogId" header="Dictamen" showEffect="fade" widgetVar="procedimentModalDialog" onShow="PF('tabProcediment').select(0)" modal="true" resizable="true" style="max-width:1000px; min-width:1000px; max-height: 550px; overflow-y: scroll;">		
 	  <div class="views_3">
 	  	<div class="content_4 modfseries modfuncion dictamen procedimiento">
 		  	<h:form id="form2">
@@ -82,7 +82,7 @@
 	  		<div class="separador_rojo"></div>
 				<div class="ui-g form_new">
 					<p:panel id="panel">
-					    <p:tabView id="tabProcediment">
+					    <p:tabView id="tabProcediment" widgetVar="tabProcediment">
 		        			<p:tab title="#{messages['nuevoprocediment.Datosbasicos']}">		        				
 							    <div class="ui-g-12">
 								    <div class="ui-g-6 item_1">
@@ -129,7 +129,7 @@
 								    	<label class="ui-g-4">#{messages['nuevoprocediment.FormaInici']}</label>		    			
 							        	<p:selectOneMenu class="ui-g-8" id="formainici" value="#{procedimentController.formainici}" label="FormaInici" converter="FormaIniciConverter"
 								                              panelStyle="">
-								            <f:selectItem itemLabel="-- #{messages['nuevoprocediment.FormaInici']} -- " itemValue="#{null}" noSelectionOption="true"/>
+								            <f:selectItem itemLabel="-- #{messages['selecciona']} #{messages['nuevoprocediment.FormaInici']} -- " itemValue="#{null}" noSelectionOption="true"/>
 								            <f:selectItems value="#{procedimentController.listaFormainici}"  var="n" itemLabel="#{n.nom}"  itemValue="#{n}"/>
 								        </p:selectOneMenu>
 								    </div>
@@ -138,7 +138,7 @@
 								    	<label class="ui-g-4">#{messages['nuevoprocediment.Silenci']}</label>		    			
 							        	<p:selectOneMenu class="ui-g-8" id="silenci" value="#{procedimentController.silenci}" label="silenci" converter="SilenciConverter"
 								                              panelStyle="">
-								            <f:selectItem itemLabel="-- #{messages['nuevoprocediment.Silenci']} -- " itemValue="#{null}" noSelectionOption="true"/>
+								            <f:selectItem itemLabel="-- #{messages['selecciona']} #{messages['nuevoprocediment.Silenci']} -- " itemValue="#{null}" noSelectionOption="true"/>
 								            <f:selectItems value="#{procedimentController.listaSilenci}"  var="n" itemLabel="#{n.nom}"  itemValue="#{n}"/>
 								        </p:selectOneMenu>
 								    </div>
@@ -157,10 +157,12 @@
 								    
 								    <div class="ui-g-6 item_1">
 								    	<label class="ui-g-4">#{messages['nuevoprocediment.Dir3Instructor']}</label>
-						    			<p:inputText id="dir3instrutor" value="#{procedimentController.dir3Instructor}" class="ui-g-8"
-						    				validatorMessage="#{messages['nuevoprocediment.validate.dir3instrutor']}"	>
-						    				<f:validateLength minimum="0" maximum="9" />
-						    			</p:inputText>				    			
+						    			<p:selectOneMenu class="ui-g-8" id="dir3instructor" value="#{procedimentController.dir3Instructor}" label="#{messages['nuevoprocediment.Dir3Instructor']}" 
+								                              panelStyle="width:450px" style="min-width: auto!important;" 
+								                              filter="true" filterMatchMode="contains">
+								            <f:selectItem itemLabel="-- #{messages['selecciona']} #{messages['nuevoprocediment.Dir3Instructor']} -- " itemValue="#{null}" noSelectionOption="true"/>
+								            <f:selectItems value="#{procedimentController.listaDir3}"  var="n"  itemValue="#{n.codi}" itemLabel="#{n.codi}-#{n.nom}"/>
+								        </p:selectOneMenu>			    			
 								    </div>
 								    
 							   	</div>
@@ -169,17 +171,19 @@
 								    
 								    <div class="ui-g-6 item_1">
 								    	<label class="ui-g-4">#{messages['nuevoprocediment.Dir3Resolvent']}</label>
-						    			<p:inputText id="dir3resolvent" value="#{procedimentController.dir3Resolvent}" class="ui-g-8"
-						    				validatorMessage="#{messages['nuevoprocediment.validate.dir3resolvent']}">
-						    				<f:validateLength minimum="0" maximum="9" />
-						    			</p:inputText>				    			
+								    	<p:selectOneMenu class="ui-g-8" id="dir3resolvent" value="#{procedimentController.dir3Resolvent}" label="#{messages['nuevoprocediment.Dir3Resolvent']}" 
+								                              panelStyle="width:450px" style="min-width: auto!important;"
+								                              filter="true" filterMatchMode="contains">
+								            <f:selectItem itemLabel="-- #{messages['selecciona']} #{messages['nuevoprocediment.Dir3Resolvent']} -- " itemValue="#{null}" noSelectionOption="true"/>
+								            <f:selectItems value="#{procedimentController.listaDir3}"  var="n"  itemValue="#{n.codi}" itemLabel="#{n.codi}-#{n.nom}"/>
+								        </p:selectOneMenu>				    			
 								    </div>  
 								    
 								    <div class="ui-g-6 item_1">
 								    	<label class="ui-g-4">#{messages['nuevoprocediment.SerieDocumental']}</label>		    			
 							        	<p:selectOneMenu class="ui-g-8" id="seriedocumental" value="#{procedimentController.seriedocumental}" label="SerieDocumental" converter="SerieDocumentalConverter" 
 							        					 panelStyle="">
-							        		<f:selectItem itemLabel="-- #{messages['nuevoprocediment.SerieDocumental']} -- " itemValue="#{null}" noSelectionOption="true"/>
+							        		<f:selectItem itemLabel="-- #{messages['selecciona']} #{messages['nuevoprocediment.SerieDocumental']} -- " itemValue="#{null}" noSelectionOption="true"/>
 								            <f:selectItems value="#{procedimentController.listaSerieDocumental}"  var="n" itemLabel="#{n.nom}"  itemValue="#{n}"/>
 								        </p:selectOneMenu>
 								    </div>
@@ -312,7 +316,7 @@
 					    				<label class="ui-g-2">#{messages['nuevoprocediment.Tipusdocumental']}:</label>
 					    				<p:selectOneMenu id="selectTipoDocumental" value="#{procedimentController.selectedTipoDocumental}" filter="true" filterMatchMode="contains">
 								             <f:converter converterId="tiposDocumentalRelacionadoConverter"/>
-								             <f:selectItem itemLabel="-- #{messages['nuevoprocediment.Tipusdocumental']} -- " itemValue="#{null}" noSelectionOption="true"/>
+								             <f:selectItem itemLabel="-- #{messages['selecciona']} #{messages['nuevoprocediment.Tipusdocumental']} -- " itemValue="#{null}" noSelectionOption="true"/>
 								             <f:selectItems value="#{procedimentController.listatipoDocumental}"  var="n" itemLabel="#{n.nom}"  itemValue="#{n}"/>
 								             <p:ajax event="valueChange" listener="#{procedimentController.onTipoDocumentalSelectedListener}" update="selectTipoDocumental, listaTiposDocumentales" />
 								        </p:selectOneMenu>
@@ -379,7 +383,7 @@
 									<div class="ui-g-6 item_1">
 								    	<label class="ui-g-4">#{messages['nuevoprocediment.Familiaprocediment']}</label>		    			
 							        	<p:selectOneMenu id="familiaprocediment" value="#{procedimentController.familiaprocediment}" label="familia" converter="FamiliaConverter">
-							        		<f:selectItem itemLabel="-- #{messages['nuevoprocediment.Familiaprocediment']} -- " itemValue="#{null}" noSelectionOption="true"/>
+							        		<f:selectItem itemLabel="-- #{messages['selecciona']} #{messages['nuevoprocediment.Familiaprocediment']} -- " itemValue="#{null}" noSelectionOption="true"/>
 								            <f:selectItems value="#{procedimentController.listaFamiliaprocediment}"  var="n" itemLabel="#{n.nom}"  itemValue="#{n}"/>
 								        </p:selectOneMenu>
 								    </div>
@@ -388,7 +392,7 @@
 								    	<label class="ui-g-4">#{messages['nuevoprocediment.Aplicacio']}</label>		    			
 							        	<p:selectOneMenu id="aplicacio" value="#{procedimentController.aplicacio}" label="Serie" converter="AplicacioConverter"
 								                              panelStyle="width:450px">
-								            <f:selectItem itemLabel="-- #{messages['nuevoprocediment.Aplicacio']} -- " itemValue="#{null}" noSelectionOption="true"/>
+								            <f:selectItem itemLabel="-- #{messages['selecciona']} #{messages['nuevoprocediment.Aplicacio']} -- " itemValue="#{null}" noSelectionOption="true"/>
 								            <f:selectItems value="#{procedimentController.listaAplicacio}"  var="n" itemLabel="#{n.nom}"  itemValue="#{n}"/>
 								        </p:selectOneMenu>
 								    </div>
@@ -398,9 +402,9 @@
 							    <div class="ui-g-12">
 							    
 							    	<div class="ui-g-6 item_1">
-								    	<label class="ui-g-4">#{messages['nuevoprocediment.NivelElectronic']}" *</label>		    			
+								    	<label class="ui-g-4">#{messages['nuevoprocediment.NivelElectronic']}</label>		    			
 							        	<p:selectOneMenu id="nivelelectronic" value="#{procedimentController.nivellelectronic}" label="nivel" converter="NivelConverter">
-							        		<f:selectItem itemLabel="-- #{messages['nuevoprocediment.NivelElectronic']} -- " itemValue="#{null}" noSelectionOption="true"/>
+							        		<f:selectItem itemLabel="-- #{messages['selecciona']} #{messages['nuevoprocediment.NivelElectronic']} -- " itemValue="#{null}" noSelectionOption="true"/>
 								            <f:selectItems value="#{procedimentController.listaNivellelectronic}"  var="n" itemLabel="#{n.nom}"  itemValue="#{n}"/>
 								        </p:selectOneMenu>
 								    </div>							    

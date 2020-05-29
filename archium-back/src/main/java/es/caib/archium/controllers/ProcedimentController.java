@@ -21,6 +21,7 @@ import org.primefaces.model.DualListModel;
 
 import es.caib.archium.commons.i18n.I18NException;
 import es.caib.archium.objects.AplicacioObject;
+import es.caib.archium.objects.Dir3Object;
 import es.caib.archium.objects.FamiliaprocedimentObject;
 import es.caib.archium.objects.FormainiciObject;
 import es.caib.archium.objects.LimitacioNormativaSerieObject;
@@ -79,7 +80,7 @@ public class ProcedimentController implements Serializable {
 
 	@Inject
 	private ProcedimentFrontService 			serviceProcediment;	    
-	
+	private List<Dir3Object> listaDir3;
 	private List<ProcedimentObject> 		listaProcediment 		= 	new ArrayList<>();
 	private List<ProcedimentObject> 		listaFilter				= 	new ArrayList<>();
 	private List<FamiliaprocedimentObject> 	listaFamiliaprocediment = 	new ArrayList<>();
@@ -121,6 +122,7 @@ public class ProcedimentController implements Serializable {
 	public void init() throws I18NException {   
 		try 
 		{
+			listaDir3 = serviceProcediment.getListaDir3();
 	    	this.listaProcediment 			= 	this.serviceProcediment.findAllProcedimiento();	    		    				    
     		this.listaFamiliaprocediment 	=	this.serviceProcediment.findAllFamiliaprocediment();
     		this.listaFormainici 			= 	this.serviceProcediment.findAllFormainici();
@@ -141,29 +143,29 @@ public class ProcedimentController implements Serializable {
     		this.normativaRelacionada		= 	new DualListModel<NormativaObject>(listaNormativa,normativaSelected);
     		this.tipusPublicRelacionada		= 	new DualListModel<tipusPublicObject>(listaTipusPublic,listaTipusPublicSelected);
     		
-    		this.estados.add("Esborrany");
-    		this.estados.add("Revisat");
-    		this.estados.add("Publicable");
-    		this.estados.add("Vigent");
-    		this.estados.add("Obsolet");
+    		this.estados.add(messageBundle.getString("general.estats.esborrany")); 
+    		this.estados.add(messageBundle.getString("general.estats.revisat"));
+    		this.estados.add(messageBundle.getString("general.estats.publicable"));
+    		this.estados.add(messageBundle.getString("general.estats.vigent"));
+    		this.estados.add(messageBundle.getString("general.estats.obsolet"));
 
-    		this.plazos1.add("Hores");
-    		this.plazos1.add("Dies");
-    		this.plazos1.add("Setmanes");
-    		this.plazos1.add("Mesos");
-    		this.plazos1.add("Anys");
+    		this.plazos1.add(messageBundle.getString("general.plazos.hores"));
+    		this.plazos1.add(messageBundle.getString("general.plazos.dies"));
+    		this.plazos1.add(messageBundle.getString("general.plazos.setmanes"));
+    		this.plazos1.add(messageBundle.getString("general.plazos.mesos"));
+    		this.plazos1.add(messageBundle.getString("general.plazos.anys"));
 
-    		this.plazos2.add("Hores");
-    		this.plazos2.add("Dies");
-    		this.plazos2.add("Setmanes");
-    		this.plazos2.add("Mesos");
-    		this.plazos2.add("Anys");
+    		this.plazos2.add(messageBundle.getString("general.plazos.hores"));
+    		this.plazos2.add(messageBundle.getString("general.plazos.dies"));
+    		this.plazos2.add(messageBundle.getString("general.plazos.setmanes"));
+    		this.plazos2.add(messageBundle.getString("general.plazos.mesos"));
+    		this.plazos2.add(messageBundle.getString("general.plazos.anys"));
     		
     		this.listaFilter = this.listaProcediment;
     	}
     	catch(Exception e) 
     	{	
-    		FacesMessage msg = new FacesMessage("Error al cargar los datos");
+    		FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, messageBundle.getString("procediment.init.error"), messageBundle.getString("procediment.init.error"));
 		 	FacesContext.getCurrentInstance().addMessage(null, msg);
     	}        
     }
@@ -193,15 +195,15 @@ public class ProcedimentController implements Serializable {
 			if (this.termine != null) {
 				String a 	= this.termine.substring(this.termine.length() - 1, this.termine.length());
 				if (a.equals("H"))
-					this.setPlazo1a("Hores");
+					this.setPlazo1a(messageBundle.getString("general.plazos.hores"));
 				if (a.equals("D"))
-					this.setPlazo1a("Dies");
+					this.setPlazo1a(messageBundle.getString("general.plazos.dies"));
 				if (a.equals("S"))
-					this.setPlazo1a("Setmanes");
+					this.setPlazo1a(messageBundle.getString("general.plazos.setmanes"));
 				if (a.equals("M"))
-					this.setPlazo1a("Mesos");
+					this.setPlazo1a(messageBundle.getString("general.plazos.mesos"));
 				if (a.equals("A"))
-					this.setPlazo1a("Anys");
+					this.setPlazo1a(messageBundle.getString("general.plazos.anys"));
 				this.plazo1 	= Integer.parseInt(this.termine.substring(0,this.termine.length() - 1));
 			}
 			else {
@@ -212,22 +214,22 @@ public class ProcedimentController implements Serializable {
 				this.plazo2 	= Integer.parseInt(this.termininotif.substring(0,this.termininotif.length() - 1));
 				String a 	= this.termininotif.substring(this.termininotif.length() - 1, this.termininotif.length());				 	
 				if (a.equals("H"))
-					this.setPlazo2a("Hores");
+					this.setPlazo2a(messageBundle.getString("general.plazos.hores"));
 				if (a.equals("D"))
-					this.setPlazo2a("Dies");
+					this.setPlazo2a(messageBundle.getString("general.plazos.dies"));
 				if (a.equals("S"))
-					this.setPlazo2a("Setmanes");
+					this.setPlazo2a(messageBundle.getString("general.plazos.setmanes"));
 				if (a.equals("M"))
-					this.setPlazo2a("Mesos");
+					this.setPlazo2a(messageBundle.getString("general.plazos.mesos"));
 				if (a.equals("A"))
-					this.setPlazo2a("Anys");
+					this.setPlazo2a(messageBundle.getString("general.plazos.anys"));
 			}
 			else {
 				this.plazo2a 	= null;
 				this.plazo2 	= null;
 			}
 		} catch (Exception e) {
-			FacesMessage msg = new FacesMessage("Error al cargar los datos");
+			FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, messageBundle.getString("procediment.init.error"), messageBundle.getString("procediment.init.error"));
 		 	FacesContext.getCurrentInstance().addMessage(null, msg);
 		}
 		
@@ -293,8 +295,7 @@ public class ProcedimentController implements Serializable {
 			
 		}
 		catch (Exception e) {
-			// TODO: handle exception
-			FacesMessage msg = new FacesMessage("Error al cargar los datos");
+			FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, messageBundle.getString("procediment.init.error"), messageBundle.getString("procediment.init.error"));
 		 	FacesContext.getCurrentInstance().addMessage(null, msg);
 		}
 	}
@@ -356,7 +357,7 @@ public class ProcedimentController implements Serializable {
 		try {
 			inicializarUpdate(obj);
 		} catch (Exception e) {
-			FacesMessage msg = new FacesMessage("Error a l'editar Procediment");
+			FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, messageBundle.getString("procediment.update.error"), messageBundle.getString("procediment.update.error"));
 		 	FacesContext.getCurrentInstance().addMessage(null, msg);
 		}
 			
@@ -378,7 +379,6 @@ public class ProcedimentController implements Serializable {
 	
 	@Transactional
 	public void save() {    
-	 	//System.out.println("Salvar dato");	    	
 		try {		
 			this.materiaSelected 			= materiaRelacionada.getTarget();			
 			this.normativaSelected 			= normativaRelacionada.getTarget();
@@ -386,13 +386,13 @@ public class ProcedimentController implements Serializable {
 			
 			this.serviceProcediment.create(objetoPersistir(), this.materiaSelected, this.listaTipusPublicSelected, this.normativaSelected, listaTDP);
 			
-			FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Dades Salvats"));
+			FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(messageBundle.getString("procediment.insert.ok")));
 			this.listaProcediment = this.serviceProcediment.findAllProcedimiento();	    	
 		} catch (Exception eee) {
 			FacesMessage message = new FacesMessage();
     		message.setSeverity(FacesMessage.SEVERITY_ERROR);
-    		message.setSummary("Error Salvants Dades");
-    		message.setDetail("Error Salvants Dades");
+    		message.setSummary(messageBundle.getString("procediment.insert.error"));
+    		message.setDetail(messageBundle.getString("procediment.insert.error"));
     		FacesContext.getCurrentInstance().addMessage(null, message);
 			eee.printStackTrace();
 		}			
@@ -405,15 +405,15 @@ public class ProcedimentController implements Serializable {
 			this.listaTipusPublicSelected   = this.tipusPublicRelacionada.getTarget();
 		    this.serviceProcediment.update(objeto, this.materiaSelected, this.listaTipusPublicSelected, this.normativaSelected, listaTDP);
 
-			FacesMessage msg = new FacesMessage("Edited");
+			FacesMessage msg = new FacesMessage(messageBundle.getString("procediment.update.ok"));
 			this.listaProcediment = this.serviceProcediment.findAllProcedimiento();	
 			FacesContext.getCurrentInstance().addMessage(null, msg);
 		}
 		catch (Exception e) {
 			FacesMessage message = new FacesMessage();
     		message.setSeverity(FacesMessage.SEVERITY_ERROR);
-    		message.setSummary("Error a l'editar Procediment");
-    		message.setDetail("Error a l'editar Procediment");
+    		message.setSummary(messageBundle.getString("procediment.update.error"));
+    		message.setDetail(messageBundle.getString("procediment.update.error"));
     		FacesContext.getCurrentInstance().addMessage(null, message);
 		}
 	}
@@ -458,10 +458,10 @@ public class ProcedimentController implements Serializable {
 		int index = listaTDP.indexOf(tdpitem);
 		if(index>=0) {
 			listaTDP.remove(index);
-			FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_INFO, "Eliminat", null);
+			FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_INFO, messageBundle.getString("procediment.tdp.delete.ok"), null);
 			FacesContext.getCurrentInstance().addMessage("mensaje-estado", message);
 		} else {
-			FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error a l'eliminar la relació", null);
+			FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_ERROR, messageBundle.getString("procediment.tdp.delete.error"), null);
 			FacesContext.getCurrentInstance().addMessage("mensaje-estado", message);
 		}
 	}
@@ -475,7 +475,7 @@ public class ProcedimentController implements Serializable {
 		} else {
 			listaTDP.add(tdpitem);
 		}	
-		FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_INFO, "Guardado", null);
+		FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_INFO, messageBundle.getString("procediment.tdp.save.ok"), null);
 		FacesContext.getCurrentInstance().addMessage("mensaje-estado", message);
 	}
 	
@@ -933,5 +933,14 @@ public class ProcedimentController implements Serializable {
 		this.procedimientoSelected = procedimientoSelected;
 	}
 
+	public List<Dir3Object> getListaDir3() {
+		return listaDir3;
+	}
+
+	public void setListaDir3(List<Dir3Object> listaDir3) {
+		this.listaDir3 = listaDir3;
+	}
+	
+	
 
 }

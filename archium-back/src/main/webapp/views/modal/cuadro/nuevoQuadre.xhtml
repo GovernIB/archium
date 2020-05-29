@@ -81,7 +81,7 @@
 				        <p:messages id="messages" />		        
 				   
 					    <div class="ui-g-12 item_1">
-					    	<label class="ui-g-2">#{messages['nuevocuadro.nombre']}</label>
+					    	<label class="ui-g-2">#{messages['nuevocuadro.nombre']}*</label>
 			    			<p:inputText id="Nom" value="#{quadreController.nombreNuevo}" class="ui-g-10" required="true"
 			    				requiredMessage="#{messages['nuevoQuadro.require.nom']}"
 			    				validatorMessage="#{messages['nuevoQuadro.validate.nom']}" >
@@ -95,7 +95,7 @@
 			    			<h:message for="NomCast" style="color: red"/>
 					    </div>	
 					    <div class="ui-g-12 item_1">
-					    	<label class="ui-g-2">#{messages['nuevocuadro.estado']}</label>		    			
+					    	<label class="ui-g-2">#{messages['nuevocuadro.estado']}*</label>		    			
 				        	<p:selectOneMenu id="estado" value="#{quadreController.nouEstat}" label="Estats" 
 					                              panelStyle="width:450px">
 					            <f:selectItems value="#{quadreController.listaEstats}"  var="n"  itemValue="#{n}" itemLabel="#{n}"/>

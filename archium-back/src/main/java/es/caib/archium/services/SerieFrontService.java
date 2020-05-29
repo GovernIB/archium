@@ -31,10 +31,12 @@ import es.caib.archium.ejb.SerieArgenEJB;
 import es.caib.archium.ejb.SerieDocumentalEJB;
 import es.caib.archium.ejb.SerieRelacionadaEJB;
 import es.caib.archium.ejb.TipusSerieEJB;
+import es.caib.archium.ejb.objects.Dir3;
 import es.caib.archium.ejb.service.AplicacioSerieService;
 import es.caib.archium.ejb.service.AplicacioService;
 import es.caib.archium.ejb.service.CatalegSerieService;
 import es.caib.archium.ejb.service.CausaLimitacioService;
+import es.caib.archium.ejb.service.Dir3Service;
 import es.caib.archium.ejb.service.FuncioService;
 import es.caib.archium.ejb.service.LimitacioNormativaSerieService;
 import es.caib.archium.ejb.service.NormativaSerieService;
@@ -49,6 +51,7 @@ import es.caib.archium.ejb.service.ValoracioService;
 import es.caib.archium.objects.AplicacionObject;
 import es.caib.archium.objects.CatalegSeriesObject;
 import es.caib.archium.objects.CausaLimitacioObject;
+import es.caib.archium.objects.Dir3Object;
 import es.caib.archium.objects.FuncioObject;
 import es.caib.archium.objects.LimitacioNormativaSerieObject;
 import es.caib.archium.objects.NormativaAprobacioObject;
@@ -116,6 +119,19 @@ public class SerieFrontService {
 	private ValorSecundariService valorSecundariEJB;
 	@Inject
 	private ValoracioService valoracioEJB;
+	@Inject 
+	private Dir3Service dir3EJB;
+	
+	public List<Dir3Object> getListaDir3(){
+		List<Dir3Object> lista = new ArrayList<Dir3Object>();
+		
+		for(Dir3 dir3:dir3EJB.getAll()) {
+			lista.add(new Dir3Object(dir3.getCodi(), dir3.getNom()));
+		}
+		
+		return lista;
+		
+	}
 	
 	@Transactional
 	public ValoracioObject getValoracioSerie(Long serieId) throws I18NException{
@@ -434,7 +450,6 @@ public class SerieFrontService {
 			String codiIecisa,List<AplicacionObject> listaApps,List<SerieDocumentalObject> relateds,List<SerieArgenObject> argenRelateds ,List<LimitacioNormativaSerieObject> listaLNS
 			,List<NormativaAprobacioObject> normativasList, ValoracioObject valoracio) throws Exception {
 		Seriedocumental toPersist = serieService.getReference(idSerie);
-		System.out.println("Updating");
 		if(toPersist == null)
 			throw new Exception("Entity not found");
 		
@@ -507,7 +522,6 @@ public class SerieFrontService {
 		for(LimitacioNormativaSerieObject lns : listaLNS) {
 			for(CausaLimitacioObject cl: lns.getDualListCausas().getTarget()) {
 				lns.setSeriedocumental(new SerieDocumentalObject(toPersist));
-				System.out.println("lns:" + lns.toString());
 				LimitacioNormativaSerie lnsDB = lns.toDbObject();
 				lnsDB.getId().setCausalimitacioId(cl.getId());
 				lnsDB.setInici(new Date());

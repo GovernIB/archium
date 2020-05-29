@@ -16,12 +16,10 @@ public class NivelConverter implements Converter {
     @Override
     public Object getAsObject(FacesContext context, UIComponent component, String newValue) {
     	if ((null == newValue) || (newValue.trim().isEmpty())) {
-            // Return null
             return null;
         }
     	
         try {
-            // Try to parse the value as long
             final Long funcioId = Long.valueOf(newValue);
             ProcedimentController data = context.getApplication().evaluateExpressionGet(context, "#{procedimentController}", ProcedimentController.class);
             for(NivellelectronicObject funcio : data.getListaNivellelectronic())
@@ -32,7 +30,6 @@ public class NivelConverter implements Converter {
             }
 			
         } catch (final NumberFormatException ex) {
-            // Throw again
             throw new ConverterException(ex);
         } catch(final Exception e) {
         	throw new ConverterException(e);

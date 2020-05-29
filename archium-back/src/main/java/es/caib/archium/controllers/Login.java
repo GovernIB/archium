@@ -36,7 +36,6 @@ public class Login implements Serializable{
     }
  
     public String logOff() {
-    	System.out.println("PST");
         //HttpSession session = request.getSession();
     	HttpServletRequest request = (HttpServletRequest) externalContext.getRequest();
     	try {

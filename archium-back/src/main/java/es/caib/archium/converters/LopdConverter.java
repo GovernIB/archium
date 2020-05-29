@@ -16,7 +16,6 @@ public class LopdConverter implements Converter {
 
     @Override
     public Object getAsObject(FacesContext context, UIComponent component, String newValue) {
-	    // System.out.println("GET AS OBJECT ");
 	    if(newValue == null)
 	    return null;
 	    DictamenController data = context.getApplication().evaluateExpressionGet(context, "#{dictamenController}", DictamenController.class);
@@ -30,14 +29,12 @@ public class LopdConverter implements Converter {
 
     @Override
     public String getAsString(FacesContext context, UIComponent component, Object object) {
-   	 //System.out.println("GET AS STRING");
     	if (object == null) {
             return "";
         }
         if (object instanceof LopdObject) {
         	LopdObject quadre= (LopdObject) object;
             Long name = quadre.getId();
-            //System.out.println("Lopd Object :" + name);
             return name.toString();
         } else {
             throw new ConverterException(new FacesMessage(object + " is not a valid LOPD"));

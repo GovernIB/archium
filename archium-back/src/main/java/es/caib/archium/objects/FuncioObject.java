@@ -21,6 +21,7 @@ public class FuncioObject {
 	private TipusSerieObject tipoSerie;
 	private QuadreObject codigoCuadro;
 	private FuncioObject funcioPare;
+	private Integer numTabs;
 	
 	public FuncioObject(Long id, String codi, String nom, String nomcas, String estat, BigDecimal ordre, Date inici,
 			Date modificacio, Date fi, TipusSerieObject tipoSerie, QuadreObject codigoCuadro,
@@ -38,10 +39,12 @@ public class FuncioObject {
 		this.tipoSerie = tipoSerie;
 		this.codigoCuadro = codigoCuadro;
 		this.funcioPare = funcioPare;
+		this.numTabs = 0;
 	}
 
 	public FuncioObject() {
 		super();
+		this.numTabs = 0;
 	}
 	
 	public FuncioObject (Funcio dbFuncio) {
@@ -68,6 +71,8 @@ public class FuncioObject {
 				fp.setNom(dbFuncio.getAchFuncio().getNom());
 				this.funcioPare = fp;
 			}
+			
+			this.numTabs = 0;
 			
 		}
 
@@ -168,6 +173,22 @@ public class FuncioObject {
 	public void setFuncioPare(FuncioObject funcioPare) {
 		this.funcioPare = funcioPare;
 	}
+	
+	public void addTab() {
+		numTabs++;
+	}
+	
+	public String printTab() {
+		return " ".repeat(numTabs*4);
+	}
+
+	public Integer getNumTabs() {
+		return numTabs;
+	}
+
+	public void setNumTabs(Integer numTabs) {
+		this.numTabs = numTabs;
+	}
 
 	public Funcio toDbObject(Quadreclassificacio q, Funcio f, Tipusserie ts){
 		Funcio db = new Funcio();
@@ -240,9 +261,12 @@ public class FuncioObject {
 		builder.append(codigoCuadro);
 		builder.append(", funcioPare=");
 		builder.append(funcioPare);
+		builder.append(", numTabs=");
+		builder.append(numTabs);
 		builder.append("]");
 		return builder.toString();
 	}
+
 	
 	
 	

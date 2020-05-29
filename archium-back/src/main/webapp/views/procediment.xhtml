@@ -4,7 +4,7 @@
       xmlns:f="http://java.sun.com/jsf/core"
       xmlns:p="http://primefaces.org/ui"
       xmlns:ui="http://java.sun.com/jsf/facelets">
-	<ui:param name="title" value="Procediment | Archium" />
+	<ui:param name="title" value="#{messages['page.visorjerarquico.title']}" />
 	
 	<ui:define name="content">
 	<ui:include src="/views/modal/procediment/nuevoProcediment.xhtml" />
@@ -17,10 +17,21 @@
   			</p:commandButton>  		
 	  		<p:growl>
 		    </p:growl>
-			<p:dataTable class="estilos-tabla table-procediment" id="Cuadros" var="cuadro" value="#{procedimentController.listaProcediment}" rows="10" selectionMode="single"  selection="#{procedimentController.procedimientoSelected}" rowKey="#{cuadro.id}"
-                 paginator="true"  filteredValue="#{procedimentController.listaFilter}" widgetVar="cuadros"
-                 paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
-                 currentPageReportTemplate="{startRecord}-{endRecord} of {totalRecords} records">
+			<p:dataTable class="estilos-tabla table-procediment" 
+				id="Cuadros" 
+				var="cuadro" 
+				value="#{procedimentController.listaProcediment}" 
+				emptyMessage="#{messages['datos.nohaydatos']}"
+				rows="10" 
+				selectionMode="single"  
+				selection="#{procedimentController.procedimientoSelected}" 
+				rowKey="#{cuadro.id}"
+                paginator="true"  
+                filteredValue="#{procedimentController.listaFilter}" 
+                widgetVar="cuadros"
+                paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                currentPageReportTemplate="{startRecord}-{endRecord} of {totalRecords} records">
+                
                 <p:ajax event="rowSelect" listener="#{procedimentController.onRowSelect}" action="#{procedimentController.abrirUpdate(cuadro)}" oncomplete="PF('procedimentModalDialog').show()" resetValues="true" update="procedimentModalDialogId"/>        		 
 		        <p:column class="first-column" headerText="#{messages['procediment.nom']}" sortBy="#{cuadro.nom}"  filterBy="#{cuadro.nom}" filterMatchMode="contains" style="width: 30%;"> 
 		        	<h:outputText value="#{cuadro.nom}" />

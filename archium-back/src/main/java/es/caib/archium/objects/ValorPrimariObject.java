@@ -75,9 +75,7 @@ public class ValorPrimariObject {
 		}
 		
 		db.setId(pk);
-		
-		System.out.println("TERMINI_TYPE:" + terminiType);
-		
+				
 		if(terminiVal!=null && terminiType!=null) {
 			db.setTermini(String.valueOf(terminiVal) + terminiType.substring(0, 1).toUpperCase());
 		}

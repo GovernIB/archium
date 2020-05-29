@@ -15,4 +15,6 @@ public interface FuncioService extends DAO<Funcio, Long> {
 	
 	public List<Funcio> getByQuadre(Long quadreId) throws I18NException;
 	
+	public List<Funcio> loadTree(Long quadreId, Long fromFuncioId) throws I18NException;
+	
 }

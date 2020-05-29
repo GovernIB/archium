@@ -23,8 +23,6 @@ public class CausasRelacionadasConverter implements Converter<CausaLimitacioObje
 
 	@Override
 	public CausaLimitacioObject getAsObject(FacesContext context, UIComponent component, String value) {
-		// TODO Auto-generated method stub
-		System.out.println("VALUE: " + value);
 		return getObjectFromUIPickListComponent(component, value);
 	}
 
@@ -37,7 +35,6 @@ public class CausasRelacionadasConverter implements Converter<CausaLimitacioObje
 			string = String.valueOf(value.getId());
 			
 		}
-		System.out.println("STRING: " + string);
 		return string;
 	}
 
@@ -62,7 +59,6 @@ public class CausasRelacionadasConverter implements Converter<CausaLimitacioObje
 	private CausaLimitacioObject getObjectFromList(final List<?> list, final Long identifier) {
 		for (final Object object : list) {
 			final CausaLimitacioObject resource = (CausaLimitacioObject) object;
-			System.out.println("CONVERTER : " + resource.getNom());
 			if (resource.getId().equals(identifier)) {
 				return resource;
 			}

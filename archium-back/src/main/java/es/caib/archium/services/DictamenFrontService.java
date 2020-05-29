@@ -73,7 +73,6 @@ public class DictamenFrontService {
 	}
 	
 	public List<DictamenObject> findAll() throws I18NException{	
-		//System.out.println("SErvice del front find all");
 		List<DictamenObject> listaDictamen = new ArrayList<DictamenObject>();
 		
 		List<Dictamen> res= dictamenEJB.findAll();

@@ -1,5 +1,7 @@
 package es.caib.archium.objects;
 
+import java.util.Objects;
+
 import es.caib.archium.persistence.model.Tipusdictamen;
 import es.caib.archium.persistence.model.Tipusserie;
 
@@ -63,17 +65,9 @@ public class TipuDictamenObject {
 		db.setNomcas(nomCas);
 		return db;
 	}
-	
-	@Override
-	public String toString() {
-		return "TipuDictamenObject [id=" + id + ", nom=" + nom + ", nomCas=" + nomCas + ", codi=" + codi + "]";
-	}
 	@Override
 	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((id == null) ? 0 : id.hashCode());
-		return result;
+		return Objects.hash(id);
 	}
 	@Override
 	public boolean equals(Object obj) {
@@ -84,12 +78,23 @@ public class TipuDictamenObject {
 		if (getClass() != obj.getClass())
 			return false;
 		TipuDictamenObject other = (TipuDictamenObject) obj;
-		if (id == null) {
-			if (other.id != null)
-				return false;
-		} else if (!id.equals(other.id))
-			return false;
-		return true;
+		return Objects.equals(id, other.id);
 	}
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("TipuDictamenObject [id=");
+		builder.append(id);
+		builder.append(", nom=");
+		builder.append(nom);
+		builder.append(", nomCas=");
+		builder.append(nomCas);
+		builder.append(", codi=");
+		builder.append(codi);
+		builder.append("]");
+		return builder.toString();
+	}
+	
+	
 	
 }

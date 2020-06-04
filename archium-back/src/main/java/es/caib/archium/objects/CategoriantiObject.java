@@ -1,5 +1,7 @@
 package es.caib.archium.objects;
 
+import java.util.Objects;
+
 import es.caib.archium.persistence.model.Categorianti;
 
 public class CategoriantiObject {
@@ -59,5 +61,39 @@ public class CategoriantiObject {
 		this.nomCas = nomCas;
 	}
 
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(id);
+	}
+
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		CategoriantiObject other = (CategoriantiObject) obj;
+		return Objects.equals(id, other.id);
+	}
+
+
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("CategoriantiObject [id=");
+		builder.append(id);
+		builder.append(", nom=");
+		builder.append(nom);
+		builder.append(", nomCas=");
+		builder.append(nomCas);
+		builder.append("]");
+		return builder.toString();
+	}
+
+	
 	
 }

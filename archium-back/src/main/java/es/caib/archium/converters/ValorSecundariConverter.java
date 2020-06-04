@@ -33,7 +33,7 @@ public class ValorSecundariConverter implements Converter{
             NuevaSerieController data = context.getApplication().evaluateExpressionGet(context, "#{nuevaSerieController}", NuevaSerieController.class);
             for(ValorSecundariObject vs : data.getListaValoresSecundarios())
             {
-                if(vs.getId()==id) {
+                if(vs.getId().equals(id)) {
                 	return vs;
                 }
             }

@@ -17,10 +17,12 @@ public class ProcedimentConvert implements Converter {
     public Object getAsObject(FacesContext context, UIComponent component, String newValue) {
 	    if(newValue == null)
 	    	return null;
+	    
+	    final Long id = Long.valueOf(newValue);
 	    ProcedimentController data = context.getApplication().evaluateExpressionGet(context, "#{procedimentController}", ProcedimentController.class);
 	    for(ProcedimentObject compLovDtgrid : data.getListaProcediment())
 	    {
-	    	if(compLovDtgrid.getId()== Long.parseLong((newValue),10))
+	    	if(compLovDtgrid.getId().equals(id))
 	    		return compLovDtgrid;
 	    }
 	    	throw new ConverterException(new FacesMessage(String.format("Cannot convert %s to ProcedimentObject", newValue)));

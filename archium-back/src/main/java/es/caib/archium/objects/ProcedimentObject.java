@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 import es.caib.archium.persistence.model.Aplicacio;
 import es.caib.archium.persistence.model.Familiaprocediment;
@@ -363,40 +364,7 @@ public class ProcedimentObject {
 
 	}
 	
-		
-	@Override
-	public String toString() {
-		return "ProcedimentObject [id=" + id + ", codisia=" + codisia + ", nom=" + nom + ", uri="
-				+ uri + ", familiaprocediment=" + familiaprocediment + ", formainici=" + formainici + ", silenci="
-				+ silenci + ", nivellelectronic=" + nivellelectronic + ", seriedocumental=" + seriedocumental
-				+ ", aplicacio=" + aplicacio + ", codirolsac=" + codirolsac + ", termine=" + termine + ", termininotif="
-				+ termininotif + ", fiViaAdministrativa=" + fiViaAdministrativa + ", taxa=" + taxa + ", dir3Resolvent="
-				+ dir3Resolvent + ", dir3Instructor=" + dir3Instructor + ", publicacio=" + publicacio + ", caducitat="
-				+ caducitat + ", gestor=" + gestor + "]";
-	}
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((id == null) ? 0 : id.hashCode());
-		return result;
-	}
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		ProcedimentObject other = (ProcedimentObject) obj;
-		if (id == null) {
-			if (other.id != null)
-				return false;
-		} else if (!id.equals(other.id))
-			return false;
-		return true;
-	}
+	
 	public List<MateriaObject> getListaMateria() {
 		return listaMateria;
 	}
@@ -429,5 +397,88 @@ public class ProcedimentObject {
 	public void setListaTipuPublic(List<tipusPublicObject> listaTipuPublic) {
 		this.listaTipuPublic = listaTipuPublic;
 	}
+	@Override
+	public int hashCode() {
+		return Objects.hash(id);
+	}
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		ProcedimentObject other = (ProcedimentObject) obj;
+		return Objects.equals(id, other.id);
+	}
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("ProcedimentObject [id=");
+		builder.append(id);
+		builder.append(", codisia=");
+		builder.append(codisia);
+		builder.append(", nom=");
+		builder.append(nom);
+		builder.append(", objecte=");
+		builder.append(objecte);
+		builder.append(", estat=");
+		builder.append(estat);
+		builder.append(", destinataris=");
+		builder.append(destinataris);
+		builder.append(", observacions=");
+		builder.append(observacions);
+		builder.append(", uri=");
+		builder.append(uri);
+		builder.append(", familiaprocediment=");
+		builder.append(familiaprocediment);
+		builder.append(", formainici=");
+		builder.append(formainici);
+		builder.append(", silenci=");
+		builder.append(silenci);
+		builder.append(", nivellelectronic=");
+		builder.append(nivellelectronic);
+		builder.append(", seriedocumental=");
+		builder.append(seriedocumental);
+		builder.append(", aplicacio=");
+		builder.append(aplicacio);
+		builder.append(", codirolsac=");
+		builder.append(codirolsac);
+		builder.append(", termine=");
+		builder.append(termine);
+		builder.append(", termininotif=");
+		builder.append(termininotif);
+		builder.append(", fiViaAdministrativa=");
+		builder.append(fiViaAdministrativa);
+		builder.append(", taxa=");
+		builder.append(taxa);
+		builder.append(", dir3Resolvent=");
+		builder.append(dir3Resolvent);
+		builder.append(", dir3Instructor=");
+		builder.append(dir3Instructor);
+		builder.append(", publicacio=");
+		builder.append(publicacio);
+		builder.append(", caducitat=");
+		builder.append(caducitat);
+		builder.append(", modificacio=");
+		builder.append(modificacio);
+		builder.append(", gestor=");
+		builder.append(gestor);
+		builder.append(", listaMateria=");
+		builder.append(listaMateria);
+		builder.append(", listaNormativa=");
+		builder.append(listaNormativa);
+		builder.append(", listaTipuPublic=");
+		builder.append(listaTipuPublic);
+		builder.append(", listaTipuDocumentalProcedimiento=");
+		builder.append(listaTipuDocumentalProcedimiento);
+		builder.append(", listaTipuDocumental=");
+		builder.append(listaTipuDocumental);
+		builder.append("]");
+		return builder.toString();
+	}
+	
+	
 	
 }

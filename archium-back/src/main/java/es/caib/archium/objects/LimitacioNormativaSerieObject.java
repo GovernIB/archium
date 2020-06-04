@@ -3,6 +3,7 @@ package es.caib.archium.objects;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 import javax.persistence.Column;
 import javax.persistence.Temporal;
@@ -107,15 +108,11 @@ public class LimitacioNormativaSerieObject {
 		return db;
 	}
 	
-
 	
 
 	@Override
 	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((normativa == null) ? 0 : normativa.hashCode());
-		return result;
+		return Objects.hash(normativa);
 	}
 
 	@Override
@@ -127,12 +124,7 @@ public class LimitacioNormativaSerieObject {
 		if (getClass() != obj.getClass())
 			return false;
 		LimitacioNormativaSerieObject other = (LimitacioNormativaSerieObject) obj;
-		if (normativa == null) {
-			if (other.normativa != null)
-				return false;
-		} else if (!normativa.equals(other.normativa))
-			return false;
-		return true;
+		return Objects.equals(normativa, other.normativa);
 	}
 
 	@Override

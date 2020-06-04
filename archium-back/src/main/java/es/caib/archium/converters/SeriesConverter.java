@@ -19,11 +19,14 @@ public class SeriesConverter implements Converter {
     	if ((null == newValue) || (newValue.trim().isEmpty())) {
             return null;
         }
+    	
+    	final Long id = Long.valueOf(newValue);
+    	
     	try {    		
     		DictamenController data = context.getApplication().evaluateExpressionGet(context, "#{dictamenController}", DictamenController.class);
 		    for(SerieDocumentalObject compLovDtgrid : data.getListaDocumental())
 		    {
-			    if(compLovDtgrid.getSerieId()== Long.parseLong((newValue),10))
+			    if(compLovDtgrid.getSerieId().equals(id))
 			    	return compLovDtgrid;
 		    }
 		    	throw new ConverterException(new FacesMessage(String.format("Cannot convert %s to SeriesObject", newValue)));

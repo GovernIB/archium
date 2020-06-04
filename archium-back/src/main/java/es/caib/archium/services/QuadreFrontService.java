@@ -26,7 +26,7 @@ public class QuadreFrontService {
 	@Inject
 	QuadreClassificacioService quadreEjb;
 	
-	public QuadreObject getQuadreById(long id) throws I18NException{
+	public QuadreObject getQuadreById(Long id) throws I18NException{
 				
 		Quadreclassificacio res= quadreEjb.findById(id);
 		

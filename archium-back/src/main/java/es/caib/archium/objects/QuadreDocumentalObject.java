@@ -1,6 +1,7 @@
 package es.caib.archium.objects;
 
 import java.util.Date;
+import java.util.Objects;
 
 import es.caib.archium.persistence.model.Quadreclassificacio;
 import es.caib.archium.persistence.model.Quadretipusdocumental;
@@ -127,12 +128,11 @@ public class QuadreDocumentalObject {
 		return db;
 	}
 	
+	
+	
 	@Override
 	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + (int) (id ^ (id >>> 32));
-		return result;
+		return Objects.hash(id);
 	}
 
 	@Override
@@ -143,10 +143,8 @@ public class QuadreDocumentalObject {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		QuadreObject other = (QuadreObject) obj;
-		if (id != other.getId())
-			return false;
-		return true;
+		QuadreDocumentalObject other = (QuadreDocumentalObject) obj;
+		return Objects.equals(id, other.id);
 	}
 
 	@Override

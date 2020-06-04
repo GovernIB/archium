@@ -35,7 +35,7 @@ public class CausaLimitacioConverter implements Converter{
 	            NuevaSerieController data = context.getApplication().evaluateExpressionGet(context, "#{nuevaSerieController}", NuevaSerieController.class);
 	            for(CausaLimitacioObject cl : data.getListaCausaLimitacio())
 	            {
-	                if(cl.getId()==clId) {
+	                if(cl.getId().equals(clId)) {
 	                	return cl;
 	                }
 	            }

@@ -187,12 +187,11 @@ public class SerieDocumentalObject {
 		return db;
 	}
 
+	
+
 	@Override
 	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((serieId == null) ? 0 : serieId.hashCode());
-		return result;
+		return Objects.hash(serieId);
 	}
 
 	@Override
@@ -204,12 +203,7 @@ public class SerieDocumentalObject {
 		if (getClass() != obj.getClass())
 			return false;
 		SerieDocumentalObject other = (SerieDocumentalObject) obj;
-		if (serieId == null) {
-			if (other.serieId != null)
-				return false;
-		} else if (!serieId.equals(other.serieId))
-			return false;
-		return true;
+		return Objects.equals(serieId, other.serieId);
 	}
 
 	@Override

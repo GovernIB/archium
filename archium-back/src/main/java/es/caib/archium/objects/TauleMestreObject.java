@@ -1,5 +1,7 @@
 package es.caib.archium.objects;
 
+import java.util.Objects;
+
 public class TauleMestreObject {
 
 	private String nom;
@@ -37,10 +39,7 @@ public class TauleMestreObject {
 	}
 	@Override
 	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((nom == null) ? 0 : nom.hashCode());
-		return result;
+		return Objects.hash(nom);
 	}
 	@Override
 	public boolean equals(Object obj) {
@@ -51,12 +50,21 @@ public class TauleMestreObject {
 		if (getClass() != obj.getClass())
 			return false;
 		TauleMestreObject other = (TauleMestreObject) obj;
-		if (nom == null) {
-			if (other.nom != null)
-				return false;
-		} else if (!nom.equals(other.nom))
-			return false;
-		return true;
+		return Objects.equals(nom, other.nom);
 	}
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("TauleMestreObject [nom=");
+		builder.append(nom);
+		builder.append(", codi=");
+		builder.append(codi);
+		builder.append(", descripcio=");
+		builder.append(descripcio);
+		builder.append("]");
+		return builder.toString();
+	}
+	
+	
 	
 }

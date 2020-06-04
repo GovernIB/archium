@@ -33,7 +33,7 @@ public class TiposDocumentalRelacionadoConverter implements Converter{
 	            ProcedimentController data = context.getApplication().evaluateExpressionGet(context, "#{procedimentController}", ProcedimentController.class);
 	            for(TipuDocumentalObject td : data.getListatipoDocumental())
 	            {
-	                if(td.getId()==tdId) {
+	                if(td.getId().equals(tdId)) {
 	                	return td;
 	                }
 	            }

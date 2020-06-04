@@ -28,7 +28,7 @@ public class FuncioTipusserieConverter implements Converter {
             FuncionesController data = context.getApplication().evaluateExpressionGet(context, "#{funciones}", FuncionesController.class);
             for(TipusSerieObject tipusserie : data.getListaTipusserie())
             {
-                if(tipusserie.getId()==tipusSerieId) {
+                if(tipusserie.getId().equals(tipusSerieId)) {
                 	return tipusserie;
                 }
             }

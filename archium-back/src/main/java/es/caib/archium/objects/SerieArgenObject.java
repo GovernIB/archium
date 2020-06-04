@@ -35,6 +35,7 @@ public class SerieArgenObject {
 	public int hashCode() {
 		return Objects.hash(codi, id, nom);
 	}
+	
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) {

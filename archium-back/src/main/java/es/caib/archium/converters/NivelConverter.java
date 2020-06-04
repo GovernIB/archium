@@ -24,7 +24,7 @@ public class NivelConverter implements Converter {
             ProcedimentController data = context.getApplication().evaluateExpressionGet(context, "#{procedimentController}", ProcedimentController.class);
             for(NivellelectronicObject funcio : data.getListaNivellelectronic())
             {
-                if(funcio.getId()==funcioId) {
+                if(funcio.getId().equals(funcioId)) {
                 	return funcio;
                 }
             }

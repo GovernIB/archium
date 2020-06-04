@@ -116,13 +116,13 @@ public class FuncionesController implements Serializable{
     	    }
     	    
     		if(quadreId==null) {
-    			if(listaCuadrosClasificacion.size()>=0) {
+    			if(listaCuadrosClasificacion.size()>0) {
     				quadreId = listaCuadrosClasificacion.get(0).getId();
     			}
     		}
     		
     		if(quadreId==null) {
-    			
+    			TreeNode root = new DefaultTreeNode(new Document(0, "All", "All", "All", null), null);
     		} else {
     			this.cuadroSeleccionado = this.servicesCuadroClasificacion.getQuadreById(quadreId);
         		this.root = this.servicesFunciones.getContent(cuadroSeleccionado);
@@ -132,6 +132,8 @@ public class FuncionesController implements Serializable{
         		this.listaTipusserie = this.servicesFunciones.findAllTipusSerie();    	
     		}
     		
+    		FacesContext ctxt = FacesContext.getCurrentInstance(); //get your hands on the current request context
+            ctxt.getPartialViewContext().getRenderIds().add("panelButtons");
     			
     	}
     	catch(Exception e) 

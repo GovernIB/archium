@@ -18,10 +18,11 @@ public class EnsConverter implements Converter {
     public Object getAsObject(FacesContext context, UIComponent component, String newValue) {
 	    if(newValue == null)
 	    return null;
+	    final Long id = Long.valueOf(newValue);
 	    DictamenController data = context.getApplication().evaluateExpressionGet(context, "#{dictamenController}", DictamenController.class);
 	    for(EnsObject compLovDtgrid : data.getListaEns())
 	    {
-	    	if(compLovDtgrid.getId()== Long.parseLong((newValue),10))
+	    	if(compLovDtgrid.getId().equals(id))
 	    		return compLovDtgrid;
 	    }
 	    	throw new ConverterException(new FacesMessage(String.format("Cannot convert %s to DictamenObject", newValue)));

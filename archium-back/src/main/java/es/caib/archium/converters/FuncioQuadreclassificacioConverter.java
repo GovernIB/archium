@@ -28,7 +28,7 @@ public class FuncioQuadreclassificacioConverter implements Converter {
             FuncionesController data = context.getApplication().evaluateExpressionGet(context, "#{funciones}", FuncionesController.class);
             for(QuadreObject quadre : data.getListaCuadrosClasificacion())
             {
-                if(quadre.getId()==quadreId) {
+                if(quadre.getId().equals(quadreId)) {
                 	return quadre;
                 }
             }

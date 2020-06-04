@@ -24,7 +24,7 @@ public class SilenciConverter implements Converter {
             ProcedimentController data = context.getApplication().evaluateExpressionGet(context, "#{procedimentController}", ProcedimentController.class);
             for(SilenciObject funcio : data.getListaSilenci())
             {
-                if(funcio.getId()==funcioId) {
+                if(funcio.getId().equals(funcioId)) {
                 	return funcio;
                 }
             }

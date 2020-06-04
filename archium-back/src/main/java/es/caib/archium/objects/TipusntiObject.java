@@ -1,5 +1,7 @@
 package es.caib.archium.objects;
 
+import java.util.Objects;
+
 import es.caib.archium.persistence.model.Categorianti;
 import es.caib.archium.persistence.model.Tipusnti;
 
@@ -72,5 +74,41 @@ public class TipusntiObject {
 	public void setCategorianti(CategoriantiObject categorianti) {
 		this.categorianti = categorianti;
 	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(id);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		TipusntiObject other = (TipusntiObject) obj;
+		return Objects.equals(id, other.id);
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("TipusntiObject [id=");
+		builder.append(id);
+		builder.append(", codi=");
+		builder.append(codi);
+		builder.append(", nom=");
+		builder.append(nom);
+		builder.append(", nomCas=");
+		builder.append(nomCas);
+		builder.append(", categorianti=");
+		builder.append(categorianti);
+		builder.append("]");
+		return builder.toString();
+	}
+	
+	
 
 }

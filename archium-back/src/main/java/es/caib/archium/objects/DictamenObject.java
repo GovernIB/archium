@@ -2,6 +2,7 @@ package es.caib.archium.objects;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.Objects;
 import java.util.ResourceBundle;
 
 import es.caib.archium.persistence.model.Dictamen;
@@ -251,22 +252,9 @@ public class DictamenObject {
 		return db;
 		
 	}
-	
-	@Override
-	public String toString() {
-		return "DictamenObject [id=" + id + ", serieDocumental=" + serieDocumental + ", tipusdictamen="
-				+ tipusdictamen + ", normativaAprovacio=" + normativaAprovacio + ", tipusAcces=" + tipusAcces
-				+ ", ens=" + ens + ", lopd=" + lopd + ", serieEsencial=" + serieEsencial + ", termini="
-				+ termini + ", condicioReutilitzacio=" + condicioReutilitzacio + ", destinatarisRestrigits="
-				+ destinatarisRestrigits + ", accioDictaminada=" + accioDictaminada + ", inici=" + inici
-				+ ", aprovacio=" + aprovacio + ", fi=" + fi + "]";
-	}
 	@Override
 	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((id == null) ? 0 : id.hashCode());
-		return result;
+		return Objects.hash(id);
 	}
 	@Override
 	public boolean equals(Object obj) {
@@ -277,12 +265,48 @@ public class DictamenObject {
 		if (getClass() != obj.getClass())
 			return false;
 		DictamenObject other = (DictamenObject) obj;
-		if (id == null) {
-			if (other.id != null)
-				return false;
-		} else if (!id.equals(other.id))
-			return false;
-		return true;
+		return Objects.equals(id, other.id);
 	}
-
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("DictamenObject [id=");
+		builder.append(id);
+		builder.append(", serieDocumental=");
+		builder.append(serieDocumental);
+		builder.append(", tipusdictamen=");
+		builder.append(tipusdictamen);
+		builder.append(", normativaAprovacio=");
+		builder.append(normativaAprovacio);
+		builder.append(", tipusAcces=");
+		builder.append(tipusAcces);
+		builder.append(", ens=");
+		builder.append(ens);
+		builder.append(", lopd=");
+		builder.append(lopd);
+		builder.append(", serieEsencial=");
+		builder.append(serieEsencial);
+		builder.append(", termini=");
+		builder.append(termini);
+		builder.append(", condicioReutilitzacio=");
+		builder.append(condicioReutilitzacio);
+		builder.append(", destinatarisRestrigits=");
+		builder.append(destinatarisRestrigits);
+		builder.append(", accioDictaminada=");
+		builder.append(accioDictaminada);
+		builder.append(", codi=");
+		builder.append(codi);
+		builder.append(", estat=");
+		builder.append(estat);
+		builder.append(", inici=");
+		builder.append(inici);
+		builder.append(", aprovacio=");
+		builder.append(aprovacio);
+		builder.append(", fi=");
+		builder.append(fi);
+		builder.append("]");
+		return builder.toString();
+	}
+	
+	
 }

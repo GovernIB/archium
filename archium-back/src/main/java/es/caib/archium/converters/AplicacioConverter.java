@@ -32,7 +32,7 @@ public class AplicacioConverter implements Converter {
             ProcedimentController data = context.getApplication().evaluateExpressionGet(context, "#{procedimentController}", ProcedimentController.class);
             for(AplicacioObject funcio : data.getListaAplicacio())
             {
-                if(funcio.getId()==funcioId) {
+                if(funcio.getId().equals(funcioId)) {
                 	return funcio;
                 }
             }

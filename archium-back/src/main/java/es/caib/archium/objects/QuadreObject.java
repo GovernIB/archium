@@ -1,6 +1,7 @@
 package es.caib.archium.objects;
 
 import java.util.Date;
+import java.util.Objects;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
@@ -45,7 +46,7 @@ public class QuadreObject {
 	
 	public QuadreObject(Quadreclassificacio dbQuadre) {
 		if(dbQuadre!=null) {
-			this.id = dbQuadre.getId();
+			this.id = dbQuadre.getId().longValue();
 			this.nom = dbQuadre.getNom();
 			this.nomCas = dbQuadre.getNomcas();
 			this.estat = dbQuadre.getEstat();
@@ -133,12 +134,11 @@ public class QuadreObject {
 		return db;
 	}
 	
+	
+
 	@Override
 	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + (int) (id ^ (id >>> 32));
-		return result;
+		return Objects.hash(id);
 	}
 
 	@Override
@@ -150,9 +150,7 @@ public class QuadreObject {
 		if (getClass() != obj.getClass())
 			return false;
 		QuadreObject other = (QuadreObject) obj;
-		if (id != other.id)
-			return false;
-		return true;
+		return Objects.equals(id, other.id);
 	}
 
 	@Override

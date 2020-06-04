@@ -25,7 +25,7 @@ public class SerieDocumentalConverter implements Converter {
             ProcedimentController data = context.getApplication().evaluateExpressionGet(context, "#{procedimentController}", ProcedimentController.class);
             for(SerieDocumentalObject funcio : data.getListaSerieDocumental())
             {
-                if(funcio.getSerieId()==funcioId) {
+                if(funcio.getSerieId().equals(funcioId)) {
                 	return funcio;
                 }
             }

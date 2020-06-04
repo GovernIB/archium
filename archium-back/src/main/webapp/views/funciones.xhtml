@@ -14,15 +14,7 @@
     	<ui:include src="/views/modal/serie/nuevaSerie.xhtml" />
     	<ui:include src="/views/modal/dictamen/nuevoDictamen.xhtml" />
        	
-       	<p:panel rendered="#{funciones.quadreId==null}" id="panelInfo">
-       		<div class="ui-g">
-       			<div class="ui-g-12">
-			        <p:staticMessage severity="error" summary="#{messages['funciones.require.quadre']}!" detail="#{messages['funciones.require.quadre']}" />
-			    </div>
-       		</div>
-        </p:panel>
-       	
-        <h:form renderer="#{funciones.quadreId!=null}" id="panel1">
+        <h:form id="panel1">
         
         	
         
@@ -38,12 +30,13 @@
 	       </div>
 	       <div class="separador_rojo"></div>
         
-        
-       		<p:commandButton class="button_add" resetValues="true" value="#{messages['funciones.nuevafuncion']}" icon="icono_add" update="dialog" action="#{funciones.setFuncioSeleccionada(null)}" oncomplete="PF('documentDialog').show()">
-        	</p:commandButton> 
-        	
-        	<p:commandButton class="button_add2" resetValues="true" value="#{messages['funciones.nuevaserie']}" icon="icono_add" update="serieModalDialogId" action="#{nuevaSerieController.loadFromFunction(null)}" oncomplete="PF('serieModalDialog').show()">
-        	</p:commandButton> 
+        	<p:panel rendered="#{funciones.quadreId!=null}" id="panelButtons">
+	       		<p:commandButton class="button_add" resetValues="true" value="#{messages['funciones.nuevafuncion']}" icon="icono_add" update="dialog" action="#{funciones.setFuncioSeleccionada(null)}" oncomplete="PF('documentDialog').show()">
+	        	</p:commandButton> 
+	        	
+	        	<p:commandButton class="button_add2" resetValues="true" value="#{messages['funciones.nuevaserie']}" icon="icono_add" update="serieModalDialogId" action="#{nuevaSerieController.loadFromFunction(null)}" oncomplete="PF('serieModalDialog').show()">
+	        	</p:commandButton> 
+	        </p:panel>
         	
         	<p:growl>
 		    </p:growl>

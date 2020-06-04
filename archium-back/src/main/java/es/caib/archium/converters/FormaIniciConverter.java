@@ -29,7 +29,7 @@ public class FormaIniciConverter implements Converter {
             ProcedimentController data = context.getApplication().evaluateExpressionGet(context, "#{procedimentController}", ProcedimentController.class);
             for(FormainiciObject funcio : data.getListaFormainici())
             {
-                if(funcio.getId()==funcioId) {
+                if(funcio.getId().equals(funcioId)) {
                 	return funcio;
                 }
             }

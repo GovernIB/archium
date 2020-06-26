@@ -20,6 +20,8 @@ import org.primefaces.event.RowEditEvent;
 import org.primefaces.event.UnselectEvent;
 import org.primefaces.model.DefaultTreeNode;
 import org.primefaces.model.TreeNode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import es.caib.archium.commons.i18n.I18NException;
 import es.caib.archium.objects.DictamenObject;
@@ -31,87 +33,79 @@ import es.caib.archium.objects.SerieDocumentalObject;
 import es.caib.archium.objects.TipuAccesObject;
 import es.caib.archium.objects.TipuDictamenObject;
 import es.caib.archium.services.DictamenFrontService;
+import es.caib.archium.utils.FrontExceptionTranslate;
 
 @Named("dictamenController")
 @ViewScoped
 public class DictamenController implements Serializable {
 	
-   	    // nullable
-	    private String 	 destinatariRestringits;
-	    private String	 condicioReutilizacio;
-	    private String	 accioDictaminada;
-	    
-	    //private List<DictamenObject> tipusDictamenList 		= new ArrayList<>();
-	    //private List<DictamenObject> lopdList		 		= new ArrayList<>();
-	    //private List<DictamenObject> ensList		 		= new ArrayList<>();
-	    //private List<DictamenObject> tiposAccessList 		= new ArrayList<>();
-	    
-	    private Date inici;
-	    private Date 	aprovacio;
-	    private Date 	fin;
-	    private String 	termini;
-	    private String 	estat;
-	    private String 	codi;
-	    private Boolean serieEsencial;
-	
 
-		// not nullable
-		private Long 		id;
-		private Long 		dictamenId;
-		private Long		documentalId;
-		private Long 	 	tipuDictamenId;
-		private Long		tipuAccesId;
-		private Long		ensId;
-		private Long		lopdId;
-		private Long		normativaAprovacioId;
-	
-		private DictamenObject 				dictamen = new DictamenObject();
-		private SerieDocumentalObject		serieDocumental;
-		private TipuDictamenObject 		 	tipuDictamen;
-		private TipuAccesObject				tipuAcces;
-		private EnsObject					ens;
-		private LopdObject					lopd;
-		private NormativaAprobacioObject	normativaAprovacio;
-	
-		private List<DictamenObject> 		listaDictamen;
-		private List<SerieDocumentalObject> 			listaDocumental;
-		private List<TipuDictamenObject> 	listatipuDictamen;
-		private List<TipuAccesObject> 		listaTipuAcces;
-		private List<EnsObject>				listaEns;
-		private List<LopdObject>			listaLopd;
-		private List<NormativaAprobacioObject>	listaNormativaAprovacio;
-		private List<String>				estados	= new ArrayList<>();
+		private static final long serialVersionUID = 1L;
+		protected final Logger log = LoggerFactory.getLogger(this.getClass());
 		
-		private Document<DictamenObject> miObjeto  = new Document<DictamenObject>();
+		private String destinatariRestringits;
+	    private String condicioReutilizacio;
+	    private String accioDictaminada;
+	    private Date inici;
+	    private Date aprovacio;
+	    private Date fin;
+	    private String termini;
+	    private String estat;
+	    private String codi;
+	    private Boolean serieEsencial;
+		private Long id;
+		private Long dictamenId;
+		private Long documentalId;
+		private Long tipuDictamenId;
+		private Long tipuAccesId;
+		private Long ensId;
+		private Long lopdId;
+		private Long normativaAprovacioId;
+	
+		private DictamenObject dictamen = new DictamenObject();
+		private SerieDocumentalObject serieDocumental;
+		private TipuDictamenObject tipuDictamen;
+		private TipuAccesObject	tipuAcces;
+		private EnsObject ens;
+		private LopdObject lopd;
+		private NormativaAprobacioObject normativaAprovacio;
+	
+		private List<DictamenObject> listaDictamen;
+		private List<SerieDocumentalObject> listaDocumental;
+		private List<TipuDictamenObject> listatipuDictamen;
+		private List<TipuAccesObject> listaTipuAcces;
+		private List<EnsObject>	listaEns;
+		private List<LopdObject> listaLopd;
+		private List<NormativaAprobacioObject> listaNormativaAprovacio;
+		private List<String> estados = new ArrayList<>();
 		
-		private List<String>						plazos1		= 	new ArrayList<>();
-		private String 		plazoTermini;
-		private Integer 	plazoTerminiVal;
+		private Document<DictamenObject> miObjeto = new Document<DictamenObject>();
+		
+		private List<String> plazos1 = new ArrayList<>();
+		private String plazoTermini;
+		private Integer	plazoTerminiVal;
 		
 	    @Inject
-	    private DictamenFrontService 			serviceDictamen;	    
+	    private DictamenFrontService serviceDictamen;	    
     
 	    ResourceBundle messageBundle = ResourceBundle.getBundle("messages.messages");
 	    
+		FuncionesController funcBean = null;
+	    
 	    @PostConstruct
-	    public void init() throws I18NException {   
-	    	try 
-	    	{
-	    		this.listaDictamen 		= this.serviceDictamen.findAll();	    		
-	    		
-	    		this.listaDocumental 	=	this.serviceDictamen.findAllDocumental();
-	    		this.listatipuDictamen 	=	this.serviceDictamen.findAllTipuDictamen();
-	    		this.listaTipuAcces 	=	this.serviceDictamen.findAllTipuAcces();
-	    		this.listaEns 			=	this.serviceDictamen.findAllEns();
-	    		this.listaLopd 			=	this.serviceDictamen.findAllLopd();
-	    		this.listaNormativaAprovacio 	=	this.serviceDictamen.findAllNormativaAprovacio();
-	    		//this.listaCuadrosClasificacion = this.servicesCuadroClasificacion.findAll();
-	    		//this.listaTipusserie = this.servicesTipusseries.findAll();
-	    		this.estados.add(messageBundle.getString("general.estats.esborrany")); 
-	    		this.estados.add(messageBundle.getString("general.estats.revisat"));
-	    		this.estados.add(messageBundle.getString("general.estats.publicable"));
-	    		this.estados.add(messageBundle.getString("general.estats.vigent"));
-	    		this.estados.add(messageBundle.getString("general.estats.obsolet"));
+	    public void init(){   
+	    		    
+	    	Map<String, Object> viewMap = FacesContext.getCurrentInstance().getViewRoot().getViewMap();
+			this.funcBean = (FuncionesController) viewMap.get("funciones");
+	    	
+	    	try {
+	    		this.listaDictamen = this.serviceDictamen.findAll();	    		
+	    		this.listaDocumental = this.serviceDictamen.findAllDocumental();
+	    		this.listatipuDictamen = this.serviceDictamen.findAllTipuDictamen();
+	    		this.listaTipuAcces = this.serviceDictamen.findAllTipuAcces();
+	    		this.listaEns = this.serviceDictamen.findAllEns();
+	    		this.listaLopd = this.serviceDictamen.findAllLopd();
+	    		this.listaNormativaAprovacio = this.serviceDictamen.findAllNormativaAprovacio();
 	    		
 	    		this.plazos1.add(messageBundle.getString("general.plazos.hores"));
 	    		this.plazos1.add(messageBundle.getString("general.plazos.dies"));
@@ -119,18 +113,14 @@ public class DictamenController implements Serializable {
 	    		this.plazos1.add(messageBundle.getString("general.plazos.mesos"));
 	    		this.plazos1.add(messageBundle.getString("general.plazos.anys"));
 
-	    	}
-	    	catch(Exception e) 
-	    	{	
-	    		e.printStackTrace();
+	    	} catch(I18NException e) {	
+	    		log.error(FuncionesController.getTranslator().translate(e, funcBean.getLocale()));
+	    		funcBean.setError(true);
 	    	}        
 	    }
 	    
 	   
 	    private void save() {    
-	    	
-	    	Map<String, Object> viewMap = FacesContext.getCurrentInstance().getViewRoot().getViewMap();
-			FuncionesController funcBean = (FuncionesController) viewMap.get("funciones");
 	    	
 			if (this.plazoTerminiVal != null) {
 				this.setTermini(this.plazoTerminiVal.toString().concat(this.plazoTermini.substring(0,1)));
@@ -154,12 +144,11 @@ public class DictamenController implements Serializable {
 										  	this.estat
 											);
 				TreeNode node = new DefaultTreeNode(new Document<DictamenObject>(newD.getId(), newD.getCodi(), newD.getAccioDictaminada(), "Dictamen", newD), 
-						//funcBean.getNodeFromFunctionId(serieDocumental.getSerieId(), "Serie", "insert", null));
 						funcBean.getNodeFromFunctionId(serieDocumental.getSerieId(), "Serie", "insert", null));
 				FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(messageBundle.getString("dictamen.insert.ok")));
-			} catch (Exception eee) {
-				FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(messageBundle.getString("dictamen.insert.error")));
-				eee.printStackTrace();
+			} catch (I18NException eee) {
+				log.error(FrontExceptionTranslate.translate(eee, funcBean.getLocale()));
+				FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, messageBundle.getString("dictamen.insert.error"), null));
 			}			
 	    }
 	    
@@ -200,10 +189,10 @@ public class DictamenController implements Serializable {
 		        funcBean.getNodeFromFunctionId(upD.getId(), "Dictamen", "update", upD);
 		        
 		    }
-	    	catch (Exception e) {
+	    	catch (I18NException e) {
+	    		log.error(FrontExceptionTranslate.translate(e, funcBean.getLocale()));
 	 			FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, messageBundle.getString("dictamen.update.error"), null);
 	 			FacesContext.getCurrentInstance().addMessage(null, msg);	
-	 			e.printStackTrace();
 	 		}
 	    }
 	    

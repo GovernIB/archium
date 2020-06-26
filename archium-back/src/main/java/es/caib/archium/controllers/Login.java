@@ -9,7 +9,10 @@ import javax.inject.Named;
 import javax.security.enterprise.SecurityContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+
+import java.io.IOException;
 import java.io.Serializable;
 
 //import es.caib.archium.objects.CuadroClasificacion;
@@ -38,13 +41,25 @@ public class Login implements Serializable{
     public String logOff() {
         //HttpSession session = request.getSession();
     	HttpServletRequest request = (HttpServletRequest) externalContext.getRequest();
+    	String path = "";
     	try {
 			request.logout();
 		} catch (ServletException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+		} finally {
+			
+			if(request.getServletPath().contains("error")) {
+	    		path = "/views/quadre.xhtml?faces-redirect=true";
+	    	} else {
+	    		path = request.getServletPath() + "?faces-redirect=true";
+	    	}
+			
 		}
-    	return "/views/quadre.xhtml?faces-redirect=true";
+    	
+    	
+    	
+    	return path;
+    	
     }
     public String getUsuario() {
 		return usuario;

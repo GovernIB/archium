@@ -40,8 +40,9 @@ public class FuncioEJB extends AbstractDAO<Funcio, Long> implements FuncioServic
 			filtersF.put("achQuadreclassificacio", quadreclassificacioEJB.getReference(quadreId));
 			OrderBy orderF = new OrderBy("ordre", OrderType.ASC);	
 			return this.findFiltered(filtersF, orderF);
+		} else {
+			throw new I18NException("funcio.getByParentAndQuadre.id.null", this.getClass().getSimpleName(), "getByParentAndQuadre");
 		}
-		return null;
 	}
 
 	@Override
@@ -51,8 +52,9 @@ public class FuncioEJB extends AbstractDAO<Funcio, Long> implements FuncioServic
 			filtersF.put("achQuadreclassificacio", quadreclassificacioEJB.getReference(quadreId));
 			OrderBy orderF = new OrderBy("ordre", OrderType.ASC);	
 			return this.findFiltered(filtersF, orderF);
+		} else {
+			throw new I18NException("funcio.getByQuadre.id.null", this.getClass().getSimpleName(), "getByQuadre");
 		}
-		return null;
 	}
 
 	@Override

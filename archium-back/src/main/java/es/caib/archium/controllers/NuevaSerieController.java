@@ -20,10 +20,13 @@ import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.primefaces.PrimeFaces;
 import org.primefaces.event.UnselectEvent;
 import org.primefaces.model.DefaultTreeNode;
 import org.primefaces.model.DualListModel;
 import org.primefaces.model.TreeNode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import es.caib.archium.commons.i18n.I18NException;
 import es.caib.archium.ejb.service.SerieService;
@@ -46,6 +49,8 @@ import es.caib.archium.objects.ValorSecundariObject;
 import es.caib.archium.objects.ValoracioObject;
 import es.caib.archium.persistence.model.Valoracio;
 import es.caib.archium.services.SerieFrontService;
+import es.caib.archium.utils.FrontExceptionTranslate;
+
 import java.io.Serializable;
 
 @Named
@@ -56,6 +61,7 @@ public class NuevaSerieController implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = -8940713018192370062L;
+	protected final Logger log = LoggerFactory.getLogger(this.getClass());
 	private Long serieId;
 	private String codi;
 	private String nom;
@@ -78,9 +84,6 @@ public class NuevaSerieController implements Serializable {
 	@Inject
 	private SerieFrontService service;
 	
-	/*@ManagedProperty("#{messages}")
-	private ResourceBundle messages;*/
-	
 	private List<Dir3Object> listaDir3;
 	
 	private List<CatalegSeriesObject> listaCatalegSerie;
@@ -102,11 +105,9 @@ public class NuevaSerieController implements Serializable {
     
     
     private NormativaAprobacioObject selectedNormativa;
-    //SerieArgen
     private DualListModel<SerieArgenObject> seriesArgenRelacionadas;
     private List<SerieArgenObject> seriesArgenSelected;
     private List<SerieArgenObject> listaSeriesArgen;
-    //NormativasSerioe
     private DualListModel<NormativaAprobacioObject> normativasSerie;
     private List<NormativaAprobacioObject> normativasSerieSelected;
     
@@ -115,41 +116,56 @@ public class NuevaSerieController implements Serializable {
     
     
     ResourceBundle messageBundle = ResourceBundle.getBundle("messages.messages");
+	FuncionesController funcBean = null;
     
 	@PostConstruct
-	public void init() throws I18NException {
-
-		listaDir3 = service.getListaDir3();
-		listaTiposValor = service.getListaTipusValor();
-		listaValoresSecundarios = service.getListaValorsSecundari();
+	public void init(){
 		
-		listaCatalegSerie = service.getListaCatalegSerie();
-		listaFunciones = service.getListaFunciones();
-		listaTipusSerie = service.getListaTipusSerie();
-		listaSeries = service.getListaSeries();
-		listaAplicaciones = service.getListaAplicaciones();
-		listaNormativaAprobacio = service.getListaNormativas();
-		listaCausaLimitacio = service.getListaCausaLimitacio();
-		listaSeriesArgen = service.getListaSeriesArgen();
+		Map<String, Object> viewMap = FacesContext.getCurrentInstance().getViewRoot().getViewMap();
+		this.funcBean = (FuncionesController) viewMap.get("funciones");
 		
-		
-		seriesArgenSelected = new ArrayList<>();
-		listaSeriesSelected = new ArrayList<>();
-		listaAplicacionesSelected= new ArrayList<>();
-		normativasSerieSelected = new ArrayList<>();
+		seriesArgenSelected = new ArrayList<SerieArgenObject>();
+		listaSeriesSelected = new ArrayList<SerieDocumentalObject>();
+		listaAplicacionesSelected= new ArrayList<AplicacionObject>();
+		normativasSerieSelected = new ArrayList<NormativaAprobacioObject>();
 		listaRelacionLNS = new ArrayList<LimitacioNormativaSerieObject>();
-		
 		valoracio = new ValoracioObject();
-		for(TipuValorObject tv: listaTiposValor) {
-			ValorPrimariObject vp = new ValorPrimariObject();
-			vp.setAchTipusvalor(tv);
-			valoracio.addValorprimari(vp);
+		
+		try {
+			listaDir3 = service.getListaDir3();
+			
+			listaTiposValor = service.getListaTipusValor();
+			listaValoresSecundarios = service.getListaValorsSecundari();
+			
+			listaCatalegSerie = service.getListaCatalegSerie();
+			listaFunciones = service.getListaFunciones();
+			listaTipusSerie = service.getListaTipusSerie();
+			listaSeries = service.getListaSeries();
+			listaAplicaciones = service.getListaAplicaciones();
+			listaNormativaAprobacio = service.getListaNormativas();
+			listaCausaLimitacio = service.getListaCausaLimitacio();
+			listaSeriesArgen = service.getListaSeriesArgen();
+					
+			for(TipuValorObject tv: listaTiposValor) {
+				ValorPrimariObject vp = new ValorPrimariObject();
+				vp.setAchTipusvalor(tv);
+				valoracio.addValorprimari(vp);
+			}
+					
+		} catch (I18NException e) {
+			listaAplicaciones = new ArrayList<AplicacionObject>();
+			listaNormativaAprobacio = new ArrayList<NormativaAprobacioObject>();
+			listaSeries = new ArrayList<SerieDocumentalObject>();
+			listaSeriesArgen = new ArrayList<SerieArgenObject>();
+			funcBean.setError(true);
+			log.error(FrontExceptionTranslate.translate(e, funcBean.getLocale()));
+		} finally {
+			aplicaciones = new DualListModel<AplicacionObject>(listaAplicaciones, listaAplicacionesSelected);
+			seriesRelacionadas = new DualListModel<SerieDocumentalObject>(listaSeries,listaSeriesSelected);
+			seriesArgenRelacionadas = new DualListModel<SerieArgenObject>(listaSeriesArgen,seriesArgenSelected);
+			normativasSerie = new DualListModel<NormativaAprobacioObject>(listaNormativaAprobacio ,normativasSerieSelected);
 		}
 		
-		aplicaciones = new DualListModel<AplicacionObject>(listaAplicaciones, listaAplicacionesSelected);
-		seriesRelacionadas = new DualListModel<SerieDocumentalObject>(listaSeries,listaSeriesSelected);
-		seriesArgenRelacionadas = new DualListModel<SerieArgenObject>(listaSeriesArgen,seriesArgenSelected);
-		normativasSerie = new DualListModel<>(listaNormativaAprobacio ,normativasSerieSelected);
 	}
 	
 	public void loadFromFunction(Document<FuncioObject> d) {
@@ -166,19 +182,20 @@ public class NuevaSerieController implements Serializable {
 	
 	
 	public void updateSerie(Document<SerieDocumentalObject> obj) {
+		
 		clearForm();
 		
 		if (obj==null) {
 			modify = null;
     	} else {
     		modify = obj.getObject();
-    	} 
+    	}
+		
 		serieId= obj.getId();
 		codi = modify.getCodi();
 		nom = modify.getNom();
 		nomCas = modify.getNomCas();
 		catalegSeriId = modify.getCatalegSeriId();
-		//funcioId =  modify.getFuncioId();
 		serieFuncio = modify.getFuncio();
 		descripcio =modify.getDescripcio();
 		descripcioCas= modify.getDescripcioCas();
@@ -223,8 +240,6 @@ public class NuevaSerieController implements Serializable {
 	    		lns.getDualListCausas().setTarget(lns.getListCausaLimitacio());
 			}
 			
-			
-			//normativasList= 
 			normativasList = service.getListaNormativasBySerie(serieId);
 			List <NormativaAprobacioObject> filteredNormativas = new ArrayList<NormativaAprobacioObject>(normativasSerie.getSource());
 			filteredNormativas.removeAll(normativasList);
@@ -259,17 +274,19 @@ public class NuevaSerieController implements Serializable {
 				
 			}
 			
+			PrimeFaces.current().executeScript("PF('serieModalDialog').show()");
+			
 		} catch (I18NException e) {
-			e.printStackTrace();
+			log.error(FrontExceptionTranslate.translate(e, funcBean.getLocale()));
+			FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, messageBundle.getString("nuevaserie.update.abrirUpdate.error"), messageBundle.getString("procediment.update.abrirUpdate.error"));
+		 	FacesContext.getCurrentInstance().addMessage(null, msg);		
 		} 
 	}
-	public void save() throws Exception {	
+	public void save(){	
 		
-		if(this.validateValoracion()) {
-			//if(this.validateNormativas()) {
-				Map<String, Object> viewMap = FacesContext.getCurrentInstance().getViewRoot().getViewMap();
-				FuncionesController funcBean = (FuncionesController) viewMap.get("funciones");
-				
+		try {
+			if(this.validateValoracion()) {
+					
 				if(serieId == null) {
 					SerieDocumentalObject newS = service.createNuevaSerie(codi,nom,nomCas,catalegSeriId,serieFuncio.getId()
 							,descripcio,descripcioCas,resumMigracio,dir3Promotor, serieEstat,
@@ -286,20 +303,25 @@ public class NuevaSerieController implements Serializable {
 							normativasSerie.getTarget(), valoracio);
 					funcBean.getNodeFromFunctionId(serieId, "Serie", "update", upS);
 				}
+				listaSeries = service.getListaSeries();
 				clearForm();
 				FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(messageBundle.getString("nuevaserie.ok")));
-			/*} else {
+
+			} else {
 				FacesContext.getCurrentInstance().validationFailed();
-				FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_ERROR, messageBundle.getString("nuevaserie.validate.duplicateNLS"), null);
+				FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_ERROR, messageBundle.getString("nuevaserie.validate.valoracio"), null);
 				FacesContext.getCurrentInstance().addMessage(null, message);
-			}*/
-		} else {
-			FacesContext.getCurrentInstance().validationFailed();
-			FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_ERROR, messageBundle.getString("nuevaserie.validate.valoracio"), null);
+			}
+		}catch (I18NException e) {
+			log.error(FrontExceptionTranslate.translate(e, funcBean.getLocale()));
+			FacesMessage message = null;
+			if(serieId == null) {
+				message = new FacesMessage(FacesMessage.SEVERITY_ERROR, messageBundle.getString("nuevaserie.insert.error"), null);
+			} else {
+				message = new FacesMessage(FacesMessage.SEVERITY_ERROR, messageBundle.getString("nuevaserie.update.error"), null);
+			}
 			FacesContext.getCurrentInstance().addMessage(null, message);
 		}
-
-		
        
 	}
 	
@@ -316,29 +338,6 @@ public class NuevaSerieController implements Serializable {
 		return false;
 	}
 	
-	/*private Boolean validateNormativas() {
-		
-		boolean duplicado = false;
-		int i=0, j = 0;
-		int count = listaRelacionLNS.size();
-		
-		while(i<count && duplicado==false) {
-			LimitacioNormativaSerieObject item = listaRelacionLNS.get(i);
-			j=0;
-			while(j<count && duplicado==false) {
-				LimitacioNormativaSerieObject item2 = listaRelacionLNS.get(j);
-				if(item.getNormativa().getId()==item2.getNormativa().getId()
-						&& item.getCausaLimitacio().getId()==item2.getCausaLimitacio().getId()
-						&& i!=j) {
-					duplicado=true;
-				}
-				j++;
-			}
-			i++;
-		}
-		
-		return !duplicado;
-	}*/
 	
 	private void clearForm(){
 		
@@ -373,7 +372,6 @@ public class NuevaSerieController implements Serializable {
 			vp.setAchTipusvalor(tv);
 			valoracio.addValorprimari(vp);
 		}
-		//modify
 	}
 	
 	private Boolean validNormativa() {
@@ -395,19 +393,11 @@ public class NuevaSerieController implements Serializable {
 		
 		if(this.validNormativa()) {
 			LimitacioNormativaSerieObject lns = new LimitacioNormativaSerieObject();
-    		
-			if(listaRelacionLNS.size()==0) {
-				//lns.setId(0);
-			} else {
-				//int lastid = listaRelacionLNS.get(listaRelacionLNS.size()-1).getId();
-				//lns.setId(lastid+1);
-			}
     		lns.setListCausaLimitacio(new ArrayList<CausaLimitacioObject>());
     		lns.setDualListCausas(new DualListModel<CausaLimitacioObject>());
     		lns.getDualListCausas().setSource(listaCausaLimitacio);
     		lns.getDualListCausas().setTarget(new ArrayList<CausaLimitacioObject>());
     		lns.setNormativa(selectedNormativa);
-    		
     		listaRelacionLNS.add(lns);
     		selectedNormativa = null;
 		} else {
@@ -433,13 +423,6 @@ public class NuevaSerieController implements Serializable {
 	public void saveLNS(LimitacioNormativaSerieObject lnsitem) {
 			
 		if(lnsitem.getDualListCausas().getTarget().size()>0) {
-			/*int index = listaRelacionLNS.indexOf(lnsitem);
-			if(serieId!=null) lnsitem.setSeriedocumental(modify);
-			if(index>=0) {
-				listaRelacionLNS.set(index, lnsitem);
-			} else {
-				listaRelacionLNS.add(lnsitem);
-			}		*/
 			FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_INFO, messageBundle.getString("datos.salvados"), null);
 			FacesContext.getCurrentInstance().addMessage("mensaje-estado", message);
 		} else {

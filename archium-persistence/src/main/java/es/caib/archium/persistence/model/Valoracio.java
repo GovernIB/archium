@@ -22,10 +22,10 @@ public class Valoracio implements Serializable {
 	@GeneratedValue(strategy=GenerationType.SEQUENCE, generator="ACH_VALORACIO_ID_GENERATOR")
 	private Long id;
 
-	@Temporal(TemporalType.DATE)
+	@Temporal(TemporalType.TIMESTAMP)
 	private Date fi;
 
-	@Temporal(TemporalType.DATE)
+	@Temporal(TemporalType.TIMESTAMP)
 	private Date inici;
 
 	//bi-directional many-to-one association to Seriedocumental

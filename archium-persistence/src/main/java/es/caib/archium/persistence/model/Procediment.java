@@ -22,7 +22,7 @@ public class Procediment implements Serializable {
 	@GeneratedValue(strategy=GenerationType.SEQUENCE, generator="ACH_PROCEDIMENT_ID_GENERATOR")
 	private long id;
 
-	@Temporal(TemporalType.DATE)
+	@Temporal(TemporalType.TIMESTAMP)
 	private Date caducitat;
 
 	private String codirolsac;
@@ -43,7 +43,7 @@ public class Procediment implements Serializable {
 
 	private String gestor;
 
-	@Temporal(TemporalType.DATE)
+	@Temporal(TemporalType.TIMESTAMP)
 	private Date modificacio;
 
 	private String nom;
@@ -52,7 +52,7 @@ public class Procediment implements Serializable {
 
 	private String observacions;
 
-	@Temporal(TemporalType.DATE)
+	@Temporal(TemporalType.TIMESTAMP)
 	private Date publicacio;
 
 	private BigDecimal taxa;

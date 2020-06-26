@@ -60,9 +60,10 @@ public class SerieRelacionadaEJB extends AbstractDAO<Serierelacionada, Long> imp
 			//filters.put("achSeriedocumental2",null);
 			filters.put("achSerieargen",null);
 			return this.findFiltered(filters);
+		} else {
+			throw new I18NException("serierelacionadas.findSeriesBySerie.id.null", this.getClass().getSimpleName(), "findSeriesBySerie");
 		}
 		
-		return new ArrayList<Serierelacionada>();
 		
 	}
 	
@@ -75,9 +76,10 @@ public class SerieRelacionadaEJB extends AbstractDAO<Serierelacionada, Long> imp
 			filters.put("achSeriedocumental2",null);
 			//filters.put("achSerieargen",null);
 			return this.findFiltered(filters);
+		} else {
+			throw new I18NException("serierelacionadas.findArgenBySerie.id.null", this.getClass().getSimpleName(), "findArgenBySerie");
 		}
 		
-		return new ArrayList<Serierelacionada>();
 		
 	}
 }

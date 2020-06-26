@@ -26,13 +26,14 @@ public class AplicacioSerieEJB  extends AbstractDAO<AplicacioSerie,AplicacioSeri
 	
 	@Override
 	public List<AplicacioSerie> getBySerie(Long serieId) throws I18NException {
+		
 		if(serieId!=null) {
 			Map<String,Object> filters  = new HashMap<>();
 			filters.put("achSeriedocumental", serieService.getReference(serieId));
 			return this.findFiltered(filters);
+		} else {
+			throw new I18NException("aplicacioserie.getBySerie.id.null", this.getClass().getSimpleName(), "getBySerie");
 		}
-		
-		return new ArrayList<AplicacioSerie>();
 	}
 
 }

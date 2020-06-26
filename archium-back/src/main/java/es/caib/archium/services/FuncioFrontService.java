@@ -76,149 +76,235 @@ public class FuncioFrontService {
 	
 	
 	private List<Funcio> getFuncioByParent(QuadreObject quadre, Funcio f) throws I18NException{		
-		Long idFuncio = (f!=null ? f.getId() : null);
-		return funcionesEJB.getByParentAndQuadre(idFuncio, quadre.getId());
+		try {
+			Long idFuncio = (f!=null ? f.getId() : null);
+			return funcionesEJB.getByParentAndQuadre(idFuncio, quadre.getId());
+		} catch(NullPointerException e) {
+			throw new I18NException("excepcion.general.NullPointerException", this.getClass().getSimpleName(), "getFuncioByParent");
+		} catch(Exception e) {
+			throw new I18NException("excepcion.general.Exception", this.getClass().getSimpleName(), "getFuncioByParent");
+		}
 	}
 	
-	private List<Dictamen> getDictamenBySerie(Seriedocumental s) throws I18NException{
-		return dictamenEJB.getBySerieId(s.getId());
+	private List<Dictamen> getDictamenBySerie(Seriedocumental s) throws I18NException{		
+		try {
+			return dictamenEJB.getBySerieId(s.getId());
+		} catch(NullPointerException e) {
+			throw new I18NException("excepcion.general.NullPointerException", this.getClass().getSimpleName(), "getDictamenBySerie");
+		} catch(Exception e) {
+			throw new I18NException("excepcion.general.Exception", this.getClass().getSimpleName(), "getDictamenBySerie");
+		}
 	}
 	
 	private List<Seriedocumental> getSeriesByFuncio(Funcio f) throws I18NException{
-		Long idFuncio = (f!=null ? f.getId() : null);
-		return serieEJB.getByFuncio(idFuncio);
+		try {
+			Long idFuncio = (f!=null ? f.getId() : null);
+			return serieEJB.getByFuncio(idFuncio);
+		} catch(NullPointerException e) {
+			throw new I18NException("excepcion.general.NullPointerException", this.getClass().getSimpleName(), "getSeriesByFuncio");
+		} catch(Exception e) {
+			throw new I18NException("excepcion.general.Exception", this.getClass().getSimpleName(), "getSeriesByFuncio");
+		}
 	}
 	
 	
 	private void recursiveTree(QuadreObject quadre, TreeNode node, Funcio funcio) throws I18NException {
 			
-		
-		List<Funcio> resF = this.getFuncioByParent(quadre, funcio);
-		List<Seriedocumental> resS = this.getSeriesByFuncio(funcio != null ?funcio : null);
-		if (resS!=null && funcio != null) {
-			for(Seriedocumental s : resS)
-			{				
-				TreeNode serieNode = new DefaultTreeNode(new Document<SerieDocumentalObject>(s.getId(), s.getCodi(), s.getNom(), "Serie", new SerieDocumentalObject(s)), node);
-				List<Dictamen> resD = this.getDictamenBySerie(s);
-				
-				if (resD.size()>0) {
-					for(Dictamen d : resD)
-					{	
-						TreeNode dictamenNode = new DefaultTreeNode(new Document<DictamenObject>(d.getId(), d.getCodi(), d.getAcciodictaminada(), "Dictamen", new DictamenObject(d)), serieNode);
+		try {
+			List<Funcio> resF = this.getFuncioByParent(quadre, funcio);
+			if (funcio!=null) {
+				List<Seriedocumental> resS = this.getSeriesByFuncio(funcio);
+				if (resS!=null) {
+					for(Seriedocumental s : resS)
+					{				
+						TreeNode serieNode = new DefaultTreeNode(new Document<SerieDocumentalObject>(s.getId(), s.getCodi(), s.getNom(), "Serie", new SerieDocumentalObject(s)), node);
+						List<Dictamen> resD = this.getDictamenBySerie(s);
+						
+						if (resD.size()>0) {
+							for(Dictamen d : resD)
+							{	
+								TreeNode dictamenNode = new DefaultTreeNode(new Document<DictamenObject>(d.getId(), d.getCodi(), d.getAcciodictaminada(), "Dictamen", new DictamenObject(d)), serieNode);
+							}
+						}
 					}
 				}
 			}
+			
+			
+			if (resF.size()>0) {
+				for(Funcio f : resF)
+				{				
+					TreeNode funcioNode = new DefaultTreeNode(new Document<FuncioObject>(f.getId(), f.getCodi(), f.getNom(), "Funcio", new FuncioObject(f)), node);
+					this.recursiveTree(quadre, funcioNode, f);
+				}
+			}
+		} catch(NullPointerException e) {
+			throw new I18NException("excepcion.general.NullPointerException", this.getClass().getSimpleName(), "recursiveTree");
+		} catch(Exception e) {
+			throw new I18NException("excepcion.general.Exception", this.getClass().getSimpleName(), "recursiveTree");
 		}
 		
-		if (resF.size()>0) {
-			for(Funcio f : resF)
-			{				
-				TreeNode funcioNode = new DefaultTreeNode(new Document<FuncioObject>(f.getId(), f.getCodi(), f.getNom(), "Funcio", new FuncioObject(f)), node);
-				this.recursiveTree(quadre, funcioNode, f);
-			}
-		}
 	}
 	
-	public FuncioObject findById(long id) {
+	public FuncioObject findById(Long id) throws I18NException {
 		
-		Funcio f = this.funcionesEJB.findById(id);
-		
-		if (f!=null) {
-			return new FuncioObject(f);
+		try {
+			Funcio f = this.funcionesEJB.findById(id);
+			
+			if (f!=null) {
+				return new FuncioObject(f);
+			}
+			
+			return null;
+		} catch(NullPointerException e) {
+			throw new I18NException("excepcion.general.NullPointerException", this.getClass().getSimpleName(), "findById");
+		} catch(Exception e) {
+			throw new I18NException("excepcion.general.Exception", this.getClass().getSimpleName(), "findById");
 		}
 		
-		return null;
 	}
 	
 	public List<FuncioObject> findAllByQuadre(QuadreObject quadre)throws I18NException{	
 		
-		List<FuncioObject> listaFunciones = new ArrayList<FuncioObject>();
 		
-		List<Funcio> res= funcionesEJB.getByQuadre(quadre.getId());
-				
-		for(Funcio f : res)
-		{				
-			listaFunciones.add(new FuncioObject(f));
+		try {
+			List<FuncioObject> listaFunciones = new ArrayList<FuncioObject>();
+			
+			List<Funcio> res= funcionesEJB.getByQuadre(quadre.getId());
+					
+			for(Funcio f : res)
+			{				
+				listaFunciones.add(new FuncioObject(f));
+			}
+			
+			return listaFunciones;
+		} catch(NullPointerException e) {
+			throw new I18NException("excepcion.general.NullPointerException", this.getClass().getSimpleName(), "findAllByQuadre");
+		} catch(Exception e) {
+			throw new I18NException("excepcion.general.Exception", this.getClass().getSimpleName(), "findAllByQuadre");
 		}
 		
-		return listaFunciones;
+		
 	}
 	
 	public List<FuncioObject> findAll() throws I18NException{	
 		
-		List<FuncioObject> listaFunciones = new ArrayList<FuncioObject>();
-		
-		List<Funcio> res= funcionesEJB.findAll();
-		
-		for(Funcio f : res)
-		{				
-			listaFunciones.add(new FuncioObject(f));
+		try {
+			List<FuncioObject> listaFunciones = new ArrayList<FuncioObject>();
+			
+			List<Funcio> res= funcionesEJB.findAll();
+			
+			for(Funcio f : res)
+			{				
+				listaFunciones.add(new FuncioObject(f));
+			}
+			
+			return listaFunciones;
+		} catch(NullPointerException e) {
+			throw new I18NException("excepcion.general.NullPointerException", this.getClass().getSimpleName(), "findAll");
+		} catch(Exception e) {
+			throw new I18NException("excepcion.general.Exception", this.getClass().getSimpleName(), "findAll");
 		}
 		
-		return listaFunciones;
+		
 	}
 	
 	public List<FuncioObject> loadTree(Long quadreId, Long fromFuncioId) throws I18NException{	
 		
-		List<FuncioObject> listaFunciones = new ArrayList<FuncioObject>();
-		
-		List<Funcio> res= funcionesEJB.loadTree(quadreId, fromFuncioId);
-		
-		this.recursiveTreeFuncios(res, listaFunciones, 0);
-		
-		return listaFunciones;
+		try {
+			List<FuncioObject> listaFunciones = new ArrayList<FuncioObject>();
+			
+			List<Funcio> res= funcionesEJB.loadTree(quadreId, fromFuncioId);
+			
+			this.recursiveTreeFuncios(res, listaFunciones, 0);
+			
+			return listaFunciones;
+		} catch(NullPointerException e) {
+			throw new I18NException("excepcion.general.NullPointerException", this.getClass().getSimpleName(), "loadTree");
+		} catch(Exception e) {
+			throw new I18NException("excepcion.general.Exception", this.getClass().getSimpleName(), "loadTree");
+		}
 		
 	}
 	
-	private void recursiveTreeFuncios(List<Funcio> listaDb, List<FuncioObject> lista, int nivel) {
-				
-		for(Funcio f:listaDb) {
-			FuncioObject fObj = new FuncioObject(f);
-			fObj.setNumTabs(nivel);
-			lista.add(fObj);
-			this.recursiveTreeFuncios(f.getAchFuncios(), lista, nivel+1);
+	private void recursiveTreeFuncios(List<Funcio> listaDb, List<FuncioObject> lista, int nivel) throws I18NException {
 			
+		try {
+			for(Funcio f:listaDb) {
+				FuncioObject fObj = new FuncioObject(f);
+				fObj.setNumTabs(nivel);
+				lista.add(fObj);
+				this.recursiveTreeFuncios(f.getAchFuncios(), lista, nivel+1);
+				
+			}
+		} catch(NullPointerException e) {
+			throw new I18NException("excepcion.general.NullPointerException", this.getClass().getSimpleName(), "recursiveTreeFuncios");
+		} catch(Exception e) {
+			throw new I18NException("excepcion.general.Exception", this.getClass().getSimpleName(), "recursiveTreeFuncios");
 		}
-		
+
 	}
 	
 	@Transactional
 	public FuncioObject create(FuncioObject funcioObject, QuadreObject fkQuadreObject, FuncioObject fkFuncioObject, TipusSerieObject fkTipusserie) throws I18NException {		
-		Funcio funcio = funcioObject.toDbObject(null, null, null);
-		funcio.setAchQuadreclassificacio(fkQuadreObject!=null ? this.quadreclassificacioEJB.getReference(fkQuadreObject.getId()): null);
-		funcio.setAchFuncio(fkFuncioObject!=null ? this.funcionesEJB.getReference(fkFuncioObject.getId()): null);
-		funcio.setAchTipusserie(fkTipusserie!=null ? this.tipusSerieEJB.getReference(fkTipusserie.getId()): null);
-		return new FuncioObject(this.funcionesEJB.create(funcio));
+		
+		try {
+			Funcio funcio = funcioObject.toDbObject(null, null, null);
+			funcio.setAchQuadreclassificacio(fkQuadreObject!=null ? this.quadreclassificacioEJB.getReference(fkQuadreObject.getId()): null);
+			funcio.setAchFuncio(fkFuncioObject!=null ? this.funcionesEJB.getReference(fkFuncioObject.getId()): null);
+			funcio.setAchTipusserie(fkTipusserie!=null ? this.tipusSerieEJB.getReference(fkTipusserie.getId()): null);
+			return new FuncioObject(this.funcionesEJB.create(funcio));
+		} catch(NullPointerException e) {
+			throw new I18NException("excepcion.general.NullPointerException", this.getClass().getSimpleName(), "create");
+		} catch(Exception e) {
+			throw new I18NException("excepcion.general.Exception", this.getClass().getSimpleName(), "create");
+		}
+		
+		
 	}
-	
 	
 	@Transactional
 	public FuncioObject update(FuncioObject funcioObject) throws I18NException {
-		Funcio funcio = this.funcionesEJB.getReference(funcioObject.getId());
-		funcio.setCodi(funcioObject.getCodi());
-		funcio.setNom(funcioObject.getNom());
-		funcio.setNomcas(funcioObject.getNomcas());
-		funcio.setEstat(funcioObject.getEstat());
-		funcio.setOrdre(funcioObject.getOrdre());
-		if(funcioObject.getFuncioPare() == null)
-			funcio.setAchFuncio(null);
-		else
-			funcio.setAchFuncio(funcionesEJB.getReference(funcioObject.getFuncioPare().getId()));
 		
-		funcio.setAchTipusserie(funcioObject.getTipoSerie()!=null ? this.tipusSerieEJB.getReference(funcioObject.getTipoSerie().getId()): null);
-		funcio.setModificacio(new Date());
-		return new FuncioObject(funcionesEJB.update(funcio));
+		try {
+			Funcio funcio = this.funcionesEJB.getReference(funcioObject.getId());
+			funcio.setCodi(funcioObject.getCodi());
+			funcio.setNom(funcioObject.getNom());
+			funcio.setNomcas(funcioObject.getNomcas());
+			funcio.setEstat(funcioObject.getEstat());
+			funcio.setOrdre(funcioObject.getOrdre());
+			if(funcioObject.getFuncioPare() == null)
+				funcio.setAchFuncio(null);
+			else
+				funcio.setAchFuncio(funcionesEJB.getReference(funcioObject.getFuncioPare().getId()));
+			
+			funcio.setAchTipusserie(funcioObject.getTipoSerie()!=null ? this.tipusSerieEJB.getReference(funcioObject.getTipoSerie().getId()): null);
+			funcio.setModificacio(new Date());
+			return new FuncioObject(funcionesEJB.update(funcio));
+		} catch(NullPointerException e) {
+			throw new I18NException("excepcion.general.NullPointerException", this.getClass().getSimpleName(), "update");
+		} catch(Exception e) {
+			throw new I18NException("excepcion.general.Exception", this.getClass().getSimpleName(), "update");
+		}
+		
 	}
 	
 	public List<TipusSerieObject> findAllTipusSerie() throws I18NException{
-
-		List<TipusSerieObject> listaTipusserie = new ArrayList<TipusSerieObject>();
-		List<Tipusserie> res= tipusSerieEJB.findAll();		
-		for(Tipusserie ts : res)
-		{				
-			listaTipusserie.add(new TipusSerieObject(ts));
+		
+		try {
+			List<TipusSerieObject> listaTipusserie = new ArrayList<TipusSerieObject>();
+			List<Tipusserie> res= tipusSerieEJB.findAll();		
+			for(Tipusserie ts : res)
+			{				
+				listaTipusserie.add(new TipusSerieObject(ts));
+			}
+			return listaTipusserie;
+		} catch(NullPointerException e) {
+			throw new I18NException("excepcion.general.NullPointerException", this.getClass().getSimpleName(), "findAllTipusSerie");
+		} catch(Exception e) {
+			throw new I18NException("excepcion.general.Exception", this.getClass().getSimpleName(), "findAllTipusSerie");
 		}
-		return listaTipusserie;
+		
 	}
 	
 	

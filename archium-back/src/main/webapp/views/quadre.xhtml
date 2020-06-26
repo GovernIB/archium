@@ -15,7 +15,12 @@
   		<!-- BreadCrumbs -->  				
   		<h2 class="title_first">#{messages['cuadro.titulo']}</h2>
   		<div class="separador_rojo"></div>
-  		<h:form id="panel1"  class="table_action">
+  		
+  		<p:panel rendered="#{quadreController.error==true}" id="panelButtons">
+       		 <p:staticMessage severity="error" summary="ERROR!" detail="#{messages['cuadro.init.error']}" />
+        </p:panel>
+  		
+  		<h:form id="panel1" rendered="#{quadreController.error==false}" class="table_action">
   			<p:commandButton class="button_add" value="#{messages['cuadro.nuevoQuadro']}" 	icon="icono_add" resetValues="true"	action="#{quadreController.abrirModal}" oncomplete="PF('quadreModalDialog').show()" update="quadreModalDialogId"/>
   			<p:growl>
 		        <p:autoUpdate />

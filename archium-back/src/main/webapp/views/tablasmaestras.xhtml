@@ -14,10 +14,17 @@
 		
   		<h2 class="title_first">#{messages['tablasmaestras.titulo']}</h2>
   		<div class="separador_rojo"></div>
-	  		<h:form id="taula" class="table_action">
+  		
+  			<p:panel rendered="#{tablasMaestras.error==true}" id="panelButtons">
+	       		 <p:staticMessage severity="error" summary="ERROR!" detail="#{messages['tablasmaestras.init.error']}" />
+	        </p:panel>
+  		
+	  		<h:form id="taula" rendered="#{tablasMaestras.error==false}" class="table_action">
 			    <p:growl>
 			        <p:autoUpdate />
 			    </p:growl>
+			    		    
+			    
 			    <h:panelGrid columns="" cellpadding="">
 			 		<!-- Item 1 -->
 			        <h:outputLabel for="multiple" value="#{messages['tablasmaestras.seleccionar']}" style="margin-left: 0px;"/>
@@ -32,6 +39,8 @@
 				<hr/>
 			
 			    <!-- Tabla contenido -->
+			    
+			    
 			
 				<p:dataTable class="estilos-tabla" 
 					var="taule" 

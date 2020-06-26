@@ -6,16 +6,19 @@
       xmlns:ui="http://java.sun.com/jsf/facelets"
 >
 
-	<ui:param name="title" value="Error 404, Página no encontrada | Archium" />
+	<meta http-equiv="refresh" content="3;url=#{request.contextPath}/"/> 
+
+
+	<ui:param name="title" value="La vista ha expirado, ERROR VIEW EXPIRED | Archium" />
 	
 	<ui:define name="content">
 
   		<div class="mensaje_aviso">
   			<div class="img_error"></div>
-  			<h2>#{messages['errors.404.title']}</h2>
-  			<h3>#{messages['errors.404.subtitle']}</h3>
-  			<p>#{messages['errors.404.desc']}</p>
-   		</div>
+  			<h2>#{messages['errors.expiracion.title']}</h2>
+  			<h3>#{messages['errors.expiracion.subtitle']}</h3>
+  			<p>#{messages['errors.expiracion.desc']}</p>
+  		</div>
 
 	</ui:define>
  

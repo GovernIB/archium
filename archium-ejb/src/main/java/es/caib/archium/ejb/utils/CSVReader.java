@@ -12,10 +12,11 @@ public class CSVReader {
 	
 	private ArrayList<String[]> data = new ArrayList<String[]>();
 
-	public CSVReader(String filePath, String separator) {
+	public CSVReader(String filePath, String separator) throws IOException, FileNotFoundException {
 		
 		BufferedReader br = null;
 		String line = "";
+
 		try {
 			InputStream input = CSVReader.class.getResourceAsStream(filePath);
 		    br = new BufferedReader(new InputStreamReader(input));
@@ -24,15 +25,15 @@ public class CSVReader {
 		        data.add(lineData);
 		    }
 		} catch (FileNotFoundException e) {
-		    e.printStackTrace();
+			throw e;
 		} catch (IOException e) {
-		    e.printStackTrace();
+			throw e;
 		} finally {
 		    if (br != null) {
 		        try {
 		            br.close();
 		        } catch (IOException e) {
-		            e.printStackTrace();
+		        	throw e;
 		        }
 		    }
 		}

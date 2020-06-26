@@ -30,10 +30,10 @@ public class TipusDocumentProcedimentEJB extends AbstractDAO<TipusdocumentProced
 			Map<String,Object> filters = new HashMap<>();
 			filters.put("achProcediment", procedimentEJB.getReference(procedimentId));
 			return this.findFiltered(filters);
+		} else {
+			throw new I18NException("tipusdocumentprocediment.getTipusDocument.id.null", this.getClass().getSimpleName(), "getTipusDocument");
 		}
 		
-		
-		return null;
 	}
 
 		

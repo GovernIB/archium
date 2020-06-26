@@ -14,13 +14,16 @@
     	<ui:include src="/views/modal/serie/nuevaSerie.xhtml" />
     	<ui:include src="/views/modal/dictamen/nuevoDictamen.xhtml" />
        	
-        <h:form id="panel1">
-        
-        	
-        
-	       <!-- <h2 class="title_first">#{funciones.cuadroSeleccionado.nom}</h2>-->
+       	<div class="separador_rojo"></div>
+       	
+       	<p:panel rendered="#{funciones.error==true}" id="panelButtons">
+       		 <p:staticMessage severity="error" summary="ERROR!" detail="#{messages['procediment.init.error']}" />
+        </p:panel>
+       	
+        <h:form id="panel1"  rendered="#{funciones.error==false}">
+
 	       <div class="title_selector">
-	      		<p:selectOneMenu id="IdTipuSerie" value="#{funciones.cuadroSeleccionado}" converter="FuncioQuadreclassificacioConverter" style="width:250px">
+	      		<p:selectOneMenu id="selectorCuadros" value="#{funciones.cuadroSeleccionado}" converter="FuncioQuadreclassificacioConverter" style="width:250px">
 	       		<p:ajax event="valueChange" 
 			        update="panel1"
 			        listener="#{funciones.onQuadreSelectedListener}"/>
@@ -28,8 +31,7 @@
 	               <f:converter converterId="FuncioQuadreclassificacioConverter"/>
 	           </p:selectOneMenu>
 	       </div>
-	       <div class="separador_rojo"></div>
-        
+
         	<p:panel rendered="#{funciones.quadreId!=null}" id="panelButtons">
 	       		<p:commandButton class="button_add" resetValues="true" value="#{messages['funciones.nuevafuncion']}" icon="icono_add" update="dialog" action="#{funciones.setFuncioSeleccionada(null)}" oncomplete="PF('documentDialog').show()">
 	        	</p:commandButton> 
@@ -38,8 +40,12 @@
 	        	</p:commandButton> 
 	        </p:panel>
         	
+        	<p:growl globalOnly="true">
+	  			<p:autoUpdate />
+		    </p:growl>
         	<p:growl>
 		    </p:growl>
+		    
 		    <p:treeTable id="tabla" 
 		    	class="table_action estilos-tabla" 
 		    	widgetVar="treeTable" 
@@ -84,7 +90,7 @@
 		            <p:commandButton class="botton_library" rendered="#{document.type=='Funcio'}" icon="pi pi-pencil" resetValues="true" title="#{messages['funciones.modificafuncion']}" update="dialog" action="#{funciones.setFuncioActualizar(document)}" oncomplete="PF('documentDialog').show()"></p:commandButton>
 		            <p:commandButton class="botton_library" rendered="#{document.type=='Funcio'}" icon="pi pi-plus-circle" resetValues="true" title="#{messages['funciones.nuevafuncion']}" update="dialog" action="#{funciones.setFuncioSeleccionada(document)}" oncomplete="PF('documentDialog').show()"></p:commandButton>
 		            <p:commandButton class="botton_library" rendered="#{document.type=='Funcio'}" icon="pi pi-file" resetValues="true" title="#{messages['funciones.nuevaserie']}" update="serieModalDialogId" action="#{nuevaSerieController.loadFromFunction(document)}" oncomplete="PF('serieModalDialog').show()"></p:commandButton>
-		            <p:commandButton class="botton_library" rendered="#{document.type=='Serie'}" icon="pi pi-pencil" resetValues="true" title="#{messages['funciones.modificaserie']}" update="serieModalDialogId" action="#{nuevaSerieController.updateSerie(document)}" oncomplete="PF('serieModalDialog').show()"></p:commandButton>
+		            <p:commandButton class="botton_library" rendered="#{document.type=='Serie'}" icon="pi pi-pencil" resetValues="true" title="#{messages['funciones.modificaserie']}" update="serieModalDialogId" action="#{nuevaSerieController.updateSerie(document)}" ></p:commandButton>
 		            <p:commandButton class="botton_library" rendered="#{document.type=='Serie'}" icon="pi pi-bars" resetValues="true" title="#{messages['funciones.nuevodictamen']}" update="dictamenModalDialogId" action="#{dictamenController.addDictamentfromSerie(document)}" oncomplete="PF('dictamenModalDialog').show()"></p:commandButton>
 		            <p:commandButton class="botton_library" rendered="#{document.type=='Dictamen'}" icon="pi pi-pencil" resetValues="true" title="#{messages['funciones.modificadictamen']}" update="dictamenModalDialogId" action="#{dictamenController.updateDictament(document)}" oncomplete="PF('dictamenModalDialog').show()"></p:commandButton>
 		        </p:column>

@@ -18,10 +18,10 @@ public class LimitacioNormativaSerie implements Serializable {
 	@EmbeddedId
 	private LimitacioNormativaSeriePK id;
 
-	@Temporal(TemporalType.DATE)
+	@Temporal(TemporalType.TIMESTAMP)
 	private Date fi;
 
-	@Temporal(TemporalType.DATE)
+	@Temporal(TemporalType.TIMESTAMP)
 	private Date inici;
 
 	//bi-directional many-to-one association to Causalimitacio

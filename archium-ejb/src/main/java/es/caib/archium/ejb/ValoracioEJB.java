@@ -42,8 +42,10 @@ public class ValoracioEJB extends AbstractDAO<Valoracio, Long> implements Valora
 			filtersF.put("achSeriedocumental", serieEJB.getReference(serieId));
 			List<Valoracio> db = this.findFiltered(filtersF);
 			if(db.size()>0) return db.get(0);
+			else return null;
+		} else {
+			throw new I18NException("valoracio.getBySerie.id.null", this.getClass().getSimpleName(), "getBySerie");
 		}
-		return null;
 	}
 	
 }

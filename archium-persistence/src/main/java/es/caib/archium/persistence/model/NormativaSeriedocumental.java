@@ -18,10 +18,10 @@ public class NormativaSeriedocumental implements Serializable {
 	@EmbeddedId
 	private NormativaSeriedocumentalPK id;
 
-	@Temporal(TemporalType.DATE)
+	@Temporal(TemporalType.TIMESTAMP)
 	private Date fi;
 
-	@Temporal(TemporalType.DATE)
+	@Temporal(TemporalType.TIMESTAMP)
 	private Date inici;
 
 	//bi-directional many-to-one association to Normativa

@@ -28,8 +28,9 @@ public class DictamenEJB extends AbstractDAO<Dictamen, Long> implements Dictamen
 		if(serieId!= null) {
 			filters.put("achSeriedocumental", serieEJB.getReference(serieId));
 			return this.findFiltered(filters);
+		} else {
+			throw new I18NException("dictamen.getBySerieId.id.null", this.getClass().getSimpleName(), "getBySerieId");
 		}
-		return null;
 	}
 
 	

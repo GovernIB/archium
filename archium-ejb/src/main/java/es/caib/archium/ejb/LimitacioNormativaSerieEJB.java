@@ -30,9 +30,9 @@ public class LimitacioNormativaSerieEJB extends AbstractDAO<LimitacioNormativaSe
 			Map<String,Object> filters  = new HashMap<>();
 			filters.put("achSeriedocumental", serieService.getReference(serieId));
 			return this.findFiltered(filters);
+		} else {
+			throw new I18NException("limitacionormativaserie.getBySerie.id.null", this.getClass().getSimpleName(), "getBySerie");
 		}
-		
-		return new ArrayList<LimitacioNormativaSerie>();
 	}
 	
 }

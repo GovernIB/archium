@@ -31,8 +31,9 @@ public class SerieEJB extends AbstractDAO<Seriedocumental, Long> implements Seri
 			filtersS.put("achFuncio", funcionesEJB.getReference(funcioId));
 			OrderBy orderS = new OrderBy("id", OrderType.DESC);	
 			return this.findFiltered(filtersS, orderS);
+		} else {
+			throw new I18NException("serie.getByFuncio.id.null", this.getClass().getSimpleName(), "getByFuncio");
 		}
-		return null;
 	}
 
 	

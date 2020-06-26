@@ -44,6 +44,7 @@ import es.caib.archium.objects.AplicacioObject;
 import es.caib.archium.objects.Dir3Object;
 import es.caib.archium.objects.FamiliaprocedimentObject;
 import es.caib.archium.objects.FormainiciObject;
+import es.caib.archium.objects.FuncioObject;
 import es.caib.archium.objects.LimitacioNormativaSerieObject;
 import es.caib.archium.objects.MateriaObject;
 import es.caib.archium.objects.NivellelectronicObject;
@@ -57,6 +58,7 @@ import es.caib.archium.objects.tipusPublicObject;
 import es.caib.archium.persistence.model.Aplicacio;
 import es.caib.archium.persistence.model.Familiaprocediment;
 import es.caib.archium.persistence.model.Formainici;
+import es.caib.archium.persistence.model.Funcio;
 import es.caib.archium.persistence.model.LimitacioNormativaSerie;
 import es.caib.archium.persistence.model.Materia;
 import es.caib.archium.persistence.model.Nivellelectronic;
@@ -104,181 +106,281 @@ public class ProcedimentFrontService {
 	@Inject 
 	private Dir3Service dir3EJB;
 	
-	public List<Dir3Object> getListaDir3(){
-		List<Dir3Object> lista = new ArrayList<Dir3Object>();
+	public List<Dir3Object> getListaDir3() throws I18NException{
 		
-		for(Dir3 dir3:dir3EJB.getAll()) {
-			lista.add(new Dir3Object(dir3.getCodi(), dir3.getNom()));
+		try {
+			
+			List<Dir3Object> lista = new ArrayList<Dir3Object>();
+			
+			for(Dir3 dir3:dir3EJB.getAll()) {
+				lista.add(new Dir3Object(dir3.getCodi(), dir3.getNom()));
+			}
+			
+			return lista;
+		} catch(NullPointerException e) {
+			throw new I18NException("excepcion.general.NullPointerException", this.getClass().getSimpleName(), "getListaDir3");
+		} catch(Exception e) {
+			throw new I18NException("excepcion.general.Exception", this.getClass().getSimpleName(), "getListaDir3");
 		}
 		
-		return lista;
+		
 		
 	}
 	
 	
 	@Transactional
 	public List<ProcedimentObject> findAllProcedimiento() throws I18NException{	
-		List<Procediment> res= procedimentEJB.findAll();
-		List<ProcedimentObject> lista = new ArrayList<ProcedimentObject>();
-		for(Procediment i : res)
-		{				
-			lista.add(new ProcedimentObject(i));
+		
+		try {
+			List<Procediment> res= procedimentEJB.findAll();
+			List<ProcedimentObject> lista = new ArrayList<ProcedimentObject>();
+			for(Procediment i : res)
+			{				
+				lista.add(new ProcedimentObject(i));
+			}
+			return lista;
+		} catch(NullPointerException e) {
+			throw new I18NException("excepcion.general.NullPointerException", this.getClass().getSimpleName(), "findAllProcedimiento");
+		} catch(Exception e) {
+			throw new I18NException("excepcion.general.Exception", this.getClass().getSimpleName(), "findAllProcedimiento");
 		}
-		return lista;
+			
 	}
 	
 	@Transactional
 	public List<FamiliaprocedimentObject> findAllFamiliaprocediment() throws I18NException{	
 		
-		List<FamiliaprocedimentObject> lista = new ArrayList< >();
-		List<Familiaprocediment> res= familiaProcedimentEJB.findAll();
+		try {
+			List<FamiliaprocedimentObject> lista = new ArrayList< >();
+			List<Familiaprocediment> res= familiaProcedimentEJB.findAll();
+			
+			for(Familiaprocediment  i : res)
+			{				
+				lista.add(new FamiliaprocedimentObject(i));
+			}		
+			return lista;
+		} catch(NullPointerException e) {
+			throw new I18NException("excepcion.general.NullPointerException", this.getClass().getSimpleName(), "findAllFamiliaprocediment");
+		} catch(Exception e) {
+			throw new I18NException("excepcion.general.Exception", this.getClass().getSimpleName(), "findAllFamiliaprocediment");
+		}
 		
-		for(Familiaprocediment  i : res)
-		{				
-			lista.add(new FamiliaprocedimentObject(i));
-		}		
-		return lista;
+		
 	}
 	
 	@Transactional
 	public List<FormainiciObject> findAllFormainici() throws I18NException{	
 		
-		List<FormainiciObject> lista = new ArrayList< >();
-		List<Formainici> res= formainiciEJB.findAll();
-		
-		for(Formainici  i : res)
-		{				
-			lista.add(new FormainiciObject(i));
+		try {
+			List<FormainiciObject> lista = new ArrayList< >();
+			List<Formainici> res= formainiciEJB.findAll();
+			
+			for(Formainici  i : res)
+			{				
+				lista.add(new FormainiciObject(i));
+			}
+			
+			return lista;
+		} catch(NullPointerException e) {
+			throw new I18NException("excepcion.general.NullPointerException", this.getClass().getSimpleName(), "findAllFormainici");
+		} catch(Exception e) {
+			throw new I18NException("excepcion.general.Exception", this.getClass().getSimpleName(), "findAllFormainici");
 		}
 		
-		return lista;
+		
 	}
 
 	@Transactional
 	public List<SilenciObject> findAllSilenci() throws I18NException{	
 		
-		List<SilenciObject> lista = new ArrayList< >();
-		List<Silenci> res= silenciEJB.findAll();
-		
-		for(Silenci i : res)
-		{				
-			lista.add(new SilenciObject(i));
+		try {
+			List<SilenciObject> lista = new ArrayList< >();
+			List<Silenci> res= silenciEJB.findAll();
+			
+			for(Silenci i : res)
+			{				
+				lista.add(new SilenciObject(i));
+			}
+			
+			return lista;
+		} catch(NullPointerException e) {
+			throw new I18NException("excepcion.general.NullPointerException", this.getClass().getSimpleName(), "findAllSilenci");
+		} catch(Exception e) {
+			throw new I18NException("excepcion.general.Exception", this.getClass().getSimpleName(), "findAllSilenci");
 		}
 		
-		return lista;
+		
 	}
 	
 	@Transactional
 	public List<NivellelectronicObject> findAllNivellelectronic() throws I18NException{	
 		
-		List<NivellelectronicObject> lista = new ArrayList< >();
-		List<Nivellelectronic > res= nivellelectronicEJB.findAll();
-		
-		for(Nivellelectronic i : res)
-		{				
-			lista.add(new NivellelectronicObject(i));
+		try {
+			List<NivellelectronicObject> lista = new ArrayList< >();
+			List<Nivellelectronic > res= nivellelectronicEJB.findAll();
+			
+			for(Nivellelectronic i : res)
+			{				
+				lista.add(new NivellelectronicObject(i));
+			}
+			
+			return lista;
+		} catch(NullPointerException e) {
+			throw new I18NException("excepcion.general.NullPointerException", this.getClass().getSimpleName(), "findAllNivellelectronic");
+		} catch(Exception e) {
+			throw new I18NException("excepcion.general.Exception", this.getClass().getSimpleName(), "findAllNivellelectronic");
 		}
 		
-		return lista;
+		
 	}
 	
 	@Transactional
 	public List<SerieDocumentalObject> findAllSeriedocumental() throws I18NException{	
 		
-		List<SerieDocumentalObject> lista = new ArrayList< >();
-		List<Seriedocumental> res= serieDocumentalEJB.findAll();
-		
-		for(Seriedocumental  i : res)
-		{				
-			lista.add(new SerieDocumentalObject(i));
+		try {
+			List<SerieDocumentalObject> lista = new ArrayList< >();
+			List<Seriedocumental> res= serieDocumentalEJB.findAll();
+			
+			for(Seriedocumental  i : res)
+			{				
+				lista.add(new SerieDocumentalObject(i));
+			}
+			
+			return lista;
+		} catch(NullPointerException e) {
+			throw new I18NException("excepcion.general.NullPointerException", this.getClass().getSimpleName(), "findAllSeriedocumental");
+		} catch(Exception e) {
+			throw new I18NException("excepcion.general.Exception", this.getClass().getSimpleName(), "findAllSeriedocumental");
 		}
 		
-		return lista;
+		
+		
 	}
 	
 	@Transactional
 	public List<AplicacioObject> findAllAplicacio() throws I18NException{	
 		
-		List<AplicacioObject> lista = new ArrayList< >();
-		List<Aplicacio> res= aplicacioEJB.findAll();
-		
-		for(Aplicacio  i : res)
-		{				
-			lista.add(new AplicacioObject(i));
+		try {
+			List<AplicacioObject> lista = new ArrayList< >();
+			List<Aplicacio> res= aplicacioEJB.findAll();
+			
+			for(Aplicacio  i : res)
+			{				
+				lista.add(new AplicacioObject(i));
+			}
+			
+			return lista;
+		} catch(NullPointerException e) {
+			throw new I18NException("excepcion.general.NullPointerException", this.getClass().getSimpleName(), "findAllAplicacio");
+		} catch(Exception e) {
+			throw new I18NException("excepcion.general.Exception", this.getClass().getSimpleName(), "findAllAplicacio");
 		}
+
 		
-		return lista;
 	}
 		
 	@Transactional
 	public List<NormativaObject> findAllNormativa() throws I18NException{	
-		
-		List<NormativaObject> lista = new ArrayList< >();
-		List<Normativa> res= normativaEJB.findAll();
-		
-		for(Normativa  i : res)
-		{				
-			lista.add(new NormativaObject(i));
+
+		try {
+			List<NormativaObject> lista = new ArrayList< >();
+			List<Normativa> res= normativaEJB.findAll();
+			
+			for(Normativa  i : res)
+			{				
+				lista.add(new NormativaObject(i));
+			}
+			
+			return lista;
+		} catch(NullPointerException e) {
+			throw new I18NException("excepcion.general.NullPointerException", this.getClass().getSimpleName(), "findAllNormativa");
+		} catch(Exception e) {
+			throw new I18NException("excepcion.general.Exception", this.getClass().getSimpleName(), "findAllNormativa");
 		}
 		
-		return lista;
 	}
 	
 	@Transactional
 	public List<MateriaObject> findAllMateria() throws I18NException{	
+	
+		try {
+			List<MateriaObject> lista = new ArrayList< >();
+			List<Materia> res= materiaEJB.findAll();
+			
+			for(Materia  i : res)
+			{				
+				lista.add(new MateriaObject(i));
+			}	
+			return lista;
+		} catch(NullPointerException e) {
+			throw new I18NException("excepcion.general.NullPointerException", this.getClass().getSimpleName(), "findAllMateria");
+		} catch(Exception e) {
+			throw new I18NException("excepcion.general.Exception", this.getClass().getSimpleName(), "findAllMateria");
+		}
 		
-		List<MateriaObject> lista = new ArrayList< >();
-		List<Materia> res= materiaEJB.findAll();
-		
-		for(Materia  i : res)
-		{				
-			lista.add(new MateriaObject(i));
-		}	
-		return lista;
 	}
 	
 	@Transactional
 	public List<TipuDocumentalProcedimentObject> getListaTDP(Long id) throws I18NException{
-		
-		List<TipuDocumentalProcedimentObject> lista = new ArrayList< >();
-		List<TipusdocumentProcediment> res = tipusDocumentProcedimentEJB.getTipusDocument(id);
-		
-		int i=0;
-		for(TipusdocumentProcediment  tdp : res)
-		{				
-			TipuDocumentalProcedimentObject newTDP = new TipuDocumentalProcedimentObject(tdp);
-			newTDP.setId(i);
-			lista.add(newTDP);
-			i++;
-		}	
-		return lista;
-	
+
+		try {
+			List<TipuDocumentalProcedimentObject> lista = new ArrayList< >();
+			List<TipusdocumentProcediment> res = tipusDocumentProcedimentEJB.getTipusDocument(id);
+			
+			int i=0;
+			for(TipusdocumentProcediment  tdp : res)
+			{				
+				TipuDocumentalProcedimentObject newTDP = new TipuDocumentalProcedimentObject(tdp);
+				newTDP.setId(i);
+				lista.add(newTDP);
+				i++;
+			}	
+			return lista;
+		} catch(NullPointerException e) {
+			throw new I18NException("excepcion.general.NullPointerException", this.getClass().getSimpleName(), "getListaTDP");
+		} catch(Exception e) {
+			throw new I18NException("excepcion.general.Exception", this.getClass().getSimpleName(), "getListaTDP");
+		}
 	}
 	
 	@Transactional
 	public List<TipuDocumentalObject> findAllTipoDocumental() throws I18NException{	
-		
-		List<TipuDocumentalObject> 	lista 	= new ArrayList< >();
-		List<Tipusdocumental> 			res		= tipusDocumentaEJB.findAll();
-		
-		for(Tipusdocumental  i : res)
-		{				
-			lista.add(new TipuDocumentalObject(i));
-		}	
-		return lista;
+
+		try {
+			List<TipuDocumentalObject> 	lista 	= new ArrayList< >();
+			List<Tipusdocumental> 			res		= tipusDocumentaEJB.findAll();
+			
+			for(Tipusdocumental  i : res)
+			{				
+				lista.add(new TipuDocumentalObject(i));
+			}	
+			return lista;
+		} catch(NullPointerException e) {
+			throw new I18NException("excepcion.general.NullPointerException", this.getClass().getSimpleName(), "findAllTipoDocumental");
+		} catch(Exception e) {
+			throw new I18NException("excepcion.general.Exception", this.getClass().getSimpleName(), "findAllTipoDocumental");
+		}
+
 	}
 	
 	@Transactional
 	public List<tipusPublicObject> findAllTipusPublic() throws I18NException{	
 		
-		List<tipusPublicObject> 	lista 	= new ArrayList< >();
-		List<Tipuspublic> 			res		= tipusPublicEJB.findAll();
+		try {
+			List<tipusPublicObject> 	lista 	= new ArrayList< >();
+			List<Tipuspublic> 			res		= tipusPublicEJB.findAll();
+			
+			for(Tipuspublic  i : res)
+			{				
+				lista.add(new tipusPublicObject(i));
+			}	
+			return lista;
+		} catch(NullPointerException e) {
+			throw new I18NException("excepcion.general.NullPointerException", this.getClass().getSimpleName(), "findAllTipusPublic");
+		} catch(Exception e) {
+			throw new I18NException("excepcion.general.Exception", this.getClass().getSimpleName(), "findAllTipusPublic");
+		}
 		
-		for(Tipuspublic  i : res)
-		{				
-			lista.add(new tipusPublicObject(i));
-		}	
-		return lista;
 	}
 	
 	public Familiaprocediment familia(Long id) {
@@ -375,10 +477,11 @@ public class ProcedimentFrontService {
 			
 			
 			
+		}catch(NullPointerException e) {
+			throw new I18NException("excepcion.general.NullPointerException", this.getClass().getSimpleName(), "create");
+		} catch(Exception e) {
+			throw new I18NException("excepcion.general.Exception", this.getClass().getSimpleName(), "create");
 		}
-		catch (Exception e){
-			e.printStackTrace();
-		}		
 	}
 	
 
@@ -457,19 +560,32 @@ public class ProcedimentFrontService {
 			
 			Procediment res = this.procedimentEJB.update(db);		
 			
-		} catch (Exception e) {
-			e.printStackTrace();
+		} catch(NullPointerException e) {
+			throw new I18NException("excepcion.general.NullPointerException", this.getClass().getSimpleName(), "update");
+		} catch(Exception e) {
+			throw new I18NException("excepcion.general.Exception", this.getClass().getSimpleName(), "update");
 		}
 		
 	}
 	@Transactional
-	public List<TipuDocumentalObject> listaTipo (List<TipuDocumentalProcedimentObject> lista){
-		List<TipuDocumentalObject> list = new ArrayList<>();
-		for (TipuDocumentalProcedimentObject var:lista ) {
-			Tipusdocumental 		bd 		= this.tipusDocumentaEJB.getReference(var.getProcediment().getId());
-			TipuDocumentalObject 	objeto 	= new TipuDocumentalObject(bd);
-			list.add(objeto);
+	public List<TipuDocumentalObject> listaTipo (List<TipuDocumentalProcedimentObject> lista) throws I18NException{
+		
+		
+		try {
+			List<TipuDocumentalObject> list = new ArrayList<>();
+			for (TipuDocumentalProcedimentObject var:lista ) {
+				Tipusdocumental 		bd 		= this.tipusDocumentaEJB.getReference(var.getTipusDocumental().getId());
+				TipuDocumentalObject 	objeto 	= new TipuDocumentalObject(bd);
+				list.add(objeto);
+			}
+			return list;
+		} catch(NullPointerException e) {
+			throw new I18NException("excepcion.general.NullPointerException", this.getClass().getSimpleName(), "listaTipo");
+		} catch(Exception e) {
+			e.printStackTrace();
+			throw new I18NException("excepcion.general.Exception", this.getClass().getSimpleName(), "listaTipo");
 		}
-		return list;
+		
+		
 	}	
 }

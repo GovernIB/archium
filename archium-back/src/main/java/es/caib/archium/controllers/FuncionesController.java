@@ -1,20 +1,20 @@
 package es.caib.archium.controllers;
 
-/* https://www.primefaces.org/showcase/ui/overlay/dialog/loginDemo.xhtml 
- * https://www.journaldev.com/4056/primefaces-utilities-requestcontext-el-functions-dialog-framework-search-expression-framework#primefaces-dialog-framework-8211-data-communication*/
-
+import java.io.InputStream;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
+import javax.faces.component.UIViewRoot;
 import javax.faces.context.FacesContext;
 import javax.faces.event.AjaxBehaviorEvent;
 import javax.faces.event.ValueChangeEvent;
@@ -31,8 +31,11 @@ import org.primefaces.event.data.PageEvent;
 import org.primefaces.event.data.SortEvent;
 import org.primefaces.model.DefaultTreeNode;
 import org.primefaces.model.TreeNode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import es.caib.archium.commons.i18n.I18NException;
+import es.caib.archium.commons.i18n.I18NTranslator;
 import es.caib.archium.ejb.interceptor.Logged;
 import es.caib.archium.objects.DictamenObject;
 import es.caib.archium.objects.Document;
@@ -46,6 +49,7 @@ import es.caib.archium.objects.TipuDictamenObject;
 import es.caib.archium.objects.TipusSerieObject;
 import es.caib.archium.services.FuncioFrontService;
 import es.caib.archium.services.QuadreFrontService;
+import es.caib.archium.utils.FrontExceptionTranslate;
 
 @Logged
 @Named("funciones")
@@ -56,6 +60,9 @@ public class FuncionesController implements Serializable{
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	protected final Logger log = LoggerFactory.getLogger(this.getClass());
+	
+	Locale locale;
 	
 	@Inject
     private FuncioFrontService servicesFunciones;
@@ -95,11 +102,17 @@ public class FuncionesController implements Serializable{
     private Long quadreId;
     
     ResourceBundle messageBundle = ResourceBundle.getBundle("messages.messages");
-
+    
+    private Boolean error = false;
+    
+    
+    public static final I18NTranslator translator = new I18NTranslator(
+            new String[]{"messages.messages"});
+    
 	@PostConstruct
-    public void init() throws I18NException {   
-    	try 
-    	{
+    public void init() throws ClassNotFoundException {   
+		
+    	try {
     		listaEstats.add(messageBundle.getString("general.estats.esborrany")); 
 			listaEstats.add(messageBundle.getString("general.estats.revisat"));
 			listaEstats.add(messageBundle.getString("general.estats.publicable"));
@@ -111,6 +124,8 @@ public class FuncionesController implements Serializable{
     		FacesContext context = FacesContext.getCurrentInstance();
     	    String quadreIdString = context.getExternalContext().getRequestParameterMap().get("quadreId");
     		
+    	    locale = context.getViewRoot().getLocale();
+    	    
     	    if(quadreIdString!=null) {
     	    	quadreId = Long.parseLong(quadreIdString);
     	    }
@@ -127,7 +142,6 @@ public class FuncionesController implements Serializable{
     			this.cuadroSeleccionado = this.servicesCuadroClasificacion.getQuadreById(quadreId);
         		this.root = this.servicesFunciones.getContent(cuadroSeleccionado);
         		this.filterNode = this.root.getParent();
-        		//this.listaFunciones = this.servicesFunciones.findAllByQuadre(this.cuadroSeleccionado);
         		this.listaFunciones = this.servicesFunciones.loadTree(quadreId, null);
         		this.listaTipusserie = this.servicesFunciones.findAllTipusSerie();    	
     		}
@@ -135,24 +149,12 @@ public class FuncionesController implements Serializable{
     		FacesContext ctxt = FacesContext.getCurrentInstance(); //get your hands on the current request context
             ctxt.getPartialViewContext().getRenderIds().add("panelButtons");
     			
-    	}
-    	catch(Exception e) 
-    	{	
-    		e.printStackTrace();
+    	} catch(I18NException e) {	
+    		log.error(translator.translate(e, this.getLocale()));
+    		error = true;
     	}        
     }
-    
-    public void changeQuadre(QuadreObject quadre) {
-    	this.clearSelection();
-    	this.cuadroSeleccionado = quadre;
-    	try {
-			this.root = this.servicesFunciones.getContent(cuadroSeleccionado);	
-			this.filterNode = this.root.getParent();
-		} catch (I18NException e) {
-			e.printStackTrace();
-		}
-    }
-    
+
     public void setFuncioActualizar(Document<FuncioObject> d) {
     	this.clearSelection();
     	this.clearForm();
@@ -247,10 +249,7 @@ public class FuncionesController implements Serializable{
 			
 	        
 		} catch (I18NException e) {
-			e.printStackTrace();
-			FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, messageBundle.getString("funciones.update.error"), null));
-		} catch (Exception e) {
-			e.printStackTrace();
+			log.error(FrontExceptionTranslate.translate(e, this.getLocale()));
 			FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, messageBundle.getString("funciones.update.error"), null));
 		}
     }
@@ -274,12 +273,9 @@ public class FuncionesController implements Serializable{
 	        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(messageBundle.getString("funciones.insert.ok")));
 	        
 		} catch (I18NException e) {
+			log.error(FrontExceptionTranslate.translate(e, this.getLocale()));
 			FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, messageBundle.getString("funciones.insert.error"), null));
-			e.printStackTrace();
-		} catch (Exception e) {
-			e.printStackTrace();
-			FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, messageBundle.getString("funciones.insert.error"), null));
-		}
+		} 
     }
     
     public <T> TreeNode getNodeFromFunctionId(long id, String type, String action, T updateObject) {
@@ -537,13 +533,13 @@ public class FuncionesController implements Serializable{
     }
     
     public void onQuadreSelectedListener(AjaxBehaviorEvent event){
-    	
     	this.clearSelection();
     	try {
 			this.root = this.servicesFunciones.getContent(cuadroSeleccionado);	
 			this.filterNode = this.root.getParent();
 		} catch (I18NException e) {
-			e.printStackTrace();
+			FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, messageBundle.getString("funciones.quadre.load"), null));
+			log.error(FrontExceptionTranslate.translate(e, this.getLocale()));
 		}
     }
     
@@ -559,6 +555,7 @@ public class FuncionesController implements Serializable{
     	try {
 			if(this.servicesFunciones.loadTree(cuadroSeleccionado.getId(), funcio.getId()).contains(funcioPare)) return false;
 		} catch (I18NException e) {
+			log.error(FrontExceptionTranslate.translate(e, this.getLocale()));
 			return false;
 		}    	
     	return true;
@@ -772,6 +769,22 @@ public class FuncionesController implements Serializable{
 
 	public void setQuadreId(Long quadreId) {
 		this.quadreId = quadreId;
+	}
+
+	public Boolean getError() {
+		return error;
+	}
+
+	public void setError(Boolean error) {
+		this.error = error;
+	}
+
+	public Locale getLocale() {
+		return locale;
+	}
+
+	public static I18NTranslator getTranslator() {
+		return translator;
 	}
 	
 	

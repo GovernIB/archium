@@ -2,80 +2,85 @@ package es.caib.archium.controllers;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
+import java.util.ResourceBundle;
 
 import javax.annotation.PostConstruct;
+import javax.faces.application.FacesMessage;
+import javax.faces.context.FacesContext;
 import javax.faces.event.ValueChangeEvent;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import es.caib.archium.commons.i18n.I18NException;
 import es.caib.archium.objects.TauleMestreObject;
 import es.caib.archium.services.TablaMaestraFrontService;
+import es.caib.archium.utils.FrontExceptionTranslate;
+
 import java.io.Serializable;
 
 @Named("tablasMaestras")
 @ViewScoped
 public class TablasMaestrasController implements Serializable {
-	
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -3157090024972868135L;
-	List<TauleMestreObject>	tablaMaestra 		= new ArrayList<>();
-	List<TauleMestreObject>	tablaMaestrafilter	= new ArrayList<>();
-	List<String> 	columns  		= new ArrayList<>();
-	List<String> 	listaTabla		= new ArrayList<>();
-	@Inject
-	TablaMaestraFrontService tablaMaestraServices ;
 
-	String tabla 					= new String();
+	private static final long serialVersionUID = -3157090024972868135L;
+	protected final Logger log = LoggerFactory.getLogger(this.getClass());
+	
+	Locale locale;	
+	
+	@Inject
+	TablaMaestraFrontService tablaMaestraServices;
+	
+	List<TauleMestreObject>	tablaMaestra = new ArrayList<>();
+	List<TauleMestreObject>	tablaMaestrafilter= new ArrayList<>();
+	List<String> columns = new ArrayList<>();
+	List<String> listaTabla	= new ArrayList<>();
+	String tabla = new String();	
+	Boolean error = false;
+	
+	ResourceBundle messageBundle = ResourceBundle.getBundle("messages.messages");
 	
 	@PostConstruct
-    public void init() throws I18NException {   
-    	try 
-    	{
+    public void init() {   
+		
+		FacesContext context = FacesContext.getCurrentInstance();	
+	    locale = context.getViewRoot().getLocale();
+		
+    	try {
     		this.listaTabla = iniTablas();
-    	}
-    	catch(Exception e) 
-    	{	
-    		e.printStackTrace();
+    	} catch(I18NException e) {	
+    		log.error(FrontExceptionTranslate.translate(e, this.getLocale()));
+    		error = true;
     	}        
     }
 	public void ChangeEvent(ValueChangeEvent event) { 
 		try {
 	    	this.setTabla(event.getNewValue().toString());
-	    	listarTabla ();
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-			// TODO: handle exception
+	    	listarTabla();
+		}catch (I18NException e) {
+			log.error(FrontExceptionTranslate.translate(e, this.getLocale()));
+			FacesContext.getCurrentInstance().addMessage(null, 
+				new FacesMessage(FacesMessage.SEVERITY_ERROR, 
+						messageBundle.getString("tablasmaestras.cargadatos.error"), 
+						messageBundle.getString("tablasmaestras.cargadatos.error")
+				)
+			);
 		}
 		    	
     }
-	private void clonar() {
-        for(TauleMestreObject i : this.tablaMaestra)
-        {                       
-        	TauleMestreObject aux = new TauleMestreObject();
-			aux.setNom(i.getNom());
-			//this.setTablaMaestrafilter(aux);
-			this.tablaMaestrafilter.add(aux);
-        }
-		
-	} 
 	
-	private void listarTabla (){
+	private void listarTabla () throws I18NException{
 		
 		String option = this.getTabla();
-		//this.columns.add("Nom");
-		try {
-			this.setTablaMaestra(tablaMaestraServices.findAll(option));
-		} catch (I18NException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		this.setTablaMaestra(tablaMaestraServices.findAll(option));
+
 	}
 	
-	private List<String> iniTablas(){
+	private List<String> iniTablas() throws I18NException{
 		List<String> listatabla = new ArrayList<>();
 		listatabla.add("Serieargen");
 		listatabla.add("Categorianti");
@@ -146,4 +151,18 @@ public class TablasMaestrasController implements Serializable {
 	public void setTablaMaestrafilter(List<TauleMestreObject> tablaMaestrafilter) {
 		this.tablaMaestrafilter = tablaMaestrafilter;
 	}
+	public Boolean getError() {
+		return error;
+	}
+	public void setError(Boolean error) {
+		this.error = error;
+	}
+	public Locale getLocale() {
+		return locale;
+	}
+	public void setLocale(Locale locale) {
+		this.locale = locale;
+	}
+	
+	
 }

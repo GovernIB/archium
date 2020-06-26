@@ -24,7 +24,7 @@ public class Dictamen implements Serializable {
 
 	private String acciodictaminada;
 
-	@Temporal(TemporalType.DATE)
+	@Temporal(TemporalType.TIMESTAMP)
 	private Date aprovacio;
 
 	private String condicioreutilitzacio;
@@ -51,10 +51,10 @@ public class Dictamen implements Serializable {
 
 	private String destinatarisrestringits;
 
-	@Temporal(TemporalType.DATE)
+	@Temporal(TemporalType.TIMESTAMP)
 	private Date fi;
 
-	@Temporal(TemporalType.DATE)
+	@Temporal(TemporalType.TIMESTAMP)
 	private Date inici;
 
 	private BigDecimal serieessencial;

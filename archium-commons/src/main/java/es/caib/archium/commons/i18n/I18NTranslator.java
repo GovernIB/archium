@@ -92,8 +92,16 @@ public class I18NTranslator {
             return null;
         }
 
-        return (String[]) Stream.of(args)
+        Object[] arguments = Stream.of(args)
                 .map(arg -> (arg instanceof I18NArgumentCode) ? translate(locale, arg.getValue()) : arg.getValue())
                 .toArray();
+        
+        String[] argumentsStrings = new String[args.length];
+        for(int i=0;i<arguments.length;i++) {
+        	argumentsStrings[i] = (String) arguments[i];
+        }
+        
+        return argumentsStrings;
+        
     }
 }

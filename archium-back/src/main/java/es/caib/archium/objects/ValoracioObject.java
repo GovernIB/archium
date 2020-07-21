@@ -176,7 +176,7 @@ public class ValoracioObject {
 			Iterator<ValorPrimariObject> it = this.getAchValorprimaris().iterator();
 			while(it.hasNext() && hashPrimariSelected==false) {
 				ValorPrimariObject item = it.next();
-				if(item.getSelected()==true) {
+				if(item.getSelected()==true && item.getTerminiVal()!=null) {
 					hashPrimariSelected = true;
 				}
 			}

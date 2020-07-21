@@ -356,7 +356,7 @@
 		    </p:tabView>
 		    
 		    <div class="ui-g-12 button_new">
-		    	<p:commandButton style="max-width: 300px;" action="#{nuevaSerieController.save}" class="boton_modal button_red" value="#{messages['guardar']}" update="panel1" oncomplete="if (args &amp;&amp; !args.validationFailed) PF('serieModalDialog').hide()"/>
+		    	<p:commandButton widgetVar="serieSaveButton" onclick="PF('serieSaveButton').disable()" style="max-width: 300px;" action="#{nuevaSerieController.save}" class="boton_modal button_red" value="#{messages['guardar']}" update="panel1" oncomplete="PF('serieSaveButton').enable();if (args &amp;&amp; !args.validationFailed) PF('serieModalDialog').hide()"/>
 		    </div>	
 	    
 	    </h:form>

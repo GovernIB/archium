@@ -114,7 +114,7 @@ public class DictamenController implements Serializable {
 	    		this.plazos1.add(messageBundle.getString("general.plazos.anys"));
 
 	    	} catch(I18NException e) {	
-	    		log.error(FuncionesController.getTranslator().translate(e, funcBean.getLocale()));
+	    		log.error(FrontExceptionTranslate.translate(e, funcBean.getLocale()));
 	    		funcBean.setError(true);
 	    	}        
 	    }
@@ -194,6 +194,19 @@ public class DictamenController implements Serializable {
 	 			FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, messageBundle.getString("dictamen.update.error"), null);
 	 			FacesContext.getCurrentInstance().addMessage(null, msg);	
 	 		}
+	    }
+	    
+	    public void deleteDictamen(Document<DictamenObject> d) {
+
+	    	try {
+				this.serviceDictamen.deleteDictamen(d.getId());
+				TreeNode node = funcBean.getNodeFromFunctionId(d.getId(), "Dictamen", "update", d);
+				node.getParent().getChildren().remove(node);
+				FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(messageBundle.getString("dictamen.delete.ok")));
+			} catch (I18NException e) {
+				log.error(FrontExceptionTranslate.translate(e, funcBean.getLocale()));
+				FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, messageBundle.getString("dictamen.delete.error"), null));
+			}
 	    }
 	    
 	    public void saveUpdate() {

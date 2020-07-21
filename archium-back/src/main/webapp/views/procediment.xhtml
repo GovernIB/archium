@@ -20,12 +20,9 @@
   			<p:commandButton class="button_add" resetValues="true" value="#{messages['procediment.NouProcediment']}" icon="icono_add" action="#{procedimentController.abrirModal}" oncomplete="PF('procedimentModalDialog').show()" update="procedimentModalDialogId">
   				
   			</p:commandButton>  		
-	  		<p:growl globalOnly="true">
-	  			<p:autoUpdate />
+	  		<p:growl id="message-global">
 		    </p:growl>
-		    <p:growl>
-	  			<p:autoUpdate />
-		    </p:growl>
+
 			<p:dataTable class="estilos-tabla table-procediment" 
 				id="Cuadros" 
 				var="cuadro" 
@@ -54,8 +51,23 @@
 		            	<f:convertDateTime pattern="dd-MM-yyyy HH:mm" />
 		            </h:outputText>
 		        </p:column>
+		        <p:column class="acciones-t" headerText="#{messages['funciones.acciones']}" style="width:100px; padding:0px;">
+			        <p:commandButton class="botton_library" icon="pi pi-trash" title="#{messages['procediment.eliminarprocediment']}" update="panel1 :panel1:message-global" action="#{procedimentController.deleteProcediment(cuadro)}" oncomplete="">
+		            	<p:confirm header="#{messages['confirmacion']}" message="#{messages['procediment.eliminar.alert']}" icon="pi pi-exclamation-triangle" />
+		            </p:commandButton>
+		        </p:column>
+		        
 	    	</p:dataTable> 	    
+	    	
+	    	<p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+		        <p:commandButton value="#{messages['si']}" type="button" styleClass="ui-confirmdialog-yes" icon="pi pi-check" />
+		        <p:commandButton value="#{messages['no']}" type="button" styleClass="ui-confirmdialog-no" icon="pi pi-times" />
+		    </p:confirmDialog>      
+	    	
 		</h:form>
+		
+		
+		
 	    <hr/> 
   	</ui:define>
   	

@@ -17,5 +17,15 @@
 			<base-name>messages.messages</base-name>
 			<var>messages</var>
 	   </resource-bundle>
+	   
+	   
+	   
      </application>
+     
+     <factory>
+		 <exception-handler-factory>
+		 es.caib.archium.jsf.AjaxExceptionHandler$Factory
+		 </exception-handler-factory>
+		</factory>
+     
 </faces-config>

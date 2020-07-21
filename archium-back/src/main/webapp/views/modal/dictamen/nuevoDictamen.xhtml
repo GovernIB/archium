@@ -214,7 +214,7 @@
 					    </div>
 					    
 					    <div class="ui-g-12 button_new" align="justify">
-					    	<p:commandButton class="boton_modal button_red" update="panel1" value="#{messages['guardar']}" action="#{dictamenController.saveUpdate}" oncomplete="if (args &amp;&amp; !args.validationFailed) PF('dictamenModalDialog').hide()" style="margin-rigth: 0px;" ></p:commandButton>
+					    	<p:commandButton widgetVar="dictSaveButton" onclick="PF('dictSaveButton').disable()" class="boton_modal button_red" update="panel1" value="#{messages['guardar']}" action="#{dictamenController.saveUpdate}" oncomplete="PF('dictSaveButton').enable();if (args &amp;&amp; !args.validationFailed) PF('dictamenModalDialog').hide()" style="margin-rigth: 0px;" ></p:commandButton>
 					    	
 					    </div>
 				    </p:panel>

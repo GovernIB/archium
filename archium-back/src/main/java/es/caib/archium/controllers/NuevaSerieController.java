@@ -180,6 +180,19 @@ public class NuevaSerieController implements Serializable {
     	} 
 	}
 	
+	public void deleteSerie(Document<SerieDocumentalObject> s) {
+
+    	try {
+			this.service.deleteSerie(s.getId());
+			TreeNode node = funcBean.getNodeFromFunctionId(s.getId(), "Serie", "update", s);
+			node.getParent().getChildren().remove(node);
+			FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(messageBundle.getString("nuevaserie.delete.ok")));
+		} catch (I18NException e) {
+			log.error(FrontExceptionTranslate.translate(e, funcBean.getLocale()));
+			FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, messageBundle.getString("nuevaserie.delete.error"), null));
+		}
+    }
+	
 	
 	public void updateSerie(Document<SerieDocumentalObject> obj) {
 		

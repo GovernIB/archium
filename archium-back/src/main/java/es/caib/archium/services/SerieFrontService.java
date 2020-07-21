@@ -804,7 +804,6 @@ public class SerieFrontService {
 			}
 			
 			Seriedocumental res = this.serieService.update(toPersist);
-			
 			return new SerieDocumentalObject(res);
 		} catch(NullPointerException e) {
 			throw new I18NException("excepcion.general.NullPointerException", this.getClass().getSimpleName(), "updateSerieDocumental");
@@ -813,6 +812,17 @@ public class SerieFrontService {
 			throw new I18NException("excepcion.general.Exception", this.getClass().getSimpleName(), "updateSerieDocumental");
 		}
 		
+	}
+	
+	@Transactional
+	public void deleteSerie(Long idSerie) throws I18NException{
+		try {
+			this.serieService.delete(idSerie);
+		} catch(NullPointerException e) {
+			throw new I18NException("excepcion.general.NullPointerException", this.getClass().getSimpleName(), "deleteSerie");
+		} catch(Exception e) {
+			throw new I18NException("excepcion.general.Exception", this.getClass().getSimpleName(), "deleteSerie");
+		}
 	}
 	
 	

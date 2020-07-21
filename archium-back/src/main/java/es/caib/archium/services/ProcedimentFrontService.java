@@ -588,4 +588,16 @@ public class ProcedimentFrontService {
 		
 		
 	}	
+	
+	@Transactional
+	public void deleteProcediment(Long idProcediment) throws I18NException{
+		try {
+			this.procedimentEJB.delete(idProcediment);
+		} catch(NullPointerException e) {
+			throw new I18NException("excepcion.general.NullPointerException", this.getClass().getSimpleName(), "deleteProcediment");
+		} catch(Exception e) {
+			throw new I18NException("excepcion.general.Exception", this.getClass().getSimpleName(), "deleteProcediment");
+		}
+	}
+	
 }

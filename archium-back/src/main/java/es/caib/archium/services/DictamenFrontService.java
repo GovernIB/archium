@@ -280,4 +280,15 @@ public class DictamenFrontService {
 		
 	}	
 	
+	@Transactional
+	public void deleteDictamen(Long idDictamen) throws I18NException{
+		try {
+			this.dictamenEJB.delete(idDictamen);
+		} catch(NullPointerException e) {
+			throw new I18NException("excepcion.general.NullPointerException", this.getClass().getSimpleName(), "deleteDictamen");
+		} catch(Exception e) {
+			throw new I18NException("excepcion.general.Exception", this.getClass().getSimpleName(), "deleteDictamen");
+		}
+	}
+	
 }

@@ -106,9 +106,6 @@ public class FuncionesController implements Serializable{
     private Boolean error = false;
     
     
-    public static final I18NTranslator translator = new I18NTranslator(
-            new String[]{"messages.messages"});
-    
 	@PostConstruct
     public void init() throws ClassNotFoundException {   
 		
@@ -150,7 +147,7 @@ public class FuncionesController implements Serializable{
             ctxt.getPartialViewContext().getRenderIds().add("panelButtons");
     			
     	} catch(I18NException e) {	
-    		log.error(translator.translate(e, this.getLocale()));
+    		log.error(FrontExceptionTranslate.translate(e, this.getLocale()));
     		error = true;
     	}        
     }
@@ -185,6 +182,19 @@ public class FuncionesController implements Serializable{
     		this.funcionSeleccionada = d.getObject();
     		this.funcioPare = d.getObject();
     	}    	
+    }
+    
+    public void deleteFuncio(Document<FuncioObject> f) {
+
+    	try {
+			this.servicesFunciones.deleteFuncio(f.getId());
+			TreeNode node = this.getNodeFromFunctionId(f.getId(), "Funcio", "update", f);
+			node.getParent().getChildren().remove(node);
+			FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(messageBundle.getString("funciones.delete.ok")));
+		} catch (I18NException e) {
+			log.error(FrontExceptionTranslate.translate(e, this.getLocale()));
+			FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, messageBundle.getString("funciones.delete.error"), null));
+		}
     }
     
     public void update() {    
@@ -244,10 +254,7 @@ public class FuncionesController implements Serializable{
 				//oldParent.getChildren().remove(node);
 		        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(messageBundle.getString("funciones.update.ok")));
 			}
-			
-			
-			
-	        
+
 		} catch (I18NException e) {
 			log.error(FrontExceptionTranslate.translate(e, this.getLocale()));
 			FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, messageBundle.getString("funciones.update.error"), null));
@@ -537,6 +544,7 @@ public class FuncionesController implements Serializable{
     	try {
 			this.root = this.servicesFunciones.getContent(cuadroSeleccionado);	
 			this.filterNode = this.root.getParent();
+			this.listaFunciones = this.servicesFunciones.loadTree(cuadroSeleccionado.getId(), null);
 		} catch (I18NException e) {
 			FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, messageBundle.getString("funciones.quadre.load"), null));
 			log.error(FrontExceptionTranslate.translate(e, this.getLocale()));
@@ -783,10 +791,7 @@ public class FuncionesController implements Serializable{
 		return locale;
 	}
 
-	public static I18NTranslator getTranslator() {
-		return translator;
-	}
-	
+
 	
 	
 }

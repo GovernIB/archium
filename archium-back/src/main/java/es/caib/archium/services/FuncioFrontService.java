@@ -307,5 +307,15 @@ public class FuncioFrontService {
 		
 	}
 	
+	@Transactional
+	public void deleteFuncio(Long idFuncio) throws I18NException{
+		try {
+			this.funcionesEJB.delete(idFuncio);
+		} catch(NullPointerException e) {
+			throw new I18NException("excepcion.general.NullPointerException", this.getClass().getSimpleName(), "deleteFuncio");
+		} catch(Exception e) {
+			throw new I18NException("excepcion.general.Exception", this.getClass().getSimpleName(), "deleteFuncio");
+		}
+	}
 	
 }

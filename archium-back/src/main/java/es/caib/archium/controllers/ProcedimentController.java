@@ -20,14 +20,17 @@ import javax.transaction.Transactional;
 import org.primefaces.PrimeFaces;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.model.DualListModel;
+import org.primefaces.model.TreeNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import es.caib.archium.commons.i18n.I18NException;
 import es.caib.archium.objects.AplicacioObject;
 import es.caib.archium.objects.Dir3Object;
+import es.caib.archium.objects.Document;
 import es.caib.archium.objects.FamiliaprocedimentObject;
 import es.caib.archium.objects.FormainiciObject;
+import es.caib.archium.objects.FuncioObject;
 import es.caib.archium.objects.LimitacioNormativaSerieObject;
 import es.caib.archium.objects.MateriaObject;
 import es.caib.archium.objects.NivellelectronicObject;
@@ -381,7 +384,19 @@ public class ProcedimentController implements Serializable {
 		return objeto;
 	}
 	
-	@Transactional
+	public void deleteProcediment(ProcedimentObject p) {
+
+    	try {
+			this.serviceProcediment.deleteProcediment(p.getId());
+			FacesContext.getCurrentInstance().addMessage("message-global", new FacesMessage(messageBundle.getString("procediment.delete.ok")));
+			this.listaProcediment.remove(p);
+			this.listaFilter.remove(p);
+		} catch (I18NException e) {
+			log.error(FrontExceptionTranslate.translate(e, this.getLocale()));
+			FacesContext.getCurrentInstance().addMessage("message-global", new FacesMessage(FacesMessage.SEVERITY_ERROR, messageBundle.getString("procediment.delete.error"), null));
+		}
+    }
+	
 	public void save() {    
 		try {		
 			this.materiaSelected 			= materiaRelacionada.getTarget();			
@@ -390,15 +405,16 @@ public class ProcedimentController implements Serializable {
 			
 			this.serviceProcediment.create(objetoPersistir(), this.materiaSelected, this.listaTipusPublicSelected, this.normativaSelected, listaTDP);
 			
-			FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(messageBundle.getString("procediment.insert.ok")));
+			FacesContext.getCurrentInstance().addMessage("message-global", new FacesMessage(messageBundle.getString("procediment.insert.ok")));
 			this.listaProcediment = this.serviceProcediment.findAllProcedimiento();	    	
+			this.listaFilter = this.listaProcediment;
 		} catch (I18NException eee) {
 			log.error(FrontExceptionTranslate.translate(eee, this.getLocale()));
 			FacesMessage message = new FacesMessage();
     		message.setSeverity(FacesMessage.SEVERITY_ERROR);
     		message.setSummary(messageBundle.getString("procediment.insert.error"));
     		message.setDetail(messageBundle.getString("procediment.insert.error"));
-    		FacesContext.getCurrentInstance().addMessage(null, message);
+    		FacesContext.getCurrentInstance().addMessage("message-global", message);
 		}			
 	}
 		    
@@ -411,7 +427,8 @@ public class ProcedimentController implements Serializable {
 
 			FacesMessage msg = new FacesMessage(messageBundle.getString("procediment.update.ok"));
 			this.listaProcediment = this.serviceProcediment.findAllProcedimiento();	
-			FacesContext.getCurrentInstance().addMessage(null, msg);
+			this.listaFilter = this.listaProcediment;
+			FacesContext.getCurrentInstance().addMessage("message-global", msg);
 		}
 		catch (I18NException e) {
 			log.error(FrontExceptionTranslate.translate(e, this.getLocale()));
@@ -419,7 +436,7 @@ public class ProcedimentController implements Serializable {
     		message.setSeverity(FacesMessage.SEVERITY_ERROR);
     		message.setSummary(messageBundle.getString("procediment.update.error"));
     		message.setDetail(messageBundle.getString("procediment.update.error"));
-    		FacesContext.getCurrentInstance().addMessage(null, message);
+    		FacesContext.getCurrentInstance().addMessage("message-global", message);
 		}
 	}
 		    

@@ -413,7 +413,7 @@
 				    	</p:tabView>
 
 					    <div class="ui-g-12 button_new" align="justify">
-					    	<p:commandButton class="boton_modal button_red" update="panel1" value="#{messages['guardar']}" action="#{procedimentController.saveUpdate}" oncomplete="if (args &amp;&amp; !args.validationFailed) PF('procedimentModalDialog').hide()" style="margin-rigth: 0px;" onstart="PF('cuadros').clearFilters()" ></p:commandButton>					 
+					    	<p:commandButton widgetVar="procSaveButton" onclick="PF('procSaveButton').disable()" class="boton_modal button_red" update="panel1 :panel1:message-global" value="#{messages['guardar']}" action="#{procedimentController.saveUpdate}" oncomplete="PF('procSaveButton').enable();if (args &amp;&amp; !args.validationFailed) PF('procedimentModalDialog').hide()" style="margin-rigth: 0px;" onstart="PF('cuadros').clearFilters()" ></p:commandButton>					 
 					    </div>
 				    </p:panel>
 				</div>

@@ -103,8 +103,8 @@
 				    
 				    <div class="ui-g-12 button_new">
 				    	<!-- <p:button class="boton_modal" value="Guardar y crear" action="#{backingBean.save}"></p:button> -->
-				    	<p:commandButton class="boton_modal button_red" update="panel1" value="#{messages['guardar']}" rendered="#{funciones.funcionActualizar==null}" actionListener="#{funciones.save}" oncomplete="if (args &amp;&amp; !args.validationFailed) PF('documentDialog').hide()"></p:commandButton>
-				    	<p:commandButton class="boton_modal button_red" update="panel1" value="#{messages['actualizar']}" rendered="#{funciones.funcionActualizar!=null}" actionListener="#{funciones.update}" oncomplete="if (args &amp;&amp; !args.validationFailed) PF('documentDialog').hide()"></p:commandButton>
+				    	<p:commandButton widgetVar="funcSaveButton" onclick="PF('funcSaveButton').disable()" class="boton_modal button_red" update="panel1" value="#{messages['guardar']}" rendered="#{funciones.funcionActualizar==null}" actionListener="#{funciones.save}" oncomplete="PF('funcSaveButton').enable();if (args &amp;&amp; !args.validationFailed) PF('documentDialog').hide()"></p:commandButton>
+				    	<p:commandButton widgetVar="funcUpdateButton" onclick="PF('funcUpdateButton').disable()" class="boton_modal button_red" update="panel1" value="#{messages['actualizar']}" rendered="#{funciones.funcionActualizar!=null}" actionListener="#{funciones.update}" oncomplete="PF('funcUpdateButton').enable();if (args &amp;&amp; !args.validationFailed) PF('documentDialog').hide()"></p:commandButton>
 				    </div>
 				
 				</div>    

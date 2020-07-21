@@ -90,15 +90,27 @@
 		            <p:commandButton class="botton_library" rendered="#{document.type=='Funcio'}" icon="pi pi-pencil" resetValues="true" title="#{messages['funciones.modificafuncion']}" update="dialog" action="#{funciones.setFuncioActualizar(document)}" oncomplete="PF('documentDialog').show()"></p:commandButton>
 		            <p:commandButton class="botton_library" rendered="#{document.type=='Funcio'}" icon="pi pi-plus-circle" resetValues="true" title="#{messages['funciones.nuevafuncion']}" update="dialog" action="#{funciones.setFuncioSeleccionada(document)}" oncomplete="PF('documentDialog').show()"></p:commandButton>
 		            <p:commandButton class="botton_library" rendered="#{document.type=='Funcio'}" icon="pi pi-file" resetValues="true" title="#{messages['funciones.nuevaserie']}" update="serieModalDialogId" action="#{nuevaSerieController.loadFromFunction(document)}" oncomplete="PF('serieModalDialog').show()"></p:commandButton>
+		            <p:commandButton class="botton_library" rendered="#{document.type=='Funcio'}" icon="pi pi-trash" title="#{messages['funciones.eliminarfuncio']}" update="panel1" action="#{funciones.deleteFuncio(document)}" oncomplete="">
+		            	<p:confirm header="#{messages['confirmacion']}" message="#{messages['funciones.eliminar.alert']}" icon="pi pi-exclamation-triangle" />
+		            </p:commandButton>
 		            <p:commandButton class="botton_library" rendered="#{document.type=='Serie'}" icon="pi pi-pencil" resetValues="true" title="#{messages['funciones.modificaserie']}" update="serieModalDialogId" action="#{nuevaSerieController.updateSerie(document)}" ></p:commandButton>
 		            <p:commandButton class="botton_library" rendered="#{document.type=='Serie'}" icon="pi pi-bars" resetValues="true" title="#{messages['funciones.nuevodictamen']}" update="dictamenModalDialogId" action="#{dictamenController.addDictamentfromSerie(document)}" oncomplete="PF('dictamenModalDialog').show()"></p:commandButton>
+		            <p:commandButton class="botton_library" rendered="#{document.type=='Serie'}" icon="pi pi-trash" title="#{messages['funciones.eliminarserie']}" update="panel1" action="#{nuevaSerieController.deleteSerie(document)}" oncomplete="">
+		            	<p:confirm header="#{messages['confirmacion']}" message="#{messages['nuevaserie.eliminar.alert']}" icon="pi pi-exclamation-triangle" />
+		            </p:commandButton>
 		            <p:commandButton class="botton_library" rendered="#{document.type=='Dictamen'}" icon="pi pi-pencil" resetValues="true" title="#{messages['funciones.modificadictamen']}" update="dictamenModalDialogId" action="#{dictamenController.updateDictament(document)}" oncomplete="PF('dictamenModalDialog').show()"></p:commandButton>
+		        	<p:commandButton class="botton_library" rendered="#{document.type=='Dictamen'}" icon="pi pi-trash" title="#{messages['funciones.eliminardictamen']}" update="panel1" action="#{dictamenController.deleteDictamen(document)}" oncomplete="">
+		            	<p:confirm header="#{messages['confirmacion']}" message="#{messages['dictamen.eliminar.alert']}" icon="pi pi-exclamation-triangle" />
+		            </p:commandButton>
 		        </p:column>
 		    </p:treeTable>
             
         </h:form>
        
-        
+        <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+	        <p:commandButton value="#{messages['si']}" type="button" styleClass="ui-confirmdialog-yes" icon="pi pi-check" />
+	        <p:commandButton value="#{messages['no']}" type="button" styleClass="ui-confirmdialog-no" icon="pi pi-times" />
+	    </p:confirmDialog>      
         <hr/>
         
         <h:form id="info">

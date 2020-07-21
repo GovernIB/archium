@@ -103,7 +103,7 @@
 					    </div>	
 	  
 					    <div class="ui-g-12 button_new" align="justify">
-					    	<p:commandButton class="boton_modal button_red" update="panel1" value="#{messages['guardar']}" action="#{quadreController.save}" oncomplete="if (args &amp;&amp; !args.validationFailed) PF('quadreModalDialog').hide()" style="margin-rigth: 0px;" ></p:commandButton>				    	
+					    	<p:commandButton widgetVar="quadreSaveButton" onclick="PF('quadreSaveButton').disable()" class="boton_modal button_red" update="panel1" value="#{messages['guardar']}" action="#{quadreController.save}" oncomplete="PF('quadreSaveButton').enable();if (args &amp;&amp; !args.validationFailed) PF('quadreModalDialog').hide()" style="margin-rigth: 0px;" ></p:commandButton>				    	
 					    </div>
 				    </p:panel>
 				</div>

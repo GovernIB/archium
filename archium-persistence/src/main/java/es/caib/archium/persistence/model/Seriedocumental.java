@@ -18,7 +18,7 @@ public class Seriedocumental implements Serializable {
 	@Id
 	@SequenceGenerator(name="ACH_SERIEDOCUMENTAL_ID_GENERATOR", sequenceName="ACH_SERIEDOCUMENTAL_SEQ", allocationSize = 1)
 	@GeneratedValue(strategy=GenerationType.SEQUENCE, generator="ACH_SERIEDOCUMENTAL_ID_GENERATOR")
-	private long id;
+	private Long id;
 
 	private String codi;
 
@@ -46,7 +46,8 @@ public class Seriedocumental implements Serializable {
 	private List<AplicacioSerie> achAplicacioSeries;
 
 	//bi-directional many-to-one association to Dictamen
-	@OneToMany(mappedBy="achSeriedocumental")
+	@OneToMany(mappedBy="achSeriedocumental",
+			cascade = CascadeType.REMOVE)
 	private List<Dictamen> achDictamens;
 
 	//bi-directional many-to-one association to LimitacioNormativaSerie
@@ -117,12 +118,19 @@ public class Seriedocumental implements Serializable {
 
 	public Seriedocumental() {
 	}
+	
+	@PreRemove
+	private void preRemove() {
+	    for (Procediment p : achProcediments) {
+	        p.setAchSeriedocumental(null);
+	    }
+	}
 
-	public long getId() {
+	public Long getId() {
 		return this.id;
 	}
 
-	public void setId(long id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 

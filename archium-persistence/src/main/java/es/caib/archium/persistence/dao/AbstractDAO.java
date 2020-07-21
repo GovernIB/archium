@@ -86,6 +86,7 @@ public abstract class AbstractDAO<E extends Serializable, PK> implements DAO<E, 
             return entityManager.merge(entity);
         } catch (Throwable e) {
             // entity.error.updating=Error desconocido actualizando un objeto de tipo {0}: {1}
+        	e.printStackTrace();
             throw new I18NException("entity.error.updating", entityClass.getName(), e.getMessage());
         }
     }

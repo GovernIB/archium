@@ -20,7 +20,7 @@ public class Procediment implements Serializable {
 	@Id
 	@SequenceGenerator(name="ACH_PROCEDIMENT_ID_GENERATOR", sequenceName="ACH_PROCEDIMENT_SEQ", allocationSize = 1)
 	@GeneratedValue(strategy=GenerationType.SEQUENCE, generator="ACH_PROCEDIMENT_ID_GENERATOR")
-	private long id;
+	private Long id;
 
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date caducitat;
@@ -146,11 +146,11 @@ public class Procediment implements Serializable {
 	public Procediment() {
 	}
 
-	public long getId() {
+	public Long getId() {
 		return this.id;
 	}
 
-	public void setId(long id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 

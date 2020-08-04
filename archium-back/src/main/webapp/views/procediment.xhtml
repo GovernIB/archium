@@ -38,7 +38,7 @@
                 paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                 currentPageReportTemplate="{startRecord}-{endRecord} of {totalRecords} records">
                 
-                <p:ajax event="rowSelect" listener="#{procedimentController.onRowSelect}"  resetValues="true" update="procedimentModalDialogId"/>        		 
+                <p:ajax event="rowSelect" listener="#{procedimentController.onRowSelect}"  resetValues="true" update="procedimentModalDialogId, :panel1:message-global"/>        		 
 		        <p:column class="first-column" headerText="#{messages['procediment.nom']}" sortBy="#{cuadro.nom}"  filterBy="#{cuadro.nom}" filterMatchMode="contains" style="width: 30%;"> 
 		        	<h:outputText value="#{cuadro.nom}" />
 		        </p:column>

@@ -50,7 +50,6 @@ public class QuadreFrontService {
 	}
 	
 	public QuadreObject getQuadreById(Long id) throws I18NException{
-				
 		try {
 			Quadreclassificacio res= quadreEjb.findById(id);
 			

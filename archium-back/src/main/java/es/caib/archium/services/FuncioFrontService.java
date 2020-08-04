@@ -147,7 +147,6 @@ public class FuncioFrontService {
 	}
 	
 	public FuncioObject findById(Long id) throws I18NException {
-		
 		try {
 			Funcio f = this.funcionesEJB.findById(id);
 			

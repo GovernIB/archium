@@ -187,125 +187,131 @@ public class ProcedimentController implements Serializable {
 	
 	private void inicializarUpdate(ProcedimentObject obj) throws I18NException{
 		
-		this.modify = obj;
-		this.id 			= obj.getId();
-		this.codisia 		= obj.getCodirolsac();
-		this.nom			= obj.getNom();
-		this.objecte 		= obj.getObjecte();
-		//private EstatObject   Estat;  //En el futuroo se añadira esta tabla y tendra que transformarse
-		this.estat			= obj.getEstat();
-		this.destinataris	= obj.getDestinataris();
-		this.observacions	= obj.getObservacions();
-		this.uri			= obj.getUri();
 		
-		this.familiaprocediment = obj.getFamiliaprocediment();
-		this.formainici 		= obj.getFormainici();
-		this.silenci			= obj.getSilenci();
-		this.nivellelectronic 	= obj.getNivellelectronic();
-		this.seriedocumental	= obj.getSeriedocumental();
-		this.aplicacio			= obj.getAplicacio();
-		this.termine  			= obj.getTermine();
-		this.termininotif		= obj.getTermininotif();
-		
+		ProcedimentObject p;
 
-		if (this.termine != null) {
-			String a 	= this.termine.substring(this.termine.length() - 1, this.termine.length());
-			if (a.equals("H"))
-				this.setPlazo1a(messageBundle.getString("general.plazos.hores"));
-			if (a.equals("D"))
-				this.setPlazo1a(messageBundle.getString("general.plazos.dies"));
-			if (a.equals("S"))
-				this.setPlazo1a(messageBundle.getString("general.plazos.setmanes"));
-			if (a.equals("M"))
-				this.setPlazo1a(messageBundle.getString("general.plazos.mesos"));
-			if (a.equals("A"))
-				this.setPlazo1a(messageBundle.getString("general.plazos.anys"));
-			this.plazo1 	= Integer.parseInt(this.termine.substring(0,this.termine.length() - 1));
-		}
-		else {
-			this.plazo1a 	= null;
-			this.plazo1 	= null;
-		}
-		if (this.termininotif != null) {
-			this.plazo2 	= Integer.parseInt(this.termininotif.substring(0,this.termininotif.length() - 1));
-			String a 	= this.termininotif.substring(this.termininotif.length() - 1, this.termininotif.length());				 	
-			if (a.equals("H"))
-				this.setPlazo2a(messageBundle.getString("general.plazos.hores"));
-			if (a.equals("D"))
-				this.setPlazo2a(messageBundle.getString("general.plazos.dies"));
-			if (a.equals("S"))
-				this.setPlazo2a(messageBundle.getString("general.plazos.setmanes"));
-			if (a.equals("M"))
-				this.setPlazo2a(messageBundle.getString("general.plazos.mesos"));
-			if (a.equals("A"))
-				this.setPlazo2a(messageBundle.getString("general.plazos.anys"));
-		}
-		else {
-			this.plazo2a 	= null;
-			this.plazo2 	= null;
-		}
-	
-	
-		this.codirolsac 		= obj.getCodirolsac(); 	
-		this.termine  			= obj.getTermine();
-		this.termininotif		= obj.getTermininotif();
-		this.fiViaAdministrativa = obj.getFiViaAdministrativa();
-		this.taxa				= obj.getTaxa();
-		this.dir3Resolvent 		= obj.getDir3Resolvent();
-		this.dir3Instructor 	= obj.getDir3Instructor();
-		this.publicacio 		= obj.getPublicacio();
-		this.caducitat			= obj.getCaducitat();
-		this.modificacio		= obj.getModificacio();	
-		this.gestor 			= obj.getGestor();
-	
-	
-		if (obj.getListaTipuDocumental() == null)
-		{
-			obj.setListaTipuDocumental(this.serviceProcediment.listaTipo(obj.getListaTipuDocumentalProcedimiento()));
-		}	
+		p = this.serviceProcediment.findById(obj.getId());
 		
-		if (obj.getListaMateria()!= null) { 
-			this.materiaRelacionada.setTarget(new ArrayList<> (obj.getListaMateria()));
-			List<MateriaObject> filterList = new ArrayList<>(listaMateria);
-			if (obj.getListaMateria() != null) 
-			{
-				filterList.removeAll(obj.getListaMateria());
-			}
-			this.materiaRelacionada.setSource(filterList);
-		}
-		else {
-			this.materiaRelacionada.setTarget(new ArrayList<> ());
-			this.materiaRelacionada.setSource(new ArrayList<> (listaMateria));
-		}
 		
-		if(obj.getListaTipuPublic() != null) {
-			this.tipusPublicRelacionada.setTarget(new ArrayList<> (obj.getListaTipuPublic()));
-			List<tipusPublicObject> filterList4 = new ArrayList<>(listaTipusPublic);
-			if (obj.getListaTipuPublic()!= null) {
-				filterList4.removeAll(obj.getListaTipuPublic());
-			}
-			this.tipusPublicRelacionada.setSource(filterList4);
-		}
-		else {
-			this.tipusPublicRelacionada.setTarget(new ArrayList<>());
-			this.tipusPublicRelacionada.setSource(new ArrayList<>(listaTipusPublic));
-		}
-		
-		if (obj.getListaNormativa() != null) {
-			this.normativaRelacionada.setTarget(new ArrayList<> (obj.getListaNormativa()));
-			List<NormativaObject> filterList3 = new ArrayList<>(listaNormativa);
-			if (obj.getListaNormativa()!= null) {
-				filterList3.removeAll(obj.getListaNormativa());
-			}
-			this.normativaRelacionada.setSource(filterList3);			
-		}
-		else {
-			this.normativaRelacionada.setTarget(new ArrayList<> ());
-			this.normativaRelacionada.setSource(new ArrayList<> (listaNormativa));
-		}
-		
-		listaTDP = serviceProcediment.getListaTDP(id);
+		if(p!=null) {
+			this.modify = p;
+			this.id 			= p.getId();
+			this.codisia 		= p.getCodirolsac();
+			this.nom			= p.getNom();
+			this.objecte 		= p.getObjecte();
+			//private EstatObject   Estat;  //En el futuroo se añadira esta tabla y tendra que transformarse
+			this.estat			= p.getEstat();
+			this.destinataris	= p.getDestinataris();
+			this.observacions	= p.getObservacions();
+			this.uri			= p.getUri();
+			
+			this.familiaprocediment = p.getFamiliaprocediment();
+			this.formainici 		= p.getFormainici();
+			this.silenci			= p.getSilenci();
+			this.nivellelectronic 	= p.getNivellelectronic();
+			this.seriedocumental	= p.getSeriedocumental();
+			this.aplicacio			= p.getAplicacio();
+			this.termine  			= p.getTermine();
+			this.termininotif		= p.getTermininotif();
+			
 
+			if (this.termine != null) {
+				String a 	= this.termine.substring(this.termine.length() - 1, this.termine.length());
+				if (a.equals("H"))
+					this.setPlazo1a(messageBundle.getString("general.plazos.hores"));
+				if (a.equals("D"))
+					this.setPlazo1a(messageBundle.getString("general.plazos.dies"));
+				if (a.equals("S"))
+					this.setPlazo1a(messageBundle.getString("general.plazos.setmanes"));
+				if (a.equals("M"))
+					this.setPlazo1a(messageBundle.getString("general.plazos.mesos"));
+				if (a.equals("A"))
+					this.setPlazo1a(messageBundle.getString("general.plazos.anys"));
+				this.plazo1 	= Integer.parseInt(this.termine.substring(0,this.termine.length() - 1));
+			}
+			else {
+				this.plazo1a 	= null;
+				this.plazo1 	= null;
+			}
+			if (this.termininotif != null) {
+				this.plazo2 	= Integer.parseInt(this.termininotif.substring(0,this.termininotif.length() - 1));
+				String a 	= this.termininotif.substring(this.termininotif.length() - 1, this.termininotif.length());				 	
+				if (a.equals("H"))
+					this.setPlazo2a(messageBundle.getString("general.plazos.hores"));
+				if (a.equals("D"))
+					this.setPlazo2a(messageBundle.getString("general.plazos.dies"));
+				if (a.equals("S"))
+					this.setPlazo2a(messageBundle.getString("general.plazos.setmanes"));
+				if (a.equals("M"))
+					this.setPlazo2a(messageBundle.getString("general.plazos.mesos"));
+				if (a.equals("A"))
+					this.setPlazo2a(messageBundle.getString("general.plazos.anys"));
+			}
+			else {
+				this.plazo2a 	= null;
+				this.plazo2 	= null;
+			}
+		
+		
+			this.codirolsac 		= p.getCodirolsac(); 	
+			this.termine  			= p.getTermine();
+			this.termininotif		= p.getTermininotif();
+			this.fiViaAdministrativa = p.getFiViaAdministrativa();
+			this.taxa				= p.getTaxa();
+			this.dir3Resolvent 		= p.getDir3Resolvent();
+			this.dir3Instructor 	= p.getDir3Instructor();
+			this.publicacio 		= p.getPublicacio();
+			this.caducitat			= p.getCaducitat();
+			this.modificacio		= p.getModificacio();	
+			this.gestor 			= p.getGestor();
+		
+		
+			if (p.getListaTipuDocumental() == null){
+				p.setListaTipuDocumental(this.serviceProcediment.listaTipo(p.getListaTipuDocumentalProcedimiento()));
+			}	
+			
+			if (p.getListaMateria()!= null) { 
+				this.materiaRelacionada.setTarget(new ArrayList<> (p.getListaMateria()));
+				List<MateriaObject> filterList = new ArrayList<>(listaMateria);
+				if (obj.getListaMateria() != null){
+					filterList.removeAll(p.getListaMateria());
+				}
+				this.materiaRelacionada.setSource(filterList);
+			} else {
+				this.materiaRelacionada.setTarget(new ArrayList<> ());
+				this.materiaRelacionada.setSource(new ArrayList<> (listaMateria));
+			}
+			
+			if(p.getListaTipuPublic() != null) {
+				this.tipusPublicRelacionada.setTarget(new ArrayList<> (p.getListaTipuPublic()));
+				List<tipusPublicObject> filterList4 = new ArrayList<>(listaTipusPublic);
+				if (p.getListaTipuPublic()!= null) {
+					filterList4.removeAll(p.getListaTipuPublic());
+				}
+				this.tipusPublicRelacionada.setSource(filterList4);
+			} else {
+				this.tipusPublicRelacionada.setTarget(new ArrayList<>());
+				this.tipusPublicRelacionada.setSource(new ArrayList<>(listaTipusPublic));
+			}
+			
+			if (p.getListaNormativa() != null) {
+				this.normativaRelacionada.setTarget(new ArrayList<> (p.getListaNormativa()));
+				List<NormativaObject> filterList3 = new ArrayList<>(listaNormativa);
+				if (p.getListaNormativa()!= null) {
+					filterList3.removeAll(p.getListaNormativa());
+				}
+				this.normativaRelacionada.setSource(filterList3);			
+			} else {
+				this.normativaRelacionada.setTarget(new ArrayList<> ());
+				this.normativaRelacionada.setSource(new ArrayList<> (listaNormativa));
+			}
+			
+			listaTDP = serviceProcediment.getListaTDP(id);
+			
+		} else {
+			FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, messageBundle.getString("procediment.update.abrirUpdate.error"), messageBundle.getString("procediment.update.abrirUpdate.error"));
+		 	FacesContext.getCurrentInstance().addMessage("message-global", msg);
+		}
 	}
 	
 	void inicializarSave(){
@@ -365,8 +371,9 @@ public class ProcedimentController implements Serializable {
 		} catch (I18NException e) {
 			log.error(FrontExceptionTranslate.translate(e, this.getLocale()));
 			FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, messageBundle.getString("procediment.update.abrirUpdate.error"), messageBundle.getString("procediment.update.abrirUpdate.error"));
-		 	FacesContext.getCurrentInstance().addMessage(null, msg);
+		 	FacesContext.getCurrentInstance().addMessage("message-global", msg);
 		}
+ 		
     }
 	
 	

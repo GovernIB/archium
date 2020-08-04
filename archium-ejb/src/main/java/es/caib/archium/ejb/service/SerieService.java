@@ -14,7 +14,7 @@ public interface SerieService extends DAO<Seriedocumental, Long> {
 
 	public List<Seriedocumental> getByFuncio(Long funcioId) throws I18NException;
 	
-	
+	public List<Dictamen> getDictamenVigent(Long serieId) throws I18NException;
 	
 }
 

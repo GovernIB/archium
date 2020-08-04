@@ -14,6 +14,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.validation.constraints.NotNull;
 
+import org.primefaces.PrimeFaces;
 import org.primefaces.event.UnselectEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -201,12 +202,31 @@ public class QuadreController implements Serializable{
     }
     
     public void abrirModalUpdate(QuadreObject object) {
-    	this.setNouId(object.getId());
-    	this.setNombreNuevo(object.getNom());    	
-    	this.setNombreNuevoCast(object.getNomCas());
-    	this.setNouEstat(object.getEstat());
-    	this.setNouFi(object.getFi());
-    	this.setNouVersio(object.getVersio());
+    	
+    	
+    	try {
+			QuadreObject quadre = this.services.getQuadreById(object.getId());
+			
+			if(quadre!=null) {
+				this.setNouId(object.getId());
+				this.setNombreNuevo(quadre.getNom());    	
+		    	this.setNombreNuevoCast(quadre.getNomCas());
+		    	this.setNouEstat(quadre.getEstat());
+		    	this.setNouFi(quadre.getFi());
+		    	this.setNouVersio(quadre.getVersio());
+		    	PrimeFaces.current().executeScript("PF('quadreModalUpdate').show()");
+			} else {
+	 			FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, messageBundle.getString("cuadro.get.error"), null);
+	 			FacesContext.getCurrentInstance().addMessage(null, msg);	
+			}
+	    	
+		} catch (I18NException e) {
+			log.error(FrontExceptionTranslate.translate(e, this.getLocale()));
+ 			FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, messageBundle.getString("cuadro.get.error"), null);
+ 			FacesContext.getCurrentInstance().addMessage(null, msg);	
+		}
+    	
+    	
     	
     }
 

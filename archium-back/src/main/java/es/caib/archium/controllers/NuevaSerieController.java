@@ -198,97 +198,101 @@ public class NuevaSerieController implements Serializable {
 		
 		clearForm();
 		
-		if (obj==null) {
-			modify = null;
-    	} else {
-    		modify = obj.getObject();
-    	}
 		
-		serieId= obj.getId();
-		codi = modify.getCodi();
-		nom = modify.getNom();
-		nomCas = modify.getNomCas();
-		catalegSeriId = modify.getCatalegSeriId();
-		serieFuncio = modify.getFuncio();
-		descripcio =modify.getDescripcio();
-		descripcioCas= modify.getDescripcioCas();
-		resumMigracio = modify.getResumMigracio();
-		dir3Promotor = modify.getDir3Promotor();
-		
-		tipusSerieId = modify.getTipusSerieId();		
-		
-		codiIecisa = modify.getCodiIecisa();
-		serieFuncio = modify.getFuncio();
-		serieEstat = (modify.getEstat()!=null ? modify.getEstat() : "ESBORRANY");
-		
-		List<AplicacionObject> targetAppsList = new ArrayList<>();
-		List<SerieDocumentalObject> relatedSeriesList = new ArrayList<>();
-		List<SerieArgenObject> relatedArgensList = new ArrayList<>();
-		List<NormativaAprobacioObject> normativasList = new ArrayList<>();
 		try {
-			targetAppsList = service.getListaAplicacionesBySerie(serieId);
-			List<AplicacionObject> filteredApps = new ArrayList<>(aplicaciones.getSource());
-			filteredApps.removeAll(targetAppsList);
-			aplicaciones.setSource(filteredApps);
-			aplicaciones.setTarget(targetAppsList);
 			
-			relatedSeriesList = service.getListaSeriesBySerie(serieId);
-			List<SerieDocumentalObject> filtered =  new ArrayList<>(seriesRelacionadas.getSource());
-			filtered.removeAll(relatedSeriesList);
-			seriesRelacionadas.setSource(filtered);
-			seriesRelacionadas.setTarget(relatedSeriesList);
+			SerieDocumentalObject modify = this.service.findById(obj.getId());
 			
-			relatedArgensList = service.getListaSeriesArgenBySerie(serieId);
-			List<SerieArgenObject> filteredArgen = new ArrayList<>(seriesArgenRelacionadas.getSource());
-			filteredArgen.removeAll(relatedArgensList);
-			seriesArgenRelacionadas.setSource(filteredArgen);
-			seriesArgenRelacionadas.setTarget(relatedArgensList);
-			listaRelacionLNS = service.getListaLNS(serieId);
-			
-			for(LimitacioNormativaSerieObject lns: listaRelacionLNS) {
-				List<CausaLimitacioObject> filteredCL = new ArrayList<CausaLimitacioObject>(listaCausaLimitacio);
-				filteredCL.removeAll(lns.getListCausaLimitacio());
-				lns.setDualListCausas(new DualListModel<CausaLimitacioObject>());
-	    		lns.getDualListCausas().setSource(filteredCL);
-	    		lns.getDualListCausas().setTarget(lns.getListCausaLimitacio());
-			}
-			
-			normativasList = service.getListaNormativasBySerie(serieId);
-			List <NormativaAprobacioObject> filteredNormativas = new ArrayList<NormativaAprobacioObject>(normativasSerie.getSource());
-			filteredNormativas.removeAll(normativasList);
-			normativasSerie.setTarget(normativasList);			
-			normativasSerie.setSource(filteredNormativas);
-			
-			ValoracioObject dbValoracio = service.getValoracioSerie(serieId);
-			valoracio = new ValoracioObject(dbValoracio);
-			valoracio.getAchValorprimaris().clear();
-			for(TipuValorObject tv: listaTiposValor) {
+			if(modify!=null) {
+				serieId= obj.getId();
+				codi = modify.getCodi();
+				nom = modify.getNom();
+				nomCas = modify.getNomCas();
+				catalegSeriId = modify.getCatalegSeriId();
+				serieFuncio = modify.getFuncio();
+				descripcio =modify.getDescripcio();
+				descripcioCas= modify.getDescripcioCas();
+				resumMigracio = modify.getResumMigracio();
+				dir3Promotor = modify.getDir3Promotor();
 				
-				boolean existe = false;
-				Iterator<ValorPrimariObject> it = dbValoracio.getAchValorprimaris().iterator();
-				while(it.hasNext() && existe==false) {
-					ValorPrimariObject item = it.next();
-					if(tv.getId()==item.getAchTipusvalor().getId()) {
-						item.setSelected(true);
-						valoracio.addValorprimari(item);
-						existe=true;
-					}
+				tipusSerieId = modify.getTipusSerieId();		
+				
+				codiIecisa = modify.getCodiIecisa();
+				serieFuncio = modify.getFuncio();
+				serieEstat = (modify.getEstat()!=null ? modify.getEstat() : "ESBORRANY");
+				
+				List<AplicacionObject> targetAppsList = new ArrayList<>();
+				List<SerieDocumentalObject> relatedSeriesList = new ArrayList<>();
+				List<SerieArgenObject> relatedArgensList = new ArrayList<>();
+				List<NormativaAprobacioObject> normativasList = new ArrayList<>();
+				
+				targetAppsList = service.getListaAplicacionesBySerie(serieId);
+				List<AplicacionObject> filteredApps = new ArrayList<>(aplicaciones.getSource());
+				filteredApps.removeAll(targetAppsList);
+				aplicaciones.setSource(filteredApps);
+				aplicaciones.setTarget(targetAppsList);
+				
+				relatedSeriesList = service.getListaSeriesBySerie(serieId);
+				List<SerieDocumentalObject> filtered =  new ArrayList<>(seriesRelacionadas.getSource());
+				filtered.removeAll(relatedSeriesList);
+				seriesRelacionadas.setSource(filtered);
+				seriesRelacionadas.setTarget(relatedSeriesList);
+				
+				relatedArgensList = service.getListaSeriesArgenBySerie(serieId);
+				List<SerieArgenObject> filteredArgen = new ArrayList<>(seriesArgenRelacionadas.getSource());
+				filteredArgen.removeAll(relatedArgensList);
+				seriesArgenRelacionadas.setSource(filteredArgen);
+				seriesArgenRelacionadas.setTarget(relatedArgensList);
+				listaRelacionLNS = service.getListaLNS(serieId);
+				
+				for(LimitacioNormativaSerieObject lns: listaRelacionLNS) {
+					List<CausaLimitacioObject> filteredCL = new ArrayList<CausaLimitacioObject>(listaCausaLimitacio);
+					filteredCL.removeAll(lns.getListCausaLimitacio());
+					lns.setDualListCausas(new DualListModel<CausaLimitacioObject>());
+		    		lns.getDualListCausas().setSource(filteredCL);
+		    		lns.getDualListCausas().setTarget(lns.getListCausaLimitacio());
 				}
-								
-				if(existe==false) {
+				
+				normativasList = service.getListaNormativasBySerie(serieId);
+				List <NormativaAprobacioObject> filteredNormativas = new ArrayList<NormativaAprobacioObject>(normativasSerie.getSource());
+				filteredNormativas.removeAll(normativasList);
+				normativasSerie.setTarget(normativasList);			
+				normativasSerie.setSource(filteredNormativas);
+				
+				ValoracioObject dbValoracio = service.getValoracioSerie(serieId);
+				valoracio = new ValoracioObject(dbValoracio);
+				valoracio.getAchValorprimaris().clear();
+				for(TipuValorObject tv: listaTiposValor) {
 					
-					ValorPrimariObject vp = new ValorPrimariObject();
-					vp.setAchTipusvalor(tv);
-					ValoracioObject val = new ValoracioObject();
-					val.setId(dbValoracio.getId());
-					vp.setAchValoracio(val);
-					valoracio.addValorprimari(vp);
+					boolean existe = false;
+					Iterator<ValorPrimariObject> it = dbValoracio.getAchValorprimaris().iterator();
+					while(it.hasNext() && existe==false) {
+						ValorPrimariObject item = it.next();
+						if(tv.getId()==item.getAchTipusvalor().getId()) {
+							item.setSelected(true);
+							valoracio.addValorprimari(item);
+							existe=true;
+						}
+					}
+									
+					if(existe==false) {
+						
+						ValorPrimariObject vp = new ValorPrimariObject();
+						vp.setAchTipusvalor(tv);
+						ValoracioObject val = new ValoracioObject();
+						val.setId(dbValoracio.getId());
+						vp.setAchValoracio(val);
+						valoracio.addValorprimari(vp);
+					}
+					
 				}
 				
+				PrimeFaces.current().executeScript("PF('serieModalDialog').show()");
+			} else {
+				FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, messageBundle.getString("nuevaserie.update.abrirUpdate.error"), messageBundle.getString("procediment.update.abrirUpdate.error"));
+			 	FacesContext.getCurrentInstance().addMessage(null, msg);		
 			}
-			
-			PrimeFaces.current().executeScript("PF('serieModalDialog').show()");
-			
+
 		} catch (I18NException e) {
 			log.error(FrontExceptionTranslate.translate(e, funcBean.getLocale()));
 			FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, messageBundle.getString("nuevaserie.update.abrirUpdate.error"), messageBundle.getString("procediment.update.abrirUpdate.error"));

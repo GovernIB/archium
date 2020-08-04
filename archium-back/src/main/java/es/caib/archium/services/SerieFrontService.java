@@ -484,6 +484,21 @@ public class SerieFrontService {
 		
 	}
 	
+	public SerieDocumentalObject findById(Long id) throws I18NException {
+		try {
+			Seriedocumental s = this.serieService.findById(id);
+			
+			if (s!=null) {
+				return new SerieDocumentalObject(s);
+			}
+			return null;
+		} catch(NullPointerException e) {
+			throw new I18NException("excepcion.general.NullPointerException", this.getClass().getSimpleName(), "findById");
+		} catch(Exception e) {
+			throw new I18NException("excepcion.general.Exception", this.getClass().getSimpleName(), "findById");
+		}
+	}
+	
 	@Transactional
 	public SerieDocumentalObject createNuevaSerie(String codi, String nom, String nomCas, Long catalegSeriId, Long idFuncio,
 			String descripcio, String descripcioCas, String resumMigracio, String dir3Promotor, String estat, Long tipusSerieId,

@@ -2,6 +2,7 @@ package es.caib.archium.services;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -69,6 +70,26 @@ public class DictamenFrontService {
 			throw new I18NException("excepcion.general.Exception", this.getClass().getSimpleName(), "getBySerie");
 		}
 		
+		
+	}
+	
+	public DictamenObject findById(Long id) throws I18NException{	
+		
+		try {
+			
+			Dictamen res = dictamenEJB.findById(id);
+			
+			if(res!=null) {
+				return new DictamenObject(res);
+			} else {
+				return null;
+			}
+			
+		} catch(NullPointerException e) {
+			throw new I18NException("excepcion.general.NullPointerException", this.getClass().getSimpleName(), "findById");
+		} catch(Exception e) {
+			throw new I18NException("excepcion.general.Exception", this.getClass().getSimpleName(), "findById");
+		}
 		
 	}
 	
@@ -220,9 +241,58 @@ public class DictamenFrontService {
 			throw new I18NException("excepcion.general.Exception", this.getClass().getSimpleName(), "findAllNormativaAprovacio");
 		}
 		
+	}
+	
+	@Transactional
+	public void changeVigent2Obsolet(Long serieId) throws I18NException {
+		
+		try {
+			
+			List<Dictamen> listDictamenes = this.serieEJB.getDictamenVigent(serieId);
+			
+			for(Dictamen d : listDictamenes) {
+				d.setEstat("Obsolet");
+				this.dictamenEJB.update(d);
+			}
+			
+		} catch(NullPointerException e) {
+			throw new I18NException("excepcion.general.NullPointerException", this.getClass().getSimpleName(), "changeVigent2Obsolet");
+		} catch(Exception e) {
+			throw new I18NException("excepcion.general.Exception", this.getClass().getSimpleName(), "changeVigent2Obsolet");
+		}		
 		
 	}
 	
+	public Boolean checkDictamenVigent(Long id, String estat, Long idSerie) throws I18NException {
+		
+		try {
+			
+			List<Dictamen> listDictamenes = this.serieEJB.getDictamenVigent(idSerie);
+			
+			if(listDictamenes!=null && estat.equals("Vigent")) {
+				
+				Iterator<Dictamen> it = listDictamenes.iterator();
+				Boolean existsVigent = false;
+				while(it.hasNext() && existsVigent==false) {
+					Dictamen d = it.next();
+					if(!(d.getId().equals(id))) {
+						existsVigent = true;
+					}
+				}
+				return existsVigent;
+			} else {
+				return false;
+			}
+			
+		} catch(NullPointerException e) {
+			throw new I18NException("excepcion.general.NullPointerException", this.getClass().getSimpleName(), "checkDictamenVigent");
+		} catch(Exception e) {
+			throw new I18NException("excepcion.general.Exception", this.getClass().getSimpleName(), "checkDictamenVigent");
+		}		
+		
+		
+		
+	}
 	
 	@Transactional
 	public DictamenObject create(SerieDocumentalObject serieDocumental, TipuDictamenObject tipuDictamen, String accioDictaminada, String termini, String destinatariRestringits, Date fin, 
@@ -290,5 +360,7 @@ public class DictamenFrontService {
 			throw new I18NException("excepcion.general.Exception", this.getClass().getSimpleName(), "deleteDictamen");
 		}
 	}
+
+	
 	
 }

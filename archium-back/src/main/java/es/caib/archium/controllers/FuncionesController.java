@@ -158,15 +158,34 @@ public class FuncionesController implements Serializable{
     	if (d==null) {
     		this.funcionActualizar = null;
     	} else {
-    		this.funcionActualizar = d.getObject();
-        	this.nuevoCodi = d.getObject().getCodi();
-        	this.nuevoEstat = d.getObject().getEstat();
-        	this.nuevoNom = d.getObject().getNom();
-        	this.nuevoNomCas = d.getObject().getNomcas();
-        	this.nuevoOrdre = d.getObject().getOrdre();
-        	this.nuevoTipusserie = d.getObject().getTipoSerie();
-        	this.funcionSeleccionada = d.getObject().getFuncioPare();
-    		this.funcioPare = d.getObject().getFuncioPare();
+    		
+    		try {
+				FuncioObject f = this.servicesFunciones.findById(d.getId());
+				
+				if(f!=null) {
+					this.funcionActualizar = f;
+		        	this.nuevoCodi = f.getCodi();
+		        	this.nuevoEstat = f.getEstat();
+		        	this.nuevoNom = f.getNom();
+		        	this.nuevoNomCas = f.getNomcas();
+		        	this.nuevoOrdre = f.getOrdre();
+		        	this.nuevoTipusserie = f.getTipoSerie();
+		        	this.funcionSeleccionada = f.getFuncioPare();
+		    		this.funcioPare = f.getFuncioPare();
+		    		PrimeFaces.current().executeScript("PF('documentDialog').show()");
+				} else {
+					FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, messageBundle.getString("funciones.get.error"), null);
+		 			FacesContext.getCurrentInstance().addMessage(null, msg);	
+				}
+				
+				
+			} catch (I18NException e) {
+				log.error(FrontExceptionTranslate.translate(e, this.getLocale()));
+	 			FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, messageBundle.getString("funciones.get.error"), null);
+	 			FacesContext.getCurrentInstance().addMessage(null, msg);	
+			}
+    		
+    		
 
     	}    	
     }

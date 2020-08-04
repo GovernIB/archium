@@ -15,6 +15,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.transaction.Transactional;
 
+import org.primefaces.PrimeFaces;
 import org.primefaces.event.CellEditEvent;
 import org.primefaces.event.RowEditEvent;
 import org.primefaces.event.UnselectEvent;
@@ -91,12 +92,15 @@ public class DictamenController implements Serializable {
 	    ResourceBundle messageBundle = ResourceBundle.getBundle("messages.messages");
 	    
 		FuncionesController funcBean = null;
+		
+		Boolean confirmacionVigent = false;
 	    
 	    @PostConstruct
 	    public void init(){   
 	    		    
 	    	Map<String, Object> viewMap = FacesContext.getCurrentInstance().getViewRoot().getViewMap();
 			this.funcBean = (FuncionesController) viewMap.get("funciones");
+	    	this.confirmacionVigent = false;
 	    	
 	    	try {
 	    		this.listaDictamen = this.serviceDictamen.findAll();	    		
@@ -143,9 +147,12 @@ public class DictamenController implements Serializable {
 										  	this.codi,
 										  	this.estat
 											);
-				TreeNode node = new DefaultTreeNode(new Document<DictamenObject>(newD.getId(), newD.getCodi(), newD.getAccioDictaminada(), "Dictamen", newD), 
-						funcBean.getNodeFromFunctionId(serieDocumental.getSerieId(), "Serie", "insert", null));
-				FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(messageBundle.getString("dictamen.insert.ok")));
+				
+					TreeNode node = new DefaultTreeNode(new Document<DictamenObject>(newD.getId(), newD.getCodi(), newD.getAccioDictaminada(), "Dictamen", newD), 
+							funcBean.getNodeFromFunctionId(serieDocumental.getSerieId(), "Serie", "insert", null));
+					FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(messageBundle.getString("dictamen.insert.ok")));
+					
+				
 			} catch (I18NException eee) {
 				log.error(FrontExceptionTranslate.translate(eee, funcBean.getLocale()));
 				FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, messageBundle.getString("dictamen.insert.error"), null));
@@ -199,23 +206,59 @@ public class DictamenController implements Serializable {
 	    public void deleteDictamen(Document<DictamenObject> d) {
 
 	    	try {
-				this.serviceDictamen.deleteDictamen(d.getId());
-				TreeNode node = funcBean.getNodeFromFunctionId(d.getId(), "Dictamen", "update", d);
-				node.getParent().getChildren().remove(node);
-				FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(messageBundle.getString("dictamen.delete.ok")));
+	    		
+	    		if(this.serviceDictamen.findById(d.getObject().getId()).getEstat().equals("Vigent")) {
+					FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, messageBundle.getString("dictamen.delete.vigentError"), null));
+	    		} else {
+	    			this.serviceDictamen.deleteDictamen(d.getId());
+					TreeNode node = funcBean.getNodeFromFunctionId(d.getId(), "Dictamen", "update", d);
+					node.getParent().getChildren().remove(node);
+					FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(messageBundle.getString("dictamen.delete.ok")));
+	    		}
+				
 			} catch (I18NException e) {
 				log.error(FrontExceptionTranslate.translate(e, funcBean.getLocale()));
 				FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, messageBundle.getString("dictamen.delete.error"), null));
 			}
 	    }
 	    
+	    public void cancelSaveVigentConfirm() {
+	    	this.confirmacionVigent = false;	    	
+	    }
+	    
 	    public void saveUpdate() {
-	    	if (this.getId() == null) { 		
-	    		save();	    		
-	    	}
-	    	else { 
-	    		update();
-	    	}	    	
+	    	
+	    	try {
+	    		
+				if(this.serviceDictamen.checkDictamenVigent(this.getId(), this.getEstat(), this.getSerieDocumental().getSerieId())==true
+						&& this.confirmacionVigent==false) {
+					
+					this.confirmacionVigent = true;
+					FacesContext.getCurrentInstance().validationFailed();
+					PrimeFaces current = PrimeFaces.current();
+					current.executeScript("PF('vigentConfirmDialog').show();");
+					
+				} else {
+					
+					if(this.confirmacionVigent==true) {
+						this.serviceDictamen.changeVigent2Obsolet(this.getSerieDocumental().getSerieId());
+					}
+				
+					if (this.getId() == null) { 		
+						save();	    		
+					} else { 
+						update();
+					}	   
+					
+					this.confirmacionVigent = false;
+					
+				}
+				
+			} catch (I18NException e) {
+				log.error(FrontExceptionTranslate.translate(e, funcBean.getLocale()));
+	 			FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, messageBundle.getString("dictamen.checkVigent.error"), null);
+	 			FacesContext.getCurrentInstance().addMessage(null, msg);	
+			}
 	    }
 	   
 	    public void addDictamentfromSerie(Document<SerieDocumentalObject> obj){
@@ -239,44 +282,67 @@ public class DictamenController implements Serializable {
 	    	this.estat = null;
 	    	this.plazoTermini = null;
 	    	this.plazoTerminiVal = null;
+	    	this.confirmacionVigent = false;
 	    }
 	    
-	    public void updateDictament(Document<DictamenObject> obj)
-	    {	    	
-			this.setId(obj.getObject().getId());
-	    	this.setSerieDocumental(obj.getObject().getSerieDocumental());
-	    	this.setTipuDictamen(obj.getObject().getTipusdictamen());
-	    	this.setAccioDictaminada(obj.getObject().getAccioDictaminada());
+	    public void updateDictament(Document<DictamenObject> d) {	    	
 	    	
 	    	
-	    	if (obj.getObject().getTermini() != null) {
-				String a 	= obj.getObject().getTermini().substring(obj.getObject().getTermini().length() - 1, obj.getObject().getTermini().length());
-				if (a.equals("H"))
-					this.setPlazoTermini(messageBundle.getString("general.plazos.hores"));
-				if (a.equals("D"))
-					this.setPlazoTermini(messageBundle.getString("general.plazos.dies"));
-				if (a.equals("S"))
-					this.setPlazoTermini(messageBundle.getString("general.plazos.setmanes"));
-				if (a.equals("M"))
-					this.setPlazoTermini(messageBundle.getString("general.plazos.mesos"));
-				if (a.equals("A"))
-					this.setPlazoTermini(messageBundle.getString("general.plazos.anys"));
-				this.plazoTerminiVal 	= Integer.parseInt(obj.getObject().getTermini().substring(0,obj.getObject().getTermini().length() - 1));
+			try {
+				
+				DictamenObject obj;
+				obj = this.serviceDictamen.findById(d.getId());
+				
+				if(obj!=null) {
+					this.setId(obj.getId());
+			    	this.setSerieDocumental(obj.getSerieDocumental());
+			    	this.setTipuDictamen(obj.getTipusdictamen());
+			    	this.setAccioDictaminada(obj.getAccioDictaminada());
+			    	
+			    	
+			    	if (obj.getTermini() != null) {
+						String a 	= obj.getTermini().substring(obj.getTermini().length() - 1, obj.getTermini().length());
+						if (a.equals("H"))
+							this.setPlazoTermini(messageBundle.getString("general.plazos.hores"));
+						if (a.equals("D"))
+							this.setPlazoTermini(messageBundle.getString("general.plazos.dies"));
+						if (a.equals("S"))
+							this.setPlazoTermini(messageBundle.getString("general.plazos.setmanes"));
+						if (a.equals("M"))
+							this.setPlazoTermini(messageBundle.getString("general.plazos.mesos"));
+						if (a.equals("A"))
+							this.setPlazoTermini(messageBundle.getString("general.plazos.anys"));
+						this.plazoTerminiVal 	= Integer.parseInt(obj.getTermini().substring(0,obj.getTermini().length() - 1));
+					}
+			    	
+			    	this.setTermini(obj.getTermini());	    	
+			    	this.setDestinatariRestringits(obj.getDestinatarisRestrigits());
+			    	this.setInici(obj.getInici());
+			    	this.setFin(obj.getFi());
+			    	this.setTipuAcces(obj.getTipusAcces());
+			    	this.setEns(obj.getEns());
+			    	this.setLopd(obj.getLopd());
+			    	this.setCondicioReutilizacio(obj.getCondicioReutilitzacio());
+			    	this.setSerieEsencial(obj.getSerieEsencial());
+			    	this.setNormativaAprovacio(obj.getNormativaAprovacio());
+			    	this.setAprovacio(obj.getAprovacio());
+			    	this.setEstat(obj.getEstat());
+			    	this.setCodi(obj.getCodi());
+			    	this.confirmacionVigent = false;
+			    	
+			    	PrimeFaces.current().executeScript("PF('dictamenModalDialog').show()");
+				} else {
+		 			FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, messageBundle.getString("dictamen.get.error"), null);
+		 			FacesContext.getCurrentInstance().addMessage(null, msg);
+				}
+				
+			} catch (I18NException e) {
+				log.error(FrontExceptionTranslate.translate(e, funcBean.getLocale()));
+	 			FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, messageBundle.getString("dictamen.get.error"), null);
+	 			FacesContext.getCurrentInstance().addMessage(null, msg);	
 			}
 	    	
-	    	this.setTermini(obj.getObject().getTermini());	    	
-	    	this.setDestinatariRestringits(obj.getObject().getDestinatarisRestrigits());
-	    	this.setInici(obj.getObject().getInici());
-	    	this.setFin(obj.getObject().getFi());
-	    	this.setTipuAcces(obj.getObject().getTipusAcces());
-	    	this.setEns(obj.getObject().getEns());
-	    	this.setLopd(obj.getObject().getLopd());
-	    	this.setCondicioReutilizacio(obj.getObject().getCondicioReutilitzacio());
-	    	this.setSerieEsencial(obj.getObject().getSerieEsencial());
-	    	this.setNormativaAprovacio(obj.getObject().getNormativaAprovacio());
-	    	this.setAprovacio(obj.getObject().getAprovacio());
-	    	this.setEstat(obj.getObject().getEstat());
-	    	this.setCodi(obj.getObject().getCodi());
+			
 	    }
 	   
 	   

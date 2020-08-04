@@ -404,6 +404,22 @@ public class ProcedimentFrontService {
 	}
 	
 	@Transactional
+	public ProcedimentObject findById(Long id) throws I18NException {
+		try {
+			Procediment p = this.procedimentEJB.findById(id);
+			
+			if (p!=null) {
+				return new ProcedimentObject(p);
+			}
+			return null;
+		} catch(NullPointerException e) {
+			throw new I18NException("excepcion.general.NullPointerException", this.getClass().getSimpleName(), "findById");
+		} catch(Exception e) {
+			throw new I18NException("excepcion.general.Exception", this.getClass().getSimpleName(), "findById");
+		}
+	}
+	
+	@Transactional
 	public void create(ProcedimentObject i, List<MateriaObject> lista1, List<tipusPublicObject> lista2, List<NormativaObject> lista3, List<TipuDocumentalProcedimentObject> listaTDP) throws I18NException {	
 		Procediment db = new Procediment();
 		try 

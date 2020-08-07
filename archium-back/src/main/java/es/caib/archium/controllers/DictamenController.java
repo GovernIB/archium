@@ -52,6 +52,7 @@ public class DictamenController implements Serializable {
 	    private Date fin;
 	    private String termini;
 	    private String estat;
+	    private String estatAnterior;
 	    private String codi;
 	    private Boolean serieEsencial;
 		private Long id;
@@ -93,7 +94,10 @@ public class DictamenController implements Serializable {
 	    
 		FuncionesController funcBean = null;
 		
+		List<DictamenObject> listDictamenFromSerie= null;
+		DictamenObject nuevoDictamenVigente = null;
 		Boolean confirmacionVigent = false;
+		Boolean confirmacionVigentReq = false;
 	    
 	    @PostConstruct
 	    public void init(){   
@@ -101,6 +105,9 @@ public class DictamenController implements Serializable {
 	    	Map<String, Object> viewMap = FacesContext.getCurrentInstance().getViewRoot().getViewMap();
 			this.funcBean = (FuncionesController) viewMap.get("funciones");
 	    	this.confirmacionVigent = false;
+	    	this.confirmacionVigentReq = false;
+	    	this.listDictamenFromSerie = null;
+	    	this.nuevoDictamenVigente = null;
 	    	
 	    	try {
 	    		this.listaDictamen = this.serviceDictamen.findAll();	    		
@@ -189,6 +196,7 @@ public class DictamenController implements Serializable {
 	    		obj.setCodi(this.getCodi());
 	    		obj.setEstat(this.getEstat());
 	    		
+	    		
 	    		DictamenObject upD = this.serviceDictamen.update(obj);
 		        FacesMessage msg = new FacesMessage(messageBundle.getString("dictamen.update.ok"));
 		        FacesContext.getCurrentInstance().addMessage(null, msg);		        
@@ -226,6 +234,10 @@ public class DictamenController implements Serializable {
 	    	this.confirmacionVigent = false;	    	
 	    }
 	    
+	    public void cancelSaveVigentConfirmReq() {
+	    	this.confirmacionVigentReq = false;
+	    }
+	    
 	    public void saveUpdate() {
 	    	
 	    	try {
@@ -238,10 +250,33 @@ public class DictamenController implements Serializable {
 					PrimeFaces current = PrimeFaces.current();
 					current.executeScript("PF('vigentConfirmDialog').show();");
 					
+				} else if(this.estatAnterior.equals("Vigent") 
+						&& !this.estat.equals("Vigent")
+						&& this.confirmacionVigentReq==false) {
+					
+					this.listDictamenFromSerie = this.serviceDictamen.getBySerie(serieDocumental);
+					
+					if(this.listDictamenFromSerie!=null && this.listDictamenFromSerie.size()==1) {
+						FacesContext.getCurrentInstance().validationFailed();
+						FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, messageBundle.getString("dictamen.checkVigentReq.error"), null);
+			 			FacesContext.getCurrentInstance().addMessage(null, msg);	
+			 			this.listDictamenFromSerie = null;
+					} else {
+						this.confirmacionVigentReq = true;
+						DictamenObject obj = new DictamenObject();
+				    	obj.setId(this.getId());
+						this.listDictamenFromSerie.remove(obj);
+						FacesContext.getCurrentInstance().validationFailed();
+						PrimeFaces current = PrimeFaces.current();
+						current.executeScript("PF('vigentConfirmReqDialog').show();");
+					}					
+					
 				} else {
 					
 					if(this.confirmacionVigent==true) {
 						this.serviceDictamen.changeVigent2Obsolet(this.getSerieDocumental().getSerieId());
+					} else if(this.confirmacionVigentReq==true) {
+						this.serviceDictamen.changeEstatDictamen(this.nuevoDictamenVigente, "Vigent");
 					}
 				
 					if (this.getId() == null) { 		
@@ -251,7 +286,9 @@ public class DictamenController implements Serializable {
 					}	   
 					
 					this.confirmacionVigent = false;
-					
+					this.confirmacionVigentReq = false;
+					this.listDictamenFromSerie = null;
+					this.nuevoDictamenVigente = null;
 				}
 				
 			} catch (I18NException e) {
@@ -283,6 +320,10 @@ public class DictamenController implements Serializable {
 	    	this.plazoTermini = null;
 	    	this.plazoTerminiVal = null;
 	    	this.confirmacionVigent = false;
+	    	this.confirmacionVigentReq = false;
+	    	this.listDictamenFromSerie = null;
+	    	this.nuevoDictamenVigente = null;
+	    	this.estatAnterior = "";
 	    }
 	    
 	    public void updateDictament(Document<DictamenObject> d) {	    	
@@ -329,7 +370,10 @@ public class DictamenController implements Serializable {
 			    	this.setEstat(obj.getEstat());
 			    	this.setCodi(obj.getCodi());
 			    	this.confirmacionVigent = false;
-			    	
+			    	this.confirmacionVigentReq = false;
+			    	this.listDictamenFromSerie = null;
+			    	this.nuevoDictamenVigente = null;
+			    	this.setEstatAnterior(obj.getEstat());
 			    	PrimeFaces.current().executeScript("PF('dictamenModalDialog').show()");
 				} else {
 		 			FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, messageBundle.getString("dictamen.get.error"), null);
@@ -784,6 +828,67 @@ public class DictamenController implements Serializable {
 			this.inici = inici;
 		}
 
+
+		public String getEstatAnterior() {
+			return estatAnterior;
+		}
+
+
+		public void setEstatAnterior(String estatAnterior) {
+			this.estatAnterior = estatAnterior;
+		}
+
+
+		public FuncionesController getFuncBean() {
+			return funcBean;
+		}
+
+
+		public void setFuncBean(FuncionesController funcBean) {
+			this.funcBean = funcBean;
+		}
+
+
+		public List<DictamenObject> getListDictamenFromSerie() {
+			return listDictamenFromSerie;
+		}
+
+
+		public void setListDictamenFromSerie(List<DictamenObject> listDictamenFromSerie) {
+			this.listDictamenFromSerie = listDictamenFromSerie;
+		}
+
+
+		public DictamenObject getNuevoDictamenVigente() {
+			return nuevoDictamenVigente;
+		}
+
+
+		public void setNuevoDictamenVigente(DictamenObject nuevoDictamenVigente) {
+			this.nuevoDictamenVigente = nuevoDictamenVigente;
+		}
+
+
+		public Boolean getConfirmacionVigent() {
+			return confirmacionVigent;
+		}
+
+
+		public void setConfirmacionVigent(Boolean confirmacionVigent) {
+			this.confirmacionVigent = confirmacionVigent;
+		}
+
+
+		public Boolean getConfirmacionVigentReq() {
+			return confirmacionVigentReq;
+		}
+
+
+		public void setConfirmacionVigentReq(Boolean confirmacionVigentReq) {
+			this.confirmacionVigentReq = confirmacionVigentReq;
+		}
+
+		
 		
 
 	}

@@ -70,7 +70,6 @@ public class DictamenFrontService {
 			throw new I18NException("excepcion.general.Exception", this.getClass().getSimpleName(), "getBySerie");
 		}
 		
-		
 	}
 	
 	public DictamenObject findById(Long id) throws I18NException{	
@@ -240,6 +239,23 @@ public class DictamenFrontService {
 		} catch(Exception e) {
 			throw new I18NException("excepcion.general.Exception", this.getClass().getSimpleName(), "findAllNormativaAprovacio");
 		}
+		
+	}
+	
+	@Transactional
+	public void changeEstatDictamen(DictamenObject dictamen, String estat) throws I18NException {
+		
+		try {
+			
+			Dictamen dic = this.dictamenEJB.getReference(dictamen.getId());
+			dic.setEstat(estat);
+			this.dictamenEJB.update(dic);
+			
+		} catch(NullPointerException e) {
+			throw new I18NException("excepcion.general.NullPointerException", this.getClass().getSimpleName(), "changeEstatDictamen");
+		} catch(Exception e) {
+			throw new I18NException("excepcion.general.Exception", this.getClass().getSimpleName(), "changeEstatDictamen");
+		}	
 		
 	}
 	

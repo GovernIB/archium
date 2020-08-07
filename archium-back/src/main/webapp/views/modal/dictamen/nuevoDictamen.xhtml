@@ -141,8 +141,8 @@
 					    	<div class="ui-g-6 item_1">
 						    	<label class="ui-g-4">#{messages['nuevodictamen.normativaA']}</label>
 				    			<p:selectOneMenu class="ui-g-8 selector_6" id="Normativa" value="#{dictamenController.normativaAprovacio}" label="Normativa" 
-						                              panelStyle="" require="true"
-						                              validatorMessage="#{messages['nuevodictamen.require.normaprob']}">
+						                              panelStyle=""
+						                              >
 						             <f:converter converterId="NormativaConverter"/>
 						             <f:selectItem itemLabel="-- #{messages['selecciona']} #{messages['nuevodictamen.normativaA']} -- " itemValue="#{null}" noSelectionOption="true"/>
 						            <f:selectItems value="#{dictamenController.listaNormativaAprovacio}"  var="n" itemLabel="#{n.nom}"/>
@@ -214,7 +214,7 @@
 					    </div>
 					    
 					    <div class="ui-g-12 button_new" align="justify">
-					    	<p:commandButton widgetVar="dictSaveButton" onclick="PF('dictSaveButton').disable()" class="boton_modal button_red" update="panel1" value="#{messages['guardar']}" action="#{dictamenController.saveUpdate}" oncomplete="PF('dictSaveButton').enable();if (args &amp;&amp; !args.validationFailed) PF('dictamenModalDialog').hide()" style="margin-rigth: 0px;" ></p:commandButton>
+					    	<p:commandButton widgetVar="dictSaveButton" onclick="PF('dictSaveButton').disable()" class="boton_modal button_red" update="panel1, vigentConfirmReqDialogId" value="#{messages['guardar']}" action="#{dictamenController.saveUpdate}" oncomplete="PF('dictSaveButton').enable();if (args &amp;&amp; !args.validationFailed) PF('dictamenModalDialog').hide()" style="margin-rigth: 0px;" ></p:commandButton>
 					    	
 					    </div>
 				    </p:panel>

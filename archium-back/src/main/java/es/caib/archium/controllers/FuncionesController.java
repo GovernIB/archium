@@ -578,6 +578,7 @@ public class FuncionesController implements Serializable{
     }
     
     private Boolean checkFuncioPareValid(FuncioObject funcio, FuncioObject funcioPare) {
+    	if(funcio==null) return true;
     	if(funcio.equals(funcioPare)) return false;
     	try {
 			if(this.servicesFunciones.loadTree(cuadroSeleccionado.getId(), funcio.getId()).contains(funcioPare)) return false;

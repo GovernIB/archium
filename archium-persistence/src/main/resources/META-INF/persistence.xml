@@ -9,7 +9,7 @@
          data source, this example data source is just for development and testing! -->
       <!-- The datasource is deployed as ${ds-deployment-location}, you
          can find it in the source at src/main/resources/archiumDS-ds.xml -->
-      <jta-data-source>es.caib.archium.ds</jta-data-source>
+      <jta-data-source>es.caib.archium.db</jta-data-source>
 
       <class>es.caib.archium.persistence.model.Aplicacio</class>
       <class>es.caib.archium.persistence.model.AplicacioSerie</class>

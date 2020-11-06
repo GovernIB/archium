@@ -51,7 +51,7 @@ public class SerieDocumentalObject {
 			this.nom = dbSerie.getNom();
 			this.nomCas = dbSerie.getNomcas();
 			this.catalegSeriId = dbSerie.getAchCatalegsery().getId();
-			this.descripcio = dbSerie.getNom();
+			this.descripcio = dbSerie.getDescripcio();
 			this.descripcioCas = dbSerie.getDescripciocas();
 			this.resumMigracio = dbSerie.getResummigracio();
 			this.dir3Promotor = dbSerie.getDir3Promotor();

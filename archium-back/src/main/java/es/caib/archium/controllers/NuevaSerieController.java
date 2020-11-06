@@ -256,8 +256,9 @@ public class NuevaSerieController implements Serializable {
 				normativasList = service.getListaNormativasBySerie(serieId);
 				List <NormativaAprobacioObject> filteredNormativas = new ArrayList<NormativaAprobacioObject>(normativasSerie.getSource());
 				filteredNormativas.removeAll(normativasList);
-				normativasSerie.setTarget(normativasList);			
 				normativasSerie.setSource(filteredNormativas);
+				normativasSerie.setTarget(normativasList);			
+				
 				
 				ValoracioObject dbValoracio = service.getValoracioSerie(serieId);
 				valoracio = new ValoracioObject(dbValoracio);

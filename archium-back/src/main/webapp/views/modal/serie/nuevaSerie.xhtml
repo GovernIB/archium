@@ -343,11 +343,11 @@
 		        	<h:panelGroup id="tabNormativasSerie">
 			        	<div class="ui-g-12">
 				    	<!--  <label class="ui-g-2">Normativas</label> -->
-							<p:pickList class="ui-g-12 relacionarseries" id="listaNormativas" value="#{nuevaSerieController.normativasSerie}" var="seri"   converter="NormativaConverter" 
-										itemValue="#{seri}"  showSourceFilter="true" showTargetFilter="true"
+							<p:pickList class="ui-g-12 relacionarseries" id="listaNormativas" value="#{nuevaSerieController.normativasSerie}" var="norm"   converter="seriesNormativaConverter" 
+										itemValue="#{norm}" itemLabel="#{norm.nom}" showSourceFilter="true" showTargetFilter="true"
 										filterMatchMode="contains" showCheckbox="true">
 									    <p:column style="width:100%;">
-			            					<h:outputText value="#{seri.nom}" />
+			            					<h:outputText value="#{norm.nom}" />
 				        				</p:column>
 							</p:pickList>
 			   			</div>

@@ -7,14 +7,8 @@ import javax.faces.convert.Converter;
 import javax.faces.convert.ConverterException;
 import javax.faces.convert.FacesConverter;
 
-import es.caib.archium.controllers.FuncionesController;
 import es.caib.archium.controllers.ProcedimentController;
 import es.caib.archium.objects.AplicacioObject;
-import es.caib.archium.objects.FormainiciObject;
-import es.caib.archium.objects.FuncioObject;
-import es.caib.archium.objects.QuadreObject;
-import es.caib.archium.persistence.model.Funcio;
-import es.caib.archium.persistence.model.Quadreclassificacio;
 
 @FacesConverter("AplicacioConverter")
 public class AplicacioConverter implements Converter {

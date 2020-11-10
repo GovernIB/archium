@@ -1,0 +1,40 @@
+package es.caib.archium.apirest.constantes;
+
+import com.fasterxml.jackson.annotation.JsonValue;
+
+/**
+ * Tipos documentales aceptados por el Archivo
+ * 
+ * @author u104848
+ *
+ */
+public enum TiposObjetoSGD {
+	
+	SERIE_DOCUMENTAL  		("eni:serie"),
+	FUNCION 		  		("eni:funcion"),
+    DOCUMENTO 		        ("eni:documento"),
+	CUADRO_CLASIFICACION 	("eni:cuadro_clasificacion");
+
+
+    private String value;
+
+    private TiposObjetoSGD(String value) {
+        this.value = value;
+    }
+
+    @Override
+    public String toString() {
+        return value;
+    }
+    
+    @JsonValue
+	public String getValue() {
+		return value;
+	}
+
+	public void setValue(String value) {
+		this.value = value;
+	}
+}
+
+	

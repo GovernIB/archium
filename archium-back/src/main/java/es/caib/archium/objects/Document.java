@@ -11,22 +11,51 @@ public class Document<T> implements Serializable, Comparable<Document<T>> {
     private String nom;
      
     private String type;
-    
+
+    private String nodeId;
+
+    private Boolean isSynchronized;
+
+    private Boolean isActive;
 
     private T object;
  
-    public Document(long id, String codi, String nom, String type, T object) {
+    public Document(long id, String codi, String nom, String type, String nodeId, Boolean isSynchronized, T object) {
 		super();
 		this.id = id;
 		this.codi = codi;
 		this.nom = nom;
 		this.type = type;
 		this.object = object;
+		this.nodeId = nodeId;
+		this.isSynchronized = isSynchronized;
+	}
+
+	public Document(long id, String codi, String nom, String type, String estat, T object) {
+		super();
+		this.id = id;
+		this.codi = codi;
+		this.nom = nom;
+		this.type = type;
+		this.object = object;
+		if(estat!=null && "active".equalsIgnoreCase(estat)){
+			isActive=true;
+		}else{
+			isActive=false;
+		}
 	}
 
 	public Document() {
 		super();
 		// TODO Auto-generated constructor stub
+	}
+
+	public Boolean getActive() {
+		return isActive;
+	}
+
+	public void setActive(Boolean active) {
+		isActive = active;
 	}
 
 	public long getId() {
@@ -67,6 +96,22 @@ public class Document<T> implements Serializable, Comparable<Document<T>> {
 
 	public void setObject(T object) {
 		this.object = object;
+	}
+
+	public String getNodeId() {
+		return nodeId;
+	}
+
+	public void setNodeId(String nodeId) {
+		this.nodeId = nodeId;
+	}
+
+	public Boolean getSynchronized() {
+		return isSynchronized;
+	}
+
+	public void setSynchronized(Boolean aSynchronized) {
+		isSynchronized = aSynchronized;
 	}
 
 	@Override

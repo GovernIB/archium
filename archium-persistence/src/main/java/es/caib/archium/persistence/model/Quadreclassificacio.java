@@ -21,6 +21,8 @@ public class Quadreclassificacio implements Serializable {
 	@GeneratedValue(strategy=GenerationType.SEQUENCE, generator="ACH_QUADRECLASSIFICACIO_ID_GENERATOR")
 	private Long id;
 
+	private String codi;
+
 	private String estat;
 
 	@Temporal(TemporalType.TIMESTAMP)
@@ -38,11 +40,32 @@ public class Quadreclassificacio implements Serializable {
 
 	private String versio;
 
+	private String nodeId;
+
+	@Column(name="SYNCHRONIZED")
+	private boolean isSynchronized;
+
 	//bi-directional many-to-one association to Funcio
 	@OneToMany(mappedBy="achQuadreclassificacio")
 	private List<Funcio> achFuncios;
 
 	public Quadreclassificacio() {
+	}
+
+	public String getNodeId() {
+		return nodeId;
+	}
+
+	public void setNodeId(String nodeId) {
+		this.nodeId = nodeId;
+	}
+
+	public boolean isSynchronized() {
+		return isSynchronized;
+	}
+
+	public void setSynchronized(boolean aSynchronized) {
+		isSynchronized = aSynchronized;
 	}
 
 	public Long getId() {
@@ -115,6 +138,14 @@ public class Quadreclassificacio implements Serializable {
 
 	public void setAchFuncios(List<Funcio> achFuncios) {
 		this.achFuncios = achFuncios;
+	}
+
+	public String getCodi() {
+		return codi;
+	}
+
+	public void setCodi(String codi) {
+		this.codi = codi;
 	}
 
 	public Funcio addAchFuncio(Funcio achFuncio) {

@@ -1,24 +1,15 @@
 package es.caib.archium.objects;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
-import es.caib.archium.persistence.model.Aplicacio;
-import es.caib.archium.persistence.model.Familiaprocediment;
-import es.caib.archium.persistence.model.Formainici;
 import es.caib.archium.persistence.model.Materia;
-import es.caib.archium.persistence.model.Nivellelectronic;
 import es.caib.archium.persistence.model.Normativa;
 import es.caib.archium.persistence.model.Procediment;
-import es.caib.archium.persistence.model.Seriedocumental;
-import es.caib.archium.persistence.model.Silenci;
 import es.caib.archium.persistence.model.TipusdocumentProcediment;
-import es.caib.archium.persistence.model.Tipusdocumental;
 import es.caib.archium.persistence.model.Tipuspublic;
-import es.caib.archium.services.ProcedimentFrontService;
 
 public class ProcedimentObject {
 	private Long 			id;

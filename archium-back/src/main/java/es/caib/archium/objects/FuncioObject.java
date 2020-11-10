@@ -1,12 +1,12 @@
 package es.caib.archium.objects;
 
-import java.math.BigDecimal;
-import java.util.Date;
-import java.util.Objects;
-
 import es.caib.archium.persistence.model.Funcio;
 import es.caib.archium.persistence.model.Quadreclassificacio;
 import es.caib.archium.persistence.model.Tipusserie;
+
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.Objects;
 
 public class FuncioObject {
 
@@ -23,10 +23,12 @@ public class FuncioObject {
 	private QuadreObject codigoCuadro;
 	private FuncioObject funcioPare;
 	private Integer numTabs;
+	private String nodeId;
+	private Boolean isSynchronized;
 	
 	public FuncioObject(Long id, String codi, String nom, String nomcas, String estat, BigDecimal ordre, Date inici,
 			Date modificacio, Date fi, TipusSerieObject tipoSerie, QuadreObject codigoCuadro,
-			FuncioObject funcioPare) {
+			FuncioObject funcioPare,String nodeId,Boolean isSynchronized) {
 		super();
 		this.id = id;
 		this.codi = codi;
@@ -41,6 +43,8 @@ public class FuncioObject {
 		this.codigoCuadro = codigoCuadro;
 		this.funcioPare = funcioPare;
 		this.numTabs = 0;
+		this.nodeId = nodeId;
+		this.isSynchronized = isSynchronized;
 	}
 
 	public FuncioObject() {
@@ -63,7 +67,8 @@ public class FuncioObject {
 			this.fi = dbFuncio.getFi();
 			this.tipoSerie = new TipusSerieObject(dbFuncio.getAchTipusserie());
 			this.codigoCuadro = new QuadreObject(dbFuncio.getAchQuadreclassificacio());
-			
+			this.nodeId = dbFuncio.getNodeId();
+			this.isSynchronized = dbFuncio.isSynchronized();
 			
 			if(dbFuncio.getAchFuncio()!=null) {
 				FuncioObject fp = new FuncioObject();
@@ -97,6 +102,22 @@ public class FuncioObject {
 
 	public String getNom() {
 		return nom;
+	}
+
+	public String getNodeId() {
+		return nodeId;
+	}
+
+	public void setNodeId(String nodeId) {
+		this.nodeId = nodeId;
+	}
+
+	public Boolean isSynchronized() {
+		return isSynchronized;
+	}
+
+	public void setSynchronized(Boolean aSynchronized) {
+		isSynchronized = aSynchronized;
 	}
 
 	public void setNom(String nom) {
@@ -205,6 +226,8 @@ public class FuncioObject {
 		db.setAchFuncio(f);
 		db.setAchQuadreclassificacio(q);
 		db.setAchTipusserie(ts);
+		db.setNodeId(nodeId);
+		db.setSynchronized(isSynchronized);
 		return db;
 	}
 

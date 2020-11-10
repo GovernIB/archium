@@ -3,10 +3,7 @@ package es.caib.archium.services;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -14,18 +11,6 @@ import javax.inject.Named;
 import javax.transaction.Transactional;
 
 import es.caib.archium.commons.i18n.I18NException;
-import es.caib.archium.ejb.AplicacioEJB;
-import es.caib.archium.ejb.FamiliaProcedimentEJB;
-import es.caib.archium.ejb.FormaIniciEJB;
-import es.caib.archium.ejb.MateriaEJB;
-import es.caib.archium.ejb.NivellElectronicEJB;
-import es.caib.archium.ejb.NormativaEJB;
-import es.caib.archium.ejb.ProcedimientoEJB;
-import es.caib.archium.ejb.SerieDocumentalEJB;
-import es.caib.archium.ejb.SilenciEJB;
-import es.caib.archium.ejb.TipusDocumentProcedimentEJB;
-import es.caib.archium.ejb.TipusDocumentalEJB;
-import es.caib.archium.ejb.TipusPublicEJB;
 import es.caib.archium.ejb.objects.Dir3;
 import es.caib.archium.ejb.service.AplicacioService;
 import es.caib.archium.ejb.service.Dir3Service;
@@ -44,8 +29,6 @@ import es.caib.archium.objects.AplicacioObject;
 import es.caib.archium.objects.Dir3Object;
 import es.caib.archium.objects.FamiliaprocedimentObject;
 import es.caib.archium.objects.FormainiciObject;
-import es.caib.archium.objects.FuncioObject;
-import es.caib.archium.objects.LimitacioNormativaSerieObject;
 import es.caib.archium.objects.MateriaObject;
 import es.caib.archium.objects.NivellelectronicObject;
 import es.caib.archium.objects.NormativaObject;
@@ -55,21 +38,7 @@ import es.caib.archium.objects.SilenciObject;
 import es.caib.archium.objects.TipuDocumentalObject;
 import es.caib.archium.objects.TipuDocumentalProcedimentObject;
 import es.caib.archium.objects.tipusPublicObject;
-import es.caib.archium.persistence.model.Aplicacio;
-import es.caib.archium.persistence.model.Familiaprocediment;
-import es.caib.archium.persistence.model.Formainici;
-import es.caib.archium.persistence.model.Funcio;
-import es.caib.archium.persistence.model.LimitacioNormativaSerie;
-import es.caib.archium.persistence.model.Materia;
-import es.caib.archium.persistence.model.Nivellelectronic;
-import es.caib.archium.persistence.model.Normativa;
-import es.caib.archium.persistence.model.Procediment;
-import es.caib.archium.persistence.model.Seriedocumental;
-import es.caib.archium.persistence.model.Serierelacionada;
-import es.caib.archium.persistence.model.Silenci;
-import es.caib.archium.persistence.model.TipusdocumentProcediment;
-import es.caib.archium.persistence.model.Tipusdocumental;
-import es.caib.archium.persistence.model.Tipuspublic;
+import es.caib.archium.persistence.model.*;
 
 @Named("ProcedimentServices")
 @ApplicationScoped
@@ -396,7 +365,7 @@ public class ProcedimentFrontService {
 	public Nivellelectronic nivel(Long id) {		
 		return nivellelectronicEJB.getReference(id);
 	}
-	public Seriedocumental serie(Long id) {		
+	public Seriedocumental serie(Long id) {
 		return serieDocumentalEJB.getReference(id);
 	}
 	public Aplicacio aplicacion(Long id) {		

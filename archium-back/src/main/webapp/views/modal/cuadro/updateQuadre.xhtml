@@ -78,7 +78,18 @@
 		  		<div class="separador_rojo"></div>
 				<div class="ui-g form_new">
 					<p:panel id="panel">
-				        <p:messages id="messages" />		        
+				        <p:messages id="messages" />
+
+						<div class="ui-g-12 item_1">
+							<!--							Cambiar i18n acuerdate del mensaje de requerido tambaien-->
+							<label class="ui-g-2">Codigo:*</label>
+							<p:inputText id="codigo" value="#{quadreController.codiNuevo}" class="ui-g-10" required="true"
+										 requiredMessage="es obligatorio informar el codigo colega"
+										 validatorMessage="#{messages['nuevoQuadro.validate.codiNuevo']}" >
+								<f:validateRequired  />
+								<f:validateLength minimum="0" maximum="10" />
+							</p:inputText>
+						</div>
 				   
 					    <div class="ui-g-12 item_1">
 					    	<label class="ui-g-3">#{messages['updatecuadro.nombre']}*</label>

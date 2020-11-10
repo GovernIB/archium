@@ -39,6 +39,12 @@ public class Seriedocumental implements Serializable {
 	
 	private String estat;
 
+	private String nodeId;
+
+	@Column(name="SYNCHRONIZED")
+	private boolean isSynchronized;
+
+
 	//bi-directional many-to-one association to AplicacioSerie
 	@OneToMany(mappedBy="achSeriedocumental",
 			cascade = CascadeType.ALL,
@@ -124,6 +130,22 @@ public class Seriedocumental implements Serializable {
 	    for (Procediment p : achProcediments) {
 	        p.setAchSeriedocumental(null);
 	    }
+	}
+
+	public String getNodeId() {
+		return nodeId;
+	}
+
+	public void setNodeId(String nodeId) {
+		this.nodeId = nodeId;
+	}
+
+	public boolean isSynchronized() {
+		return isSynchronized;
+	}
+
+	public void setSynchronized(boolean aSynchronized) {
+		isSynchronized = aSynchronized;
 	}
 
 	public Long getId() {

@@ -9,9 +9,6 @@ import javax.faces.convert.FacesConverter;
 
 import es.caib.archium.controllers.FuncionesController;
 import es.caib.archium.objects.TipusSerieObject;
-import es.caib.archium.persistence.model.Funcio;
-import es.caib.archium.persistence.model.Quadreclassificacio;
-import es.caib.archium.persistence.model.Tipusserie;
 
 @FacesConverter("FuncioTipusserieConverter")
 public class FuncioTipusserieConverter implements Converter {

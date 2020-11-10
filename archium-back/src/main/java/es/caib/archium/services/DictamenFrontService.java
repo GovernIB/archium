@@ -25,13 +25,7 @@ import es.caib.archium.objects.NormativaAprobacioObject;
 import es.caib.archium.objects.SerieDocumentalObject;
 import es.caib.archium.objects.TipuAccesObject;
 import es.caib.archium.objects.TipuDictamenObject;
-import es.caib.archium.persistence.model.Dictamen;
-import es.caib.archium.persistence.model.Ens;
-import es.caib.archium.persistence.model.Lopd;
-import es.caib.archium.persistence.model.Normativa;
-import es.caib.archium.persistence.model.Seriedocumental;
-import es.caib.archium.persistence.model.Tipusacce;
-import es.caib.archium.persistence.model.Tipusdictamen;
+import es.caib.archium.persistence.model.*;
 
 @Named
 @ApplicationScoped

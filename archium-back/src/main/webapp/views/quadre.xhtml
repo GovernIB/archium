@@ -35,13 +35,20 @@
 				paginator="true" 
 				paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                 currentPageReportTemplate="{startRecord}-{endRecord} of {totalRecords} records" >
-		 
+
+<!--				Cambiar i18n-->
+				<p:column class="first-column" headerText="codigo" sortBy="#{cuadro.codi}"   style="width: 25%;">
+					<h:outputLink value="#{request.contextPath}/views/funciones.xhtml">
+						<h:outputText value="#{cuadro.codi}" />
+						<f:param  name="quadreId" value="#{cuadro.id}" />
+					</h:outputLink>
+				</p:column>
+
 		        <p:column class="first-column" headerText="#{messages['cuadro.nombre']}" sortBy="#{cuadro.nom}"   style="width: 25%;"> 
 		        	<h:outputLink value="#{request.contextPath}/views/funciones.xhtml">
 						<h:outputText value="#{cuadro.nom}" />
 						<f:param  name="quadreId" value="#{cuadro.id}" />
 					</h:outputLink>
-		            
 		        </p:column>
 		 		
 		 		<p:column class="first-column" headerText="#{messages['cuadro.nombrecas']}" sortBy="#{cuadro.nomCas}" style="width: 25%;">
@@ -88,9 +95,16 @@
 					</h:outputLink>             	
 		        </p:column>
 
-		        <p:column class="first-column column_acciones" style="width: 5%;">
-			        <p:commandButton update="quadreModalUpdateId" icon="ui-icon-pencil" resetValues="true" title="#{messages['actualizar']}" action="#{quadreController.abrirModalUpdate(cuadro)}" />  			
-		        </p:column>		
+				<p:column class="first-column column_acciones" style="width: 10%;">
+					<p:commandButton update="quadreModalUpdateId" icon="ui-icon-pencil" resetValues="true" title="#{messages['actualizar']}" action="#{quadreController.abrirModalUpdate(cuadro)}" />
+					<!--			       cambiar i18n-->
+<!--					No sincronizado y tiene permisos-->
+					<p:commandButton rendered="#{quadreController.checkRolLogued('ACH_GESTOR') eq true and cuadro.synchronized eq false}" class="botton_library" icon="circle-state red" resetValues="true" title="sincronizar" update="quadreModalUpdateId" action="#{quadreController.sincronizar(cuadro)}" />
+					<!--					no sincronizado sin permisos-->
+					<h:outputText rendered="#{quadreController.checkRolLogued('ACH_GESTOR') eq false and cuadro.synchronized eq false}" > <i class="circle-state red"></i> </h:outputText>
+<!--					sincronizado-->
+					<h:outputText rendered="#{cuadro.synchronized eq true}" ><i class="circle-state green"></i></h:outputText>
+		        </p:column>
 	    	</p:dataTable> 	    
 		</h:form>
 	    <hr/> 

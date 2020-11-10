@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <artifactId>archium</artifactId>
+        <groupId>es.caib.archium</groupId>
+        <version>1.0.0</version>
+    </parent>
+
+    <artifactId>archium-communication</artifactId>
+    <version>1.0.0</version>
+    <packaging>jar</packaging>
+    <name>Archium - COMMUNICATION</name>
+    <description>Capa de comunicacion de Archium</description>
+
+    <properties>
+        <archium-commons.version>1.0.0</archium-commons.version>
+        <archium-apirest.version>1.0.0</archium-apirest.version>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>javax</groupId>
+            <artifactId>javaee-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>es.caib.archium</groupId>
+            <artifactId>archium-commons</artifactId>
+            <version>${archium-commons.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>es.caib.archium</groupId>
+            <artifactId>archium-apirest</artifactId>
+            <version>${archium-apirest.version}</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <finalName>${project.artifactId}-${project.version}</finalName>
+    </build>
+</project>

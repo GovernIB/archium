@@ -1,17 +1,9 @@
 package es.caib.archium.ejb;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.annotation.security.DeclareRoles;
-import javax.annotation.security.RolesAllowed;
-import javax.ejb.Stateless;
-import javax.inject.Inject;
-
 import es.caib.archium.commons.i18n.I18NException;
 import es.caib.archium.commons.query.OrderBy;
 import es.caib.archium.commons.query.OrderType;
+import es.caib.archium.commons.utils.Constants;
 import es.caib.archium.ejb.service.DictamenService;
 import es.caib.archium.ejb.service.FuncioService;
 import es.caib.archium.ejb.service.SerieService;
@@ -19,8 +11,16 @@ import es.caib.archium.persistence.dao.AbstractDAO;
 import es.caib.archium.persistence.model.Dictamen;
 import es.caib.archium.persistence.model.Seriedocumental;
 
+import javax.annotation.security.RolesAllowed;
+import javax.ejb.Stateless;
+import javax.inject.Inject;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+//TODO: Añadir permiso para el nuevo rol para series, funciones y cuadros, cambiar los permitidos en los DAO
 @Stateless
-@RolesAllowed({"ACH_GESTOR"})
+@RolesAllowed({Constants.ACH_GESTOR,Constants.ACH_ALFRESCO})
 public class SerieEJB extends AbstractDAO<Seriedocumental, Long> implements SerieService  {
 
 	@Inject
@@ -28,7 +28,7 @@ public class SerieEJB extends AbstractDAO<Seriedocumental, Long> implements Seri
 	
 	@Inject
 	DictamenService dictamenEJB;
-	
+
 	@Override
 	public List<Seriedocumental> getByFuncio(Long funcioId) throws I18NException {
 		if(funcioId!=null) {
@@ -63,5 +63,4 @@ public class SerieEJB extends AbstractDAO<Seriedocumental, Long> implements Seri
 		}
 	}
 
-	
 }

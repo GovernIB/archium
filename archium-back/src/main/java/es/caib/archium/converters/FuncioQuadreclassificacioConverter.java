@@ -6,12 +6,9 @@ import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.ConverterException;
 import javax.faces.convert.FacesConverter;
-import javax.inject.Inject;
 
 import es.caib.archium.controllers.FuncionesController;
-import es.caib.archium.ejb.service.QuadreClassificacioService;
 import es.caib.archium.objects.QuadreObject;
-import es.caib.archium.persistence.model.Quadreclassificacio;
 
 @FacesConverter("FuncioQuadreclassificacioConverter")
 public class FuncioQuadreclassificacioConverter implements Converter {

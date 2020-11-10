@@ -1,46 +1,26 @@
 package es.caib.archium.services;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.enterprise.context.ApplicationScoped;
-import javax.faces.application.FacesMessage;
-import javax.faces.context.FacesContext;
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.transaction.Transactional;
-
+import es.caib.archium.apirest.constantes.Estado;
+import es.caib.archium.apirest.facade.pojos.Funcion;
+import es.caib.archium.commons.i18n.I18NException;
+import es.caib.archium.communication.iface.CSGDFuncionService;
+import es.caib.archium.ejb.service.*;
+import es.caib.archium.objects.*;
+import es.caib.archium.persistence.model.Dictamen;
+import es.caib.archium.persistence.model.Funcio;
+import es.caib.archium.persistence.model.Seriedocumental;
+import es.caib.archium.persistence.model.Tipusserie;
+import org.apache.commons.lang3.StringUtils;
 import org.primefaces.model.DefaultTreeNode;
 import org.primefaces.model.TreeNode;
 
-import es.caib.archium.commons.i18n.I18NException;
-import es.caib.archium.commons.query.OrderBy;
-import es.caib.archium.commons.query.OrderType;
-import es.caib.archium.ejb.DictamenEJB;
-import es.caib.archium.ejb.FuncioEJB;
-import es.caib.archium.ejb.QuadreClassificacioEJB;
-import es.caib.archium.ejb.SerieEJB;
-import es.caib.archium.ejb.TipuDictamenEJB;
-import es.caib.archium.ejb.TipusSerieEJB;
-import es.caib.archium.ejb.service.DictamenService;
-import es.caib.archium.ejb.service.FuncioService;
-import es.caib.archium.ejb.service.QuadreClassificacioService;
-import es.caib.archium.ejb.service.SerieService;
-import es.caib.archium.ejb.service.TipusSerieService;
-import es.caib.archium.objects.DictamenObject;
-import es.caib.archium.objects.Document;
-import es.caib.archium.objects.FuncioObject;
-import es.caib.archium.objects.QuadreObject;
-import es.caib.archium.objects.SerieDocumentalObject;
-import es.caib.archium.objects.TipusSerieObject;
-import es.caib.archium.persistence.model.Dictamen;
-import es.caib.archium.persistence.model.Funcio;
-import es.caib.archium.persistence.model.Quadreclassificacio;
-import es.caib.archium.persistence.model.Seriedocumental;
-import es.caib.archium.persistence.model.Tipusserie;
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.transaction.Transactional;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 @Named
 @ApplicationScoped
@@ -63,11 +43,14 @@ public class FuncioFrontService {
 
 	@Inject
 	DictamenFrontService dictamenServices;
+
+	@Inject
+	CSGDFuncionService csgdFuncionService;
 	
 	@Transactional
 	public TreeNode getContent(QuadreObject quadre) throws I18NException {	
 
-		TreeNode root = new DefaultTreeNode(new Document(0, "All", "All", "All", null), null);
+		TreeNode root = new DefaultTreeNode(new Document(0, "All", "All", "All", null,null,null), null);
 		this.recursiveTree(quadre, root, null);
 		
 		return root;
@@ -117,13 +100,13 @@ public class FuncioFrontService {
 				if (resS!=null) {
 					for(Seriedocumental s : resS)
 					{				
-						TreeNode serieNode = new DefaultTreeNode(new Document<SerieDocumentalObject>(s.getId(), s.getCodi(), s.getNom(), "Serie", new SerieDocumentalObject(s)), node);
+						TreeNode serieNode = new DefaultTreeNode(new Document<SerieDocumentalObject>(s.getId(), s.getCodi(), s.getNom(), "Serie", s.getNodeId(),s.isSynchronized(), new SerieDocumentalObject(s)), node);
 						List<Dictamen> resD = this.getDictamenBySerie(s);
 						
 						if (resD.size()>0) {
 							for(Dictamen d : resD)
 							{	
-								TreeNode dictamenNode = new DefaultTreeNode(new Document<DictamenObject>(d.getId(), d.getCodi(), d.getAcciodictaminada(), "Dictamen", new DictamenObject(d)), serieNode);
+								TreeNode dictamenNode = new DefaultTreeNode(new Document<DictamenObject>(d.getId(), d.getCodi(), d.getAcciodictaminada(), "Dictamen", d.getEstat(), new DictamenObject(d)), serieNode);
 							}
 						}
 					}
@@ -134,7 +117,7 @@ public class FuncioFrontService {
 			if (resF.size()>0) {
 				for(Funcio f : resF)
 				{				
-					TreeNode funcioNode = new DefaultTreeNode(new Document<FuncioObject>(f.getId(), f.getCodi(), f.getNom(), "Funcio", new FuncioObject(f)), node);
+					TreeNode funcioNode = new DefaultTreeNode(new Document<FuncioObject>(f.getId(), f.getCodi(), f.getNom(), "Funcio", f.getNodeId(),f.isSynchronized(), new FuncioObject(f)), node);
 					this.recursiveTree(quadre, funcioNode, f);
 				}
 			}
@@ -309,6 +292,13 @@ public class FuncioFrontService {
 	@Transactional
 	public void deleteFuncio(Long idFuncio) throws I18NException{
 		try {
+			this.csgdFuncionService.removeFuncion(idFuncio.toString());
+			//TODO: Capturar la excepcion y personalizarla para mostrar el mensaje al usuario
+		}catch (Exception e){
+
+		}
+
+		try {
 			this.funcionesEJB.delete(idFuncio);
 		} catch(NullPointerException e) {
 			throw new I18NException("excepcion.general.NullPointerException", this.getClass().getSimpleName(), "deleteFuncio");
@@ -316,5 +306,32 @@ public class FuncioFrontService {
 			throw new I18NException("excepcion.general.Exception", this.getClass().getSimpleName(), "deleteFuncio");
 		}
 	}
-	
+
+    public void synchronize(Long functionId) {
+
+		try{
+			// Recuperamos la funcion de base de datos
+			Funcio funciondb = funcionesEJB.getReference(functionId);
+
+			Funcion funcion = new Funcion();
+			funcion.setCodigo(funciondb.getCodi());
+			funcion.setFuncionPadre(funciondb.getAchFuncio()==null? null : funciondb.getAchFuncio().getCodi());
+			funcion.setCodigoCuadro(funciondb.getAchQuadreclassificacio()==null? null : funciondb.getAchQuadreclassificacio().getCodi());
+			funcion.setEstado(Estado.getEstado(funciondb.getEstat()));
+
+			// Realizamos la llamada para sincronizar la informacion en Alfresco
+			String nodeId = this.csgdFuncionService.synchronizeFunction(funcion);
+
+			// Asignamos a la funcion el nodo creado en Alfresco
+			if(StringUtils.isNotEmpty(nodeId)){
+				funciondb.setNodeId(nodeId);
+				funciondb.setSynchronized(true);
+				funcionesEJB.update(funciondb);
+			}else{
+				//TODO: Excepcion error no controlado
+			}
+		}catch(Exception e){
+			//TODO: Capturar la excepcion y personalizarla para mostrar el mensaje al usuario
+		}
+    }
 }

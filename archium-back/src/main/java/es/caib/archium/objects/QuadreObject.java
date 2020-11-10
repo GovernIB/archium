@@ -1,21 +1,15 @@
 package es.caib.archium.objects;
 
+import es.caib.archium.persistence.model.Quadreclassificacio;
+
 import java.util.Date;
 import java.util.Objects;
-
-import javax.faces.application.FacesMessage;
-import javax.faces.context.FacesContext;
-import javax.inject.Inject;
-
-import es.caib.archium.commons.i18n.I18NException;
-import es.caib.archium.ejb.service.QuadreClassificacioService;
-import es.caib.archium.persistence.model.Lopd;
-import es.caib.archium.persistence.model.Quadreclassificacio;
 
 public class QuadreObject {
 	
 	
 	private Long 	id;
+	private String 	codi;
 	private String 	nom;
 	private String 	nomCas;
 	private String 	estat;
@@ -23,6 +17,8 @@ public class QuadreObject {
 	private Date 	modificacio;
 	private String 	versio;
 	private Date 	fi;
+	private String 	nodeId;
+	private Boolean isSynchronized;
 
 	
 	
@@ -31,10 +27,11 @@ public class QuadreObject {
 		// TODO Auto-generated constructor stub
 	}
 
-	public QuadreObject(Long id, String nom, String nomCas, String estat, Date inici, Date modificacio, String versio,
-			Date fi) {
+	public QuadreObject(Long id,String codi, String nom, String nomCas, String estat, Date inici, Date modificacio, String versio,
+			Date fi, String nodeId, Boolean isSynchronized) {
 		super();
 		this.id = id;
+		this.codi = codi;
 		this.nom = nom;
 		this.nomCas = nomCas;
 		this.estat = estat;
@@ -42,6 +39,8 @@ public class QuadreObject {
 		this.modificacio = modificacio;
 		this.versio = versio;
 		this.fi = fi;
+		this.nodeId = nodeId;
+		this.isSynchronized = isSynchronized;
 	}
 	
 	public QuadreObject(Quadreclassificacio dbQuadre) {
@@ -54,7 +53,18 @@ public class QuadreObject {
 			this.modificacio = dbQuadre.getModificacio();
 			this.versio = dbQuadre.getVersio();
 			this.fi = dbQuadre.getFi();
+			this.nodeId = dbQuadre.getNodeId();
+			this.isSynchronized = dbQuadre.isSynchronized();
+			this.codi = dbQuadre.getCodi();
 		}
+	}
+
+	public String getCodi() {
+		return codi;
+	}
+
+	public void setCodi(String codi) {
+		this.codi = codi;
 	}
 
 	public Long getId() {
@@ -120,7 +130,23 @@ public class QuadreObject {
 	public void setFi(Date fi) {
 		this.fi = fi;
 	}
-	
+
+	public String getNodeId() {
+		return nodeId;
+	}
+
+	public void setNodeId(String nodeId) {
+		this.nodeId = nodeId;
+	}
+
+	public Boolean getSynchronized() {
+		return isSynchronized;
+	}
+
+	public void setSynchronized(Boolean aSynchronized) {
+		isSynchronized = aSynchronized;
+	}
+
 	public Quadreclassificacio toDbObject() {
 		Quadreclassificacio db = new Quadreclassificacio();
 		db.setId(id);
@@ -131,53 +157,50 @@ public class QuadreObject {
 		db.setModificacio(modificacio);
 		db.setFi(fi);
 		db.setVersio(versio);
+		db.setNodeId(nodeId);
+		db.setSynchronized(isSynchronized);
+		db.setCodi(codi);
 		return db;
 	}
-	
-	
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		QuadreObject that = (QuadreObject) o;
+		return Objects.equals(id, that.id) &&
+				Objects.equals(codi, that.codi) &&
+				Objects.equals(nom, that.nom) &&
+				Objects.equals(nomCas, that.nomCas) &&
+				Objects.equals(estat, that.estat) &&
+				Objects.equals(inici, that.inici) &&
+				Objects.equals(modificacio, that.modificacio) &&
+				Objects.equals(versio, that.versio) &&
+				Objects.equals(fi, that.fi) &&
+				Objects.equals(nodeId, that.nodeId) &&
+				Objects.equals(isSynchronized, that.isSynchronized);
+	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(id);
+		return Objects.hash(id, codi, nom, nomCas, estat, inici, modificacio, versio, fi, nodeId, isSynchronized);
 	}
 
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		QuadreObject other = (QuadreObject) obj;
-		return Objects.equals(id, other.id);
-	}
 
 	@Override
 	public String toString() {
-		StringBuilder builder = new StringBuilder();
-		builder.append("QuadreObject [id=");
-		builder.append(id);
-		builder.append(", nom=");
-		builder.append(nom);
-		builder.append(", nomCas=");
-		builder.append(nomCas);
-		builder.append(", estat=");
-		builder.append(estat);
-		builder.append(", inici=");
-		builder.append(inici);
-		builder.append(", modificacio=");
-		builder.append(modificacio);
-		builder.append(", versio=");
-		builder.append(versio);
-		builder.append(", fi=");
-		builder.append(fi);
-		builder.append("]");
-		return builder.toString();
+		return "QuadreObject{" +
+				"id=" + id +
+				", codi='" + codi + '\'' +
+				", nom='" + nom + '\'' +
+				", nomCas='" + nomCas + '\'' +
+				", estat='" + estat + '\'' +
+				", inici=" + inici +
+				", modificacio=" + modificacio +
+				", versio='" + versio + '\'' +
+				", fi=" + fi +
+				", nodeId='" + nodeId + '\'' +
+				", isSynchronized=" + isSynchronized +
+				'}';
 	}
-	
-	
-	
-	
-	
 }

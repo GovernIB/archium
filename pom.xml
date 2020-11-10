@@ -309,6 +309,7 @@
         <module>archium-persistence</module>
         <module>archium-ejb</module>
         <module>archium-back</module>
+        <module>archium-communication</module>
         <module>archium-ear</module>
     </modules>
 </project>

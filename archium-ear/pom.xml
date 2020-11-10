@@ -25,6 +25,12 @@
             <version>1.0.0</version>
             <type>ejb</type>
         </dependency>
+        <dependency>
+            <groupId>es.caib.archium</groupId>
+            <artifactId>archium-communication</artifactId>
+            <version>1.0.0</version>
+            <type>ejb</type>
+        </dependency>
         <!-- FRONT START -->
         <dependency>
             <groupId>es.caib.archium</groupId>
@@ -33,8 +39,8 @@
             <type>war</type>
         </dependency>
         <!-- FRONT END -->
-        
-        
+
+
         <!-- Mòduls que van dins el lib/ -->
         <dependency>
             <groupId>es.caib.archium</groupId>
@@ -51,7 +57,7 @@
             <artifactId>slf4j-api</artifactId>
         </dependency>
 
-        
+
     </dependencies>
 
     <build>
@@ -87,7 +93,7 @@
                             <contextRoot>/archiumback</contextRoot>
                         </webModule>
                         <!-- FRONT END -->
-                        
+
                     </modules>
                 </configuration>
             </plugin>

@@ -8,9 +8,7 @@ import es.caib.archium.ejb.service.QuadreClassificacioService;
 import es.caib.archium.ejb.service.TipusSerieService;
 import es.caib.archium.persistence.dao.AbstractDAO;
 import es.caib.archium.persistence.model.Funcio;
-import es.caib.archium.persistence.model.Quadreclassificacio;
 
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

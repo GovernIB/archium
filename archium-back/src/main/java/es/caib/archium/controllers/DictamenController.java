@@ -1,11 +1,14 @@
 package es.caib.archium.controllers;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.ResourceBundle;
+import es.caib.archium.commons.i18n.I18NException;
+import es.caib.archium.objects.*;
+import es.caib.archium.services.DictamenFrontService;
+import es.caib.archium.utils.FrontExceptionTranslate;
+import org.primefaces.PrimeFaces;
+import org.primefaces.model.DefaultTreeNode;
+import org.primefaces.model.TreeNode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
@@ -13,28 +16,8 @@ import javax.faces.context.FacesContext;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
-import javax.transaction.Transactional;
-
-import org.primefaces.PrimeFaces;
-import org.primefaces.event.CellEditEvent;
-import org.primefaces.event.RowEditEvent;
-import org.primefaces.event.UnselectEvent;
-import org.primefaces.model.DefaultTreeNode;
-import org.primefaces.model.TreeNode;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import es.caib.archium.commons.i18n.I18NException;
-import es.caib.archium.objects.DictamenObject;
-import es.caib.archium.objects.Document;
-import es.caib.archium.objects.EnsObject;
-import es.caib.archium.objects.LopdObject;
-import es.caib.archium.objects.NormativaAprobacioObject;
-import es.caib.archium.objects.SerieDocumentalObject;
-import es.caib.archium.objects.TipuAccesObject;
-import es.caib.archium.objects.TipuDictamenObject;
-import es.caib.archium.services.DictamenFrontService;
-import es.caib.archium.utils.FrontExceptionTranslate;
+import java.io.Serializable;
+import java.util.*;
 
 @Named("dictamenController")
 @ViewScoped
@@ -155,7 +138,7 @@ public class DictamenController implements Serializable {
 										  	this.estat
 											);
 				
-					TreeNode node = new DefaultTreeNode(new Document<DictamenObject>(newD.getId(), newD.getCodi(), newD.getAccioDictaminada(), "Dictamen", newD), 
+					TreeNode node = new DefaultTreeNode(new Document<DictamenObject>(newD.getId(), newD.getCodi(), newD.getAccioDictaminada(), newD.getEstat(), "Dictamen", newD),
 							funcBean.getNodeFromFunctionId(serieDocumental.getSerieId(), "Serie", "insert", null));
 					FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(messageBundle.getString("dictamen.insert.ok")));
 					
@@ -325,6 +308,11 @@ public class DictamenController implements Serializable {
 	    	this.nuevoDictamenVigente = null;
 	    	this.estatAnterior = "";
 	    }
+
+
+	public void publicar(Document<DictamenObject> d){
+		log.debug("Se publica el dictamen: "+d.toString());
+	}
 	    
 	    public void updateDictament(Document<DictamenObject> d) {	    	
 	    	

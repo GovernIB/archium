@@ -1,19 +1,19 @@
 <?xml version="1.0"?>
-<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-    xmlns="http://java.sun.com/xml/ns/javaee" 
-    xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_4_0.xsd" 
-    version="4.0">
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://java.sun.com/xml/ns/javaee"
+         xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_4_0.xsd"
+         version="4.0">
 
-  <servlet>
-    <servlet-name>Faces Servlet</servlet-name>
-    <servlet-class>javax.faces.webapp.FacesServlet</servlet-class>
-  </servlet>
-  
-  <servlet-mapping>
-    <servlet-name>Faces Servlet</servlet-name>
-    <url-pattern>*.xhtml</url-pattern>
-  </servlet-mapping>
- 	<security-constraint>
+    <servlet>
+        <servlet-name>Faces Servlet</servlet-name>
+        <servlet-class>javax.faces.webapp.FacesServlet</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>Faces Servlet</servlet-name>
+        <url-pattern>*.xhtml</url-pattern>
+    </servlet-mapping>
+    <security-constraint>
         <web-resource-collection>
             <web-resource-name>platform</web-resource-name>
             <url-pattern>*.xhtml</url-pattern>
@@ -25,44 +25,44 @@
             <transport-guarantee>CONFIDENTIAL</transport-guarantee>
         </user-data-constraint>
     </security-constraint>
-    
+
     <security-constraint>
-   		<web-resource-collection>
-	        <web-resource-name>Open Content</web-resource-name>
-	        <url-pattern>/javax.faces.resource/*</url-pattern>
-	        <url-pattern>/views/error403.xhtml</url-pattern>
-	    </web-resource-collection>
-	</security-constraint>
+        <web-resource-collection>
+            <web-resource-name>Open Content</web-resource-name>
+            <url-pattern>/javax.faces.resource/*</url-pattern>
+            <url-pattern>/views/error403.xhtml</url-pattern>
+        </web-resource-collection>
+    </security-constraint>
 
     <login-config>
         <auth-method>KEYCLOAK</auth-method>
-        <realm-name>ARCHIUM</realm-name>
+        <realm-name>archium-default</realm-name>
     </login-config>
 
-	<error-page>
-	    <error-code>403</error-code>
-	    <location>/views/error403.xhtml</location>
-	</error-page>
-	<error-page>
-	    <error-code>404</error-code>
-	    <location>/views/error404.xhtml</location>
-	</error-page>
-	<error-page>
-	    <error-code>500</error-code>
-	    <location>/views/error500.xhtml</location>
-	</error-page>
-	<error-page>
+    <error-page>
+        <error-code>403</error-code>
+        <location>/views/error403.xhtml</location>
+    </error-page>
+    <error-page>
+        <error-code>404</error-code>
+        <location>/views/error404.xhtml</location>
+    </error-page>
+    <error-page>
+        <error-code>500</error-code>
+        <location>/views/error500.xhtml</location>
+    </error-page>
+    <error-page>
         <exception-type>javax.faces.application.ViewExpiredException</exception-type>
         <location>/views/errorExpired.xhtml</location>
     </error-page>
-	<error-page>
+    <error-page>
         <exception-type>java.lang.Exception</exception-type>
         <location>/views/error.xhtml</location>
     </error-page>
-    
+
     <welcome-file-list>
-	    <welcome-file>/views/quadre.xhtml</welcome-file>
-	</welcome-file-list>
+        <welcome-file>/views/quadre.xhtml</welcome-file>
+    </welcome-file-list>
 
     <security-role>
         <role-name>ACH_GESTOR</role-name>

@@ -1,28 +1,23 @@
 package es.caib.archium.controllers;
-import java.util.Date;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.ResourceBundle;
-
-import javax.annotation.PostConstruct;
-import javax.faces.application.FacesMessage;
-import javax.faces.context.FacesContext;
-import javax.faces.view.ViewScoped;
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.validation.constraints.NotNull;
-
-import org.primefaces.PrimeFaces;
-import org.primefaces.event.UnselectEvent;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import es.caib.archium.commons.i18n.I18NException;
 import es.caib.archium.objects.QuadreObject;
 import es.caib.archium.services.QuadreFrontService;
 import es.caib.archium.utils.FrontExceptionTranslate;
+import org.primefaces.PrimeFaces;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.annotation.PostConstruct;
+import javax.faces.application.FacesMessage;
+import javax.faces.context.ExternalContext;
+import javax.faces.context.FacesContext;
+import javax.faces.view.ViewScoped;
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.servlet.http.HttpServletRequest;
+import java.io.Serializable;
+import java.util.*;
 
 
 @Named("quadreController")
@@ -41,19 +36,21 @@ public class QuadreController implements Serializable{
     private String 	 nombreNuevo;
     private String 	 nombreNuevoCast;
     private String 	 nouEstat;
-   
+	private String	 codiNuevo;
 
-    private Date 	 nouFi;
-    private String 	 nouVersio;
-    
 
-    
+	private Date 	 nouFi;
+	private String 	 nouVersio;
+
+
     private String	 nombreQuadre;
     private String	 estat;
     private Long 	 quadreId;
     
     @Inject
     private QuadreFrontService services;
+	@Inject
+	private ExternalContext externalContext;
         
     private List<QuadreObject> listaCuadros = new ArrayList<>();
     private List<QuadreObject> listaQuadreFilter = new ArrayList<>();
@@ -96,12 +93,39 @@ public class QuadreController implements Serializable{
     	
     }
 
+	public void sincronizar(QuadreObject cuadro) {
+		log.debug("Se sincroniza el cuadro: " + cuadro.toString());
+
+		try {
+			this.services.synchronize(cuadro.getId());
+			//TODO: Cambiar i18n
+			FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Cuadro de clasificacion" +
+					" Sincronizado"));
+		} catch (Exception e) {
+			//TODO: Excepciones...
+		}
+	}
+
+	/**
+	 * Comprueba el rol con el que está logueado el usuario
+	 *
+	 * @param rol
+	 * @return
+	 */
+	public boolean checkRolLogued(String rol) {
+		HttpServletRequest request = (HttpServletRequest) externalContext.getRequest();
+		if (request.isUserInRole(rol)) {
+			return true;
+		}
+		return false;
+	}
     
 	public void save() {
 		
 		
 		try {
 			QuadreObject object = new QuadreObject();
+			object.setCodi(this.getCodiNuevo());
 			object.setNom(this.getNombreNuevo());
 			object.setNomCas(this.getNombreNuevoCast());		
 			object.setEstat(this.getNouEstat());
@@ -131,6 +155,7 @@ public class QuadreController implements Serializable{
 	       
 	        this.setNombreNuevo("");    	
 	    	this.setNombreNuevoCast("");
+	    	this.setCodiNuevo("");
 		} catch (I18NException e) {
 			log.error(FrontExceptionTranslate.translate(e, this.getLocale()));
 			FacesMessage message = new FacesMessage();
@@ -148,6 +173,7 @@ public class QuadreController implements Serializable{
 			QuadreObject obj = new QuadreObject() ;
 			obj.setId(this.nouId);
 			obj.setEstat(this.nouEstat);
+			obj.setCodi(this.getCodiNuevo().trim());
 			obj.setNom(this.getNombreNuevo().trim());
 			obj.setNomCas(this.getNombreNuevoCast().trim());
 			obj.setFi(this.getNouFi());
@@ -194,6 +220,7 @@ public class QuadreController implements Serializable{
 	
     public void abrirModal() {
     	this.setNouId(null);
+    	this.setCodiNuevo("");
     	this.setNombreNuevo("");    	
     	this.setNombreNuevoCast("");    	
     	this.setNouFi(null);
@@ -209,6 +236,7 @@ public class QuadreController implements Serializable{
 			
 			if(quadre!=null) {
 				this.setNouId(object.getId());
+				this.setCodiNuevo(object.getCodi());
 				this.setNombreNuevo(quadre.getNom());    	
 		    	this.setNombreNuevoCast(quadre.getNomCas());
 		    	this.setNouEstat(quadre.getEstat());
@@ -381,7 +409,12 @@ public class QuadreController implements Serializable{
 	public void setLocale(Locale locale) {
 		this.locale = locale;
 	}
-	
-	
 
+	public String getCodiNuevo() {
+		return codiNuevo;
+	}
+
+	public void setCodiNuevo(String codiNuevo) {
+		this.codiNuevo = codiNuevo;
+	}
 }

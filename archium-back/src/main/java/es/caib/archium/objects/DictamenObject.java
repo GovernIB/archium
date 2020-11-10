@@ -5,13 +5,7 @@ import java.util.Date;
 import java.util.Objects;
 import java.util.ResourceBundle;
 
-import es.caib.archium.persistence.model.Dictamen;
-import es.caib.archium.persistence.model.Ens;
-import es.caib.archium.persistence.model.Lopd;
-import es.caib.archium.persistence.model.Normativa;
-import es.caib.archium.persistence.model.Seriedocumental;
-import es.caib.archium.persistence.model.Tipusacce;
-import es.caib.archium.persistence.model.Tipusdictamen;
+import es.caib.archium.persistence.model.*;
 
 public class DictamenObject {
 	private Long 	id;

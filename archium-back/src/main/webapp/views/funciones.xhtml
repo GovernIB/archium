@@ -6,7 +6,7 @@
       xmlns:ui="http://java.sun.com/jsf/facelets"
 >
     <ui:param name="title" value="#{messages['page.visorjerarquico.title']}" />
-    
+
     <ui:define name="content">
     	<p:panel id="panelRoot">
         <!-- BreadCrumbs -->
@@ -15,18 +15,18 @@
     	<ui:include src="/views/modal/dictamen/nuevoDictamen.xhtml" />
     	<ui:include src="/views/modal/dictamen/confirmDictamenVigent.xhtml" />
     	<ui:include src="/views/modal/dictamen/confirmDictamenVigentReq.xhtml" />
-       	
+
        	<div class="separador_rojo"></div>
-       	
+
        	<p:panel rendered="#{funciones.error==true}" id="panelButtons">
        		 <p:staticMessage severity="error" summary="ERROR!" detail="#{messages['procediment.init.error']}" />
         </p:panel>
-       	
+
         <h:form id="panel1"  rendered="#{funciones.error==false}">
 
 	       <div class="title_selector">
 	      		<p:selectOneMenu id="selectorCuadros" value="#{funciones.cuadroSeleccionado}" converter="FuncioQuadreclassificacioConverter" style="width:250px">
-	       		<p:ajax event="valueChange" 
+	       		<p:ajax event="valueChange"
 			        update="panel1"
 			        listener="#{funciones.onQuadreSelectedListener}"/>
 	               <f:selectItems value="#{funciones.listaCuadrosClasificacion}" var="n" itemLabel="#{n.nom}" itemValue="#{n}" />
@@ -36,39 +36,39 @@
 
         	<p:panel rendered="#{funciones.quadreId!=null}" id="panelButtons">
 	       		<p:commandButton class="button_add" resetValues="true" value="#{messages['funciones.nuevafuncion']}" icon="icono_add" update="dialog" action="#{funciones.setFuncioSeleccionada(null)}" oncomplete="PF('documentDialog').show()">
-	        	</p:commandButton> 
-	        	
+	        	</p:commandButton>
+
 	        	<p:commandButton class="button_add2" resetValues="true" value="#{messages['funciones.nuevaserie']}" icon="icono_add" update="serieModalDialogId" action="#{nuevaSerieController.loadFromFunction(null)}" oncomplete="PF('serieModalDialog').show()">
-	        	</p:commandButton> 
+	        	</p:commandButton>
 	        </p:panel>
-        	
+
         	<p:growl globalOnly="true">
 	  			<p:autoUpdate />
 		    </p:growl>
         	<p:growl>
 		    </p:growl>
-		    
-		    <p:treeTable id="tabla" 
-		    	class="table_action estilos-tabla" 
-		    	widgetVar="treeTable" 
-		    	value="#{funciones.root}" 
-		    	var="document" 
+
+		    <p:treeTable id="tabla"
+		    	class="table_action estilos-tabla"
+		    	widgetVar="treeTable"
+		    	value="#{funciones.root}"
+		    	var="document"
 		    	emptyMessage="#{messages['datos.nohaydatos']}"
-	        	style="margin-top:0" 
-	        	paginator="true" 
+	        	style="margin-top:0"
+	        	paginator="true"
 	        	rows="10"
 	        	rowStyleClass="row_type_#{document.type}"
 	        	filteredNode="#{funciones.filterNode}"
-	        	selectionMode="single" 
+	        	selectionMode="single"
 	        	selection="#{funciones.selectedNode}">
-	        	
+
         		<p:ajax event="select" listener="#{funciones.onNodeSelect}"  update="tabla :info" />
         		<p:ajax event="unselect" listener="#{funciones.onNodeUnselect}" update="tabla :info" />
         		<p:ajax event="collapse" listener="#{funciones.onCollapseTree}" update="tabla :info" />
         		<p:ajax event="expand" listener="#{funciones.onExpandTree}" update="tabla :info" />
         		<p:ajax event="sort" listener="#{funciones.onSortTree}" update="tabla :info" />
         		<p:ajax event="page" listener="#{funciones.onPageTree}" update="tabla :info" />
-        		
+
 		        <p:column headerText="#{messages['funciones.codi']}" style="width:200px;" filterBy="#{document.codi}" sortBy="#{document.codi}" filterMatchMode="contains">
 		            <h:outputText value="#{document.codi}" />
 		        </p:column>
@@ -88,7 +88,7 @@
 		            <h:outputText rendered="#{document.type=='Serie'}" value="#{messages['funciones.tree.type.serie']}" />
 		            <h:outputText rendered="#{document.type=='Dictamen'}" value="#{messages['funciones.tree.type.dictamen']}" />
 		        </p:column>
-		        <p:column class="acciones-t" headerText="#{messages['funciones.acciones']}" style="width:210px; padding:0px;">
+		        <p:column class="acciones-t" headerText="#{messages['funciones.acciones']}" style="width:221px; padding:0px;">
 		            <p:commandButton class="botton_library" rendered="#{document.type=='Funcio'}" icon="pi pi-pencil" resetValues="true" title="#{messages['funciones.modificafuncion']}" update="dialog" action="#{funciones.setFuncioActualizar(document)}" ></p:commandButton>
 		            <p:commandButton class="botton_library" rendered="#{document.type=='Funcio'}" icon="pi pi-plus-circle" resetValues="true" title="#{messages['funciones.nuevafuncion']}" update="dialog" action="#{funciones.setFuncioSeleccionada(document)}" oncomplete="PF('documentDialog').show()"></p:commandButton>
 		            <p:commandButton class="botton_library" rendered="#{document.type=='Funcio'}" icon="pi pi-file" resetValues="true" title="#{messages['funciones.nuevaserie']}" update="serieModalDialogId" action="#{nuevaSerieController.loadFromFunction(document)}" oncomplete="PF('serieModalDialog').show()"></p:commandButton>
@@ -104,40 +104,53 @@
 		        	<p:commandButton class="botton_library" rendered="#{document.type=='Dictamen'}" icon="pi pi-trash" title="#{messages['funciones.eliminardictamen']}" update="panel1" action="#{dictamenController.deleteDictamen(document)}" oncomplete="">
 		            	<p:confirm header="#{messages['confirmacion']}" message="#{messages['dictamen.eliminar.alert']}" icon="pi pi-exclamation-triangle" />
 		            </p:commandButton>
+
+<!--					icono de sincronizacion-->
+<!--					Si tienes permisos de sincronizar y no esta sincronizado-->
+<!--						cambiar i18n-->
+					<p:commandButton class="botton_library" rendered="#{document.type=='Funcio' and funciones.checkRolLogued('ACH_GESTOR') eq true and document.synchronized eq false}" icon="circle-state red" resetValues="true" title="sincronizar" update="dialog" action="#{funciones.sincronizar(document)}" />
+					<p:commandButton class="botton_library" rendered="#{document.type=='Serie' and funciones.checkRolLogued('ACH_GESTOR') eq true and document.synchronized eq false}" icon="circle-state red" resetValues="true" title="sincronizar" update="dialog" action="#{nuevaSerieController.sincronizar(document)}" />
+					<p:commandButton class="botton_library" rendered="#{document.type=='Dictamen' and funciones.checkRolLogued('ACH_GESTOR') eq true and document.estat eq 'NO_ACTIVO'}" icon="pi pi-times" resetValues="true" title="publicar" update="dialog" action="#{dictamenController.publicar(document)}" />
+                    <!--                    si ya esta sincronizado-->
+                    <h:outputText rendered="#{document.type ne 'Dictamen' and document.synchronized eq true}" > <i class="circle-state green"></i> </h:outputText>
+					<h:outputText rendered="#{document.type eq 'Dictamen' and document.estat eq 'ACTIVO'}" >   <i class="pi pi-check"></i> </h:outputText>
+<!--                    si no esta sincronizado y no tienes permisos-->
+					<h:outputText rendered="#{funciones.checkRolLogued('ACH_GESTOR') eq false and document.type ne 'Dictamen' and document.synchronized eq false}" ><i class="circle-state red"></i> </h:outputText>
+					<h:outputText rendered="#{funciones.checkRolLogued('ACH_GESTOR') eq false and document.type eq 'Dictamen' and document.estat eq 'NO_ACTIVO'}" > <i class="pi pi-times"></i> </h:outputText>
 		        </p:column>
 		    </p:treeTable>
-            
+
         </h:form>
-       
+
         <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
 	        <p:commandButton value="#{messages['si']}" type="button" styleClass="ui-confirmdialog-yes" icon="pi pi-check" />
 	        <p:commandButton value="#{messages['no']}" type="button" styleClass="ui-confirmdialog-no" icon="pi pi-times" />
-	    </p:confirmDialog>      
+	    </p:confirmDialog>
         <hr/>
-        
+
         <h:form id="info">
         	<p:panel rendered="#{not empty funciones.infoSelectedElement}" id="panelInfo">
 	        	<div class="panelInfo">
 	        		<div class="info_header">#{funciones.infoSelectedElement.type}</div>
 	        		<div class="info_body">
 	        			<div class="ui-g">
-	        			
+
 		        			<ui:repeat value="#{funciones.infoSelectedElement}" var="entry" >
 		        				<h:panelGroup rendered="#{entry.key!='type' and entry.key!='id'}">
 		        					<div class="ui-g-6"><strong>#{entry.key}: </strong><label>#{entry.value}</label></div>
 		        				</h:panelGroup>
 						    </ui:repeat>
-	
-							
+
+
 						</div>
 	        		</div>
 	        	</div>
         	</p:panel>
         </h:form>
-        
+
         </p:panel>
-        
-        
+
+
     </ui:define>
- 	 
+
 </ui:composition>

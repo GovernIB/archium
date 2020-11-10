@@ -1,11 +1,11 @@
 package es.caib.archium.objects;
 
-import java.util.Objects;
-
 import es.caib.archium.persistence.model.Catalegsery;
 import es.caib.archium.persistence.model.Funcio;
 import es.caib.archium.persistence.model.Seriedocumental;
 import es.caib.archium.persistence.model.Tipusserie;
+
+import java.util.Objects;
 
 public class SerieDocumentalObject {
 	private Long serieId;
@@ -22,13 +22,15 @@ public class SerieDocumentalObject {
 	private String estat;
 	private Long tipusSerieId;
 	private String codiIecisa;
+	private String nodeId;
+	private Boolean isSynchronized;
 	
 	public SerieDocumentalObject() {
 	}
 
 	public SerieDocumentalObject(String codi, String nom, String nomCas, Long catalegSeriId, FuncioObject funcio,
 			String descripcio, String descripcioCas, String resumMigracio, String dir3Promotor, Long tipusSerieId,
-			String codiIecisa, String estat) {
+			String codiIecisa, String estat, String nodeId, Boolean isSynchronized) {
 		this.codi = codi;
 		this.nom = nom;
 		this.nomCas = nomCas;
@@ -41,6 +43,8 @@ public class SerieDocumentalObject {
 		this.tipusSerieId = tipusSerieId;
 		this.codiIecisa = codiIecisa;
 		this.estat = estat;
+		this.nodeId = nodeId;
+		this.isSynchronized = isSynchronized;
 	}
 	
 	public SerieDocumentalObject(Seriedocumental dbSerie) {
@@ -61,6 +65,7 @@ public class SerieDocumentalObject {
 			this.codiIecisa = dbSerie.getCodiiecisa();
 			this.funcio = new FuncioObject(dbSerie.getAchFuncio());
 			this.estat = dbSerie.getEstat();
+			this.isSynchronized = dbSerie.isSynchronized();
 		}
 			
 	}
@@ -168,7 +173,23 @@ public class SerieDocumentalObject {
 	public void setEstat(String estat) {
 		this.estat = estat;
 	}
-	
+
+	public String getNodeId() {
+		return nodeId;
+	}
+
+	public void setNodeId(String nodeId) {
+		this.nodeId = nodeId;
+	}
+
+	public Boolean isSynchronized() {
+		return isSynchronized;
+	}
+
+	public void setSynchronized(Boolean aSynchronized) {
+		isSynchronized = aSynchronized;
+	}
+
 	public Seriedocumental toDbObject(Tipusserie ts, Catalegsery cs, Funcio f) {
 		Seriedocumental db = new Seriedocumental();
 		db.setId(serieId);
@@ -184,6 +205,8 @@ public class SerieDocumentalObject {
 		db.setNom(nom);
 		db.setNomcas(nomCas);
 		db.setEstat(estat);
+		db.setNodeId(nodeId);
+		db.setSynchronized(isSynchronized);
 		return db;
 	}
 

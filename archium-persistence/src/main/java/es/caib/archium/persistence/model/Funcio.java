@@ -7,206 +7,227 @@ import java.util.Date;
 import java.util.List;
 
 
-/**
- * The persistent class for the ACH_FUNCIO database table.
- * 
- */
-@Entity
-@Table(name="ACH_FUNCIO")
-@NamedQuery(name="Funcio.findAll", query="SELECT f FROM Funcio f")
-public class Funcio implements Serializable {
-	private static final long serialVersionUID = 1L;
+ /**
+  * The persistent class for the ACH_FUNCIO database table.
+  *
+  */
+ @Entity
+ @Table(name="ACH_FUNCIO")
+ @NamedQuery(name="Funcio.findAll", query="SELECT f FROM Funcio f")
+ public class Funcio implements Serializable {
+     private static final long serialVersionUID = 1L;
 
-	@Id
-	@SequenceGenerator(name="ACH_FUNCIO_ID_GENERATOR", sequenceName="ACH_FUNCIO_SEQ", allocationSize = 1)
-	@GeneratedValue(strategy=GenerationType.SEQUENCE, generator="ACH_FUNCIO_ID_GENERATOR")
-	private Long id;
+     @Id
+     @SequenceGenerator(name="ACH_FUNCIO_ID_GENERATOR", sequenceName="ACH_FUNCIO_SEQ", allocationSize = 1)
+     @GeneratedValue(strategy=GenerationType.SEQUENCE, generator="ACH_FUNCIO_ID_GENERATOR")
+     private Long id;
 
-	private String codi;
+     private String codi;
 
-	private String estat;
+     private String estat;
 
-	@Temporal(TemporalType.TIMESTAMP)
-	private Date fi;
+     @Temporal(TemporalType.TIMESTAMP)
+     private Date fi;
 
-	@Temporal(TemporalType.TIMESTAMP)
-	private Date inici;
+     @Temporal(TemporalType.TIMESTAMP)
+     private Date inici;
 
-	@Temporal(TemporalType.TIMESTAMP)
-	private Date modificacio;
+     @Temporal(TemporalType.TIMESTAMP)
+     private Date modificacio;
 
-	private String nom;
+     private String nom;
 
-	private String nomcas;
+     private String nomcas;
 
-	private BigDecimal ordre;
+     private BigDecimal ordre;
 
-	//bi-directional many-to-one association to Funcio
-	@ManyToOne
-	@JoinColumn(name="FUNCIO_PARE")
-	private Funcio achFuncio;
+     private String nodeId;
 
-	//bi-directional many-to-one association to Funcio
-	@OneToMany(mappedBy="achFuncio", 
-			cascade = CascadeType.REMOVE)
-	private List<Funcio> achFuncios;
+     @Column(name="SYNCHRONIZED")
+     private boolean isSynchronized;
 
-	//bi-directional many-to-one association to Quadreclassificacio
-	@ManyToOne
-	@JoinColumn(name="QUADRECLASSIFICACIO_ID")
-	private Quadreclassificacio achQuadreclassificacio;
+     //bi-directional many-to-one association to Funcio
+     @ManyToOne
+     @JoinColumn(name="FUNCIO_PARE")
+     private Funcio achFuncio;
 
-	//bi-directional many-to-one association to Tipusserie
-	@ManyToOne
-	@JoinColumn(name="TIPUSSERIE_ID")
-	private Tipusserie achTipusserie;
+     //bi-directional many-to-one association to Funcio
+     @OneToMany(mappedBy="achFuncio",
+             cascade = CascadeType.REMOVE)
+     private List<Funcio> achFuncios;
 
-	//bi-directional many-to-one association to Seriedocumental
-	@OneToMany(mappedBy="achFuncio", 
-			cascade = CascadeType.REMOVE)
-	private List<Seriedocumental> achSeriedocumentals;
+     //bi-directional many-to-one association to Quadreclassificacio
+     @ManyToOne
+     @JoinColumn(name="QUADRECLASSIFICACIO_ID")
+     private Quadreclassificacio achQuadreclassificacio;
 
-	public Funcio() {
-	}
+     //bi-directional many-to-one association to Tipusserie
+     @ManyToOne
+     @JoinColumn(name="TIPUSSERIE_ID")
+     private Tipusserie achTipusserie;
 
-	public Long getId() {
-		return this.id;
-	}
+     //bi-directional many-to-one association to Seriedocumental
+     @OneToMany(mappedBy="achFuncio",
+             cascade = CascadeType.REMOVE)
+     private List<Seriedocumental> achSeriedocumentals;
 
-	public void setId(Long id) {
-		this.id = id;
-	}
+     public Funcio() {
+     }
 
-	public String getCodi() {
-		return this.codi;
-	}
+     public String getNodeId() {
+         return nodeId;
+     }
 
-	public void setCodi(String codi) {
-		this.codi = codi;
-	}
+     public void setNodeId(String nodeId) {
+         this.nodeId = nodeId;
+     }
 
-	public String getEstat() {
-		return this.estat;
-	}
+     public boolean isSynchronized() {
+         return isSynchronized;
+     }
 
-	public void setEstat(String estat) {
-		this.estat = estat;
-	}
+     public void setSynchronized(boolean aSynchronized) {
+         isSynchronized = aSynchronized;
+     }
 
-	public Date getFi() {
-		return this.fi;
-	}
+     public Long getId() {
+         return this.id;
+     }
 
-	public void setFi(Date fi) {
-		this.fi = fi;
-	}
+     public void setId(Long id) {
+         this.id = id;
+     }
 
-	public Date getInici() {
-		return this.inici;
-	}
+     public String getCodi() {
+         return this.codi;
+     }
 
-	public void setInici(Date inici) {
-		this.inici = inici;
-	}
+     public void setCodi(String codi) {
+         this.codi = codi;
+     }
 
-	public Date getModificacio() {
-		return this.modificacio;
-	}
+     public String getEstat() {
+         return this.estat;
+     }
 
-	public void setModificacio(Date modificacio) {
-		this.modificacio = modificacio;
-	}
+     public void setEstat(String estat) {
+         this.estat = estat;
+     }
 
-	public String getNom() {
-		return this.nom;
-	}
+     public Date getFi() {
+         return this.fi;
+     }
 
-	public void setNom(String nom) {
-		this.nom = nom;
-	}
+     public void setFi(Date fi) {
+         this.fi = fi;
+     }
 
-	public String getNomcas() {
-		return this.nomcas;
-	}
+     public Date getInici() {
+         return this.inici;
+     }
 
-	public void setNomcas(String nomcas) {
-		this.nomcas = nomcas;
-	}
+     public void setInici(Date inici) {
+         this.inici = inici;
+     }
 
-	public BigDecimal getOrdre() {
-		return this.ordre;
-	}
+     public Date getModificacio() {
+         return this.modificacio;
+     }
 
-	public void setOrdre(BigDecimal ordre) {
-		this.ordre = ordre;
-	}
+     public void setModificacio(Date modificacio) {
+         this.modificacio = modificacio;
+     }
 
-	public Funcio getAchFuncio() {
-		return this.achFuncio;
-	}
+     public String getNom() {
+         return this.nom;
+     }
 
-	public void setAchFuncio(Funcio achFuncio) {
-		this.achFuncio = achFuncio;
-	}
+     public void setNom(String nom) {
+         this.nom = nom;
+     }
 
-	public List<Funcio> getAchFuncios() {
-		return this.achFuncios;
-	}
+     public String getNomcas() {
+         return this.nomcas;
+     }
 
-	public void setAchFuncios(List<Funcio> achFuncios) {
-		this.achFuncios = achFuncios;
-	}
+     public void setNomcas(String nomcas) {
+         this.nomcas = nomcas;
+     }
 
-	public Funcio addAchFuncio(Funcio achFuncio) {
-		getAchFuncios().add(achFuncio);
-		achFuncio.setAchFuncio(this);
+     public BigDecimal getOrdre() {
+         return this.ordre;
+     }
 
-		return achFuncio;
-	}
+     public void setOrdre(BigDecimal ordre) {
+         this.ordre = ordre;
+     }
 
-	public Funcio removeAchFuncio(Funcio achFuncio) {
-		getAchFuncios().remove(achFuncio);
-		achFuncio.setAchFuncio(null);
+     public Funcio getAchFuncio() {
+         return this.achFuncio;
+     }
 
-		return achFuncio;
-	}
+     public void setAchFuncio(Funcio achFuncio) {
+         this.achFuncio = achFuncio;
+     }
 
-	public Quadreclassificacio getAchQuadreclassificacio() {
-		return this.achQuadreclassificacio;
-	}
+     public List<Funcio> getAchFuncios() {
+         return this.achFuncios;
+     }
 
-	public void setAchQuadreclassificacio(Quadreclassificacio achQuadreclassificacio) {
-		this.achQuadreclassificacio = achQuadreclassificacio;
-	}
+     public void setAchFuncios(List<Funcio> achFuncios) {
+         this.achFuncios = achFuncios;
+     }
 
-	public Tipusserie getAchTipusserie() {
-		return this.achTipusserie;
-	}
+     public Funcio addAchFuncio(Funcio achFuncio) {
+         getAchFuncios().add(achFuncio);
+         achFuncio.setAchFuncio(this);
 
-	public void setAchTipusserie(Tipusserie achTipusserie) {
-		this.achTipusserie = achTipusserie;
-	}
+         return achFuncio;
+     }
 
-	public List<Seriedocumental> getAchSeriedocumentals() {
-		return this.achSeriedocumentals;
-	}
+     public Funcio removeAchFuncio(Funcio achFuncio) {
+         getAchFuncios().remove(achFuncio);
+         achFuncio.setAchFuncio(null);
 
-	public void setAchSeriedocumentals(List<Seriedocumental> achSeriedocumentals) {
-		this.achSeriedocumentals = achSeriedocumentals;
-	}
+         return achFuncio;
+     }
 
-	public Seriedocumental addAchSeriedocumental(Seriedocumental achSeriedocumental) {
-		getAchSeriedocumentals().add(achSeriedocumental);
-		achSeriedocumental.setAchFuncio(this);
+     public Quadreclassificacio getAchQuadreclassificacio() {
+         return this.achQuadreclassificacio;
+     }
 
-		return achSeriedocumental;
-	}
+     public void setAchQuadreclassificacio(Quadreclassificacio achQuadreclassificacio) {
+         this.achQuadreclassificacio = achQuadreclassificacio;
+     }
 
-	public Seriedocumental removeAchSeriedocumental(Seriedocumental achSeriedocumental) {
-		getAchSeriedocumentals().remove(achSeriedocumental);
-		achSeriedocumental.setAchFuncio(null);
+     public Tipusserie getAchTipusserie() {
+         return this.achTipusserie;
+     }
 
-		return achSeriedocumental;
-	}
+     public void setAchTipusserie(Tipusserie achTipusserie) {
+         this.achTipusserie = achTipusserie;
+     }
 
-}
+     public List<Seriedocumental> getAchSeriedocumentals() {
+         return this.achSeriedocumentals;
+     }
+
+     public void setAchSeriedocumentals(List<Seriedocumental> achSeriedocumentals) {
+         this.achSeriedocumentals = achSeriedocumentals;
+     }
+
+     public Seriedocumental addAchSeriedocumental(Seriedocumental achSeriedocumental) {
+         getAchSeriedocumentals().add(achSeriedocumental);
+         achSeriedocumental.setAchFuncio(this);
+
+         return achSeriedocumental;
+     }
+
+     public Seriedocumental removeAchSeriedocumental(Seriedocumental achSeriedocumental) {
+         getAchSeriedocumentals().remove(achSeriedocumental);
+         achSeriedocumental.setAchFuncio(null);
+
+         return achSeriedocumental;
+     }
+
+ }

@@ -3,6 +3,10 @@
 		height: 10px;
 		background: #ccc;
 		border-radius: 100%;
+		top: 0 !important;
+        margin-top: 6px !important;
+        margin-left: 4px !important;
+        left: 0 !important;
 	}
 	.red{
 		background: red;

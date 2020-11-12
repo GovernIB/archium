@@ -3,6 +3,8 @@ package es.caib.archium.services;
 import es.caib.archium.apirest.constantes.Estado;
 import es.caib.archium.apirest.facade.pojos.CuadroClasificacion;
 import es.caib.archium.commons.i18n.I18NException;
+import es.caib.archium.commons.utils.Constants;
+import es.caib.archium.communication.exception.CSGDException;
 import es.caib.archium.communication.iface.CSGDCuadroService;
 import es.caib.archium.communication.impl.CSGGDCuadroServiceImpl;
 import es.caib.archium.ejb.service.QuadreClassificacioService;
@@ -150,28 +152,61 @@ public class QuadreFrontService {
     }
 
     @Transactional
+    public void deleteClassificationTable(Long idClassificationTable) throws I18NException {
+        log.debug("Se procede a eliminar el cuadro ["+idClassificationTable+"]");
+        Quadreclassificacio cuadro = quadreEjb.getReference(idClassificationTable);
+        if(StringUtils.isNotEmpty(cuadro.getNodeId())) {
+            log.debug("El cuadro existe en Alfresco, así que procedemos a eliminarlo");
+            try {
+                this.csgdCuadroService.removeCuadro(cuadro.getNodeId());
+                log.info("El cuadro ["+idClassificationTable+"] ha sido eliminada de Alfresco");
+            } catch (CSGDException e) {
+                throw new I18NException(getExceptionI18n(e.getClientErrorCode()), this.getClass().getSimpleName(), "deleteClassificationTable");
+            } catch (Exception e) {
+                throw new I18NException("excepcion.general.Exception", this.getClass().getSimpleName(), "deleteClassificationTable");
+            }
+        }
+
+        // Si se elimina correctamente de gdib, se borra en la bbdd
+        try {
+            this.quadreEjb.delete(idClassificationTable);
+
+        } catch (NullPointerException e) {
+            throw new I18NException("excepcion.general.NullPointerException", this.getClass().getSimpleName(), "deleteClassificationTable");
+        } catch (Exception e) {
+            throw new I18NException("excepcion.general.Exception", this.getClass().getSimpleName(), "deleteClassificationTable");
+        }
+    }
+
+    @Transactional
     public void synchronize(Long tableId) throws I18NException {
-        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Se sincroniza cuadro"));
-        log.error("Procedemos a sincronizar el cuadro de clasificacion con id=[" + tableId + "]");
+        log.debug("Procedemos a sincronizar el cuadro de clasificacion con id=[" + tableId + "]");
         log.debug("Obtenemos los datos del cuadro...");
         //Obtenemos el cuadro de clasificacion de base de datos
-        Quadreclassificacio cuadrodb = quadreEjb.getReference(tableId);
-
+        Quadreclassificacio cuadrodb = null;
+        try {
+            cuadrodb = quadreEjb.getReference(tableId);
+        } catch (Exception e) {
+            log.error("Error obteniendo la entidad del cuadro: " + e);
+            throw new I18NException("excepcion.general.Exception", this.getClass().getSimpleName(), "get entity");
+        }
         CuadroClasificacion cuadroWs = new CuadroClasificacion();
         cuadroWs.setCodigo(cuadrodb.getCodi());
         cuadroWs.setEstado(Estado.getEstado(cuadrodb.getEstat()));
 
-        log.error("Dto creado, llamamos al servicio de sincronizacion");
+        log.debug("Dto creado, llamamos al servicio de sincronizacion");
         String nodeId = null;
         try {
             // Realizamos la llamada para la sincronizacion en Alfresco de los datos
             nodeId = csgdCuadroService.synchronizeClassificationTable(cuadroWs);
+        } catch (CSGDException e) {
+            throw new I18NException(getExceptionI18n(e.getClientErrorCode()), this.getClass().getSimpleName(), "synchronizeClassificationTable");
         } catch (Exception e) {
-            //TODO: la excepcion...
-            log.error("Error sincronizando el cuadro: " + e.getMessage());
+            log.error("Error sincronizando el cuadro: " + e);
+            throw new I18NException("excepcion.general.Exception", this.getClass().getSimpleName(), "synchronizeClassificationTable");
         }
 
-        log.error("Creado cuadro con id [" + nodeId + "]. Se procede a guardar en base de datos");
+        log.debug("Creado cuadro con id [" + nodeId + "]. Se procede a guardar en base de datos");
 
         if (StringUtils.isNotEmpty(nodeId)) {
             try {
@@ -179,15 +214,30 @@ public class QuadreFrontService {
                 cuadrodb.setNodeId(nodeId);
                 cuadrodb.setSynchronized(true);
                 quadreEjb.update(cuadrodb);
-                log.debug("Proceso de sincronizacion finalizado con exito");
+            } catch (I18NException e) {
+                log.error("Error sincronizando la informacion del cuadro: " + e);
+                throw e;
             } catch (Exception e) {
                 // Cambiar i18n
-                //TODO: Controlamos y personalizamos la excepcion...
-                log.error("Error sincronizando el cuadro: " + e.getMessage());
+                log.error("Error sincronizando la informacion del cuadro: " + e);
+                throw new I18NException("excepcion.general.Exception", this.getClass().getSimpleName(), "update");
             }
         } else {
-            //TODO: Excepcion genenrica
-            throw new I18NException("excepcion.general.Exception",this.getClass().getSimpleName(), "synchronize");
+            log.error("Se ha devuelto null como nodo de alfresco en la sincronizacion del cuadro");
+            throw new I18NException("excepcion.general.Exception", this.getClass().getSimpleName(), "synchronizeError");
         }
+    }
+
+    private String getExceptionI18n(String clientErrorCode) {
+        if (Constants.ExceptionConstants.CLIENT_ERROR.getValue().equals(clientErrorCode)) {
+            return "csgd.client.error";
+        } else if (Constants.ExceptionConstants.ERROR_RETURNED.getValue().equals(clientErrorCode)) {
+            return "csgd.error.returned";
+        } else if (Constants.ExceptionConstants.GENERIC_ERROR.getValue().equals(clientErrorCode)) {
+            return "exception.general.Exception";
+        } else if (Constants.ExceptionConstants.MALFORMED_RESULT.getValue().equals(clientErrorCode)) {
+            return "csgd.malformed.result";
+        }
+        return "excepcion.general.Exception";
     }
 }

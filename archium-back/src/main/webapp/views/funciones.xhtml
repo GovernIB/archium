@@ -108,8 +108,8 @@
 <!--					icono de sincronizacion-->
 <!--					Si tienes permisos de sincronizar y no esta sincronizado-->
 <!--						cambiar i18n-->
-					<p:commandButton class="botton_library" rendered="#{document.type=='Funcio' and funciones.checkRolLogued('ACH_GESTOR') eq true and document.synchronized eq false}" icon="circle-state red" resetValues="true" title="sincronizar" update="dialog" action="#{funciones.sincronizar(document)}" />
-					<p:commandButton class="botton_library" rendered="#{document.type=='Serie' and funciones.checkRolLogued('ACH_GESTOR') eq true and document.synchronized eq false}" icon="circle-state red" resetValues="true" title="sincronizar" update="dialog" action="#{nuevaSerieController.sincronizar(document)}" />
+					<p:commandButton class="botton_library" rendered="#{document.type=='Funcio' and funciones.checkRolLogued('ACH_GESTOR') eq true and document.synchronized eq false}" icon="circle-state red" resetValues="true" title="sincronizar" update="dialog" action="#{funciones.synchronize(document)}" />
+					<p:commandButton class="botton_library" rendered="#{document.type=='Serie' and funciones.checkRolLogued('ACH_GESTOR') eq true and document.synchronized eq false}" icon="circle-state red" resetValues="true" title="sincronizar" update="dialog" action="#{nuevaSerieController.synchronize(document)}" />
 					<p:commandButton class="botton_library" rendered="#{document.type=='Dictamen' and funciones.checkRolLogued('ACH_GESTOR') eq true and document.estat eq 'NO_ACTIVO'}" icon="pi pi-times" resetValues="true" title="publicar" update="dialog" action="#{dictamenController.publicar(document)}" />
                     <!--                    si ya esta sincronizado-->
                     <h:outputText rendered="#{document.type ne 'Dictamen' and document.synchronized eq true}" > <i class="circle-state green"></i> </h:outputText>

@@ -1,6 +1,7 @@
 package es.caib.archium.apirest;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
 import es.caib.archium.apirest.constantes.Servicios;
 import es.caib.archium.apirest.csgd.entidades.comunes.*;
 import es.caib.archium.apirest.csgd.entidades.parametrosllamada.*;
@@ -14,17 +15,21 @@ import es.caib.archium.apirest.facade.pojos.cabecera.CabeceraAplicacion;
 import es.caib.archium.apirest.facade.pojos.cabecera.CabeceraLogin;
 import es.caib.archium.apirest.facade.pojos.cabecera.CabeceraPeticion;
 import es.caib.archium.apirest.facade.pojos.cabecera.CabeceraTramite;
-import es.caib.archium.apirest.facade.resultados.ExceptionResult;
 import es.caib.archium.apirest.facade.resultados.Resultado;
 import es.caib.archium.apirest.facade.resultados.ResultadoSimple;
 import es.caib.archium.apirest.jerseyclient.JerseyClientGet;
 import es.caib.archium.apirest.jerseyclient.ResultadoJersey;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.ejb.Stateless;
 import java.io.IOException;
+import java.util.LinkedHashMap;
 
 @Stateless
 public class ApiArchium {
+
+    protected final Logger log = LoggerFactory.getLogger(ApiArchium.class);
 
     public static final String VERSION_SERVICIO = "1.0";
 
@@ -47,31 +52,53 @@ public class ApiArchium {
     }
 
     public CreateSerieResult crearSerie(Serie serie, String funcionPadre) throws IOException {
+        log.debug("Se prepara la llamada en el cliente para crearSerie");
 
         CreateSerieResult result = null;
-        SerieNode serieNode = convertirASerieNode(serie,funcionPadre);
+        SerieNode serieNode = convertirASerieNode(serie);
 
         Request<ParamCreateSerie> request = new Request<ParamCreateSerie>();
         CreateSerie peticion = new CreateSerie();
         ParamCreateSerie param = new ParamCreateSerie();
         param.setSerie(serieNode);
+        param.setParent(funcionPadre);
 
         request.setServiceHeader(getServiceHeader());
         request.setParam(param);
         peticion.setCreateSerieRequest(request);
 
         ResultadoJersey output;
-        output = JerseyClientGet.post(this.urlBase,Servicios.CREATE_SERIE,peticion,CreateSerieResult.class,trazas);
+        try {
+            log.debug("Se realiza la llamada con parametros de entrada: "+peticion.toString());
+            output = JerseyClientGet.post(this.urlBase, Servicios.CREATE_SERIE, peticion, CreateSerieResult.class, trazas);
+        }catch (UnrecognizedPropertyException e){
+            log.error("Se ha producido un error desconocido en la llamada en el el cliente: " + e);
+            RespuestaGenerica<String> rg = new RespuestaGenerica<>();
+            ResultData rd = new ResultData();
+            rd.setCode("500");
+            rd.setDescription("Se ha producido una excepcion en la respuesta a la peticion");
+            rg.setResult(rd);
+            result.setCreateSerieResult(rg);
+            return result;
+        }
 
+        log.debug("Llamada realizada con exito, codigo de la respuesta: "+output.getEstadoRespuestaHttp());
         if(output.getEstadoRespuestaHttp() == 200){
             result = (CreateSerieResult) output.getContenido();
         }else{
-            //TODO: Tratar excepcion
+            ExceptionResult except = (ExceptionResult) output.getContenido();
+            RespuestaGenerica<String> csr = new RespuestaGenerica<>();
+            ResultData rd = new ResultData();
+            rd.setCode(except.getException().getCode());
+            rd.setDescription(except.getException().getDescription());
+            csr.setResult(rd);
+            result = new CreateSerieResult();
+            result.setCreateSerieResult(csr);
         }
         return result;
     }
 
-    private SerieNode convertirASerieNode(Serie serie, String funcionPadre) {
+    private SerieNode convertirASerieNode(Serie serie) {
 
         //TODO: hacer converter
         return null;
@@ -102,14 +129,15 @@ public class ApiArchium {
             resultado.setCodigoResultado(result.getRemoveSerieResult().getResult().getCode());
             resultado.setMsjResultado(result.getRemoveSerieResult().getResult().getDescription());
         } else {
-            //TODO: como trabajar las excepciones?
-            Object o = output.getContenido();
+            ExceptionResult except = (ExceptionResult) output.getContenido();
+            resultado.setCodigoResultado(except.getException().getCode());
+            resultado.setMsjResultado(except.getException().getDescription());
         }
 
         return resultado;
     }
 
-    public CreateFunctionResult crearFuncion(Funcion funcion) throws IOException {
+    public CreateFunctionResult crearFuncion(Funcion funcion, String parentId) throws IOException {
 
         CreateFunctionResult result = null;
         FunctionNode functionNode = convertirAFunctionNode(funcion);
@@ -118,6 +146,7 @@ public class ApiArchium {
         CreateFunction peticion = new CreateFunction();
         ParamCreateFunction param = new ParamCreateFunction();
         param.setFunction(functionNode);
+        param.setParent(parentId);
 
         request.setServiceHeader(getServiceHeader());
         request.setParam(param);
@@ -129,7 +158,14 @@ public class ApiArchium {
         if(output.getEstadoRespuestaHttp() == 200){
             result = (CreateFunctionResult) output.getContenido();
         }else{
-            //TODO: Tratar excepcion
+            ExceptionResult except = (ExceptionResult) output.getContenido();
+            RespuestaGenerica<String> cfr = new RespuestaGenerica<>();
+            ResultData rd = new ResultData();
+            rd.setCode(except.getException().getCode());
+            rd.setDescription(except.getException().getDescription());
+            cfr.setResult(rd);
+            result = new CreateFunctionResult();
+            result.setCreateFunctionResult(cfr);
         }
         return result;
     }
@@ -163,8 +199,9 @@ public class ApiArchium {
             resultado.setCodigoResultado(result.getRemoveFuncionResult().getResult().getCode());
             resultado.setMsjResultado(result.getRemoveFuncionResult().getResult().getDescription());
         } else {
-            //TODO: como trabajar las excepciones?
-            Object o = output.getContenido();
+            ExceptionResult except = (ExceptionResult) output.getContenido();
+            resultado.setCodigoResultado(except.getException().getCode());
+            resultado.setMsjResultado(except.getException().getDescription());
         }
 
         return resultado;
@@ -191,7 +228,14 @@ public class ApiArchium {
         if(output.getEstadoRespuestaHttp() == 200){
             result = (CreateClassificationTableResult) output.getContenido();
         }else{
-            //TODO: Tratar excepcion
+            ExceptionResult except = (ExceptionResult) output.getContenido();
+            RespuestaGenerica<String> cctr = new RespuestaGenerica<>();
+            ResultData rd = new ResultData();
+            rd.setCode(except.getException().getCode());
+            rd.setDescription(except.getException().getDescription());
+            cctr.setResult(rd);
+            result = new CreateClassificationTableResult();
+            result.setCreateClassificationTableResult(cctr);
         }
         return result;
     }
@@ -225,8 +269,9 @@ public class ApiArchium {
             resultado.setCodigoResultado(result.getRemoveCuadroResult().getResult().getCode());
             resultado.setMsjResultado(result.getRemoveCuadroResult().getResult().getDescription());
         } else {
-            //TODO: como trabajar las excepciones?
-            Object o = output.getContenido();
+            ExceptionResult except = (ExceptionResult) output.getContenido();
+            resultado.setCodigoResultado(except.getException().getCode());
+            resultado.setMsjResultado(except.getException().getDescription());
         }
 
         return resultado;
@@ -275,9 +320,9 @@ public class ApiArchium {
             resultado.setMsjResultado(result.getGetDocumentResult().getResult().getDescription());
             resultado.setElementoDevuelto(toDocument(result.getGetDocumentResult().getResParam()));
         } else {
-            ExceptionResult exception = (ExceptionResult) output.getContenido();
-            resultado.setCodigoResultado(exception.getException().getCode());
-            resultado.setMsjResultado(exception.getException().getDescription());
+            ExceptionResult result = (ExceptionResult) output.getContenido();
+            resultado.setCodigoResultado(result.getException().getCode());
+            resultado.setMsjResultado(result.getException().getDescription());
             resultado.setElementoDevuelto(null);
         }
 

@@ -6,33 +6,33 @@
       xmlns:ui="http://java.sun.com/jsf/facelets">
 
 	<ui:param name="title" value="#{messages['page.quadre.title']}" />
-	
+
 	<ui:define name="content">
 	<ui:include src="/views/modal/cuadro/nuevoQuadre.xhtml" />
 	<ui:include src="/views/modal/cuadro/updateQuadre.xhtml" />
   	<!-- CONTENIDO -->
 
-  		<!-- BreadCrumbs -->  				
+  		<!-- BreadCrumbs -->
   		<h2 class="title_first">#{messages['cuadro.titulo']}</h2>
   		<div class="separador_rojo"></div>
-  		
+
   		<p:panel rendered="#{quadreController.error==true}" id="panelButtons">
        		 <p:staticMessage severity="error" summary="ERROR!" detail="#{messages['cuadro.init.error']}" />
         </p:panel>
-  		
+
   		<h:form id="panel1" rendered="#{quadreController.error==false}" class="table_action">
   			<p:commandButton class="button_add" value="#{messages['cuadro.nuevoQuadro']}" 	icon="icono_add" resetValues="true"	action="#{quadreController.abrirModal}" oncomplete="PF('quadreModalDialog').show()" update="quadreModalDialogId"/>
   			<p:growl>
 		        <p:autoUpdate />
 		    </p:growl>
 
-			<p:dataTable class="estilos-tabla" 
-				var="cuadro" 
-				id="Cuadros" 
-				value="#{quadreController.listaCuadros}" 
-				rows="10" 
+			<p:dataTable class="estilos-tabla"
+				var="cuadro"
+				id="Cuadros"
+				value="#{quadreController.listaCuadros}"
+				rows="10"
 				emptyMessage="#{messages['datos.nohaydatos']}"
-				paginator="true" 
+				paginator="true"
 				paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                 currentPageReportTemplate="{startRecord}-{endRecord} of {totalRecords} records" >
 
@@ -44,20 +44,20 @@
 					</h:outputLink>
 				</p:column>
 
-		        <p:column class="first-column" headerText="#{messages['cuadro.nombre']}" sortBy="#{cuadro.nom}"   style="width: 25%;"> 
+		        <p:column class="first-column" headerText="#{messages['cuadro.nombre']}" sortBy="#{cuadro.nom}"   style="width: 25%;">
 		        	<h:outputLink value="#{request.contextPath}/views/funciones.xhtml">
 						<h:outputText value="#{cuadro.nom}" />
 						<f:param  name="quadreId" value="#{cuadro.id}" />
 					</h:outputLink>
 		        </p:column>
-		 		
+
 		 		<p:column class="first-column" headerText="#{messages['cuadro.nombrecas']}" sortBy="#{cuadro.nomCas}" style="width: 25%;">
 					<h:outputLink value="#{request.contextPath}/views/funciones.xhtml">
 						<h:outputText value="#{cuadro.nomCas}" />
 						<f:param  name="quadreId" value="#{cuadro.id}" />
 					</h:outputLink>
 		        </p:column>
-		 		
+
 		        <p:column class="first-column" headerText="#{messages['cuadro.estado']}" sortBy="#{cuadro.estat}" style="width: 8%;">
 					<h:outputLink value="#{request.contextPath}/views/funciones.xhtml">
 					<h:outputText value="#{cuadro.estat}" />
@@ -90,24 +90,34 @@
 		        </p:column>
 		        <p:column class="first-column" headerText="#{messages['cuadro.version']}" sortBy="#{cuadro.versio}" filterBy="multiple2" style="width: 7%;">
 		        	<h:outputLink value="#{request.contextPath}/views/funciones.xhtml">
-		        	<h:outputText value="#{cuadro.versio}" />   
+		        	<h:outputText value="#{cuadro.versio}" />
 		        	<f:param  name="quadreId" value="#{cuadro.id}" />
-					</h:outputLink>             	
+					</h:outputLink>
 		        </p:column>
 
-				<p:column class="first-column column_acciones" style="width: 10%;">
+				<p:column class="first-column column_acciones" style="width: 15%;">
+<!--				<p:column class="acciones-t" style="width: 10%;">-->
 					<p:commandButton update="quadreModalUpdateId" icon="ui-icon-pencil" resetValues="true" title="#{messages['actualizar']}" action="#{quadreController.abrirModalUpdate(cuadro)}" />
+					<p:commandButton class="botton_library" icon="pi pi-trash" title="#{messages['cuadro.eliminarcuadro']}" update="panel1" action="#{quadreController.deleteClassificationTable(cuadro)}" />
+<!--						<p:confirm header="#{messages['confirmacion']}" message="#{messages['cuadro.eliminar.alert']}" icon="pi pi-exclamation-triangle" />-->
+<!--					</p:commandButton>-->
 					<!--			       cambiar i18n-->
 <!--					No sincronizado y tiene permisos-->
-					<p:commandButton rendered="#{quadreController.checkRolLogued('ACH_GESTOR') eq true and cuadro.synchronized eq false}" class="botton_library" icon="circle-state red" resetValues="true" title="sincronizar" update="quadreModalUpdateId" action="#{quadreController.sincronizar(cuadro)}" />
+					<p:commandButton rendered="#{quadreController.checkRolLogued('ACH_GESTOR') eq true and cuadro.synchronized eq false}" class="botton_library" icon="circle-state red" title="sincronizar" update="panel1" action="#{quadreController.synchronize(cuadro)}" />
 					<!--					no sincronizado sin permisos-->
-					<h:outputText rendered="#{quadreController.checkRolLogued('ACH_GESTOR') eq false and cuadro.synchronized eq false}" > <i class="circle-state red"></i> </h:outputText>
+					<p:commandButton rendered="#{quadreController.checkRolLogued('ACH_GESTOR') eq false and cuadro.synchronized eq false}" class="botton_library" icon="circle-state red" />
 <!--					sincronizado-->
-					<h:outputText rendered="#{cuadro.synchronized eq true}" ><i class="circle-state green"></i></h:outputText>
+					<p:commandButton rendered="#{cuadro.synchronized eq true}" class="botton_library" icon="circle-state green" />
 		        </p:column>
-	    	</p:dataTable> 	    
+	    	</p:dataTable>
+
+			<p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+				<p:commandButton value="#{messages['si']}" type="button" styleClass="ui-confirmdialog-yes" icon="pi pi-check" />
+				<p:commandButton value="#{messages['no']}" type="button" styleClass="ui-confirmdialog-no" icon="pi pi-times" />
+			</p:confirmDialog>
+
 		</h:form>
-	    <hr/> 
+	    <hr/>
   	</ui:define>
-  	
+
  </ui:composition>

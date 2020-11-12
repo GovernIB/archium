@@ -11,5 +11,5 @@ public interface CSGDFuncionService {
     //TODO: Crear excepciones
     void removeFuncion(String funcionId) throws CSGDException;
 
-    String synchronizeFunction(Funcion funcion) throws CSGDException;
+    String synchronizeFunction(Funcion funcion, String nodeId) throws CSGDException;
 }

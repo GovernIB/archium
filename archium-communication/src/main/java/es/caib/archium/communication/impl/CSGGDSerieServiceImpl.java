@@ -4,8 +4,8 @@ import es.caib.archium.apirest.ApiArchium;
 import es.caib.archium.apirest.csgd.entidades.resultados.CreateSerieResult;
 import es.caib.archium.apirest.facade.pojos.Serie;
 import es.caib.archium.apirest.facade.resultados.ResultadoSimple;
+import es.caib.archium.commons.utils.Constants;
 import es.caib.archium.communication.exception.CSGDException;
-import es.caib.archium.communication.exception.ExceptionConstants;
 import es.caib.archium.communication.iface.CSGDSerieService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,22 +29,29 @@ public class CSGGDSerieServiceImpl implements CSGDSerieService {
 
         try {
             ResultadoSimple rs = client.borrarSerie(serieId);
-            //FIXME: Puede producirse que se borre en gdib y en bbdd no, hay que controlar de manera diferente si no
-            // existe en gdib para que siga el proceso como que sí se hizo
             //TODO: Constante con codigos de resultados
-            if (rs.getCodigoResultado() != "200") {
-                //TODO: Que hacer si no se borra
-                log.error("Se ha devuelto un codigo [" + rs.getCodigoResultado() + "] en el proceso de borrado de la serie." +
-                        " Mensaje: " + rs.getMsjResultado());
-                throw new CSGDException(ExceptionConstants.ERROR_RETURNED.getValue(), rs.getCodigoResultado(), rs.getMsjResultado(), "Se ha devuelto un codigo [" + rs.getCodigoResultado() + "] en el proceso de borrado de " +
-                        "la serie. Mensaje: " + rs.getMsjResultado());
+            if (!rs.getCodigoResultado().equals("COD_000")) {
+                // Cuando se produce un error porque el nodo a borrar no existe devuelve el cod_021, por lo que  continuamos
+                // con el proceso
+                if (rs.getCodigoResultado().equals("COD_021")) {
+                    log.info("Se ha recibido el código de error COD_021, el nodo no existe en Alfresco, así que " +
+                            "continuamos con el proceso de borrado");
+                    return;
+                } else {
+                    log.error("Se ha devuelto un codigo [" + rs.getCodigoResultado() + "] en el proceso de borrado de la serie." +
+                            " Mensaje: " + rs.getMsjResultado());
+                    throw new CSGDException(Constants.ExceptionConstants.ERROR_RETURNED.getValue(), rs.getCodigoResultado(), rs.getMsjResultado(), "Se ha devuelto un codigo [" + rs.getCodigoResultado() + "] en el proceso de borrado de " +
+                            "la serie. Mensaje: " + rs.getMsjResultado());
+                }
             }
+        } catch (CSGDException e) {
+            throw e;
         } catch (IOException e) {
-            log.error("Se ha producido un error desconocido en la llamada en el el cliente: " + e);
-            throw new CSGDException(ExceptionConstants.CLIENT_ERROR.getValue(), "Se ha producido un error desconocido en la llamada en el el cliente", e);
+            log.error("Se ha producido un error desconocido en el cliente al realizar la llamada al endpoint: " + e);
+            throw new CSGDException(Constants.ExceptionConstants.CLIENT_ERROR.getValue(), "Se ha producido un error desconocido en el cliente al realizar la llamada al endpoint", e);
         } catch (Exception e) {
             log.error("Se ha producido un error no controlado en el proceso de eliminación de la serie: " + e);
-            throw new CSGDException(ExceptionConstants.GENERIC_ERROR.getValue(), "Se ha producido un error no controlado en el proceso de eliminación de la serie", e);
+            throw new CSGDException(Constants.ExceptionConstants.GENERIC_ERROR.getValue(), "Se ha producido un error no controlado en el proceso de eliminación de la serie", e);
         }
     }
 
@@ -52,36 +59,35 @@ public class CSGGDSerieServiceImpl implements CSGDSerieService {
     public String synchronizeSerie(Serie serie, String functionParent) throws CSGDException {
         try {
             CreateSerieResult rs = client.crearSerie(serie, functionParent);
-            if (rs.getCreateSerieResult() == null || rs.getCreateSerieResult().getResult() == null) {
-                //TODO: Error genérico
-                log.error("Se ha producido un error no esperado al no recibir correctamente los datos de respuesta en " +
-                        "el proceso de creacion de la serie");
-                throw new CSGDException(ExceptionConstants.MALFORMED_RESULT.name(), "Se ha producido un error no esperado al no recibir correctamente los datos de respuesta en " +
-                        "el proceso de creacion de la serie");
-            }
 
-            //TODO: Constante con codigos de resultados
             if (rs.getCreateSerieResult() != null && rs.getCreateSerieResult().getResult() != null
-                    && rs.getCreateSerieResult().getResult().getCode() != "200") {
-                //TODO: Que hacer si no se crea
+                    && rs.getCreateSerieResult().getResult().getCode() != "COD_001") {
                 log.error("Se ha devuelto un codigo [" + rs.getCreateSerieResult().getResult().getCode() + "] en el " +
                         "proceso de sincronizacion de la serie. Mensaje: " + rs.getCreateSerieResult().getResult()
                         .getDescription());
-                throw new CSGDException(ExceptionConstants.ERROR_RETURNED.getValue(), rs.getCreateSerieResult().getResult().getCode(), rs.getCreateSerieResult().getResult().getDescription(), "Se ha devuelto un codigo [" + rs.getCreateSerieResult().getResult().getCode() + "] " +
+                throw new CSGDException(Constants.ExceptionConstants.ERROR_RETURNED.getValue(), rs.getCreateSerieResult().getResult().getCode(), rs.getCreateSerieResult().getResult().getDescription(), "Se ha devuelto un codigo [" + rs.getCreateSerieResult().getResult().getCode() + "] " +
                         "en el proceso de sincronizacion de la serie. Mensaje: " + rs.getCreateSerieResult().getResult());
             }
 
+            if (rs.getCreateSerieResult() == null || rs.getCreateSerieResult().getResult() == null) {
+                log.error("Se ha producido un error no esperado al no recibir correctamente los datos de respuesta en " +
+                        "el proceso de creacion de la serie");
+                throw new CSGDException(Constants.ExceptionConstants.MALFORMED_RESULT.name(), "Se ha producido un error no esperado al no recibir correctamente los datos de respuesta en " +
+                        "el proceso de creacion de la serie");
+            }
 
             log.debug("Serie creada correctamente. NodeId: " + rs.getCreateSerieResult().getResParam());
             return rs.getCreateSerieResult().getResParam();
 
 
+        } catch (CSGDException e) {
+            throw e;
         } catch (IOException e) {
-            log.error("Se ha producido un error desconocido en la llamada en el el cliente: " + e);
-            throw new CSGDException(ExceptionConstants.CLIENT_ERROR.getValue(), "Se ha producido un error desconocido en la llamada en el el cliente", e);
+            log.error("Se ha producido un error desconocido en el cliente al realizar la llamada al endpoint: " + e);
+            throw new CSGDException(Constants.ExceptionConstants.CLIENT_ERROR.getValue(), "Se ha producido un error desconocido en el cliente al realizar la llamada al endpoint", e);
         } catch (Exception e) {
             log.error("Se ha producido un error no controlado en el proceso de sincronizacion de la serie: " + e);
-            throw new CSGDException(ExceptionConstants.GENERIC_ERROR.getValue(), "Se ha producido un error no controlado en el proceso de sincronizacion de la serie", e);
+            throw new CSGDException(Constants.ExceptionConstants.GENERIC_ERROR.getValue(), "Se ha producido un error no controlado en el proceso de sincronizacion de la serie", e);
         }
     }
 

@@ -21,15 +21,6 @@ public class SerieNode {
     private Boolean isEsencial;
     private TipoClasificacion tipoClasificacion;
     private Boolean resellado;
-    private String funcionPadre;
-
-    public String getFuncionPadre() {
-        return funcionPadre;
-    }
-
-    public void setFuncionPadre(String funcionPadre) {
-        this.funcionPadre = funcionPadre;
-    }
 
     public String getCodigoCuadro() {
         return codigoCuadro;

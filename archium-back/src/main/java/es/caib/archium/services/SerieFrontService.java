@@ -4,6 +4,8 @@ import es.caib.archium.apirest.constantes.LOPD;
 import es.caib.archium.apirest.constantes.TipoAcceso;
 import es.caib.archium.apirest.facade.pojos.Serie;
 import es.caib.archium.commons.i18n.I18NException;
+import es.caib.archium.commons.utils.Constants;
+import es.caib.archium.communication.exception.CSGDException;
 import es.caib.archium.communication.iface.CSGDSerieService;
 import es.caib.archium.ejb.objects.Dir3;
 import es.caib.archium.ejb.service.*;
@@ -11,6 +13,8 @@ import es.caib.archium.objects.*;
 import es.caib.archium.persistence.model.*;
 import org.apache.commons.lang3.StringUtils;
 import org.primefaces.model.DualListModel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -24,6 +28,8 @@ import java.util.List;
 @Named
 @ApplicationScoped
 public class SerieFrontService {
+
+    protected final Logger log = LoggerFactory.getLogger(this.getClass());
 
     //Funciones
     @Inject
@@ -768,16 +774,25 @@ public class SerieFrontService {
 
     @Transactional
     public void deleteSerie(Long idSerie) throws I18NException {
+        log.debug("Se procede a eliminar la serie ["+idSerie+"]");
+        Seriedocumental serie = serieService.getReference(idSerie);
 
-        try {
-            this.csgdSerieService.removeSerie(idSerie.toString());
-            //TODO: Capturar la excepcion y personalizarla para mostrar el mensaje al usuario
-        } catch (Exception e) {
-
+        if(StringUtils.isNotEmpty(serie.getNodeId())) {
+            log.debug("La serie existe en Alfresco, así que procedemos a eliminarla");
+            try {
+                this.csgdSerieService.removeSerie(serie.getNodeId());
+                log.info("La serie ["+idSerie+"] ha sido eliminada de Alfresco");
+            } catch (CSGDException e) {
+                throw new I18NException(getExceptionI18n(e.getClientErrorCode()), this.getClass().getSimpleName(), "deleteSerie");
+            } catch (Exception e) {
+                throw new I18NException("excepcion.general.Exception", this.getClass().getSimpleName(), "deleteSerie");
+            }
         }
+
         // Si se elimina correctamente de gdib, se borra en la bbdd
         try {
             this.serieService.delete(idSerie);
+
         } catch (NullPointerException e) {
             throw new I18NException("excepcion.general.NullPointerException", this.getClass().getSimpleName(), "deleteSerie");
         } catch (Exception e) {
@@ -785,54 +800,131 @@ public class SerieFrontService {
         }
     }
 
-    public void synchronize(Long s) {
+    private String getExceptionI18n(String clientErrorCode) {
+        if (Constants.ExceptionConstants.CLIENT_ERROR.getValue().equals(clientErrorCode)) {
+            return "csgd.client.error";
+        } else if (Constants.ExceptionConstants.ERROR_RETURNED.getValue().equals(clientErrorCode)) {
+            return "csgd.error.returned";
+        } else if (Constants.ExceptionConstants.GENERIC_ERROR.getValue().equals(clientErrorCode)) {
+            return "exception.general.Exception";
+        } else if (Constants.ExceptionConstants.MALFORMED_RESULT.getValue().equals(clientErrorCode)) {
+            return "csgd.malformed.result";
+        }
+        return "excepcion.general.Exception";
+    }
+
+    @Transactional
+    public void synchronize(Long s) throws I18NException {
+        log.debug("Procedemos a sincronizar la serie con id=[" + s + "]");
+        log.debug("Obtenemos los datos de la serie...");
+
+        Seriedocumental serie = null;
         try {
             //Obtenemos toda la informacion de la serie y dictamen activo relacionado para sincronizar en alfresco
-            Seriedocumental serie = serieEJB.getReference(s);
-            List<Dictamen> dictamenList = serie.getAchDictamens();
-            Dictamen dictamen = null;
-            for (Dictamen d : dictamenList) {
-                //TODO: Cuál se el nombre del estado??
-                if ("activo".equalsIgnoreCase(d.getEstat())) {
-                    dictamen = d;
-                }
+            serie = serieEJB.getReference(s);
+        } catch (Exception e) {
+            log.error("Error obteniendo la entidad de la serie: " + e);
+            throw new I18NException("excepcion.general.Exception", this.getClass().getSimpleName(), "get entity");
+        }
+
+        //Comprobamos que el padre este sincronizado
+        if (!this.isParentsSynchronized(serie.getAchFuncio())) {
+            log.error("La serie [Id = " + serie.getId() + ", Cod = " + serie.getCodi() + "] no puede sincronizarse hasta que " +
+                    "todos sus padres esten sincronizados");
+            throw new I18NException("serie.padre.no.sincronizado", this.getClass().getSimpleName());
+        }
+
+        List<Dictamen> dictamenList = serie.getAchDictamens();
+        Dictamen dictamen = null;
+        for (Dictamen d : dictamenList) {
+            //TODO: Cuál se el nombre del estado??
+            if ("activo".equalsIgnoreCase(d.getEstat())) {
+                dictamen = d;
             }
-            Serie serieWs = new Serie();
+        }
+        Serie serieWs = new Serie();
 
-            //TODO: Cambiar por id
-            serieWs.setCodigoCuadro(serie.getAchFuncio() == null ? null : serie.getAchFuncio().getAchQuadreclassificacio() == null ? null
-                    : serie.getAchFuncio().getAchQuadreclassificacio().getNom());
-            serieWs.setCodigoClasificacion(serie.getCodi());
-            if (dictamen != null) {
+        serieWs.setCodigoCuadro(serie.getAchFuncio() == null ? null : serie.getAchFuncio().getAchQuadreclassificacio() == null ? null
+                : serie.getAchFuncio().getAchQuadreclassificacio().getNodeId());
+        serieWs.setCodigoClasificacion(serie.getCodi());
+        if (dictamen != null) {
 
-                serieWs.setAccionDictaminada(dictamen.getAcciodictaminada());
-                //TODO: Qué atributo coger?
-                serieWs.setLopd(LOPD.getLopd(dictamen.getAchLopd() == null ? null : dictamen.getAchLopd().getNom()));
-                //TODO: De donde sale la confidencialidad?
+            serieWs.setAccionDictaminada(dictamen.getAcciodictaminada());
+            //TODO: Qué atributo coger?
+            serieWs.setLopd(LOPD.getLopd(dictamen.getAchLopd() == null ? null : dictamen.getAchLopd().getNom()));
+            //TODO: De donde sale la confidencialidad?
 //				serieWs.setConfidencialidad();
-                //TODO: Qué atributo coger?
-                serieWs.setTipoAcceso(TipoAcceso.getTipoAcceso(dictamen.getAchTipusacce().getNom()));
-                //TODO: Sacar la limitacion de la normativa
+            //TODO: Qué atributo coger?
+            serieWs.setTipoAcceso(TipoAcceso.getTipoAcceso(dictamen.getAchTipusacce().getNom()));
+            //TODO: Sacar la limitacion de la normativa
 //			serieWs.setCausaLimitacion(dictamen.li);
-                //TODO: Qué atributo coger?
-                serieWs.setNormativa(dictamen.getAchNormativa() == null ? null : dictamen.getAchNormativa().getNom());
-                serieWs.setCondicionReutilizacion(dictamen.getCondicioreutilitzacio());
+            //TODO: Qué atributo coger?
+            serieWs.setNormativa(dictamen.getAchNormativa() == null ? null : dictamen.getAchNormativa().getNom());
+            serieWs.setCondicionReutilizacion(dictamen.getCondicioreutilitzacio());
 //				serieWs.setTipoValor(object.getv);
-            }
+        }
 
+        log.debug("Dto creado, llamamos al servicio de sincronizacion");
+        String nodeId = null;
+        try {
             // Enviamos la informacion para sincronizar
-            String nodeId = this.csgdSerieService.synchronizeSerie(serieWs, serie.getAchFuncio().getCodi());
+            nodeId = this.csgdSerieService.synchronizeSerie(serieWs, serie.getAchFuncio().getNodeId());
+        } catch (CSGDException e) {
+            throw new I18NException(getExceptionI18n(e.getClientErrorCode()), this.getClass().getSimpleName(), "synchronizeSerie");
+        } catch (Exception e) {
+            log.error("Error sincronizando la serie: " + e);
+            throw new I18NException("excepcion.general.Exception", this.getClass().getSimpleName(), "synchronizeSerie");
+        }
 
-            // Una vez creada la serie en el arbol de alfresco, guardamos la referencia con el nodo creado
-            if (StringUtils.isNotEmpty(nodeId)) {
+        log.debug("Creada serie con id [" + nodeId + "]. Se procede a guardar en base de datos");
+
+        // Una vez creada la serie en el arbol de alfresco, guardamos la referencia con el nodo creado
+        if (StringUtils.isNotEmpty(nodeId)) {
+            try {
                 serie.setNodeId(nodeId);
                 serie.setSynchronized(true);
                 serieEJB.update(serie);
-            } else {
-                //TODO: Excepcion error no controlado
+            } catch (I18NException e) {
+                log.error("Error sincronizando la informacion de la serie: " + e);
+                throw e;
+            } catch (Exception e) {
+                // Cambiar i18n
+                log.error("Error sincronizando la informacion de la serie: " + e);
+                throw new I18NException("excepcion.general.Exception", this.getClass().getSimpleName(), "update");
             }
-        } catch (Exception e) {
-            //TODO: Capturar la excepcion y personalizarla para mostrar el mensaje al usuario
+        } else {
+            log.error("Se ha devuelto null como nodo de alfresco en la sincronizacion de la funcion");
+            throw new I18NException("excepcion.general.Exception", this.getClass().getSimpleName(), "synchronizeError");
         }
     }
+
+    /**
+     * Comprueba que todos los padres hasta el cuadro de clasificacion esten sincronizados
+     *
+     * @param function
+     * @return
+     */
+    private boolean isParentsSynchronized(Funcio function) {
+        if (!function.isSynchronized()) {
+            log.error("La funcion [" + function.getId() + "] no esta sincronizada");
+            return false;
+        } else {
+            log.debug("La funcion [" + function.getId() + "] esta sincronizada");
+        }
+        //Comprobamos si tiene funcion padre
+        if (function.getAchFuncio() != null) {
+            log.debug("Comprobamos si la funcion padre esta sincronizada...");
+            return isParentsSynchronized(function.getAchFuncio());
+        } else {
+            if (function.getAchQuadreclassificacio().isSynchronized()) {
+                log.debug("El cuadro [" + function.getAchQuadreclassificacio().getCodi() + "] esta sincronizado");
+                return true;
+            } else {
+                log.error("El cuadro [" + function.getAchQuadreclassificacio().getCodi() + "] no esta sincronizado");
+                return false;
+            }
+        }
+    }
+
+
 }

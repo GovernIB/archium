@@ -23,4 +23,16 @@ public class CSGDException extends Exception{
         this.clientErrorCode = clientErrorCode;
         this.clientMessage = clientMessage;
     }
+
+    public String getCode() {
+        return code;
+    }
+
+    public String getClientErrorCode() {
+        return clientErrorCode;
+    }
+
+    public String getClientMessage() {
+        return clientMessage;
+    }
 }

@@ -184,15 +184,22 @@ public class FuncionesController implements Serializable {
         }
     }
 
-    public void sincronizar(Document<FuncioObject> func) {
+    public void synchronize(Document<FuncioObject> func) {
         log.debug("Se sincroniza la funcion: " + func.toString());
 
         try {
             this.servicesFunciones.synchronize(func.getObject().getId());
+            log.debug("Proceso de sincronizacion finalizado con exito");
             //TODO: Cambiar i18n
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Funcion Sincronizada"));
-        } catch (Exception e) {
-            //TODO: Excepciones...
+        } catch (I18NException e) {
+            log.error(FrontExceptionTranslate.translate(e, this.getLocale()));
+            FacesMessage message = new FacesMessage();
+            message.setSeverity(FacesMessage.SEVERITY_ERROR);
+            //TODO: traducir mensaje de error
+            message.setSummary(messageBundle.getString("nuevocuadro.error"));
+            message.setDetail(messageBundle.getString("nuevocuadro.error"));
+            FacesContext.getCurrentInstance().addMessage(null, message);
         }
     }
 

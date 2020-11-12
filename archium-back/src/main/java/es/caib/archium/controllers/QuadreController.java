@@ -1,9 +1,12 @@
 package es.caib.archium.controllers;
 
 import es.caib.archium.commons.i18n.I18NException;
+import es.caib.archium.communication.exception.CSGDException;
 import es.caib.archium.objects.QuadreObject;
+import es.caib.archium.persistence.model.Quadreclassificacio;
 import es.caib.archium.services.QuadreFrontService;
 import es.caib.archium.utils.FrontExceptionTranslate;
+import org.apache.commons.lang3.StringUtils;
 import org.primefaces.PrimeFaces;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,6 +19,7 @@ import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
+import javax.transaction.Transactional;
 import java.io.Serializable;
 import java.util.*;
 
@@ -93,17 +97,46 @@ public class QuadreController implements Serializable{
     	
     }
 
-	public void sincronizar(QuadreObject cuadro) {
+	public void synchronize(QuadreObject cuadro) {
 		log.debug("Se sincroniza el cuadro: " + cuadro.toString());
 
 		try {
 			this.services.synchronize(cuadro.getId());
+			log.debug("Proceso de sincronizacion finalizado con exito");
 			//TODO: Cambiar i18n
 			FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Cuadro de clasificacion" +
 					" Sincronizado"));
-		} catch (Exception e) {
-			//TODO: Excepciones...
+		} catch (I18NException e) {
+			log.error(FrontExceptionTranslate.translate(e, this.getLocale()));
+			FacesMessage message = new FacesMessage();
+			message.setSeverity(FacesMessage.SEVERITY_ERROR);
+			//TODO: traducir mensaje de error
+			message.setSummary(messageBundle.getString("nuevocuadro.error"));
+			message.setDetail(messageBundle.getString("nuevocuadro.error"));
+			FacesContext.getCurrentInstance().addMessage(null, message);
 		}
+	}
+
+	@Transactional
+	public void deleteClassificationTable(QuadreObject cuadro) throws I18NException {
+		log.debug("Se llama al proceso de eliminar cuadro");
+
+		try {
+			this.services.deleteClassificationTable(cuadro.getId());
+			log.info("Proceso de eliminacion finalizado con exito");
+			//TODO: Cambiar i18n
+			FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Cuadro de clasificacion" +
+					" Eliminado"));
+		} catch (I18NException e) {
+			log.error(FrontExceptionTranslate.translate(e, this.getLocale()));
+			FacesMessage message = new FacesMessage();
+			message.setSeverity(FacesMessage.SEVERITY_ERROR);
+			//TODO: traducir mensaje de error
+			message.setSummary(messageBundle.getString("nuevocuadro.error"));
+			message.setDetail(messageBundle.getString("nuevocuadro.error"));
+			FacesContext.getCurrentInstance().addMessage(null, message);
+		}
+
 	}
 
 	/**

@@ -24,7 +24,6 @@ public class QuadreObject {
 	
 	public QuadreObject() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 
 	public QuadreObject(Long id,String codi, String nom, String nomCas, String estat, Date inici, Date modificacio, String versio,

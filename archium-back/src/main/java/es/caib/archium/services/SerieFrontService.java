@@ -1,8 +1,8 @@
 package es.caib.archium.services;
 
-import es.caib.archium.apirest.constantes.LOPD;
-import es.caib.archium.apirest.constantes.TipoAcceso;
-import es.caib.archium.apirest.facade.pojos.Serie;
+import es.caib.csgd.apirest.constantes.LOPD;
+import es.caib.csgd.apirest.constantes.TipoAcceso;
+import es.caib.csgd.apirest.facade.pojos.Serie;
 import es.caib.archium.commons.i18n.I18NException;
 import es.caib.archium.commons.utils.Constants;
 import es.caib.archium.communication.exception.CSGDException;
@@ -16,6 +16,7 @@ import org.primefaces.model.DualListModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.ejb.EJBAccessException;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -784,7 +785,10 @@ public class SerieFrontService {
                 log.info("La serie ["+idSerie+"] ha sido eliminada de Alfresco");
             } catch (CSGDException e) {
                 throw new I18NException(getExceptionI18n(e.getClientErrorCode()), this.getClass().getSimpleName(), "deleteSerie");
-            } catch (Exception e) {
+            } catch (EJBAccessException e){
+                log.error("No se cuenta con los permisos adecuados para realiziar la llamada al csgd");
+                throw new I18NException("csgd.permiso.denegado", this.getClass().getSimpleName(), "deleteSerie");
+            }catch (Exception e) {
                 throw new I18NException("excepcion.general.Exception", this.getClass().getSimpleName(), "deleteSerie");
             }
         }
@@ -806,15 +810,15 @@ public class SerieFrontService {
         } else if (Constants.ExceptionConstants.ERROR_RETURNED.getValue().equals(clientErrorCode)) {
             return "csgd.error.returned";
         } else if (Constants.ExceptionConstants.GENERIC_ERROR.getValue().equals(clientErrorCode)) {
-            return "exception.general.Exception";
+            return "nuevaserie.sinc.error";
         } else if (Constants.ExceptionConstants.MALFORMED_RESULT.getValue().equals(clientErrorCode)) {
             return "csgd.malformed.result";
         }
-        return "excepcion.general.Exception";
+        return "nuevaserie.sinc.error";
     }
 
     @Transactional
-    public void synchronize(Long s) throws I18NException {
+    public SerieDocumentalObject synchronize(Long s) throws I18NException {
         log.debug("Procedemos a sincronizar la serie con id=[" + s + "]");
         log.debug("Obtenemos los datos de la serie...");
 
@@ -828,11 +832,12 @@ public class SerieFrontService {
         }
 
         //Comprobamos que el padre este sincronizado
-        if (!this.isParentsSynchronized(serie.getAchFuncio())) {
-            log.error("La serie [Id = " + serie.getId() + ", Cod = " + serie.getCodi() + "] no puede sincronizarse hasta que " +
-                    "todos sus padres esten sincronizados");
-            throw new I18NException("serie.padre.no.sincronizado", this.getClass().getSimpleName());
-        }
+        //TODO : DESCOMENTAR ESTO
+//        if (!this.isParentsSynchronized(serie.getAchFuncio())) {
+//            log.error("La serie [Id = " + serie.getId() + ", Cod = " + serie.getCodi() + "] no puede sincronizarse hasta que " +
+//                    "todos sus padres esten sincronizados");
+//            throw new I18NException("serie.padre.no.sincronizado", this.getClass().getSimpleName());
+//        }
 
         List<Dictamen> dictamenList = serie.getAchDictamens();
         Dictamen dictamen = null;
@@ -844,8 +849,6 @@ public class SerieFrontService {
         }
         Serie serieWs = new Serie();
 
-        serieWs.setCodigoCuadro(serie.getAchFuncio() == null ? null : serie.getAchFuncio().getAchQuadreclassificacio() == null ? null
-                : serie.getAchFuncio().getAchQuadreclassificacio().getNodeId());
         serieWs.setCodigoClasificacion(serie.getCodi());
         if (dictamen != null) {
 
@@ -871,7 +874,10 @@ public class SerieFrontService {
             nodeId = this.csgdSerieService.synchronizeSerie(serieWs, serie.getAchFuncio().getNodeId());
         } catch (CSGDException e) {
             throw new I18NException(getExceptionI18n(e.getClientErrorCode()), this.getClass().getSimpleName(), "synchronizeSerie");
-        } catch (Exception e) {
+        } catch (EJBAccessException e){
+            log.error("No se cuenta con los permisos adecuados para realiziar la llamada al csgd");
+            throw new I18NException("csgd.permiso.denegado", this.getClass().getSimpleName(), "synchronizeFunction");
+        }catch (Exception e) {
             log.error("Error sincronizando la serie: " + e);
             throw new I18NException("excepcion.general.Exception", this.getClass().getSimpleName(), "synchronizeSerie");
         }
@@ -884,6 +890,7 @@ public class SerieFrontService {
                 serie.setNodeId(nodeId);
                 serie.setSynchronized(true);
                 serieEJB.update(serie);
+                return new SerieDocumentalObject(serie);
             } catch (I18NException e) {
                 log.error("Error sincronizando la informacion de la serie: " + e);
                 throw e;

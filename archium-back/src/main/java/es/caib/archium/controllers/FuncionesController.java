@@ -1,6 +1,7 @@
 package es.caib.archium.controllers;
 
 import es.caib.archium.commons.i18n.I18NException;
+import es.caib.archium.commons.utils.Constants;
 import es.caib.archium.ejb.interceptor.Logged;
 import es.caib.archium.objects.*;
 import es.caib.archium.services.FuncioFrontService;
@@ -187,18 +188,50 @@ public class FuncionesController implements Serializable {
     public void synchronize(Document<FuncioObject> func) {
         log.debug("Se sincroniza la funcion: " + func.toString());
 
+        FuncioObject f = func.getObject();
+        TreeNode oldParent = null;
+        if (f.getFuncioPare() != null) {
+            oldParent = this.getNodeFromFunctionId(f.getFuncioPare().getId(), "Funcio", "insert", null);
+        }
         try {
-            this.servicesFunciones.synchronize(func.getObject().getId());
+            f = this.servicesFunciones.synchronize(func.getObject().getId());
             log.debug("Proceso de sincronizacion finalizado con exito");
-            //TODO: Cambiar i18n
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Funcion Sincronizada"));
+
+            this.listaFunciones = this.servicesFunciones.loadTree(quadreId, null);
+
+            if (oldParent != null) {
+                TreeNode node = this.getNodeFromFunctionId(func.getId(), "Funcio", "update", f);
+                oldParent.getChildren().remove(node);
+                TreeNode parentNode;
+                if (f.getFuncioPare() != null) {
+                    parentNode = getNodeFromFunctionId(f.getFuncioPare().getId(), "Funcio", "insert", null);
+                } else {
+                    parentNode = root;
+                }
+                node.setParent(parentNode);
+                parentNode.getChildren().add(node);
+            } else {
+                TreeNode node = this.getNodeFromFunctionId(func.getId(), "Funcio", "update", f);
+                if (f.getFuncioPare() != null) {
+                    root.getChildren().remove(node);
+                    TreeNode parentNode = getNodeFromFunctionId(f.getFuncioPare().getId(), "Funcio", "insert", null);
+                    parentNode.getChildren().add(node);
+                    node.setParent(parentNode);
+                }
+            }
+
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(messageBundle.getString("funciones.sinc.ok")));
         } catch (I18NException e) {
             log.error(FrontExceptionTranslate.translate(e, this.getLocale()));
             FacesMessage message = new FacesMessage();
             message.setSeverity(FacesMessage.SEVERITY_ERROR);
-            //TODO: traducir mensaje de error
-            message.setSummary(messageBundle.getString("nuevocuadro.error"));
-            message.setDetail(messageBundle.getString("nuevocuadro.error"));
+            if("excepcion.general.Exception".equals(e.getMessage())){
+                message.setSummary(messageBundle.getString("funciones.sincro.error"));
+                message.setDetail(messageBundle.getString("funciones.sincro.error"));
+            }else {
+                message.setSummary(messageBundle.getString(e.getMessage()));
+                message.setDetail(messageBundle.getString(e.getMessage()));
+            }
             FacesContext.getCurrentInstance().addMessage(null, message);
         }
     }
@@ -214,7 +247,13 @@ public class FuncionesController implements Serializable {
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(messageBundle.getString("funciones.delete.ok")));
         } catch (I18NException e) {
             log.error(FrontExceptionTranslate.translate(e, this.getLocale()));
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, messageBundle.getString("funciones.delete.error"), null));
+            if("excepcion.general.Exception".equals(e.getMessage())
+                    || "excepcion.general.NullPointerException".equals(e.getMessage())){
+                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, messageBundle.getString("funciones.delete.error"), null));
+            }else {
+                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, messageBundle.getString(e.getMessage()), null));
+            }
+
         }
     }
 
@@ -292,12 +331,21 @@ public class FuncionesController implements Serializable {
             f.setInici(new Date());
             f.setModificacio(new Date());
             f.setFi(null);
+            f.setSynchronized(false);
             FuncioObject newF = this.servicesFunciones.create(f, this.cuadroSeleccionado, this.funcioPare, this.nuevoTipusserie);
             this.listaFunciones = this.servicesFunciones.loadTree(quadreId, null);
+
+            TreeNode parent = null;
+            if (this.funcioPare != null) {
+                parent = this.getNodeFromFunctionId(this.funcioPare.getId(), "Funcio", "insert", null);
+            } else {
+                parent = this.root;
+            }
+
             TreeNode node = new DefaultTreeNode(new Document<FuncioObject>(newF.getId(), newF.getCodi(), newF.getNom(),
-                    "Funcio", newF.getNodeId(), newF.isSynchronized(), newF), (this.funcioPare != null) ?
-                    this.getNodeFromFunctionId(this.funcioPare.getId(), "Funcio", "insert", null)
-                    : this.root);
+                    "Funcio", newF.getNodeId(), newF.isSynchronized(), newF), parent);
+
+            parent.getChildren().add(node);
 
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(messageBundle.getString("funciones.insert.ok")));
 
@@ -335,7 +383,7 @@ public class FuncionesController implements Serializable {
                         break;
                     case "DictamenObject":
                         DictamenObject di = (DictamenObject) updateObject;
-                        Document<DictamenObject> fun = new Document<DictamenObject>(di.getId(), di.getCodi(), di.getAccioDictaminada(), "Dictamen", di.getEstat(), di);
+                        Document<DictamenObject> fun = new Document<DictamenObject>(di.getId(), di.getCodi(), di.getAccioDictaminada(), "Dictamen", di);
                         ((DefaultTreeNode) node).setData(fun);
                         break;
                     default:
@@ -598,16 +646,19 @@ public class FuncionesController implements Serializable {
     }
 
     /**
-     * Comprueba el rol con el que está logueado el usuario
+     * Devuelve true si el usuario logueado tiene permisos para llamar al CSGD
      *
-     * @param rol
      * @return
      */
-    public boolean checkRolLogued(String rol) {
+    public boolean checkPermissionsToCallCSGD() {
         HttpServletRequest request = (HttpServletRequest) externalContext.getRequest();
-        if (request.isUserInRole(rol)) {
-            return true;
+        List<String> roles = Constants.permissionsToCallCSGD();
+        for(String rol : roles){
+            if(request.isUserInRole(rol)){
+                return true;
+            }
         }
+
         return false;
     }
 

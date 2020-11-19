@@ -1,6 +1,9 @@
 package es.caib.archium.commons.utils;
 
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Constants emprades dins tota l'aplicació.
  *
@@ -22,7 +25,7 @@ public interface Constants {
     /**
      * Constant pel rol d'Alfresco
      */
-    String ACH_ALFRESCO = "ACH_ALFRESCO";
+    String ACH_CSGD = "ACH_ALFRESCO";
 
 
     static enum ExceptionConstants{
@@ -30,7 +33,8 @@ public interface Constants {
         GENERIC_ERROR("CSGD500"),
         CLIENT_ERROR("CSGD501"),
         MALFORMED_RESULT("CSGD502"),
-        ERROR_RETURNED("CSGD503");
+        ERROR_RETURNED("CSGD503"),
+        HEADER_ERROR("CSGD504");
 
         private String value;
 
@@ -41,5 +45,16 @@ public interface Constants {
         public String getValue() {
             return value;
         }
+    }
+
+    /**
+     * Retorna la lista de roles que pueden realizar llamadas al CSGD a traves del cliente Jersey
+     *
+     * @return
+     */
+    public static List<String> permissionsToCallCSGD(){
+        List<String> permisos = new ArrayList<String>();
+        permisos.add(ACH_CSGD);
+        return permisos;
     }
 }

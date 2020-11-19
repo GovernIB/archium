@@ -18,7 +18,6 @@ public class AplicacionesConverter implements Converter<AplicacionObject>{
 
 	@Override
 	public AplicacionObject getAsObject(FacesContext context, UIComponent component, String value) {
-		// TODO Auto-generated method stub
 		return getObjectFromUIPickListComponent(component, value);
 	}
 

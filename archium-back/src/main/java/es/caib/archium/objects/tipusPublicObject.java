@@ -12,7 +12,6 @@ public class tipusPublicObject {
 	
 	public tipusPublicObject() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 	public tipusPublicObject(Long id, String nom, String descripcio) {
 		super();

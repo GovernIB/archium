@@ -199,7 +199,6 @@ public class ProcedimentObject {
 	}
 	public ProcedimentObject() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 	
 	public ProcedimentObject(String codisia, String nom, String objecte, String estat, String destinataris,
@@ -326,7 +325,6 @@ public class ProcedimentObject {
 	}
 	
 	public ProcedimentObject(ProcedimentObject i) {
-		// TODO Auto-generated constructor stub
 		this.id 			= i.getId();
 		this.codisia 		= i.getCodisia();
 		this.nom 			= i.getNom();

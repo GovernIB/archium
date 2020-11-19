@@ -33,7 +33,6 @@ public class DictamenObject {
 	
 	public DictamenObject() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 	public DictamenObject(Long id, SerieDocumentalObject serieDocumental, TipuDictamenObject tipusdictamen,
 			NormativaAprobacioObject normativaAprovacio, TipuAccesObject tipusAcces, EnsObject ens, LopdObject lopd,

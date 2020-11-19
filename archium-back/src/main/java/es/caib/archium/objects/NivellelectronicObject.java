@@ -12,7 +12,6 @@ public class NivellelectronicObject {
 	
 	public NivellelectronicObject() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 	
 	public NivellelectronicObject(Long id, String nom, String  descripcio) {

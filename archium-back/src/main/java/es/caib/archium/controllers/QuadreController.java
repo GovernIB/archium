@@ -1,12 +1,10 @@
 package es.caib.archium.controllers;
 
 import es.caib.archium.commons.i18n.I18NException;
-import es.caib.archium.communication.exception.CSGDException;
+import es.caib.archium.commons.utils.Constants;
 import es.caib.archium.objects.QuadreObject;
-import es.caib.archium.persistence.model.Quadreclassificacio;
 import es.caib.archium.services.QuadreFrontService;
 import es.caib.archium.utils.FrontExceptionTranslate;
-import org.apache.commons.lang3.StringUtils;
 import org.primefaces.PrimeFaces;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -103,16 +101,21 @@ public class QuadreController implements Serializable{
 		try {
 			this.services.synchronize(cuadro.getId());
 			log.debug("Proceso de sincronizacion finalizado con exito");
-			//TODO: Cambiar i18n
-			FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Cuadro de clasificacion" +
-					" Sincronizado"));
+			listaCuadros = services.findAll();
+			listaQuadreFilter = listaCuadros;
+
+			FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(messageBundle.getString("nuevocuadro.sinc.ok")));
 		} catch (I18NException e) {
 			log.error(FrontExceptionTranslate.translate(e, this.getLocale()));
 			FacesMessage message = new FacesMessage();
 			message.setSeverity(FacesMessage.SEVERITY_ERROR);
-			//TODO: traducir mensaje de error
-			message.setSummary(messageBundle.getString("nuevocuadro.error"));
-			message.setDetail(messageBundle.getString("nuevocuadro.error"));
+			if("excepcion.general.Exception".equals(e.getMessage())){
+				message.setSummary(messageBundle.getString("nuevocuadro.sincro.error"));
+				message.setDetail(messageBundle.getString("nuevocuadro.sincro.error"));
+			}else {
+				message.setSummary(messageBundle.getString(e.getMessage()));
+				message.setDetail(messageBundle.getString(e.getMessage()));
+			}
 			FacesContext.getCurrentInstance().addMessage(null, message);
 		}
 	}
@@ -124,32 +127,35 @@ public class QuadreController implements Serializable{
 		try {
 			this.services.deleteClassificationTable(cuadro.getId());
 			log.info("Proceso de eliminacion finalizado con exito");
-			//TODO: Cambiar i18n
-			FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Cuadro de clasificacion" +
-					" Eliminado"));
+			listaCuadros = services.findAll();
+			listaQuadreFilter = listaCuadros;
+
+			FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(messageBundle.getString("nuevocuadro.delete.ok")));
 		} catch (I18NException e) {
 			log.error(FrontExceptionTranslate.translate(e, this.getLocale()));
-			FacesMessage message = new FacesMessage();
-			message.setSeverity(FacesMessage.SEVERITY_ERROR);
-			//TODO: traducir mensaje de error
-			message.setSummary(messageBundle.getString("nuevocuadro.error"));
-			message.setDetail(messageBundle.getString("nuevocuadro.error"));
-			FacesContext.getCurrentInstance().addMessage(null, message);
+			if("excepcion.general.Exception".equals(e.getMessage()) || "excepcion.general.NullPointerException".equals(e.getMessage())){
+				FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, messageBundle.getString("nuevocuadro.delete.error"), null));
+			}else {
+				FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, messageBundle.getString(e.getMessage()), null));
+			}
 		}
 
 	}
 
 	/**
-	 * Comprueba el rol con el que está logueado el usuario
+	 * Devuelve true si el usuario logueado tiene permisos para llamar al CSGD
 	 *
-	 * @param rol
 	 * @return
 	 */
-	public boolean checkRolLogued(String rol) {
+	public boolean checkPermissionsToCallCSGD() {
 		HttpServletRequest request = (HttpServletRequest) externalContext.getRequest();
-		if (request.isUserInRole(rol)) {
-			return true;
+		List<String> roles = Constants.permissionsToCallCSGD();
+		for(String rol : roles){
+			if(request.isUserInRole(rol)){
+				return true;
+			}
 		}
+
 		return false;
 	}
     

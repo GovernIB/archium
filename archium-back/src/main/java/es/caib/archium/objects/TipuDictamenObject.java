@@ -15,7 +15,6 @@ public class TipuDictamenObject {
 	
 	public TipuDictamenObject() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 	public TipuDictamenObject(Long id, String nom, String nomCas, String codi) {
 		super();

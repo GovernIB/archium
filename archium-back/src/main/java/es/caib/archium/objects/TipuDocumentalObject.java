@@ -24,7 +24,6 @@ public class TipuDocumentalObject {
 
 	public TipuDocumentalObject() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 
 	public TipuDocumentalObject(Tipusdocumental i) {

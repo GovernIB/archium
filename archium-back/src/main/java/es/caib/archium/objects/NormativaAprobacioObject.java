@@ -26,7 +26,6 @@ public class NormativaAprobacioObject {
 	
 	public NormativaAprobacioObject() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 	public NormativaAprobacioObject(Long id, String codi, String nom, String nomCas, String uri, String urieli,
 			String urieliconsolidada, Date vigor, String estat, Date derogacio, Long descripcio,

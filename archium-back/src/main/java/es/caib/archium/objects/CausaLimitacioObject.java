@@ -21,7 +21,6 @@ public class CausaLimitacioObject {
 
 	public CausaLimitacioObject() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 	
 	public CausaLimitacioObject(Causalimitacio dbCausaLimitacio) {

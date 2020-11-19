@@ -138,7 +138,7 @@ public class DictamenController implements Serializable {
 										  	this.estat
 											);
 				
-					TreeNode node = new DefaultTreeNode(new Document<DictamenObject>(newD.getId(), newD.getCodi(), newD.getAccioDictaminada(), newD.getEstat(), "Dictamen", newD),
+					TreeNode node = new DefaultTreeNode(new Document<DictamenObject>(newD.getId(), newD.getCodi(), newD.getAccioDictaminada(), "Dictamen", newD),
 							funcBean.getNodeFromFunctionId(serieDocumental.getSerieId(), "Serie", "insert", null));
 					FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(messageBundle.getString("dictamen.insert.ok")));
 					

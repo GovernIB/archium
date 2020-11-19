@@ -16,7 +16,6 @@ public class EnsObject {
 	
 	public EnsObject() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 	public EnsObject(Long id, String nom, String nomCas, String descripcio, String descripcioCas) {
 		super();

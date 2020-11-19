@@ -2,6 +2,7 @@ package es.caib.archium.controllers;
 
 import es.caib.archium.commons.i18n.I18NException;
 import es.caib.archium.objects.*;
+import es.caib.archium.persistence.model.Seriedocumental;
 import es.caib.archium.services.SerieFrontService;
 import es.caib.archium.utils.FrontExceptionTranslate;
 import org.primefaces.PrimeFaces;
@@ -157,7 +158,12 @@ public class NuevaSerieController implements Serializable {
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(messageBundle.getString("nuevaserie.delete.ok")));
         } catch (I18NException e) {
             log.error(FrontExceptionTranslate.translate(e, funcBean.getLocale()));
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, messageBundle.getString("nuevaserie.delete.error"), null));
+            if("excepcion.general.Exception".equals(e.getMessage())
+                 || "excepcion.general.NullPointerException".equals(e.getMessage())){
+                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, messageBundle.getString("nuevaserie.delete.error"), null));
+            }else {
+                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, messageBundle.getString(e.getMessage()), null));
+            }
         }
     }
 
@@ -165,17 +171,23 @@ public class NuevaSerieController implements Serializable {
         log.debug("Se sincroniza la serie: " + serie.toString());
 
         try {
-            this.service.synchronize(serie.getObject().getSerieId());
+            SerieDocumentalObject upS =this.service.synchronize(serie.getObject().getSerieId());
             log.debug("Proceso de sincronizacion finalizado con exito");
-            //TODO: Cambiar i18n
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Serie Sincronizada"));
+            funcBean.getNodeFromFunctionId(serie.getId(), "Serie", "update", upS);
+            listaSeries = service.getListaSeries();
+
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(messageBundle.getString("nuevaserie.sinc.ok")));
         } catch (I18NException e) {
             log.error(FrontExceptionTranslate.translate(e, funcBean.getLocale()));
             FacesMessage message = new FacesMessage();
             message.setSeverity(FacesMessage.SEVERITY_ERROR);
-            //TODO: traducir mensaje de error
-            message.setSummary(messageBundle.getString("nuevocuadro.error"));
-            message.setDetail(messageBundle.getString("nuevocuadro.error"));
+            if("excepcion.general.Exception".equals(e.getMessage())){
+                message.setSummary(messageBundle.getString("nuevaserie.sinc.error"));
+                message.setDetail(messageBundle.getString("nuevaserie.sinc.error"));
+            }else {
+                message.setSummary(messageBundle.getString(e.getMessage()));
+                message.setDetail(messageBundle.getString(e.getMessage()));
+            }
             FacesContext.getCurrentInstance().addMessage(null, message);
         }
     }

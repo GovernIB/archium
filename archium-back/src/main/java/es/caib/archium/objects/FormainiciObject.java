@@ -12,7 +12,6 @@ public class FormainiciObject {
 	
 	public FormainiciObject() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 	
 	public FormainiciObject(Long id, String nom, String  descripcio) {

@@ -9,7 +9,6 @@ public class FamiliaprocedimentObject {
 	private String 	nom;
 	public FamiliaprocedimentObject() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 	
 	public FamiliaprocedimentObject(Long id, String nom) {

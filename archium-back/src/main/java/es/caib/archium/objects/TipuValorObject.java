@@ -16,7 +16,6 @@ public class TipuValorObject {
 	
 	public TipuValorObject() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 	
 	

@@ -17,7 +17,6 @@ public class ValorSecundariObject {
 	
 	public ValorSecundariObject() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 	
 	

@@ -13,7 +13,6 @@ public class CategoriantiObject {
 	
 	public CategoriantiObject() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 
 

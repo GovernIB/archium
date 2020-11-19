@@ -15,7 +15,6 @@ public class TipusntiObject {
 	
 	public TipusntiObject() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 
 	public TipusntiObject(Long id, String codi, String nom, String nomCas, CategoriantiObject categorianti) {

@@ -103,18 +103,13 @@
 <!--					</p:commandButton>-->
 					<!--			       cambiar i18n-->
 <!--					No sincronizado y tiene permisos-->
-					<p:commandButton rendered="#{quadreController.checkRolLogued('ACH_GESTOR') eq true and cuadro.synchronized eq false}" class="botton_library" icon="circle-state red" title="sincronizar" update="panel1" action="#{quadreController.synchronize(cuadro)}" />
+					<p:commandButton rendered="#{quadreController.checkPermissionsToCallCSGD() eq true and cuadro.synchronized eq false}" class="botton_library" icon="circle-state red" title="sincronizar" update="panel1" action="#{quadreController.synchronize(cuadro)}" />
 					<!--					no sincronizado sin permisos-->
-					<p:commandButton rendered="#{quadreController.checkRolLogued('ACH_GESTOR') eq false and cuadro.synchronized eq false}" class="botton_library" icon="circle-state red" />
+					<p:commandButton rendered="#{quadreController.checkPermissionsToCallCSGD() eq false and cuadro.synchronized eq false}" class="botton_library" icon="circle-state red" />
 <!--					sincronizado-->
 					<p:commandButton rendered="#{cuadro.synchronized eq true}" class="botton_library" icon="circle-state green" />
 		        </p:column>
 	    	</p:dataTable>
-
-			<p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
-				<p:commandButton value="#{messages['si']}" type="button" styleClass="ui-confirmdialog-yes" icon="pi pi-check" />
-				<p:commandButton value="#{messages['no']}" type="button" styleClass="ui-confirmdialog-no" icon="pi pi-times" />
-			</p:confirmDialog>
 
 		</h:form>
 	    <hr/>

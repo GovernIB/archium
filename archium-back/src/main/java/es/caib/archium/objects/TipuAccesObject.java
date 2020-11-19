@@ -13,7 +13,6 @@ public class TipuAccesObject {
 	
 	public TipuAccesObject() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 	public TipuAccesObject(Long id, String nom, String nomCas) {
 		super();

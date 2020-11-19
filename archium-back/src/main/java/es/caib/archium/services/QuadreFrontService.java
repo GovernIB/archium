@@ -1,12 +1,11 @@
 package es.caib.archium.services;
 
-import es.caib.archium.apirest.constantes.Estado;
-import es.caib.archium.apirest.facade.pojos.CuadroClasificacion;
+import es.caib.csgd.apirest.constantes.Estado;
+import es.caib.csgd.apirest.facade.pojos.CuadroClasificacion;
 import es.caib.archium.commons.i18n.I18NException;
 import es.caib.archium.commons.utils.Constants;
 import es.caib.archium.communication.exception.CSGDException;
 import es.caib.archium.communication.iface.CSGDCuadroService;
-import es.caib.archium.communication.impl.CSGGDCuadroServiceImpl;
 import es.caib.archium.ejb.service.QuadreClassificacioService;
 import es.caib.archium.objects.QuadreObject;
 import es.caib.archium.persistence.model.Quadreclassificacio;
@@ -14,9 +13,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.ejb.EJBAccessException;
 import javax.enterprise.context.ApplicationScoped;
-import javax.faces.application.FacesMessage;
-import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.transaction.Transactional;
@@ -162,7 +160,10 @@ public class QuadreFrontService {
                 log.info("El cuadro ["+idClassificationTable+"] ha sido eliminada de Alfresco");
             } catch (CSGDException e) {
                 throw new I18NException(getExceptionI18n(e.getClientErrorCode()), this.getClass().getSimpleName(), "deleteClassificationTable");
-            } catch (Exception e) {
+            } catch (EJBAccessException e){
+                log.error("No se cuenta con los permisos adecuados para realiziar la llamada al csgd");
+                throw new I18NException("csgd.permiso.denegado", this.getClass().getSimpleName(), "synchronizeFunction");
+            }catch (Exception e) {
                 throw new I18NException("excepcion.general.Exception", this.getClass().getSimpleName(), "deleteClassificationTable");
             }
         }
@@ -201,7 +202,10 @@ public class QuadreFrontService {
             nodeId = csgdCuadroService.synchronizeClassificationTable(cuadroWs);
         } catch (CSGDException e) {
             throw new I18NException(getExceptionI18n(e.getClientErrorCode()), this.getClass().getSimpleName(), "synchronizeClassificationTable");
-        } catch (Exception e) {
+        } catch (EJBAccessException e){
+            log.error("No se cuenta con los permisos adecuados para realiziar la llamada al csgd");
+            throw new I18NException("csgd.permiso.denegado", this.getClass().getSimpleName(), "synchronizeFunction");
+        }catch (Exception e) {
             log.error("Error sincronizando el cuadro: " + e);
             throw new I18NException("excepcion.general.Exception", this.getClass().getSimpleName(), "synchronizeClassificationTable");
         }
@@ -234,10 +238,10 @@ public class QuadreFrontService {
         } else if (Constants.ExceptionConstants.ERROR_RETURNED.getValue().equals(clientErrorCode)) {
             return "csgd.error.returned";
         } else if (Constants.ExceptionConstants.GENERIC_ERROR.getValue().equals(clientErrorCode)) {
-            return "exception.general.Exception";
+            return "nuevocuadro.sincro.error";
         } else if (Constants.ExceptionConstants.MALFORMED_RESULT.getValue().equals(clientErrorCode)) {
             return "csgd.malformed.result";
         }
-        return "excepcion.general.Exception";
+        return "nuevocuadro.sincro.error";
     }
 }

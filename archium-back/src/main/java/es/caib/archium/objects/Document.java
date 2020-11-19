@@ -31,23 +31,17 @@ public class Document<T> implements Serializable, Comparable<Document<T>> {
 		this.isSynchronized = isSynchronized;
 	}
 
-	public Document(long id, String codi, String nom, String type, String estat, T object) {
+	public Document(long id, String codi, String nom, String type, T object) {
 		super();
 		this.id = id;
 		this.codi = codi;
 		this.nom = nom;
 		this.type = type;
 		this.object = object;
-		if(estat!=null && "active".equalsIgnoreCase(estat)){
-			isActive=true;
-		}else{
-			isActive=false;
-		}
 	}
 
 	public Document() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 
 	public Boolean getActive() {

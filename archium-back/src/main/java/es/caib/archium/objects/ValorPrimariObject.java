@@ -19,7 +19,6 @@ public class ValorPrimariObject {
 	
 	public ValorPrimariObject() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 
 	

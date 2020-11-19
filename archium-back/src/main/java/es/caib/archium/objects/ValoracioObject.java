@@ -25,7 +25,6 @@ public class ValoracioObject {
 	
 	public ValoracioObject() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 	
 	public ValoracioObject(Long id, Date inici, Date fi, List<ValorPrimariObject> achValorprimaris,

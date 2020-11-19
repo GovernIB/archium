@@ -16,7 +16,6 @@ public class TipuDocumentalProcedimentObject {
 	
 	public TipuDocumentalProcedimentObject() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 
 	public TipuDocumentalProcedimentObject(ProcedimentObject procediment, TipuDocumentalObject tipusDocumentalt, Boolean obligatori,

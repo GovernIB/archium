@@ -108,15 +108,12 @@
 <!--					icono de sincronizacion-->
 <!--					Si tienes permisos de sincronizar y no esta sincronizado-->
 <!--						cambiar i18n-->
-					<p:commandButton class="botton_library" rendered="#{document.type=='Funcio' and funciones.checkRolLogued('ACH_GESTOR') eq true and document.synchronized eq false}" icon="circle-state red" resetValues="true" title="sincronizar" update="dialog" action="#{funciones.synchronize(document)}" />
-					<p:commandButton class="botton_library" rendered="#{document.type=='Serie' and funciones.checkRolLogued('ACH_GESTOR') eq true and document.synchronized eq false}" icon="circle-state red" resetValues="true" title="sincronizar" update="dialog" action="#{nuevaSerieController.synchronize(document)}" />
-					<p:commandButton class="botton_library" rendered="#{document.type=='Dictamen' and funciones.checkRolLogued('ACH_GESTOR') eq true and document.estat eq 'NO_ACTIVO'}" icon="pi pi-times" resetValues="true" title="publicar" update="dialog" action="#{dictamenController.publicar(document)}" />
+					<p:commandButton class="botton_library" rendered="#{document.type=='Funcio' and funciones.checkPermissionsToCallCSGD() eq true and document.synchronized eq false}" icon="circle-state red" title="sincronizar" update="panel1" action="#{funciones.synchronize(document)}" />
+					<p:commandButton class="botton_library" rendered="#{document.type=='Serie' and funciones.checkPermissionsToCallCSGD() eq true and document.synchronized eq false}" icon="circle-state red" title="sincronizar" update="panel1" action="#{nuevaSerieController.synchronize(document)}" />
                     <!--                    si ya esta sincronizado-->
-                    <h:outputText rendered="#{document.type ne 'Dictamen' and document.synchronized eq true}" > <i class="circle-state green"></i> </h:outputText>
-					<h:outputText rendered="#{document.type eq 'Dictamen' and document.estat eq 'ACTIVO'}" >   <i class="pi pi-check"></i> </h:outputText>
+					<p:commandButton rendered="#{document.type ne 'Dictamen' and document.synchronized eq true}" class="botton_library" icon="circle-state green" />
 <!--                    si no esta sincronizado y no tienes permisos-->
-					<h:outputText rendered="#{funciones.checkRolLogued('ACH_GESTOR') eq false and document.type ne 'Dictamen' and document.synchronized eq false}" ><i class="circle-state red"></i> </h:outputText>
-					<h:outputText rendered="#{funciones.checkRolLogued('ACH_GESTOR') eq false and document.type eq 'Dictamen' and document.estat eq 'NO_ACTIVO'}" > <i class="pi pi-times"></i> </h:outputText>
+					<p:commandButton rendered="#{funciones.checkPermissionsToCallCSGD() eq false and document.type ne 'Dictamen' and document.synchronized eq false}" class="botton_library" icon="circle-state red" />
 		        </p:column>
 		    </p:treeTable>
 

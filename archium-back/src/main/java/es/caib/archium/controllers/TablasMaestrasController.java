@@ -143,7 +143,6 @@ public class TablasMaestrasController implements Serializable {
 	}
 	public TablasMaestrasController() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 	public List<TauleMestreObject> getTablaMaestrafilter() {
 		return tablaMaestrafilter;

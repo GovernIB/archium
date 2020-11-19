@@ -22,7 +22,6 @@ public class QuadreDocumentalObject {
 	
 	public QuadreDocumentalObject() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 
 	public QuadreDocumentalObject(Long id, String nom, String nomCas, String estat, Date inici, Date modificacio, String versio,

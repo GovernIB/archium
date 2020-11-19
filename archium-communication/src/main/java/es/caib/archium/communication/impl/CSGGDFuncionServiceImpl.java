@@ -1,40 +1,42 @@
 package es.caib.archium.communication.impl;
 
-import es.caib.archium.apirest.ApiArchium;
-import es.caib.archium.apirest.csgd.entidades.resultados.CreateFunctionResult;
-import es.caib.archium.apirest.facade.pojos.Funcion;
-import es.caib.archium.apirest.facade.resultados.ResultadoSimple;
+import es.caib.csgd.apirest.ApiCSGDServices;
+import es.caib.csgd.apirest.facade.pojos.Funcion;
+import es.caib.csgd.apirest.facade.resultados.Resultado;
+import es.caib.csgd.apirest.facade.resultados.ResultadoSimple;
 import es.caib.archium.commons.utils.Constants;
 import es.caib.archium.communication.exception.CSGDException;
 import es.caib.archium.communication.iface.CSGDFuncionService;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.security.RolesAllowed;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import java.io.IOException;
 
-//TODO: Crear el nuevo rol
 @Stateless
-//@RolesAllowed(Constants.ACH_ALFRESCO)
+@RolesAllowed({Constants.ACH_CSGD})
 public class CSGGDFuncionServiceImpl implements CSGDFuncionService {
 
     protected final Logger log = LoggerFactory.getLogger(CSGGDFuncionServiceImpl.class);
 
     @Inject
-    private ApiArchium client;
+    private ApiCSGDServices client;
 
     @Override
     public void removeFuncion(String funcionId) throws CSGDException {
 
         try {
             ResultadoSimple rs = client.borrarFuncion(funcionId);
-            //FIXME: Puede producirse que se borre en gdib y en bbdd no, hay que controlar de manera diferente si no
-            // existe en gdib para que siga el proceso como que sí se hizo
+
             //TODO: Constante con codigos de resultados
-            if (!rs.getCodigoResultado().equals("COD_000")) {
+            if (!"COD_000".equals(rs.getCodigoResultado())) {
                 // Cuando se produce un error porque el nodo a borrar no existe devuelve el cod_021, por lo que  continuamos
                 // con el proceso
+                //FIXME: Puede producirse que se borre en gdib y en bbdd no, hay que controlar de manera diferente si no
+                // existe en gdib para que siga el proceso como que sí se hizo. Mockeado con el COD_021
                 if (rs.getCodigoResultado().equals("COD_021")) {
                     log.info("Se ha recibido el código de error COD_021, el nodo no existe en Alfresco, así que " +
                             "continuamos con el proceso de borrado");
@@ -60,26 +62,25 @@ public class CSGGDFuncionServiceImpl implements CSGDFuncionService {
     @Override
     public String synchronizeFunction(Funcion funcion, String parentId) throws CSGDException {
         try {
-            CreateFunctionResult rs = client.crearFuncion(funcion, parentId);
+            Resultado<String> rs = client.crearFuncion(funcion, parentId);
 
-            if (rs.getCreateFunctionResult() != null && rs.getCreateFunctionResult().getResult() != null
-                    && rs.getCreateFunctionResult().getResult().getCode() != "COD_001") {
-                log.error("Se ha devuelto un codigo [" + rs.getCreateFunctionResult().getResult().getCode() + "] en el " +
-                        "proceso de sincronizacion de la funcion. Mensaje: " + rs.getCreateFunctionResult().getResult()
-                        .getDescription());
-                throw new CSGDException(Constants.ExceptionConstants.ERROR_RETURNED.getValue(), rs.getCreateFunctionResult().getResult().getCode(), rs.getCreateFunctionResult().getResult().getDescription(), "Se ha devuelto un codigo [" + rs.getCreateFunctionResult().getResult().getCode() + "] " +
-                        "en el proceso de sincronizacion de la funcion. Mensaje: " + rs.getCreateFunctionResult().getResult());
+            if (!"COD_000".equals(rs.getCodigoResultado())) {
+                log.error("Se ha devuelto un codigo [" + rs.getCodigoResultado()+ "] en el " +
+                        "proceso de sincronizacion de la funcion. Mensaje: " + rs.getMsjResultado());
+                throw new CSGDException(Constants.ExceptionConstants.ERROR_RETURNED.getValue(), rs.getCodigoResultado(), rs.getMsjResultado(),
+                        "Se ha devuelto un codigo [" + rs.getCodigoResultado() + "] " +
+                        "en el proceso de sincronizacion de la funcion. Mensaje: " + rs.getMsjResultado());
             }
 
-            if (rs.getCreateFunctionResult() == null || rs.getCreateFunctionResult().getResult() == null) {
+            if (StringUtils.trimToNull(rs.getElementoDevuelto())==null) {
                 log.error("Se ha producido un error no esperado al no recibir correctamente los datos de respuesta en " +
                         "el proceso de creacion de la funcion");
                 throw new CSGDException(Constants.ExceptionConstants.MALFORMED_RESULT.name(), "Se ha producido un error no esperado al no recibir correctamente los datos de respuesta en " +
                         "el proceso de creacion de la funcion");
             }
 
-            log.debug("funcion creada correctamente. NodeId: " + rs.getCreateFunctionResult().getResParam());
-            return rs.getCreateFunctionResult().getResParam();
+            log.debug("funcion creada correctamente. NodeId: " + rs.getElementoDevuelto());
+            return rs.getElementoDevuelto();
 
 
         } catch (CSGDException e) {
@@ -94,11 +95,11 @@ public class CSGGDFuncionServiceImpl implements CSGDFuncionService {
     }
 
 
-    public ApiArchium getClient() {
+    public ApiCSGDServices getClient() {
         return client;
     }
 
-    public void setClient(ApiArchium client) {
+    public void setClient(ApiCSGDServices client) {
         this.client = client;
     }
 }

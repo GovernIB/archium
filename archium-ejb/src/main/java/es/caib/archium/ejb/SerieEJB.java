@@ -18,9 +18,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-//TODO: Añadir permiso para el nuevo rol para series, funciones y cuadros, cambiar los permitidos en los DAO
 @Stateless
-@RolesAllowed({Constants.ACH_GESTOR,Constants.ACH_ALFRESCO})
+@RolesAllowed({Constants.ACH_GESTOR,Constants.ACH_CSGD})
 public class SerieEJB extends AbstractDAO<Seriedocumental, Long> implements SerieService  {
 
 	@Inject

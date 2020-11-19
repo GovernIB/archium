@@ -9,12 +9,13 @@ import javax.annotation.security.RolesAllowed;
 import javax.ejb.Stateless;
 
 import es.caib.archium.commons.i18n.I18NException;
+import es.caib.archium.commons.utils.Constants;
 import es.caib.archium.ejb.objects.Dir3;
 import es.caib.archium.ejb.service.Dir3Service;
 import es.caib.archium.ejb.utils.CSVReader;
 
 @Stateless
-@RolesAllowed({"ACH_GESTOR"})
+@RolesAllowed({Constants.ACH_GESTOR,Constants.ACH_CSGD})
 public class Dir3EJB  implements Dir3Service  {
 
 	@Override

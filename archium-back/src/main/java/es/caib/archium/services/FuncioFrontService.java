@@ -1,7 +1,7 @@
 package es.caib.archium.services;
 
-import es.caib.archium.apirest.constantes.Estado;
-import es.caib.archium.apirest.facade.pojos.Funcion;
+import es.caib.csgd.apirest.constantes.Estado;
+import es.caib.csgd.apirest.facade.pojos.Funcion;
 import es.caib.archium.commons.i18n.I18NException;
 import es.caib.archium.commons.utils.Constants;
 import es.caib.archium.communication.exception.CSGDException;
@@ -18,6 +18,7 @@ import org.primefaces.model.TreeNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.ejb.EJBAccessException;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -110,7 +111,7 @@ public class FuncioFrontService {
 
                         if (resD.size() > 0) {
                             for (Dictamen d : resD) {
-                                TreeNode dictamenNode = new DefaultTreeNode(new Document<DictamenObject>(d.getId(), d.getCodi(), d.getAcciodictaminada(), "Dictamen", d.getEstat(), new DictamenObject(d)), serieNode);
+                                TreeNode dictamenNode = new DefaultTreeNode(new Document<DictamenObject>(d.getId(), d.getCodi(), d.getAcciodictaminada(), "Dictamen", new DictamenObject(d)), serieNode);
                             }
                         }
                     }
@@ -301,6 +302,9 @@ public class FuncioFrontService {
                 log.info("La funcion ["+idFuncio+"] ha sido eliminada de Alfresco");
             } catch (CSGDException e) {
                 throw new I18NException(getExceptionI18n(e.getClientErrorCode()), this.getClass().getSimpleName(), "deleteFunction");
+            } catch (EJBAccessException e){
+                log.error("No se cuenta con los permisos adecuados para realiziar la llamada al csgd");
+                throw new I18NException("csgd.permiso.denegado", this.getClass().getSimpleName(), "synchronizeFunction");
             } catch (Exception e) {
                 throw new I18NException("excepcion.general.Exception", this.getClass().getSimpleName(), "deleteFunction");
             }
@@ -322,15 +326,15 @@ public class FuncioFrontService {
         } else if (Constants.ExceptionConstants.ERROR_RETURNED.getValue().equals(clientErrorCode)) {
             return "csgd.error.returned";
         } else if (Constants.ExceptionConstants.GENERIC_ERROR.getValue().equals(clientErrorCode)) {
-            return "exception.general.Exception";
+            return "funciones.sincro.error";
         } else if (Constants.ExceptionConstants.MALFORMED_RESULT.getValue().equals(clientErrorCode)) {
             return "csgd.malformed.result";
         }
-        return "excepcion.general.Exception";
+        return "funciones.sincro.error";
     }
 
     @Transactional
-    public void synchronize(Long functionId) throws I18NException {
+    public FuncioObject synchronize(Long functionId) throws I18NException {
         log.debug("Procedemos a sincronizar la funcion con id=[" + functionId + "]");
         log.debug("Obtenemos los datos de la funcion...");
 
@@ -374,6 +378,9 @@ public class FuncioFrontService {
             nodeId = this.csgdFuncionService.synchronizeFunction(funcion,parent);
         } catch (CSGDException e) {
             throw new I18NException(getExceptionI18n(e.getClientErrorCode()), this.getClass().getSimpleName(), "synchronizeFunction");
+        } catch (EJBAccessException e){
+            log.error("No se cuenta con los permisos adecuados para realiziar la llamada al csgd");
+            throw new I18NException("csgd.permiso.denegado", this.getClass().getSimpleName(), "synchronizeFunction");
         } catch (Exception e) {
             log.error("Error sincronizando el cuadro: " + e);
             throw new I18NException("excepcion.general.Exception", this.getClass().getSimpleName(), "synchronizeFunction");
@@ -387,6 +394,7 @@ public class FuncioFrontService {
                 funciondb.setNodeId(nodeId);
                 funciondb.setSynchronized(true);
                 funcionesEJB.update(funciondb);
+                return new FuncioObject(funciondb);
             } catch (I18NException e) {
                 log.error("Error sincronizando la informacion de la funcion: " + e);
                 throw e;
@@ -399,7 +407,6 @@ public class FuncioFrontService {
             log.error("Se ha devuelto null como nodo de alfresco en la sincronizacion de la funcion");
             throw new I18NException("excepcion.general.Exception", this.getClass().getSimpleName(), "synchronizeError");
         }
-
     }
 
     /**

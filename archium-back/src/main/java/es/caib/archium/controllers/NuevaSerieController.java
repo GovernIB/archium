@@ -167,144 +167,143 @@ public class NuevaSerieController implements Serializable {
         }
     }
 
-    /**
-     * Proceso de sincronizacion de la serie en GDIB
-     *
-     * @param serie
-     */
-    public void synchronize(Document<SerieDocumentalObject> serie) {
-        log.debug("Se sincroniza la serie: " + serie.toString());
+	/**
+	 * Proceso de sincronizacion de la serie en GDIB
+	 *
+	 * @param serie
+	 */
+	public void synchronize(Document<SerieDocumentalObject> serie) {
+		log.debug("Se sincroniza la serie: " + serie.toString());
 
-        try {
-            SerieDocumentalObject upS =this.service.synchronize(serie.getObject().getSerieId());
-            log.debug("Proceso de sincronizacion finalizado con exito");
-            // Se carga de nuevo la lista de series para mostrar los datos de esta serie actualizados
-            funcBean.getNodeFromFunctionId(serie.getId(), "Serie", "update", upS);
-            listaSeries = service.getListaSeries();
+		try {
+			SerieDocumentalObject upS =this.service.synchronize(serie.getObject().getSerieId());
+			log.debug("Proceso de sincronizacion finalizado con exito");
+			// Se carga de nuevo la lista de series para mostrar los datos de esta serie actualizados
+			funcBean.getNodeFromFunctionId(serie.getId(), "Serie", "update", upS);
+			listaSeries = service.getListaSeries();
 
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(messageBundle.getString("nuevaserie.sinc.ok")));
-        } catch (I18NException e) {
-            log.error(FrontExceptionTranslate.translate(e, funcBean.getLocale()));
-            FacesMessage message = new FacesMessage();
-            message.setSeverity(FacesMessage.SEVERITY_ERROR);
-            if("excepcion.general.Exception".equals(e.getMessage())){
-                message.setSummary(messageBundle.getString("nuevaserie.sinc.error"));
-                message.setDetail(messageBundle.getString("nuevaserie.sinc.error"));
-            }else {
-                message.setSummary(messageBundle.getString(e.getMessage()));
-                message.setDetail(messageBundle.getString(e.getMessage()));
-            }
-            FacesContext.getCurrentInstance().addMessage(null, message);
-        }
-    }
-
-
-    public void updateSerie(Document<SerieDocumentalObject> obj) {
-
-        clearForm();
+			FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(messageBundle.getString("nuevaserie.sinc.ok")));
+		} catch (I18NException e) {
+			log.error(FrontExceptionTranslate.translate(e, funcBean.getLocale()));
+			FacesMessage message = new FacesMessage();
+			message.setSeverity(FacesMessage.SEVERITY_ERROR);
+			if("excepcion.general.Exception".equals(e.getMessage())){
+				message.setSummary(messageBundle.getString("nuevaserie.sinc.error"));
+				message.setDetail(messageBundle.getString("nuevaserie.sinc.error"));
+			}else {
+				message.setSummary(messageBundle.getString(e.getMessage()));
+				message.setDetail(messageBundle.getString(e.getMessage()));
+			}
+			FacesContext.getCurrentInstance().addMessage(null, message);
+		}
+	}
 
 
-        try {
+	public void updateSerie(Document<SerieDocumentalObject> obj) {
 
-            SerieDocumentalObject modify = this.service.findById(obj.getId());
+		clearForm();
 
-            if (modify != null) {
-                serieId = obj.getId();
-                codi = modify.getCodi();
-                nom = modify.getNom();
-                nomCas = modify.getNomCas();
-                catalegSeriId = modify.getCatalegSeriId();
-                serieFuncio = modify.getFuncio();
-                descripcio = modify.getDescripcio();
-                descripcioCas = modify.getDescripcioCas();
-                resumMigracio = modify.getResumMigracio();
-                dir3Promotor = modify.getDir3Promotor();
 
-                tipusSerieId = modify.getTipusSerieId();
+		try {
 
-                codiIecisa = modify.getCodiIecisa();
-                serieFuncio = modify.getFuncio();
-                serieEstat = (modify.getEstat() != null ? modify.getEstat() : "ESBORRANY");
+			SerieDocumentalObject modify = this.service.findById(obj.getId());
 
-                List<AplicacionObject> targetAppsList = new ArrayList<>();
-                List<SerieDocumentalObject> relatedSeriesList = new ArrayList<>();
-                List<SerieArgenObject> relatedArgensList = new ArrayList<>();
-                List<NormativaAprobacioObject> normativasList = new ArrayList<>();
+			if (modify != null) {
+				serieId = obj.getId();
+				codi = modify.getCodi();
+				nom = modify.getNom();
+				nomCas = modify.getNomCas();
+				catalegSeriId = modify.getCatalegSeriId();
+				serieFuncio = modify.getFuncio();
+				descripcio = modify.getDescripcio();
+				descripcioCas = modify.getDescripcioCas();
+				resumMigracio = modify.getResumMigracio();
+				dir3Promotor = modify.getDir3Promotor();
 
-                targetAppsList = service.getListaAplicacionesBySerie(serieId);
-                List<AplicacionObject> filteredApps = new ArrayList<>(aplicaciones.getSource());
-                filteredApps.removeAll(targetAppsList);
-                aplicaciones.setSource(filteredApps);
-                aplicaciones.setTarget(targetAppsList);
+				tipusSerieId = modify.getTipusSerieId();
 
-                relatedSeriesList = service.getListaSeriesBySerie(serieId);
-                List<SerieDocumentalObject> filtered = new ArrayList<>(seriesRelacionadas.getSource());
-                filtered.removeAll(relatedSeriesList);
-                seriesRelacionadas.setSource(filtered);
-                seriesRelacionadas.setTarget(relatedSeriesList);
+				codiIecisa = modify.getCodiIecisa();
+				serieFuncio = modify.getFuncio();
+				serieEstat = (modify.getEstat() != null ? modify.getEstat() : "ESBORRANY");
 
-                relatedArgensList = service.getListaSeriesArgenBySerie(serieId);
-                List<SerieArgenObject> filteredArgen = new ArrayList<>(seriesArgenRelacionadas.getSource());
-                filteredArgen.removeAll(relatedArgensList);
-                seriesArgenRelacionadas.setSource(filteredArgen);
-                seriesArgenRelacionadas.setTarget(relatedArgensList);
-                listaRelacionLNS = service.getListaLNS(serieId);
+				List<AplicacionObject> targetAppsList = new ArrayList<>();
+				List<SerieDocumentalObject> relatedSeriesList = new ArrayList<>();
+				List<SerieArgenObject> relatedArgensList = new ArrayList<>();
+				List<NormativaAprobacioObject> normativasList = new ArrayList<>();
 
-                for (LimitacioNormativaSerieObject lns : listaRelacionLNS) {
-                    List<CausaLimitacioObject> filteredCL = new ArrayList<CausaLimitacioObject>(listaCausaLimitacio);
-                    filteredCL.removeAll(lns.getListCausaLimitacio());
-                    lns.setDualListCausas(new DualListModel<CausaLimitacioObject>());
-                    lns.getDualListCausas().setSource(filteredCL);
-                    lns.getDualListCausas().setTarget(lns.getListCausaLimitacio());
-                }
+				targetAppsList = service.getListaAplicacionesBySerie(serieId);
+				List<AplicacionObject> filteredApps = new ArrayList<>(aplicaciones.getSource());
+				filteredApps.removeAll(targetAppsList);
+				aplicaciones.setSource(filteredApps);
+				aplicaciones.setTarget(targetAppsList);
 
-                normativasList = service.getListaNormativasBySerie(serieId);
-                List <NormativaAprobacioObject> filteredNormativas = new ArrayList<NormativaAprobacioObject>(normativasSerie.getSource());
-                filteredNormativas.removeAll(normativasList);
-                normativasSerie.setSource(filteredNormativas);
-                normativasSerie.setTarget(normativasList);
+				relatedSeriesList = service.getListaSeriesBySerie(serieId);
+				List<SerieDocumentalObject> filtered = new ArrayList<>(seriesRelacionadas.getSource());
+				filtered.removeAll(relatedSeriesList);
+				seriesRelacionadas.setSource(filtered);
+				seriesRelacionadas.setTarget(relatedSeriesList);
 
-                ValoracioObject dbValoracio = service.getValoracioSerie(serieId);
-                valoracio = new ValoracioObject(dbValoracio);
-                valoracio.getAchValorprimaris().clear();
-                for (TipuValorObject tv : listaTiposValor) {
+				relatedArgensList = service.getListaSeriesArgenBySerie(serieId);
+				List<SerieArgenObject> filteredArgen = new ArrayList<>(seriesArgenRelacionadas.getSource());
+				filteredArgen.removeAll(relatedArgensList);
+				seriesArgenRelacionadas.setSource(filteredArgen);
+				seriesArgenRelacionadas.setTarget(relatedArgensList);
+				listaRelacionLNS = service.getListaLNS(serieId);
 
-                    boolean existe = false;
-                    Iterator<ValorPrimariObject> it = dbValoracio.getAchValorprimaris().iterator();
-                    while (it.hasNext() && existe == false) {
-                        ValorPrimariObject item = it.next();
-                        if (tv.getId() == item.getAchTipusvalor().getId()) {
-                            item.setSelected(true);
-                            valoracio.addValorprimari(item);
-                            existe = true;
-                        }
-                    }
+				for (LimitacioNormativaSerieObject lns : listaRelacionLNS) {
+					List<CausaLimitacioObject> filteredCL = new ArrayList<CausaLimitacioObject>(listaCausaLimitacio);
+					filteredCL.removeAll(lns.getListCausaLimitacio());
+					lns.setDualListCausas(new DualListModel<CausaLimitacioObject>());
+					lns.getDualListCausas().setSource(filteredCL);
+					lns.getDualListCausas().setTarget(lns.getListCausaLimitacio());
+				}
 
-                    if (existe == false) {
+				normativasList = service.getListaNormativasBySerie(serieId);
+				List <NormativaAprobacioObject> filteredNormativas = new ArrayList<NormativaAprobacioObject>(normativasSerie.getSource());
+				filteredNormativas.removeAll(normativasList);
+				normativasSerie.setSource(filteredNormativas);
+				normativasSerie.setTarget(normativasList);
 
-                        ValorPrimariObject vp = new ValorPrimariObject();
-                        vp.setAchTipusvalor(tv);
-                        ValoracioObject val = new ValoracioObject();
-                        val.setId(dbValoracio.getId());
-                        vp.setAchValoracio(val);
-                        valoracio.addValorprimari(vp);
-                    }
+				ValoracioObject dbValoracio = service.getValoracioSerie(serieId);
+				valoracio = new ValoracioObject(dbValoracio);
+				valoracio.getAchValorprimaris().clear();
+				for (TipuValorObject tv : listaTiposValor) {
 
-                }
+					boolean existe = false;
+					Iterator<ValorPrimariObject> it = dbValoracio.getAchValorprimaris().iterator();
+					while (it.hasNext() && existe == false) {
+						ValorPrimariObject item = it.next();
+						if (tv.getId() == item.getAchTipusvalor().getId()) {
+							item.setSelected(true);
+							valoracio.addValorprimari(item);
+							existe = true;
+						}
+					}
 
-                PrimeFaces.current().executeScript("PF('serieModalDialog').show()");
-            } else {
-                FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, messageBundle.getString("nuevaserie.update.abrirUpdate.error"), messageBundle.getString("procediment.update.abrirUpdate.error"));
-                FacesContext.getCurrentInstance().addMessage(null, msg);
-            }
+					if (existe == false) {
 
-        } catch (I18NException e) {
-            log.error(FrontExceptionTranslate.translate(e, funcBean.getLocale()));
-            FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, messageBundle.getString("nuevaserie.update.abrirUpdate.error"), messageBundle.getString("procediment.update.abrirUpdate.error"));
-            FacesContext.getCurrentInstance().addMessage(null, msg);
-        }
-    }
+						ValorPrimariObject vp = new ValorPrimariObject();
+						vp.setAchTipusvalor(tv);
+						ValoracioObject val = new ValoracioObject();
+						val.setId(dbValoracio.getId());
+						vp.setAchValoracio(val);
+						valoracio.addValorprimari(vp);
+					}
 
+				}
+
+				PrimeFaces.current().executeScript("PF('serieModalDialog').show()");
+			} else {
+				FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, messageBundle.getString("nuevaserie.update.abrirUpdate.error"), messageBundle.getString("procediment.update.abrirUpdate.error"));
+				FacesContext.getCurrentInstance().addMessage(null, msg);
+			}
+
+		} catch (I18NException e) {
+			log.error(FrontExceptionTranslate.translate(e, funcBean.getLocale()));
+			FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, messageBundle.getString("nuevaserie.update.abrirUpdate.error"), messageBundle.getString("procediment.update.abrirUpdate.error"));
+			FacesContext.getCurrentInstance().addMessage(null, msg);
+		}
+	}
     public void save() {
 
         try {

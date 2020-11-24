@@ -1,7 +1,7 @@
 package es.caib.archium.services;
 
-import es.caib.csgd.apirest.constantes.Estado;
-import es.caib.csgd.apirest.facade.pojos.Funcion;
+import es.caib.archium.csgd.apirest.constantes.Estado;
+import es.caib.archium.csgd.apirest.facade.pojos.Funcion;
 import es.caib.archium.commons.i18n.I18NException;
 import es.caib.archium.commons.utils.Constants;
 import es.caib.archium.communication.exception.CSGDException;
@@ -333,6 +333,11 @@ public class FuncioFrontService {
         return "funciones.sincro.error";
     }
 
+    /**
+     * Proceso de sincronizacion de la funcion en GDIB
+     *
+     * @param functionId
+     */
     @Transactional
     public FuncioObject synchronize(Long functionId) throws I18NException {
         log.debug("Procedemos a sincronizar la funcion con id=[" + functionId + "]");
@@ -354,7 +359,7 @@ public class FuncioFrontService {
             if (!this.isParentsSynchronized(funciondb.getAchFuncio())) {
                 log.error("La funcion [Id = "+funciondb.getId()+", Cod = "+funciondb.getCodi()+"] no puede sincronizarse" +
                         " hasta que todos sus padres esten sincronizados");
-                throw new I18NException("funcio.padre.no.sincronizado", this.getClass().getSimpleName());
+                throw new I18NException("validaciones.funcio.padre.no.sincronizado", this.getClass().getSimpleName());
             }
         }else{
             parent = funciondb.getAchQuadreclassificacio().getNodeId();
@@ -362,10 +367,13 @@ public class FuncioFrontService {
                 log.error("El cuadro de clasificacion [Id = " + funciondb.getAchQuadreclassificacio().getId() + ", " +
                         "Cod = " + funciondb.getAchQuadreclassificacio().getCodi() +"] debe sincronizarse para poder" +
                         "sincronizar la funcion [Id = "+funciondb.getId()+", Cod = "+funciondb.getCodi()+"]");
-                throw new I18NException("funcio.padre.no.sincronizado", this.getClass().getSimpleName());
+                throw new I18NException("validaciones.funcio.padre.no.sincronizado", this.getClass().getSimpleName());
             }
         }
 
+        log.info("Todos los padres de la funcion se encuentran sincronizados, se procede con la sincronizacion");
+
+        this.validarFuncion(funciondb);
 
         Funcion funcion = new Funcion();
         funcion.setCodigo(funciondb.getCodi());
@@ -406,6 +414,23 @@ public class FuncioFrontService {
         } else {
             log.error("Se ha devuelto null como nodo de alfresco en la sincronizacion de la funcion");
             throw new I18NException("excepcion.general.Exception", this.getClass().getSimpleName(), "synchronizeError");
+        }
+    }
+
+    /**
+     * Valida que toda la informacion requerida por GDIB este informada
+     *
+     * @param funciondb
+     */
+    private void validarFuncion(Funcio funciondb) throws I18NException {
+        log.debug("Validamos los datos de la funcion");
+        if(StringUtils.trimToNull(funciondb.getCodi()) == null
+        || StringUtils.trimToNull(funciondb.getEstat()) == null
+        || Estado.getEstado(funciondb.getEstat())==null){
+            log.error("Error de validacion de la funcion. Alguno de los campos obligatorios no esta informado");
+            throw new I18NException("validaciones.funcion", this.getClass().getSimpleName());
+        }else{
+            log.info("Funcion validada");
         }
     }
 

@@ -1,9 +1,9 @@
 package es.caib.archium.communication.impl;
 
-import es.caib.csgd.apirest.ApiCSGDServices;
-import es.caib.csgd.apirest.facade.pojos.Serie;
-import es.caib.csgd.apirest.facade.resultados.Resultado;
-import es.caib.csgd.apirest.facade.resultados.ResultadoSimple;
+import es.caib.archium.csgd.apirest.ApiCSGDServices;
+import es.caib.archium.csgd.apirest.facade.pojos.Serie;
+import es.caib.archium.csgd.apirest.facade.resultados.Resultado;
+import es.caib.archium.csgd.apirest.facade.resultados.ResultadoSimple;
 import es.caib.archium.commons.utils.Constants;
 import es.caib.archium.communication.exception.CSGDException;
 import es.caib.archium.communication.iface.CSGDSerieService;

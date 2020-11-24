@@ -167,12 +167,18 @@ public class NuevaSerieController implements Serializable {
         }
     }
 
+    /**
+     * Proceso de sincronizacion de la serie en GDIB
+     *
+     * @param serie
+     */
     public void synchronize(Document<SerieDocumentalObject> serie) {
         log.debug("Se sincroniza la serie: " + serie.toString());
 
         try {
             SerieDocumentalObject upS =this.service.synchronize(serie.getObject().getSerieId());
             log.debug("Proceso de sincronizacion finalizado con exito");
+            // Se carga de nuevo la lista de series para mostrar los datos de esta serie actualizados
             funcBean.getNodeFromFunctionId(serie.getId(), "Serie", "update", upS);
             listaSeries = service.getListaSeries();
 

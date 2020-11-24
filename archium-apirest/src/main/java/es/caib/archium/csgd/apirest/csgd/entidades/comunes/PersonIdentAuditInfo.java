@@ -1,0 +1,36 @@
+package es.caib.archium.csgd.apirest.csgd.entidades.comunes;
+
+import org.apache.commons.lang3.StringEscapeUtils;
+
+/**
+ * Tipo de datos compuesto que representa la información de identificación de una persona.
+ * 
+ * @author u104848
+ *
+ */
+public class PersonIdentAuditInfo {
+	private String document;
+	private String name;
+	
+	public String getDocument() {
+		return document;
+	}
+	public void setDocument(String document) {
+		//Se hace el escapeado para evitar problemas con caracteres especiales
+		this.document = StringEscapeUtils.escapeXml(document);
+	}
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = StringEscapeUtils.escapeXml(name);
+	}
+
+	@Override
+	public String toString() {
+		return "PersonIdentAuditInfo{" +
+				"document='" + document + '\'' +
+				", name='" + name + '\'' +
+				'}';
+	}
+}

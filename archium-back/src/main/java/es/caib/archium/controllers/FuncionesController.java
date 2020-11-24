@@ -185,6 +185,11 @@ public class FuncionesController implements Serializable {
         }
     }
 
+    /**
+     * Proceso de sincronizacion de la funcion en GDIB
+     *
+     * @param func
+     */
     public void synchronize(Document<FuncioObject> func) {
         log.debug("Se sincroniza la funcion: " + func.toString());
 
@@ -197,10 +202,13 @@ public class FuncionesController implements Serializable {
             f = this.servicesFunciones.synchronize(func.getObject().getId());
             log.debug("Proceso de sincronizacion finalizado con exito");
 
+            // Se procede a actualizar el nodo modificado en el arbol para mostrar la informacion de este correcta
+
             this.listaFunciones = this.servicesFunciones.loadTree(quadreId, null);
 
             if (oldParent != null) {
                 TreeNode node = this.getNodeFromFunctionId(func.getId(), "Funcio", "update", f);
+                int index = oldParent.getChildren().indexOf(node);
                 oldParent.getChildren().remove(node);
                 TreeNode parentNode;
                 if (f.getFuncioPare() != null) {
@@ -209,13 +217,14 @@ public class FuncionesController implements Serializable {
                     parentNode = root;
                 }
                 node.setParent(parentNode);
-                parentNode.getChildren().add(node);
+                parentNode.getChildren().add(index,node);
             } else {
                 TreeNode node = this.getNodeFromFunctionId(func.getId(), "Funcio", "update", f);
                 if (f.getFuncioPare() != null) {
+                    int index = root.getChildren().indexOf(node);
                     root.getChildren().remove(node);
                     TreeNode parentNode = getNodeFromFunctionId(f.getFuncioPare().getId(), "Funcio", "insert", null);
-                    parentNode.getChildren().add(node);
+                    parentNode.getChildren().add(index,node);
                     node.setParent(parentNode);
                 }
             }
@@ -290,6 +299,7 @@ public class FuncionesController implements Serializable {
 
                 if (oldParent != null) {
                     TreeNode node = this.getNodeFromFunctionId(upF.getId(), "Funcio", "update", f);
+                    int index = oldParent.getChildren().indexOf(node);
                     oldParent.getChildren().remove(node);
                     TreeNode parentNode;
                     if (funcioPare != null) {
@@ -298,13 +308,14 @@ public class FuncionesController implements Serializable {
                         parentNode = root;
                     }
                     node.setParent(parentNode);
-                    parentNode.getChildren().add(node);
+                    parentNode.getChildren().add(index,node);
                 } else {
                     TreeNode node = this.getNodeFromFunctionId(upF.getId(), "Funcio", "update", f);
                     if (funcioPare != null) {
+                        int index = root.getChildren().indexOf(node);
                         root.getChildren().remove(node);
                         TreeNode parentNode = getNodeFromFunctionId(this.funcioPare.getId(), "Funcio", "insert", null);
-                        parentNode.getChildren().add(node);
+                        parentNode.getChildren().add(index,node);
                         node.setParent(parentNode);
                     }
                 }
@@ -333,7 +344,6 @@ public class FuncionesController implements Serializable {
             f.setFi(null);
             f.setSynchronized(false);
             FuncioObject newF = this.servicesFunciones.create(f, this.cuadroSeleccionado, this.funcioPare, this.nuevoTipusserie);
-            this.listaFunciones = this.servicesFunciones.loadTree(quadreId, null);
 
             TreeNode parent = null;
             if (this.funcioPare != null) {
@@ -345,7 +355,9 @@ public class FuncionesController implements Serializable {
             TreeNode node = new DefaultTreeNode(new Document<FuncioObject>(newF.getId(), newF.getCodi(), newF.getNom(),
                     "Funcio", newF.getNodeId(), newF.isSynchronized(), newF), parent);
 
-            parent.getChildren().add(node);
+            parent.getChildren().add(0,node);
+
+            this.listaFunciones = this.servicesFunciones.loadTree(quadreId, null);
 
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(messageBundle.getString("funciones.insert.ok")));
 

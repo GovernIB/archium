@@ -10,6 +10,7 @@ import javax.ejb.Stateless;
 import javax.inject.Inject;
 
 import es.caib.archium.commons.i18n.I18NException;
+import es.caib.archium.commons.utils.Constants;
 import es.caib.archium.ejb.service.LimitacioNormativaSerieService;
 import es.caib.archium.ejb.service.SerieDocumentalService;
 import es.caib.archium.persistence.dao.AbstractDAO;
@@ -18,7 +19,7 @@ import es.caib.archium.persistence.model.LimitacioNormativaSeriePK;
 
 
 @Stateless
-@RolesAllowed({"ACH_GESTOR"})
+@RolesAllowed({Constants.ACH_GESTOR,Constants.ACH_CSGD})
 public class LimitacioNormativaSerieEJB extends AbstractDAO<LimitacioNormativaSerie,LimitacioNormativaSeriePK> implements LimitacioNormativaSerieService{
 
 	@Inject 

@@ -1,8 +1,9 @@
 package es.caib.archium.services;
 
-import es.caib.csgd.apirest.constantes.LOPD;
-import es.caib.csgd.apirest.constantes.TipoAcceso;
-import es.caib.csgd.apirest.facade.pojos.Serie;
+import es.caib.archium.csgd.apirest.constantes.*;
+import es.caib.archium.csgd.apirest.csgd.entidades.comunes.CausaLimitacionNormativa;
+import es.caib.archium.csgd.apirest.csgd.entidades.comunes.Termino;
+import es.caib.archium.csgd.apirest.facade.pojos.Serie;
 import es.caib.archium.commons.i18n.I18NException;
 import es.caib.archium.commons.utils.Constants;
 import es.caib.archium.communication.exception.CSGDException;
@@ -21,6 +22,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.transaction.Transactional;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
@@ -775,20 +777,20 @@ public class SerieFrontService {
 
     @Transactional
     public void deleteSerie(Long idSerie) throws I18NException {
-        log.debug("Se procede a eliminar la serie ["+idSerie+"]");
+        log.debug("Se procede a eliminar la serie [" + idSerie + "]");
         Seriedocumental serie = serieService.getReference(idSerie);
 
-        if(StringUtils.isNotEmpty(serie.getNodeId())) {
+        if (StringUtils.isNotEmpty(serie.getNodeId())) {
             log.debug("La serie existe en Alfresco, así que procedemos a eliminarla");
             try {
                 this.csgdSerieService.removeSerie(serie.getNodeId());
-                log.info("La serie ["+idSerie+"] ha sido eliminada de Alfresco");
+                log.info("La serie [" + idSerie + "] ha sido eliminada de Alfresco");
             } catch (CSGDException e) {
                 throw new I18NException(getExceptionI18n(e.getClientErrorCode()), this.getClass().getSimpleName(), "deleteSerie");
-            } catch (EJBAccessException e){
+            } catch (EJBAccessException e) {
                 log.error("No se cuenta con los permisos adecuados para realiziar la llamada al csgd");
                 throw new I18NException("csgd.permiso.denegado", this.getClass().getSimpleName(), "deleteSerie");
-            }catch (Exception e) {
+            } catch (Exception e) {
                 throw new I18NException("excepcion.general.Exception", this.getClass().getSimpleName(), "deleteSerie");
             }
         }
@@ -817,6 +819,11 @@ public class SerieFrontService {
         return "nuevaserie.sinc.error";
     }
 
+    /**
+     * Proceso de sincronizacion de la serie en GDIB
+     *
+     * @param serie
+     */
     @Transactional
     public SerieDocumentalObject synchronize(Long s) throws I18NException {
         log.debug("Procedemos a sincronizar la serie con id=[" + s + "]");
@@ -832,39 +839,57 @@ public class SerieFrontService {
         }
 
         //Comprobamos que el padre este sincronizado
-        //TODO : DESCOMENTAR ESTO
-//        if (!this.isParentsSynchronized(serie.getAchFuncio())) {
-//            log.error("La serie [Id = " + serie.getId() + ", Cod = " + serie.getCodi() + "] no puede sincronizarse hasta que " +
-//                    "todos sus padres esten sincronizados");
-//            throw new I18NException("serie.padre.no.sincronizado", this.getClass().getSimpleName());
-//        }
-
-        List<Dictamen> dictamenList = serie.getAchDictamens();
-        Dictamen dictamen = null;
-        for (Dictamen d : dictamenList) {
-            //TODO: Cuál se el nombre del estado??
-            if ("activo".equalsIgnoreCase(d.getEstat())) {
-                dictamen = d;
-            }
+        if (!this.isParentsSynchronized(serie.getAchFuncio())) {
+            log.error("La serie [Id = " + serie.getId() + ", Cod = " + serie.getCodi() + "] no puede sincronizarse hasta que " +
+                    "todos sus padres esten sincronizados");
+            throw new I18NException("validaciones.serie.padre.no.sincronizado", this.getClass().getSimpleName());
         }
+        log.info("Todos los padres de la serie se encuentran sincronizados, se procede con la sincronizacion");
+
+        //Creamos el dto
         Serie serieWs = new Serie();
+        log.debug("Validamos la informacion de la serie");
+        this.validarSerie(serie);
 
         serieWs.setCodigoClasificacion(serie.getCodi());
-        if (dictamen != null) {
+        serieWs.setCausaLimitacionNormativas(extraerNormativasYCausasLimitacion(serie));
+        extraerValoresYTermino(serie, serieWs);
 
-            serieWs.setAccionDictaminada(dictamen.getAcciodictaminada());
-            //TODO: Qué atributo coger?
-            serieWs.setLopd(LOPD.getLopd(dictamen.getAchLopd() == null ? null : dictamen.getAchLopd().getNom()));
-            //TODO: De donde sale la confidencialidad?
-//				serieWs.setConfidencialidad();
-            //TODO: Qué atributo coger?
-            serieWs.setTipoAcceso(TipoAcceso.getTipoAcceso(dictamen.getAchTipusacce().getNom()));
-            //TODO: Sacar la limitacion de la normativa
-//			serieWs.setCausaLimitacion(dictamen.li);
-            //TODO: Qué atributo coger?
-            serieWs.setNormativa(dictamen.getAchNormativa() == null ? null : dictamen.getAchNormativa().getNom());
-            serieWs.setCondicionReutilizacion(dictamen.getCondicioreutilitzacio());
-//				serieWs.setTipoValor(object.getv);
+        // Recuperamos el dictamen en estado vigente (solo puede tener uno cada serie)
+        log.debug("Comprobamos cual es el dictamen activo para la serie ["+serie.getCodi()+"]");
+        Dictamen dictamen = getDictamenVigente(serie.getAchDictamens());
+
+        if (dictamen != null) {
+            log.info("Dictamen activo de la serie ["+serie.getCodi()+"]: ["+dictamen.getCodi()+"]");
+            //Validamos que los datos obligatorios del dictamen estén informados
+            log.debug("Validamos la informacion del dictamen");
+            this.validarDictamen(dictamen);
+
+            serieWs.setAccionDictaminada(dictamen.getAcciodictaminada().toLowerCase());
+            serieWs.setLopd(LOPD.getLopd(dictamen.getAchLopd().getNomcas()));
+            serieWs.setTipoAcceso(TipoAcceso.getTipoAcceso(dictamen.getAchTipusacce().getNomcas()));
+            serieWs.setConfidencialidad(Confidencialidad.getConfidencialidad(dictamen.getAchEn().getNomcas()));
+            // Para el caso de las series documentales, siempre será un valor por defecto
+            serieWs.setTipoClasificacion(Constants.ArchiumConstants.TIPO_CLASIFICACION_VALOR_POR_DEFECTO.getValue());
+            serieWs.setCondicionReutilizacion(dictamen.getCondicioreutilitzacio().toLowerCase());
+            serieWs.setTipoDictamen(TipoDictamen.getTipoDictamen(dictamen.getAchTipusdictamen().getCodi()));
+            serieWs.setEsencial(BigDecimal.ONE.equals(dictamen.getSerieessencial()));
+            // TODO : falta campo plazo_unidad_accion_dictaminada, "unidad temporal del plazo de ejecucion de la acción dictaminada"
+            try {
+                serieWs.setTerminoAccionDictaminada(Long.valueOf(dictamen.getTermini()));
+            } catch (ClassCastException e) {
+                log.error("Error transformando el valor del campo 'terminoAccionDictaminada' del dictamen ["+dictamen.getCodi()+"]");
+                throw new I18NException("validaciones.serie.terminoAccionDictaminada.valor.incorrecto", this.getClass().getSimpleName());
+            }
+            try {
+                serieWs.setResellado(Long.valueOf(dictamen.getAcciodictaminada()));
+            } catch (ClassCastException e) {
+                log.error("Error transformando el valor del campo 'accioDictaminada' del dictamen ["+dictamen.getCodi()+"]");
+                throw new I18NException("validaciones.serie.accioDictaminada.valor.incorrecto", this.getClass().getSimpleName());
+            }
+        } else {
+            log.error("La serie ["+serie.getCodi()+"] no cuenta con un dictamen en estado activo ('vigent'), por lo que no es posible sincronizarse");
+            throw new I18NException("validaciones.serie.dictamen.novigente", this.getClass().getSimpleName());
         }
 
         log.debug("Dto creado, llamamos al servicio de sincronizacion");
@@ -874,15 +899,15 @@ public class SerieFrontService {
             nodeId = this.csgdSerieService.synchronizeSerie(serieWs, serie.getAchFuncio().getNodeId());
         } catch (CSGDException e) {
             throw new I18NException(getExceptionI18n(e.getClientErrorCode()), this.getClass().getSimpleName(), "synchronizeSerie");
-        } catch (EJBAccessException e){
+        } catch (EJBAccessException e) {
             log.error("No se cuenta con los permisos adecuados para realiziar la llamada al csgd");
             throw new I18NException("csgd.permiso.denegado", this.getClass().getSimpleName(), "synchronizeFunction");
-        }catch (Exception e) {
+        } catch (Exception e) {
             log.error("Error sincronizando la serie: " + e);
             throw new I18NException("excepcion.general.Exception", this.getClass().getSimpleName(), "synchronizeSerie");
         }
 
-        log.debug("Creada serie con id [" + nodeId + "]. Se procede a guardar en base de datos");
+        log.info("Creada serie con id [" + nodeId + "]. Se procede a guardar en base de datos");
 
         // Una vez creada la serie en el arbol de alfresco, guardamos la referencia con el nodo creado
         if (StringUtils.isNotEmpty(nodeId)) {
@@ -903,6 +928,126 @@ public class SerieFrontService {
             log.error("Se ha devuelto null como nodo de alfresco en la sincronizacion de la funcion");
             throw new I18NException("excepcion.general.Exception", this.getClass().getSimpleName(), "synchronizeError");
         }
+    }
+
+    /**
+     * Valida que toda la informacion requerida por GDIB este informada
+     *
+     * @param serie
+     */
+    private void validarSerie(Seriedocumental serie) throws I18NException {
+
+        if(serie.getAchDictamens()== null || serie.getAchDictamens().isEmpty()
+        || serie.getAchValoracios() == null || serie.getAchValoracios().isEmpty()
+        || StringUtils.trimToNull(serie.getCodi()) == null){
+            log.error("Error de validacion de la serie. Alguno de los campos obligatorios no esta informado");
+            throw new I18NException("validaciones.serie", this.getClass().getSimpleName());
+        }else{
+            log.info("Serie validada");
+        }
+    }
+
+    /**
+     * Valida que toda la informacion requerida por GDIB este informada
+     *
+     * @param dictamen
+     */
+    private void validarDictamen(Dictamen dictamen) throws I18NException {
+        if(StringUtils.trimToNull(dictamen.getAcciodictaminada())==null
+            || StringUtils.trimToNull(dictamen.getAchLopd().getNomcas())==null
+            || StringUtils.trimToNull(dictamen.getAchTipusacce().getNomcas())==null
+            || StringUtils.trimToNull(dictamen.getAchEn().getNomcas())==null
+            || StringUtils.trimToNull(dictamen.getCondicioreutilitzacio())==null
+            || StringUtils.trimToNull(dictamen.getAchTipusdictamen().getCodi())==null
+            || StringUtils.trimToNull(dictamen.getTermini())==null
+            || StringUtils.trimToNull(dictamen.getAcciodictaminada())==null
+            || dictamen.getSerieessencial() == null){
+            log.error("Error de validacion del dictamen de la serie. Alguno de los campos obligatorios no esta informado");
+            throw new I18NException("validaciones.serie.dictamen", this.getClass().getSimpleName());
+        }else{
+            log.info("Dictamen validado");
+        }
+    }
+
+    /**
+     * SerieDocumental.valoracio[fi IS NULL].valorPrimari.tipusValor.nomcas
+     * <p>
+     * Dada la serie, escoge la valoración vigente (sin fecha de fin, sólo debería haber una) y coge todos los valores primarios (metadato múltiple).
+     * Se supone que sólo habrá una valoración vigente.
+     *
+     * @param serie
+     * @param serieWs
+     * @return
+     */
+    private void extraerValoresYTermino(Seriedocumental serie, Serie serieWs) {
+        serieWs.setTipoValor(new ArrayList<>());
+        serieWs.setTermino(new ArrayList<>());
+        serieWs.setValorSecundario(new ArrayList<>());
+
+        for (Valoracio valoracion : serie.getAchValoracios()) {
+            serieWs.getValorSecundario().add(valoracion.getAchValorsecundari().getNomcas());
+            // valoracion vigente es la que no tiene fecha de fin
+            if (valoracion.getFi() == null) {
+                for (Valorprimari p : valoracion.getAchValorprimaris()) {
+                    Termino t = new Termino();
+                    serieWs.getTipoValor().add(TipoValor.getTipoValor(p.getAchTipusvalor().getNomcas()));
+                    t.setValorPrimario(p.getAchTipusvalor().getNomcas());
+                    try {
+                        t.setTermino(Long.valueOf(p.getTermini()));
+                    } catch (ClassCastException e) {
+                        // TODO : Que hacer?
+                    }
+                    serieWs.getTermino().add(t);
+                }
+            }
+        }
+    }
+
+    /**
+     * En la definición de la serie, se utiliza la tabla ach_limitacio_normativa_serie para almacenar las distintas causas de limitación (las causas por las que se limita el acceso) así como las normativas aplicables para cada una de estas causas.
+     * Se trata de una tabla cuya PK es: serie + causaLimitacion + normativa.
+     * Por tanto, dada la serie a migrar a Alfresco:
+     * - Las causas de limitación a transferir son las distintas causas de limitación presentes en esta tabla para esa serie.
+     * - Las normativas son todas las que aparecen para la serie en cuestión y para cada causa de limitación.
+     *
+     * @param serie
+     * @return
+     */
+    private List<CausaLimitacionNormativa> extraerNormativasYCausasLimitacion(Seriedocumental serie) {
+        // Si no tiene lista de limitaciones no se pueden extraer ni normativas ni causas limitacion
+        if (serie.getAchLimitacioNormativaSeries() == null ||serie.getAchLimitacioNormativaSeries().isEmpty()) {
+            return null;
+        }
+        CausaLimitacionNormativa cln = null;
+        List<CausaLimitacionNormativa> list = new ArrayList<>();
+        // Extraemos las causas limitacion y series, relacionandolas para mantener la correspondencia
+        for (LimitacioNormativaSerie lm : serie.getAchLimitacioNormativaSeries()) {
+            if (lm.getId().getSeriedocumentalId().equals(serie.getId())) {
+                cln = new CausaLimitacionNormativa();
+                cln.setCausaLimitacion(lm.getAchCausalimitacio().getCodi().toLowerCase());
+                cln.setNormativa(lm.getAchCausalimitacio().getNomcas().toLowerCase());
+                list.add(cln);
+            }
+        }
+        return list;
+    }
+
+    /**
+     * Devuelve el dictamen activo (estado = "vigent")
+     *
+     * @param achDictamens
+     * @return
+     */
+    private Dictamen getDictamenVigente(List<Dictamen> achDictamens) {
+        if (achDictamens == null || achDictamens.isEmpty()) {
+            return null;
+        }
+        for (Dictamen dic : achDictamens) {
+            if (Constants.ArchiumConstants.DICTAMEN_ACTIVO.getValue().equalsIgnoreCase(dic.getEstat())) {
+                return dic;
+            }
+        }
+        return null;
     }
 
     /**

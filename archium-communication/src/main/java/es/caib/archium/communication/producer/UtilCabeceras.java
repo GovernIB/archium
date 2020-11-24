@@ -1,7 +1,7 @@
 package es.caib.archium.communication.producer;
 
 
-import es.caib.csgd.apirest.facade.pojos.cabecera.CabeceraPeticion;
+import es.caib.archium.csgd.apirest.facade.pojos.cabecera.CabeceraPeticion;
 
 public abstract class UtilCabeceras {
 

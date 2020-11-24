@@ -1,6 +1,6 @@
 package es.caib.archium.communication.iface;
 
-import es.caib.csgd.apirest.facade.pojos.CuadroClasificacion;
+import es.caib.archium.csgd.apirest.facade.pojos.CuadroClasificacion;
 import es.caib.archium.communication.exception.CSGDException;
 
 import javax.ejb.Local;

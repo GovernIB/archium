@@ -47,6 +47,23 @@ public interface Constants {
         }
     }
 
+
+    static enum ArchiumConstants{
+        DICTAMEN_ACTIVO("vigent"),
+        TIPO_CLASIFICACION_VALOR_POR_DEFECTO("Funcional");
+
+
+        private String value;
+
+        ArchiumConstants(String value){
+            this.value = value;
+        }
+
+        public String getValue() {
+            return value;
+        }
+    }
+
     /**
      * Retorna la lista de roles que pueden realizar llamadas al CSGD a traves del cliente Jersey
      *

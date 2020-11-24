@@ -1,7 +1,7 @@
 package es.caib.archium.communication.producer;
 
-import es.caib.csgd.apirest.ApiCSGDServices;
-import es.caib.csgd.apirest.facade.pojos.cabecera.CabeceraPeticion;
+import es.caib.archium.csgd.apirest.ApiCSGDServices;
+import es.caib.archium.csgd.apirest.facade.pojos.cabecera.CabeceraPeticion;
 import es.caib.archium.commons.utils.Constants;
 import es.caib.archium.communication.exception.CSGDException;
 import org.slf4j.Logger;

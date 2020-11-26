@@ -101,9 +101,10 @@
 			    			</p:inputText>			    							    						    			
 					    </div>		    
 					    <div class="ui-g-12 item_1">
-					    	<label class="ui-g-3">#{messages['updatecuadro.nombrecas']}</label>
-			    			<p:inputText id="NomCast" value="#{quadreController.nombreNuevoCast}"  class="ui-g-9"
-			    						validatorMessage="#{messages['nuevoQuadro.validate.nomcas']}">
+					    	<label class="ui-g-3">#{messages['updatecuadro.nombrecas']}*</label>
+			    			<p:inputText id="NomCast" value="#{quadreController.nombreNuevoCast}"  class="ui-g-9" required="true"
+										 requiredMessage="#{messages['nuevoQuadro.require.nomcas']}"
+										 validatorMessage="#{messages['nuevoQuadro.validate.nomcas']}">
 			    						<f:validateLength minimum="0" maximum="200" />
 			    			</p:inputText>
 			    						

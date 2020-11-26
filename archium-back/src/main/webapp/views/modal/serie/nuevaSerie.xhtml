@@ -150,9 +150,10 @@
 					    </div>
 					    
 					    <div class="ui-g-6">
-					    	<label class="ui-g-5">#{messages['nuevaserie.nombrecastellano']}</label>
-			    			<p:inputText class="ui-g-7" value="#{nuevaSerieController.nomCas}"
-			    				validatorMessage="#{messages['nuevaserie.validate.nomcas']}" style="height: 100%!important;">
+					    	<label class="ui-g-5">#{messages['nuevaserie.nombrecastellano']}*</label>
+			    			<p:inputText class="ui-g-7" value="#{nuevaSerieController.nomCas}" required="true"
+			    				validatorMessage="#{messages['nuevaserie.validate.nomcas']}"
+								requiredMessage="#{messages['nuevaserie.require.nomcas']}" style="height: 100%!important;">
 			    				<f:validateLength minimum="0" maximum="1000" />
 			    			</p:inputText>
 					    </div>

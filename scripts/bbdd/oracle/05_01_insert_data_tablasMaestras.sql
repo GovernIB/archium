@@ -645,9 +645,9 @@ INSERT INTO ACH_SERIEARGEN (ID, CODI, NOM) VALUES (ACH_SERIEARGEN_SEQ.NEXTVAL, '
 INSERT INTO ACH_SERIEARGEN (ID, CODI, NOM) VALUES (ACH_SERIEARGEN_SEQ.NEXTVAL, 'E59', 'AJUDES EXCEPCIONALS PLUGES LLEVANT');
 
 
-INSERT INTO ACH_valorsecundari(ID, NOM, DESCRIPCIO) VALUES (ACH_valorsecundari_seq.NEXTVAL, 'Sí', 'Existeixen valors secundaris (testimonial, informatiu o històric) als documents');
-INSERT INTO ACH_valorsecundari(ID, NOM, DESCRIPCIO) VALUES (ACH_valorsecundari_seq.NEXTVAL, 'No', 'No existeixen valors secundaris (testimonial, informatiu o històric) als documents');
-INSERT INTO ACH_valorsecundari(ID, NOM, DESCRIPCIO) VALUES (ACH_valorsecundari_seq.NEXTVAL, 'Sense cobertura de qualificació', 'Ha d''emprar-se aquest valor fins que la sèrie pertinent estigui coberta per una norma de conservació');
+INSERT INTO ACH_valorsecundari(ID, NOM, NOMCAS, DESCRIPCIO) VALUES (ACH_valorsecundari_seq.NEXTVAL, 'Sí', 'Sí', 'Existeixen valors secundaris (testimonial, informatiu o històric) als documents');
+INSERT INTO ACH_valorsecundari(ID, NOM, NOMCAS, DESCRIPCIO) VALUES (ACH_valorsecundari_seq.NEXTVAL, 'No', 'No', 'No existeixen valors secundaris (testimonial, informatiu o històric) als documents');
+INSERT INTO ACH_valorsecundari(ID, NOM, NOMCAS, DESCRIPCIO) VALUES (ACH_valorsecundari_seq.NEXTVAL, 'Sense cobertura de qualificació', 'Sin cobertura de calificación', 'Ha d''emprar-se aquest valor fins que la sèrie pertinent estigui coberta per una norma de conservació');
 
 INSERT INTO ACH_tipusvalor(ID, NOM, NOMCAS, DESCRIPCIO) VALUES (ACH_TIPUSVALOR_SEQ.NEXTVAL, 'Administratiu', 'Administrativo', 'Valor que presenten els documents que es troben en plena vigència administrativa');
 INSERT INTO ACH_tipusvalor(ID, NOM, NOMCAS, DESCRIPCIO) VALUES (ACH_TIPUSVALOR_SEQ.NEXTVAL, 'Fiscal', 'Fiscal', 'Valor que presenten els documents que tracten d''entrades, sortides i controls dels diners gestionats a una institució');

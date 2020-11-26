@@ -196,7 +196,7 @@ public class ProcedimentController implements Serializable {
 		if(p!=null) {
 			this.modify = p;
 			this.id 			= p.getId();
-			this.codisia 		= p.getCodirolsac();
+			this.codisia 		= p.getCodisia();
 			this.nom			= p.getNom();
 			this.objecte 		= p.getObjecte();
 			//private EstatObject   Estat;  //En el futuroo se añadira esta tabla y tendra que transformarse

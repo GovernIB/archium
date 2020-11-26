@@ -246,7 +246,7 @@ public class ProcedimentObject {
 	public ProcedimentObject(Procediment i) {
 		super();
 		this.id				= i.getId();
-		this.codisia 		= i.getCodirolsac();
+		this.codisia 		= i.getCodisia();
 		this.nom 			= i.getNom();
 		this.objecte 		= i.getObjecte();
 		this.estat 			= i.getEstat();

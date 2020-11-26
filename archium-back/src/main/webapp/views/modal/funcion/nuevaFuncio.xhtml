@@ -40,9 +40,10 @@
 				    </div>
 				    
 				    <div class="ui-g-4 item_1">
-				    	<label class="ui-g-3">#{messages['nuevafuncion.nomcas']}</label>
-		    			<p:inputText class="ui-g-9" value="#{funciones.nuevoNomCas}"
-		    				validatorMessage="#{messages['nuevafuncion.validate.nomcas']}">
+				    	<label class="ui-g-3">#{messages['nuevafuncion.nomcas']}*</label>
+		    			<p:inputText class="ui-g-9" value="#{funciones.nuevoNomCas}" required="true"
+		    				validatorMessage="#{messages['nuevafuncion.validate.nomcas']}"
+							requiredMessage="#{messages['nuevafuncion.require.nomcas']}">
 		    				<f:validateLength minimum="0" maximum="200" />
 		    			</p:inputText>
 				    </div>

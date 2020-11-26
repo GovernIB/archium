@@ -9,7 +9,7 @@ import java.util.List;
 
 public enum Estado {
 
-    ESBORRANY("Esborrrany"),
+    ESBORRANY("Esborrany"),
     REVISAT("Revisat"),
     PUBLICABLE("Publicable"),
     VIGENT("Vigent"),

@@ -26,7 +26,6 @@ public enum Confidencialidad {
             return null;
         }
         List<Confidencialidad> confidencialidades = new ArrayList<>(Arrays.asList(values()));
-        //TODO: Cuales serán los estados válidos? en qué idioma estarán?
         for(Confidencialidad c : confidencialidades){
             if(c.getValue().equalsIgnoreCase(confidencialidad)){
                 return c;

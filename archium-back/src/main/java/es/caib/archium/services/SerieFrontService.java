@@ -1,8 +1,6 @@
 package es.caib.archium.services;
 
 import es.caib.archium.csgd.apirest.constantes.*;
-import es.caib.archium.csgd.apirest.csgd.entidades.comunes.CausaLimitacionNormativa;
-import es.caib.archium.csgd.apirest.csgd.entidades.comunes.Termino;
 import es.caib.archium.csgd.apirest.facade.pojos.Serie;
 import es.caib.archium.commons.i18n.I18NException;
 import es.caib.archium.commons.utils.Constants;
@@ -12,6 +10,8 @@ import es.caib.archium.ejb.objects.Dir3;
 import es.caib.archium.ejb.service.*;
 import es.caib.archium.objects.*;
 import es.caib.archium.persistence.model.*;
+import es.caib.archium.utils.CreateSerieXMLUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.primefaces.model.DualListModel;
 import org.slf4j.Logger;
@@ -22,6 +22,9 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.transaction.Transactional;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.TransformerException;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
@@ -73,6 +76,8 @@ public class SerieFrontService {
     private Dir3Service dir3EJB;
     @Inject
     private CSGDSerieService csgdSerieService;
+    @Inject
+    private CreateSerieXMLUtils toXmlUtil;
 
     public List<Dir3Object> getListaDir3() throws I18NException {
 
@@ -852,7 +857,7 @@ public class SerieFrontService {
         this.validarSerie(serie);
 
         serieWs.setCodigoClasificacion(serie.getCodi());
-        serieWs.setCausaLimitacionNormativas(extraerNormativasYCausasLimitacion(serie));
+        serieWs.setCausaLimitacion(extraerCausasLimitacion(serie));
         extraerValoresYTermino(serie, serieWs);
 
         // Recuperamos el dictamen en estado vigente (solo puede tener uno cada serie)
@@ -863,10 +868,11 @@ public class SerieFrontService {
             log.info("Dictamen activo de la serie ["+serie.getCodi()+"]: ["+dictamen.getCodi()+"]");
             //Validamos que los datos obligatorios del dictamen estén informados
             log.debug("Validamos la informacion del dictamen");
+
             this.validarDictamen(dictamen);
 
             serieWs.setAccionDictaminada(dictamen.getAcciodictaminada().toLowerCase());
-            serieWs.setLopd(LOPD.getLopd(dictamen.getAchLopd().getNomcas()));
+            serieWs.setLopd(LOPD.getLopd(dictamen.getAchLopd().getNom()));
             serieWs.setTipoAcceso(TipoAcceso.getTipoAcceso(dictamen.getAchTipusacce().getNomcas()));
             serieWs.setConfidencialidad(Confidencialidad.getConfidencialidad(dictamen.getAchEn().getNomcas()));
             // Para el caso de las series documentales, siempre será un valor por defecto
@@ -874,23 +880,47 @@ public class SerieFrontService {
             serieWs.setCondicionReutilizacion(dictamen.getCondicioreutilitzacio().toLowerCase());
             serieWs.setTipoDictamen(TipoDictamen.getTipoDictamen(dictamen.getAchTipusdictamen().getCodi()));
             serieWs.setEsencial(BigDecimal.ONE.equals(dictamen.getSerieessencial()));
-            // TODO : falta campo plazo_unidad_accion_dictaminada, "unidad temporal del plazo de ejecucion de la acción dictaminada"
+            String unidad = dictamen.getTermini().substring(dictamen.getTermini().length()-1,dictamen.getTermini().length());
+            String valor = dictamen.getTermini().substring(0,dictamen.getTermini().length()-1);
             try {
-                serieWs.setTerminoAccionDictaminada(Long.valueOf(dictamen.getTermini()));
+                serieWs.setTerminoAccionDictaminada(Long.valueOf(valor));
             } catch (ClassCastException e) {
                 log.error("Error transformando el valor del campo 'terminoAccionDictaminada' del dictamen ["+dictamen.getCodi()+"]");
                 throw new I18NException("validaciones.serie.terminoAccionDictaminada.valor.incorrecto", this.getClass().getSimpleName());
             }
-            try {
-                serieWs.setResellado(Long.valueOf(dictamen.getAcciodictaminada()));
-            } catch (ClassCastException e) {
-                log.error("Error transformando el valor del campo 'accioDictaminada' del dictamen ["+dictamen.getCodi()+"]");
-                throw new I18NException("validaciones.serie.accioDictaminada.valor.incorrecto", this.getClass().getSimpleName());
-            }
+//            try {
+            // TODO : este valor no es, es un String
+//                serieWs.setResellado(Long.valueOf(dictamen.getAcciodictaminada()));
+//            } catch (ClassCastException e) {
+//                log.error("Error transformando el valor del campo 'accioDictaminada' del dictamen ["+dictamen.getCodi()+"]");
+//                throw new I18NException("validaciones.serie.accioDictaminada.valor.incorrecto", this.getClass().getSimpleName());
+//            }
         } else {
             log.error("La serie ["+serie.getCodi()+"] no cuenta con un dictamen en estado activo ('vigent'), por lo que no es posible sincronizarse");
             throw new I18NException("validaciones.serie.dictamen.novigente", this.getClass().getSimpleName());
         }
+
+
+        // Se crea xml que  contiene todos los metadatos descriptivos de la serie documental
+        try {
+            serieWs.setContent(toXmlUtil.createXMLDocument(serie,dictamen));
+        } catch (ParserConfigurationException | TransformerException e) {
+            log.error("Se ha producido un error generando el documento con los datos de la serie: "+e);
+            throw new I18NException("excepcion.general.Exception", this.getClass().getSimpleName(), "synchronize");
+        }
+
+        // TODO : esto es un mockeo
+
+        String content = null;
+        try {
+            content = IOUtils.toString(serieWs.getContent().getInputStream(),"UTF-8");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        log.debug(content);
+        System.out.println(content);
+
+        // TODO : *************************
 
         log.debug("Dto creado, llamamos al servicio de sincronizacion");
         String nodeId = null;
@@ -954,9 +984,9 @@ public class SerieFrontService {
      */
     private void validarDictamen(Dictamen dictamen) throws I18NException {
         if(StringUtils.trimToNull(dictamen.getAcciodictaminada())==null
-            || StringUtils.trimToNull(dictamen.getAchLopd().getNomcas())==null
-            || StringUtils.trimToNull(dictamen.getAchTipusacce().getNomcas())==null
-            || StringUtils.trimToNull(dictamen.getAchEn().getNomcas())==null
+            || StringUtils.trimToNull(dictamen.getAchLopd().getNom())==null
+            || StringUtils.trimToNull(dictamen.getAchTipusacce().getNom())==null
+            || StringUtils.trimToNull(dictamen.getAchEn().getNom())==null
             || StringUtils.trimToNull(dictamen.getCondicioreutilitzacio())==null
             || StringUtils.trimToNull(dictamen.getAchTipusdictamen().getCodi())==null
             || StringUtils.trimToNull(dictamen.getTermini())==null
@@ -979,25 +1009,26 @@ public class SerieFrontService {
      * @param serieWs
      * @return
      */
-    private void extraerValoresYTermino(Seriedocumental serie, Serie serieWs) {
+    private void extraerValoresYTermino(Seriedocumental serie, Serie serieWs) throws I18NException {
         serieWs.setTipoValor(new ArrayList<>());
         serieWs.setTermino(new ArrayList<>());
         serieWs.setValorSecundario(new ArrayList<>());
 
         for (Valoracio valoracion : serie.getAchValoracios()) {
-            serieWs.getValorSecundario().add(valoracion.getAchValorsecundari().getNomcas());
             // valoracion vigente es la que no tiene fecha de fin
             if (valoracion.getFi() == null) {
+                serieWs.getValorSecundario().add(valoracion.getAchValorsecundari().getNom());
                 for (Valorprimari p : valoracion.getAchValorprimaris()) {
-                    Termino t = new Termino();
                     serieWs.getTipoValor().add(TipoValor.getTipoValor(p.getAchTipusvalor().getNomcas()));
-                    t.setValorPrimario(p.getAchTipusvalor().getNomcas());
+                    String unidad = p.getTermini().substring(p.getTermini().length()-1,p.getTermini().length());
+                    String valor = p.getTermini().substring(0,p.getTermini().length()-1);
+
                     try {
-                        t.setTermino(Long.valueOf(p.getTermini()));
+                        serieWs.getTermino().add(Long.valueOf(valor));
                     } catch (ClassCastException e) {
-                        // TODO : Que hacer?
+                        log.error("Se ha producido un error extrayendo el valor del termino: "+e);
+                        throw new I18NException("excepcion.general.Exception", this.getClass().getSimpleName(), "synchronize");
                     }
-                    serieWs.getTermino().add(t);
                 }
             }
         }
@@ -1010,23 +1041,22 @@ public class SerieFrontService {
      * - Las causas de limitación a transferir son las distintas causas de limitación presentes en esta tabla para esa serie.
      * - Las normativas son todas las que aparecen para la serie en cuestión y para cada causa de limitación.
      *
+     * Como propiedades basta con pasar las causas limitacion ya que es lo que realmente interesa a nivel archivistico,
+     * en la generación del documento XML guardaremos la relacion entre causas limitacion y normativas
+     *
      * @param serie
      * @return
      */
-    private List<CausaLimitacionNormativa> extraerNormativasYCausasLimitacion(Seriedocumental serie) {
+    private List<String> extraerCausasLimitacion(Seriedocumental serie) {
         // Si no tiene lista de limitaciones no se pueden extraer ni normativas ni causas limitacion
         if (serie.getAchLimitacioNormativaSeries() == null ||serie.getAchLimitacioNormativaSeries().isEmpty()) {
             return null;
         }
-        CausaLimitacionNormativa cln = null;
-        List<CausaLimitacionNormativa> list = new ArrayList<>();
+        List<String> list = new ArrayList<>();
         // Extraemos las causas limitacion y series, relacionandolas para mantener la correspondencia
         for (LimitacioNormativaSerie lm : serie.getAchLimitacioNormativaSeries()) {
             if (lm.getId().getSeriedocumentalId().equals(serie.getId())) {
-                cln = new CausaLimitacionNormativa();
-                cln.setCausaLimitacion(lm.getAchCausalimitacio().getCodi().toLowerCase());
-                cln.setNormativa(lm.getAchCausalimitacio().getNomcas().toLowerCase());
-                list.add(cln);
+                list.add(lm.getAchCausalimitacio().getCodi());
             }
         }
         return list;

@@ -1,9 +1,8 @@
 package es.caib.archium.csgd.apirest.facade.pojos;
 
 import es.caib.archium.csgd.apirest.constantes.*;
-import es.caib.archium.csgd.apirest.csgd.entidades.comunes.CausaLimitacionNormativa;
-import es.caib.archium.csgd.apirest.csgd.entidades.comunes.Termino;
 
+import javax.activation.DataHandler;
 import java.util.List;
 
 public class Serie {
@@ -12,10 +11,10 @@ public class Serie {
     private LOPD lopd;
     private Confidencialidad confidencialidad;
     private TipoAcceso tipoAcceso;
-    private List<CausaLimitacionNormativa> causaLimitacionNormativas;
+    private List<String> causaLimitacion;
     private String condicionReutilizacion;
     private List<TipoValor> tipoValor;
-    private List<Termino> termino;
+    private List<Long> termino;
     private List<String> valorSecundario;
     private TipoDictamen tipoDictamen;
     private String accionDictaminada;
@@ -23,6 +22,15 @@ public class Serie {
     private Boolean isEsencial;
     private String tipoClasificacion;
     private Long resellado;
+    private DataHandler content;
+
+    public DataHandler getContent() {
+        return content;
+    }
+
+    public void setContent(DataHandler content) {
+        this.content = content;
+    }
 
     public String getCodigoClasificacion() {
         return codigoClasificacion;
@@ -56,14 +64,6 @@ public class Serie {
         this.tipoAcceso = tipoAcceso;
     }
 
-    public List<CausaLimitacionNormativa> getCausaLimitacionNormativas() {
-        return causaLimitacionNormativas;
-    }
-
-    public void setCausaLimitacionNormativas(List<CausaLimitacionNormativa> causaLimitacionNormativas) {
-        this.causaLimitacionNormativas = causaLimitacionNormativas;
-    }
-
     public String getCondicionReutilizacion() {
         return condicionReutilizacion;
     }
@@ -78,14 +78,6 @@ public class Serie {
 
     public void setTipoValor(List<TipoValor> tipoValor) {
         this.tipoValor = tipoValor;
-    }
-
-    public List<Termino> getTermino() {
-        return termino;
-    }
-
-    public void setTermino(List<Termino> termino) {
-        this.termino = termino;
     }
 
     public List<String> getValorSecundario() {
@@ -142,5 +134,21 @@ public class Serie {
 
     public void setResellado(Long resellado) {
         this.resellado = resellado;
+    }
+
+    public List<String> getCausaLimitacion() {
+        return causaLimitacion;
+    }
+
+    public void setCausaLimitacion(List<String> causaLimitacion) {
+        this.causaLimitacion = causaLimitacion;
+    }
+
+    public List<Long> getTermino() {
+        return termino;
+    }
+
+    public void setTermino(List<Long> termino) {
+        this.termino = termino;
     }
 }

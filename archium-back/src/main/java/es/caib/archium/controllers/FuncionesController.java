@@ -89,7 +89,7 @@ public class FuncionesController implements Serializable {
 
 
     @PostConstruct
-    public void init() throws ClassNotFoundException {
+    public void init() {
 
         try {
             listaEstats.add(messageBundle.getString("general.estats.esborrany"));

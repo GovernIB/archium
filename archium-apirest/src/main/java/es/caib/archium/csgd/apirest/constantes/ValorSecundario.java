@@ -26,7 +26,6 @@ public enum ValorSecundario {
             return null;
         }
         List<ValorSecundario> valores = new ArrayList<>(Arrays.asList(values()));
-        //TODO: Cuales serán los estados válidos? en qué idioma estarán?
         for(ValorSecundario vs : valores){
             if(vs.getValue().equalsIgnoreCase(valorSecundario)){
                 return vs;

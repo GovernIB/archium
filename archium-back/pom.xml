@@ -19,6 +19,10 @@
 
 
     <dependencies>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+        </dependency>
         <!-- Altres mòduls del projecte -->
         <dependency>
             <groupId>es.caib.archium</groupId>
@@ -31,6 +35,16 @@
             <artifactId>archium-communication</artifactId>
             <version>${archium-communication.version}</version>
             <scope>provided</scope>
+            <exclusions>
+                <exclusion>
+                    <artifactId>keycloak-core</artifactId>
+                    <groupId>org.keycloak</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.keycloak</groupId>
+            <artifactId>keycloak-core</artifactId>
         </dependency>
         <dependency>
             <groupId>es.caib.archium</groupId>

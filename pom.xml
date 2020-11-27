@@ -34,9 +34,17 @@
         <hibernate.version>5.3.15.Final</hibernate.version>
         <resteasy.version>3.6.3.SP1</resteasy.version>
         <jboss-logging.version>3.3.3.Final</jboss-logging.version>
+        <commons-lang3.version>3.1</commons-lang3.version>
+        <archium-commons.version>1.0.0</archium-commons.version>
+        <archium-apirest.version>1.0.0</archium-apirest.version>
     </properties>
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-lang3</artifactId>
+                <version>${commons-lang3.version}</version>
+            </dependency>
             <!-- Depend?ncies de JAVA EE 8 -->
             <dependency>
                 <groupId>javax</groupId>

@@ -272,6 +272,7 @@ public class CreateSerieXMLUtils {
             if (lm.getAchSeriedocumental().getId().equals(serie.getId())) {
                 if (map.get(lm.getAchCausalimitacio().getCodi()) == null) {
                     HashSet<String> list = new HashSet<String>();
+                    // TODO : Cambiar estos dos get a getNomcas en el futuro
                     list.add(lm.getAchNormativa().getNom());
                     map.put(lm.getAchCausalimitacio().getCodi(), list);
                 }else{

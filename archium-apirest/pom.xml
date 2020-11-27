@@ -20,13 +20,6 @@
 
 
     <dependencies>
-        <!-- Borrar esta dependencia, se incluye unicamente para unas pruebas -->
-        <dependency>
-            <groupId>commons-io</groupId>
-            <artifactId>commons-io</artifactId>
-            <version>2.5</version>
-        </dependency>
-
         <dependency>
             <groupId>org.glassfish.jersey.core</groupId>
             <artifactId>jersey-client</artifactId>

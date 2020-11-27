@@ -83,8 +83,8 @@
 						<div class="ui-g-12 item_1">
 <!--							Cambiar i18n acuerdate del mensaje de requerido tambaien-->
 							<label class="ui-g-2">Codigo:*</label>
-							<p:inputText id="codigo" value="#{quadreController.codiNuevo}" class="ui-g-10" required="true"
-										 requiredMessage="es obligatorio informar el codigo colega"
+							<p:inputText id="codigo" value="#{quadreController.codiNuevo}*" class="ui-g-10" required="true"
+										 requiredMessage="#{messages['nuevoQuadro.require.codi']}"
 										 validatorMessage="#{messages['nuevoQuadro.validate.codiNuevo']}" >
 								<f:validateRequired  />
 								<f:validateLength minimum="0" maximum="10" />

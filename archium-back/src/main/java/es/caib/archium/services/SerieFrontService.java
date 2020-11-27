@@ -1,19 +1,19 @@
 package es.caib.archium.services;
 
-import es.caib.archium.csgd.apirest.constantes.*;
-import es.caib.archium.csgd.apirest.facade.pojos.Serie;
 import es.caib.archium.commons.i18n.I18NException;
 import es.caib.archium.commons.utils.Constants;
 import es.caib.archium.communication.exception.CSGDException;
 import es.caib.archium.communication.iface.CSGDSerieService;
+import es.caib.archium.csgd.apirest.constantes.*;
+import es.caib.archium.csgd.apirest.facade.pojos.Serie;
 import es.caib.archium.ejb.objects.Dir3;
 import es.caib.archium.ejb.service.*;
 import es.caib.archium.objects.*;
 import es.caib.archium.persistence.model.*;
 import es.caib.archium.utils.CreateSerieXMLUtils;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.primefaces.model.DualListModel;
+import org.primefaces.shaded.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -872,7 +872,7 @@ public class SerieFrontService {
             this.validarDictamen(dictamen);
 
             serieWs.setAccionDictaminada(dictamen.getAcciodictaminada().toLowerCase());
-            serieWs.setLopd(LOPD.getLopd(dictamen.getAchLopd().getNom()));
+            serieWs.setLopd(LOPD.getLopd(dictamen.getAchLopd().getNomcas()));
             serieWs.setTipoAcceso(TipoAcceso.getTipoAcceso(dictamen.getAchTipusacce().getNomcas()));
             serieWs.setConfidencialidad(Confidencialidad.getConfidencialidad(dictamen.getAchEn().getNomcas()));
             // Para el caso de las series documentales, siempre será un valor por defecto

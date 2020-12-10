@@ -4,6 +4,9 @@ import es.caib.archium.csgd.apirest.ApiCSGDServices;
 import es.caib.archium.csgd.apirest.facade.pojos.cabecera.CabeceraPeticion;
 import es.caib.archium.commons.utils.Constants;
 import es.caib.archium.communication.exception.CSGDException;
+import org.keycloak.KeycloakPrincipal;
+import org.keycloak.KeycloakSecurityContext;
+import org.keycloak.representations.IDToken;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,6 +17,8 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.security.Principal;
+import java.util.Map;
 import java.util.Properties;
 
 public class CSGDClientProducer {
@@ -43,12 +48,23 @@ public class CSGDClientProducer {
             throw new CSGDException(Constants.ExceptionConstants.HEADER_ERROR.getValue(), "Se ha producido un error cargando las propiedades para la creacion de la cabecera de la peticion gdib");
         }
 
+        Principal principal = request.getUserPrincipal();
+        String usuario = null;
+        String solicitanteNombre = null;
+        String solicitanteDocumento = null;
+        if(principal instanceof KeycloakPrincipal){
+            KeycloakPrincipal<KeycloakSecurityContext> kp =
+                    (KeycloakPrincipal<KeycloakSecurityContext>) principal;
+            IDToken token = kp.getKeycloakSecurityContext().getIdToken();
+            solicitanteDocumento=token.getPreferredUsername();
+            usuario=token.getGivenName();
+            // El NIF, al ser atributo personalizado, está en otherClaims:
+            Map<String,Object> otherClaims = token.getOtherClaims();
+            solicitanteDocumento= (String) otherClaims.get("nif");
+        }
+
+
         String url = prop.getProperty("csgd.url");
-        String usuario = request.getUserPrincipal().getName();
-        String solicitanteNombre = request.getUserPrincipal().getName();
-        //TODO: Como conseguir el documento? que poner en usuario y en solicitante?
-//        String solicitanteDocumento = request.getUserPrincipal().
-        String solicitanteDocumento = "123456789Z";
         String procedimiento = prop.getProperty("csgd.procedimiento.nombre");
         String organizacion = prop.getProperty("csgd.organizacion");
         String aplicacionCliente = prop.getProperty("csgd.aplicacion.cliente");

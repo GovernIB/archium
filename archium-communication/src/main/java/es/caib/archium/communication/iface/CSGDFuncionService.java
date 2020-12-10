@@ -1,14 +1,8 @@
 package es.caib.archium.communication.iface;
 
+import es.caib.archium.communication.iface.generic.CSGDService;
+import es.caib.archium.csgd.apirest.csgd.entidades.comunes.FunctionId;
 import es.caib.archium.csgd.apirest.facade.pojos.Funcion;
-import es.caib.archium.communication.exception.CSGDException;
 
-import javax.ejb.Local;
-
-@Local
-public interface CSGDFuncionService {
-
-    void removeFuncion(String funcionId) throws CSGDException;
-
-    String synchronizeFunction(Funcion funcion, String nodeId) throws CSGDException;
+public interface CSGDFuncionService extends CSGDService<Funcion, FunctionId> {
 }

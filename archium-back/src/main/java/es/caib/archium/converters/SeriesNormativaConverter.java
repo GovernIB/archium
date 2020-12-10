@@ -23,7 +23,6 @@ public class SeriesNormativaConverter implements Converter<NormativaAprobacioObj
 
 	@Override
 	public NormativaAprobacioObject getAsObject(FacesContext context, UIComponent component, String value) {
-		// TODO Auto-generated method stub
 		return getObjectFromUIPickListComponent(component, value);
 	}
 

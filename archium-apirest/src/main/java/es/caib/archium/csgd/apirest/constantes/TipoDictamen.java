@@ -26,7 +26,6 @@ public enum TipoDictamen {
             return null;
         }
         List<TipoDictamen> tipos = new ArrayList<>(Arrays.asList(values()));
-        //TODO: Cuales serán los estados válidos? en qué idioma estarán?
         for(TipoDictamen td : tipos){
             if(td.getValue().equalsIgnoreCase(tipoDictamen)){
                 return td;

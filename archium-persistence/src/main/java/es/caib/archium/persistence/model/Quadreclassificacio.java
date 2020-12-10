@@ -21,8 +21,6 @@ public class Quadreclassificacio implements Serializable {
 	@GeneratedValue(strategy=GenerationType.SEQUENCE, generator="ACH_QUADRECLASSIFICACIO_ID_GENERATOR")
 	private Long id;
 
-	private String codi;
-
 	private String estat;
 
 	@Temporal(TemporalType.TIMESTAMP)
@@ -138,14 +136,6 @@ public class Quadreclassificacio implements Serializable {
 
 	public void setAchFuncios(List<Funcio> achFuncios) {
 		this.achFuncios = achFuncios;
-	}
-
-	public String getCodi() {
-		return codi;
-	}
-
-	public void setCodi(String codi) {
-		this.codi = codi;
 	}
 
 	public Funcio addAchFuncio(Funcio achFuncio) {

@@ -38,7 +38,6 @@ public class QuadreController implements Serializable{
     private String 	 nombreNuevo;
     private String 	 nombreNuevoCast;
     private String 	 nouEstat;
-	private String	 codiNuevo;
 
 
 	private Date 	 nouFi;
@@ -164,7 +163,6 @@ public class QuadreController implements Serializable{
 		
 		try {
 			QuadreObject object = new QuadreObject();
-			object.setCodi(this.getCodiNuevo());
 			object.setNom(this.getNombreNuevo());
 			object.setNomCas(this.getNombreNuevoCast());		
 			object.setEstat(this.getNouEstat());
@@ -194,7 +192,6 @@ public class QuadreController implements Serializable{
 	       
 	        this.setNombreNuevo("");    	
 	    	this.setNombreNuevoCast("");
-	    	this.setCodiNuevo("");
 		} catch (I18NException e) {
 			log.error(FrontExceptionTranslate.translate(e, this.getLocale()));
 			FacesMessage message = new FacesMessage();
@@ -212,7 +209,6 @@ public class QuadreController implements Serializable{
 			QuadreObject obj = new QuadreObject() ;
 			obj.setId(this.nouId);
 			obj.setEstat(this.nouEstat);
-			obj.setCodi(this.getCodiNuevo().trim());
 			obj.setNom(this.getNombreNuevo().trim());
 			obj.setNomCas(this.getNombreNuevoCast().trim());
 			obj.setFi(this.getNouFi());
@@ -259,8 +255,7 @@ public class QuadreController implements Serializable{
 	
     public void abrirModal() {
     	this.setNouId(null);
-    	this.setCodiNuevo("");
-    	this.setNombreNuevo("");    	
+    	this.setNombreNuevo("");
     	this.setNombreNuevoCast("");    	
     	this.setNouFi(null);
     	this.setNouVersio(null);
@@ -275,8 +270,7 @@ public class QuadreController implements Serializable{
 			
 			if(quadre!=null) {
 				this.setNouId(object.getId());
-				this.setCodiNuevo(object.getCodi());
-				this.setNombreNuevo(quadre.getNom());    	
+				this.setNombreNuevo(quadre.getNom());
 		    	this.setNombreNuevoCast(quadre.getNomCas());
 		    	this.setNouEstat(quadre.getEstat());
 		    	this.setNouFi(quadre.getFi());
@@ -449,11 +443,4 @@ public class QuadreController implements Serializable{
 		this.locale = locale;
 	}
 
-	public String getCodiNuevo() {
-		return codiNuevo;
-	}
-
-	public void setCodiNuevo(String codiNuevo) {
-		this.codiNuevo = codiNuevo;
-	}
 }

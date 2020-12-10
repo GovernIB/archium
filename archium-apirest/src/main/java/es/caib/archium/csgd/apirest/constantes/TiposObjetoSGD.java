@@ -10,9 +10,9 @@ import com.fasterxml.jackson.annotation.JsonValue;
  */
 public enum TiposObjetoSGD {
 	
-	SERIE_DOCUMENTAL  		("eni:serie"),
-	FUNCION 		  		("eni:funcion"),
-	CUADRO_CLASIFICACION 	("eni:cuadro_clasificacion");
+	SERIE_DOCUMENTAL  		("gdib:serie"),
+	FUNCION 		  		("gdib:funcion"),
+	CUADRO_CLASIFICACION 	("gdib:cuadro_clasificacion");
 
 
     private String value;

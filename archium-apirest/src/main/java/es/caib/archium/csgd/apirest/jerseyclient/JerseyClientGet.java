@@ -2,6 +2,7 @@ package es.caib.archium.csgd.apirest.jerseyclient;
 
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 import es.caib.archium.csgd.apirest.csgd.entidades.resultados.ExceptionResult;
+import es.caib.archium.csgd.apirest.utils.Constantes;
 import org.glassfish.jersey.client.ClientConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,7 +35,7 @@ public class JerseyClientGet {
         return client;
     }
 
-    public static <T> ResultadoJersey post(String url, String path, Object object, Class<T> entity) throws IOException, RuntimeException {
+    public static <T> ResultadoJersey post(String url, String path, Object object, Class<T> entity) throws IOException {
         return post(url, path, object, entity, Boolean.TRUE);
     }
 
@@ -43,7 +44,7 @@ public class JerseyClientGet {
         Client client = JerseyClientGet.getInstance();
 
         if (trazas) {
-            log.info("\n JerseyClientGet url: " + url);
+            log.info("\n JerseyClientGet url: " + url+path);
             log.info("\n JerseyClientGet request: " + object.toString());
         }
 
@@ -54,14 +55,14 @@ public class JerseyClientGet {
                 .post(Entity.entity(object, MediaType.APPLICATION_JSON_TYPE));
 
         output.setEstadoRespuestaHttp(response.getStatus());
-        if (output.getEstadoRespuestaHttp() == 200) {
+        if (output.getEstadoRespuestaHttp() == Constantes.CodigosRespuesta.HTTP_RESPUESTA_OK.getValue()) {
             output.setContenido(response.readEntity(entity));
         } else {
             output.setContenido(response.readEntity(ExceptionResult.class));
         }
 
         if (trazas) {
-            log.info("\n JerseyClientGet url: " + url);
+            log.info("\n JerseyClientGet url: " + url+path);
             log.info("\n JerseyClientGet output: " + output);
         }
 

@@ -1,14 +1,8 @@
 package es.caib.archium.communication.iface;
 
+import es.caib.archium.communication.iface.generic.CSGDService;
+import es.caib.archium.csgd.apirest.csgd.entidades.comunes.SerieId;
 import es.caib.archium.csgd.apirest.facade.pojos.Serie;
-import es.caib.archium.communication.exception.CSGDException;
 
-import javax.ejb.Local;
-
-@Local
-public interface CSGDSerieService {
-
-    void removeSerie(String serieId) throws CSGDException;
-
-    String synchronizeSerie(Serie serie, String codi) throws CSGDException;
+public interface CSGDSerieService extends CSGDService<Serie, SerieId> {
 }

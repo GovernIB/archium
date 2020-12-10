@@ -1,32 +1,27 @@
 package es.caib.archium.csgd.apirest.csgd.entidades.comunes;
 
-public class FunctionNode {
+import es.caib.archium.csgd.apirest.constantes.Aspects;
+import es.caib.archium.csgd.apirest.constantes.TiposObjetoSGD;
 
-    private String code;
-    private String state;
+import java.util.List;
+import java.util.Map;
 
-    public String getCode() {
-        return code;
-    }
+public class FunctionNode extends Node{
 
-    public void setCode(String code) {
-        this.code = code;
-    }
-
-    public String getState() {
-        return state;
-    }
-
-    public void setState(String state) {
-        this.state = state;
-    }
+    /**
+     * Tipo de entidad documental
+     */
+    private static final TiposObjetoSGD type = TiposObjetoSGD.FUNCION;
 
 
     @Override
     public String toString() {
         return "FunctionNode{" +
-                "code='" + code + '\'' +
-                ", state='" + state + '\'' +
+                "metadataCollection=" + metadataCollection +
+                ", aspects=" + aspects +
+                ", name='" + name + '\'' +
+                ", type=" + type +
+                ", id='" + id + '\'' +
                 '}';
     }
 }

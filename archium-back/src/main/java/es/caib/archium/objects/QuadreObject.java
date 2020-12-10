@@ -9,7 +9,6 @@ public class QuadreObject {
 	
 	
 	private Long 	id;
-	private String 	codi;
 	private String 	nom;
 	private String 	nomCas;
 	private String 	estat;
@@ -26,11 +25,10 @@ public class QuadreObject {
 		super();
 	}
 
-	public QuadreObject(Long id,String codi, String nom, String nomCas, String estat, Date inici, Date modificacio, String versio,
+	public QuadreObject(Long id, String nom, String nomCas, String estat, Date inici, Date modificacio, String versio,
 			Date fi, String nodeId, Boolean isSynchronized) {
 		super();
 		this.id = id;
-		this.codi = codi;
 		this.nom = nom;
 		this.nomCas = nomCas;
 		this.estat = estat;
@@ -54,16 +52,7 @@ public class QuadreObject {
 			this.fi = dbQuadre.getFi();
 			this.nodeId = dbQuadre.getNodeId();
 			this.isSynchronized = dbQuadre.isSynchronized();
-			this.codi = dbQuadre.getCodi();
 		}
-	}
-
-	public String getCodi() {
-		return codi;
-	}
-
-	public void setCodi(String codi) {
-		this.codi = codi;
 	}
 
 	public Long getId() {
@@ -158,7 +147,6 @@ public class QuadreObject {
 		db.setVersio(versio);
 		db.setNodeId(nodeId);
 		db.setSynchronized(isSynchronized);
-		db.setCodi(codi);
 		return db;
 	}
 
@@ -168,7 +156,6 @@ public class QuadreObject {
 		if (o == null || getClass() != o.getClass()) return false;
 		QuadreObject that = (QuadreObject) o;
 		return Objects.equals(id, that.id) &&
-				Objects.equals(codi, that.codi) &&
 				Objects.equals(nom, that.nom) &&
 				Objects.equals(nomCas, that.nomCas) &&
 				Objects.equals(estat, that.estat) &&
@@ -182,7 +169,7 @@ public class QuadreObject {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(id, codi, nom, nomCas, estat, inici, modificacio, versio, fi, nodeId, isSynchronized);
+		return Objects.hash(id, nom, nomCas, estat, inici, modificacio, versio, fi, nodeId, isSynchronized);
 	}
 
 
@@ -190,7 +177,6 @@ public class QuadreObject {
 	public String toString() {
 		return "QuadreObject{" +
 				"id=" + id +
-				", codi='" + codi + '\'' +
 				", nom='" + nom + '\'' +
 				", nomCas='" + nomCas + '\'' +
 				", estat='" + estat + '\'' +

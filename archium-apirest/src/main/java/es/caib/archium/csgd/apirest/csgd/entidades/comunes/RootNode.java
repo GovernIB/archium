@@ -4,34 +4,21 @@ import es.caib.archium.csgd.apirest.constantes.Aspects;
 import es.caib.archium.csgd.apirest.constantes.TiposObjetoSGD;
 
 import java.util.List;
+import java.util.Set;
 
-public class SerieNode extends Node{
+public class RootNode extends Node {
 
     /**
      * Tipo de entidad documental
      */
-    private static final TiposObjetoSGD type = TiposObjetoSGD.SERIE_DOCUMENTAL;
+    private static final TiposObjetoSGD type = TiposObjetoSGD.CUADRO_CLASIFICACION;
 
-    /**
-     * Documento XML con los datos de la serie
-     */
-    private Content binaryContent;
-
-
-    public Content getBinaryContent() {
-        return binaryContent;
-    }
-
-    public void setBinaryContent(Content binaryContent) {
-        this.binaryContent = binaryContent;
-    }
 
     @Override
     public String toString() {
-        return "SerieNode{" +
+        return "RootNode{" +
                 "metadataCollection=" + metadataCollection +
                 ", aspects=" + aspects +
-                ", binaryContent=" + binaryContent +
                 ", name='" + name + '\'' +
                 ", type=" + type +
                 ", id='" + id + '\'' +

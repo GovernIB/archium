@@ -2,6 +2,7 @@ package es.caib.archium.commons.utils;
 
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -27,7 +28,22 @@ public interface Constants {
      */
     String ACH_CSGD = "ACH_ALFRESCO";
 
+    /**
+     * Retorna la lista de roles que pueden realizar llamadas al CSGD a traves del cliente Jersey
+     *
+     * @return
+     */
+    public static List<String> permissionsToCallCSGD(){
+        List<String> permisos = new ArrayList<String>();
+        permisos.add(ACH_CSGD);
+        return permisos;
+    }
 
+
+    /**
+     * Codigos de error devueltos por la capa CSGD en funcion de los diferentes errores
+     *
+     */
     static enum ExceptionConstants{
 
         GENERIC_ERROR("CSGD500"),
@@ -48,10 +64,15 @@ public interface Constants {
     }
 
 
+    /**
+     * Constantes utilizadas en la logica de negocio
+     *
+     */
     static enum ArchiumConstants{
         DICTAMEN_ACTIVO("vigent"),
-        TIPO_CLASIFICACION_VALOR_POR_DEFECTO("Funcional");
-
+        DICTAMEN_RECIENTE_ESTADO("esborrany"),
+        TIPO_CLASIFICACION_VALOR_POR_DEFECTO("Funcional"),
+        VALOR_SECUNDARIO_SI("Sí");
 
         private String value;
 
@@ -65,13 +86,22 @@ public interface Constants {
     }
 
     /**
-     * Retorna la lista de roles que pueden realizar llamadas al CSGD a traves del cliente Jersey
+     * Codigos de error devueltos por el bus
      *
-     * @return
      */
-    public static List<String> permissionsToCallCSGD(){
-        List<String> permisos = new ArrayList<String>();
-        permisos.add(ACH_CSGD);
-        return permisos;
+    static enum CodigosRespuestaCSGD{
+        RESPUESTA_OK("COD_000"),
+        RESPUESTA_EXCEPCION("COD_021"),
+        ERROR_VALIDACION("COD_010");
+
+        private String value;
+
+        CodigosRespuestaCSGD(String value){
+            this.value=value;
+        }
+
+        public String getValue() {
+            return value;
+        }
     }
 }

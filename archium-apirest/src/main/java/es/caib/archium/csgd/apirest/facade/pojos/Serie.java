@@ -2,42 +2,76 @@ package es.caib.archium.csgd.apirest.facade.pojos;
 
 import es.caib.archium.csgd.apirest.constantes.*;
 
-import javax.activation.DataHandler;
 import java.util.List;
 
-public class Serie {
+public class Serie extends Nodo{
 
-    private String codigoClasificacion;
+    private String denominacionClase;
     private LOPD lopd;
     private Confidencialidad confidencialidad;
     private TipoAcceso tipoAcceso;
-    private List<String> causaLimitacion;
+    private List<String> codigoLimitacion;
     private String condicionReutilizacion;
     private List<TipoValor> tipoValor;
-    private List<Long> termino;
-    private List<String> valorSecundario;
+    private String valorSecundario;
     private TipoDictamen tipoDictamen;
     private String accionDictaminada;
-    private Long terminoAccionDictaminada;
+    private Integer plazoAccionDictaminada;
+    private String unidadPlazoAccionDictaminada;
     private Boolean isEsencial;
     private String tipoClasificacion;
-    private Long resellado;
-    private DataHandler content;
+    private Integer resellado;
+    private String unidadResellado;
+    private String content;
+    private String mimeType;
+    private String encoding;
 
-    public DataHandler getContent() {
+    public String getUnidadPlazoAccionDictaminada() {
+        return unidadPlazoAccionDictaminada;
+    }
+
+    public void setUnidadPlazoAccionDictaminada(String unidadPlazoAccionDictaminada) {
+        this.unidadPlazoAccionDictaminada = unidadPlazoAccionDictaminada;
+    }
+
+    public String getUnidadResellado() {
+        return unidadResellado;
+    }
+
+    public void setUnidadResellado(String unidadResellado) {
+        this.unidadResellado = unidadResellado;
+    }
+
+    public String getDenominacionClase() {
+        return denominacionClase;
+    }
+
+    public void setDenominacionClase(String denominacionClase) {
+        this.denominacionClase = denominacionClase;
+    }
+
+    public String getEncoding() {
+        return encoding;
+    }
+
+    public void setEncoding(String encoding) {
+        this.encoding = encoding;
+    }
+
+    public String getMimeType() {
+        return mimeType;
+    }
+
+    public void setMimeType(String mimeType) {
+        this.mimeType = mimeType;
+    }
+
+    public String getContent() {
         return content;
     }
 
-    public void setContent(DataHandler content) {
+    public void setContent(String content) {
         this.content = content;
-    }
-
-    public String getCodigoClasificacion() {
-        return codigoClasificacion;
-    }
-
-    public void setCodigoClasificacion(String codigoClasificacion) {
-        this.codigoClasificacion = codigoClasificacion;
     }
 
     public LOPD getLopd() {
@@ -80,11 +114,11 @@ public class Serie {
         this.tipoValor = tipoValor;
     }
 
-    public List<String> getValorSecundario() {
+    public String getValorSecundario() {
         return valorSecundario;
     }
 
-    public void setValorSecundario(List<String> valorSecundario) {
+    public void setValorSecundario(String valorSecundario) {
         this.valorSecundario = valorSecundario;
     }
 
@@ -104,12 +138,12 @@ public class Serie {
         this.accionDictaminada = accionDictaminada;
     }
 
-    public Long getTerminoAccionDictaminada() {
-        return terminoAccionDictaminada;
+    public Integer getPlazoAccionDictaminada() {
+        return plazoAccionDictaminada;
     }
 
-    public void setTerminoAccionDictaminada(Long terminoAccionDictaminada) {
-        this.terminoAccionDictaminada = terminoAccionDictaminada;
+    public void setPlazoAccionDictaminada(Integer plazoAccionDictaminada) {
+        this.plazoAccionDictaminada = plazoAccionDictaminada;
     }
 
     public Boolean getEsencial() {
@@ -128,27 +162,19 @@ public class Serie {
         this.tipoClasificacion = tipoClasificacion;
     }
 
-    public Long getResellado() {
+    public Integer getResellado() {
         return resellado;
     }
 
-    public void setResellado(Long resellado) {
+    public void setResellado(Integer resellado) {
         this.resellado = resellado;
     }
 
-    public List<String> getCausaLimitacion() {
-        return causaLimitacion;
+    public List<String> getCodigoLimitacion() {
+        return codigoLimitacion;
     }
 
-    public void setCausaLimitacion(List<String> causaLimitacion) {
-        this.causaLimitacion = causaLimitacion;
-    }
-
-    public List<Long> getTermino() {
-        return termino;
-    }
-
-    public void setTermino(List<Long> termino) {
-        this.termino = termino;
+    public void setCodigoLimitacion(List<String> codigoLimitacion) {
+        this.codigoLimitacion = codigoLimitacion;
     }
 }

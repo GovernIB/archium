@@ -24,15 +24,6 @@
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
         </dependency>
-        <!--        La implementacion de logs va en el JBoss del CAIB, así que solo se declara la interfaz-->
-        <!--        <dependency>-->
-        <!--            <groupId>org.slf4j</groupId>-->
-        <!--            <artifactId>slf4j-log4j12</artifactId>-->
-        <!--        </dependency>-->
-        <!--        <dependency>-->
-        <!--            <groupId>log4j</groupId>-->
-        <!--            <artifactId>log4j</artifactId>-->
-        <!--        </dependency>-->
         <dependency>
             <groupId>javax</groupId>
             <artifactId>javaee-api</artifactId>
@@ -47,6 +38,21 @@
             <groupId>es.caib.archium</groupId>
             <artifactId>archium-apirest</artifactId>
             <version>${archium-apirest.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.fasterxml.jackson.jaxrs</groupId>
+                    <artifactId>jackson-jaxrs-json-provider</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.glassfish.jersey.core</groupId>
+                    <artifactId>jersey-client</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.keycloak</groupId>
+            <artifactId>keycloak-core</artifactId>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 

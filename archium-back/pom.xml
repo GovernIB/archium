@@ -19,10 +19,6 @@
 
 
     <dependencies>
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-lang3</artifactId>
-        </dependency>
         <!-- Altres mòduls del projecte -->
         <dependency>
             <groupId>es.caib.archium</groupId>
@@ -34,17 +30,6 @@
             <groupId>es.caib.archium</groupId>
             <artifactId>archium-communication</artifactId>
             <version>${archium-communication.version}</version>
-            <scope>provided</scope>
-            <exclusions>
-                <exclusion>
-                    <artifactId>keycloak-core</artifactId>
-                    <groupId>org.keycloak</groupId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.keycloak</groupId>
-            <artifactId>keycloak-core</artifactId>
         </dependency>
         <dependency>
             <groupId>es.caib.archium</groupId>
@@ -68,15 +53,6 @@
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
         </dependency>
-        <!--        La implementacion de logs va en el JBoss del CAIB, así que solo se declara la interfaz-->
-        <!--        <dependency>-->
-        <!--            <groupId>org.slf4j</groupId>-->
-        <!--            <artifactId>slf4j-log4j12</artifactId>-->
-        <!--        </dependency>-->
-        <!--        <dependency>-->
-        <!--            <groupId>log4j</groupId>-->
-        <!--            <artifactId>log4j</artifactId>-->
-        <!--        </dependency>-->
         <dependency>
             <groupId>org.primefaces</groupId>
             <artifactId>primefaces</artifactId>

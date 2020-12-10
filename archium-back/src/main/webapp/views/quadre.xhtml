@@ -36,14 +36,6 @@
 				paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                 currentPageReportTemplate="{startRecord}-{endRecord} of {totalRecords} records" >
 
-<!--				Cambiar i18n-->
-				<p:column class="first-column" headerText="codigo" sortBy="#{cuadro.codi}"   style="width: 25%;">
-					<h:outputLink value="#{request.contextPath}/views/funciones.xhtml">
-						<h:outputText value="#{cuadro.codi}" />
-						<f:param  name="quadreId" value="#{cuadro.id}" />
-					</h:outputLink>
-				</p:column>
-
 		        <p:column class="first-column" headerText="#{messages['cuadro.nombre']}" sortBy="#{cuadro.nom}"   style="width: 25%;">
 		        	<h:outputLink value="#{request.contextPath}/views/funciones.xhtml">
 						<h:outputText value="#{cuadro.nom}" />
@@ -101,13 +93,12 @@
 					<p:commandButton class="botton_library" icon="pi pi-trash" title="#{messages['cuadro.eliminarcuadro']}" update="panel1" action="#{quadreController.deleteClassificationTable(cuadro)}" />
 <!--						<p:confirm header="#{messages['confirmacion']}" message="#{messages['cuadro.eliminar.alert']}" icon="pi pi-exclamation-triangle" />-->
 <!--					</p:commandButton>-->
-					<!--			       cambiar i18n-->
 <!--					No sincronizado y tiene permisos-->
-					<p:commandButton rendered="#{quadreController.checkPermissionsToCallCSGD() eq true and cuadro.synchronized eq false}" class="botton_library" icon="circle-state red" title="sincronizar" update="panel1" action="#{quadreController.synchronize(cuadro)}" />
+					<p:commandButton rendered="#{quadreController.checkPermissionsToCallCSGD() eq true and cuadro.synchronized eq false}" class="botton_library" icon="circle-state red" title="#{messages['cuadro.sincronizar']}" update="panel1" action="#{quadreController.synchronize(cuadro)}" />
 					<!--					no sincronizado sin permisos-->
-					<p:commandButton rendered="#{quadreController.checkPermissionsToCallCSGD() eq false and cuadro.synchronized eq false}" class="botton_library" icon="circle-state red" />
+					<p:commandButton rendered="#{quadreController.checkPermissionsToCallCSGD() eq false and cuadro.synchronized eq false}" title="#{messages['cuadro.noSincronizado']}" class="botton_library" icon="circle-state red" />
 <!--					sincronizado-->
-					<p:commandButton rendered="#{cuadro.synchronized eq true}" class="botton_library" icon="circle-state green" />
+					<p:commandButton rendered="#{cuadro.synchronized eq true}" class="botton_library" title="#{messages['cuadro.sincronizado']}" icon="circle-state green" />
 		        </p:column>
 	    	</p:dataTable>
 

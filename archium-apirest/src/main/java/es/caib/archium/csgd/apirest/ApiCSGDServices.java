@@ -1,9 +1,9 @@
 package es.caib.archium.csgd.apirest;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
+import es.caib.archium.csgd.apirest.constantes.Aspects;
 import es.caib.archium.csgd.apirest.constantes.Servicios;
 import es.caib.archium.csgd.apirest.constantes.TipoValor;
+import es.caib.archium.csgd.apirest.constantes.TiposObjetoSGD;
 import es.caib.archium.csgd.apirest.csgd.entidades.comunes.*;
 import es.caib.archium.csgd.apirest.csgd.entidades.parametrosllamada.ParamCreateClassificationTable;
 import es.caib.archium.csgd.apirest.csgd.entidades.parametrosllamada.ParamCreateFunction;
@@ -13,6 +13,7 @@ import es.caib.archium.csgd.apirest.csgd.entidades.resultados.*;
 import es.caib.archium.csgd.apirest.csgd.peticiones.*;
 import es.caib.archium.csgd.apirest.facade.pojos.CuadroClasificacion;
 import es.caib.archium.csgd.apirest.facade.pojos.Funcion;
+import es.caib.archium.csgd.apirest.facade.pojos.Nodo;
 import es.caib.archium.csgd.apirest.facade.pojos.Serie;
 import es.caib.archium.csgd.apirest.facade.pojos.cabecera.CabeceraAplicacion;
 import es.caib.archium.csgd.apirest.facade.pojos.cabecera.CabeceraLogin;
@@ -22,23 +23,18 @@ import es.caib.archium.csgd.apirest.facade.resultados.Resultado;
 import es.caib.archium.csgd.apirest.facade.resultados.ResultadoSimple;
 import es.caib.archium.csgd.apirest.jerseyclient.JerseyClientGet;
 import es.caib.archium.csgd.apirest.jerseyclient.ResultadoJersey;
+import es.caib.archium.csgd.apirest.utils.Constantes;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.ejb.Stateless;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.TransformerException;
-import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
+import javax.ws.rs.ProcessingException;
+import java.io.IOException;
+import java.util.*;
 
-@Stateless
 public class ApiCSGDServices {
 
     protected final Logger log = LoggerFactory.getLogger(ApiCSGDServices.class);
-
-
-    public static final String VERSION_SERVICIO = "1.0";
 
     protected final CabeceraPeticion cabeceraPeticion;
 
@@ -58,13 +54,67 @@ public class ApiCSGDServices {
         this(urlBase, constructCabeceraPeticion(cabeceraApp, cabeceraLogin, cabeceraTramite));
     }
 
-    public Resultado<String> crearSerie(Serie serie, String funcionPadre) throws IOException {
+    /**
+     * Llamada post generica para relizara desde todos los metodos que esperan un Resultado<String>
+     * 
+     * @param result
+     * @param servicio
+     * @param peticion
+     * @param entityResult
+     * @param <T>
+     * @return
+     * @throws IOException
+     */
+    private <T> ResultadoJersey postCall(Resultado<String> result, String servicio, Object peticion,  Class<T> entityResult) {
+        try {
+            log.debug("Se realiza la llamada con parametros de entrada: " + peticion.toString());
+            return JerseyClientGet.post(this.urlBase, servicio, peticion, entityResult, trazas);
+        } catch (ProcessingException e){
+            log.error("No es posible realizar conexion con el servicio. URL = ["+urlBase+servicio+"]: " + e);
+            result.setCodigoResultado(String.valueOf(Constantes.CodigosRespuesta.ERROR_CONEXION.getValue()));
+            result.setMsjResultado("No es posible realizar conexion con el servicio");
+        } catch (IOException e) {
+            log.error("Se ha producido un error desconocido en la llamada en el el cliente: " + e);
+            result.setCodigoResultado(String.valueOf(Constantes.CodigosRespuesta.ERROR_DESCONOCIDO_PETICION.getValue()));
+            result.setMsjResultado("Se ha producido una excepcion en la respuesta a la peticion");
+        }
+        return null;
+    }
+
+    /**
+     * Llamada post generica para relizara desde todos los metodos que esperan un ResultadoSimple
+     *
+     * @param result
+     * @param servicio
+     * @param peticion
+     * @param entityResult
+     * @param <T>
+     * @return
+     * @throws IOException
+     */
+    private <T> ResultadoJersey postCall(ResultadoSimple rs, String servicio, Object peticion, Class<T> entityResult) {
+        try {
+            log.debug("Se realiza la llamada con parametros de entrada: " + peticion.toString());
+            return JerseyClientGet.post(this.urlBase, servicio, peticion, entityResult, trazas);
+        } catch (ProcessingException e){
+            log.error("No es posible realizar conexion con el servicio. URL = ["+urlBase+servicio+"]: " + e);
+            rs.setCodigoResultado(String.valueOf(Constantes.CodigosRespuesta.ERROR_CONEXION.getValue()));
+            rs.setMsjResultado("No es posible realizar conexion con el servicio");
+        } catch (IOException e) {
+            log.error("Se ha producido un error desconocido en la llamada en el el cliente: " + e);
+            rs.setCodigoResultado(String.valueOf(Constantes.CodigosRespuesta.ERROR_DESCONOCIDO_PETICION.getValue()));
+            rs.setMsjResultado("Se ha producido una excepcion en la respuesta a la peticion");
+        }
+        return null;
+    }
+    
+
+    public Resultado<String> crearSerie(Serie serie, String funcionPadre) {
         log.debug("Se prepara la llamada en el cliente para crearSerie");
         Resultado<String> result = new Resultado<>();
         SerieNode serieNode = null;
 
         serieNode = convertirASerieNode(serie);
-
 
         Request<ParamCreateSerie> request = new Request<ParamCreateSerie>();
         CreateSerie peticion = new CreateSerie();
@@ -77,17 +127,15 @@ public class ApiCSGDServices {
         peticion.setCreateSerieRequest(request);
 
         ResultadoJersey output;
-        try {
-            log.debug("Se realiza la llamada con parametros de entrada: " + peticion.toString());
-            output = JerseyClientGet.post(this.urlBase, Servicios.CREATE_SERIE, peticion, CreateSerieResult.class, trazas);
-        } catch (UnrecognizedPropertyException e) {
-            log.error("Se ha producido un error desconocido en la llamada en el el cliente: " + e);
-            result.setCodigoResultado("500");
-            result.setMsjResultado("Se ha producido una excepcion en la respuesta a la peticion");
+        
+        // Realizamos la llamada
+        output = postCall(result,Servicios.CREATE_SERIE, peticion, CreateSerieResult.class);
+        // Si el output es null es que se produjo una excepcion
+        if(output==null){
             return result;
         }
 
-        if (output.getEstadoRespuestaHttp() == 200) {
+        if (output.getEstadoRespuestaHttp() == Constantes.CodigosRespuesta.HTTP_RESPUESTA_OK.getValue()) {
             CreateSerieResult resultado = (CreateSerieResult) output.getContenido();
             result.setElementoDevuelto(resultado.getCreateSerieResult().getResParam().getId());
             result.setCodigoResultado(resultado.getCreateSerieResult().getResult().getCode());
@@ -100,48 +148,8 @@ public class ApiCSGDServices {
         return result;
     }
 
-    private SerieNode convertirASerieNode(Serie serie) {
-        SerieNode dto = new SerieNode();
 
-        dto.setAccionDictaminada(serie.getAccionDictaminada());
-        dto.setCausaLimitacion(serie.getCausaLimitacion());
-        dto.setCodigoClasificacion(serie.getCodigoClasificacion());
-        dto.setCondicionReutilizacion(serie.getCondicionReutilizacion());
-        dto.setConfidencialidad(serie.getConfidencialidad() == null ? null : serie.getConfidencialidad().getValue());
-        dto.setEsencial(serie.getEsencial());
-        dto.setLopd(serie.getLopd() == null ? null : serie.getLopd().getValue());
-        dto.setResellado(serie.getResellado());
-        dto.setTermino(serie.getTermino());
-        dto.setTerminoAccionDictaminada(serie.getTerminoAccionDictaminada());
-        dto.setTipoAcceso(serie.getTipoAcceso() == null ? null : serie.getTipoAcceso().getValue());
-        dto.setTipoClasificacion(serie.getTipoClasificacion() == null ? null : serie.getTipoClasificacion());
-        dto.setTipoDictamen(serie.getTipoDictamen() == null ? null : serie.getTipoDictamen().getValue());
-        dto.setTipoValor(serie.getTipoValor() == null ? null : toStringList(serie.getTipoValor()));
-        dto.setValorSecundario(serie.getValorSecundario() == null ? null : serie.getValorSecundario());
-        dto.setContent(serie.getContent());
-        return dto;
-    }
-
-    /**
-     * Convierte la lista de enumerados en una de String
-     *
-     * @param tipoValor
-     * @return
-     */
-    private List<String> toStringList(List<TipoValor> tipoValor) {
-        if (tipoValor != null && !tipoValor.isEmpty()) {
-            List<String> valores = new ArrayList<>();
-            for (TipoValor t : tipoValor) {
-                valores.add(t.getValue());
-            }
-            return valores;
-        } else {
-            return null;
-        }
-    }
-
-
-    public ResultadoSimple borrarSerie(String nodeId) throws IOException {
+    public ResultadoSimple borrarSerie(String nodeId) {
 
         RemoveSerieResult result = null;
         ResultadoSimple resultado = new ResultadoSimple();
@@ -158,17 +166,16 @@ public class ApiCSGDServices {
         peticion.setRemoveSerieRequest(request);
 
         ResultadoJersey output;
-        try {
-            output = JerseyClientGet.post(urlBase, Servicios.REMOVE_SERIE, peticion, RemoveSerieResult.class, trazas);
-        } catch (UnrecognizedPropertyException e) {
-            log.error("Se ha producido un error desconocido en la llamada en el el cliente: " + e);
-            ResultadoSimple rs = new ResultadoSimple();
-            rs.setCodigoResultado("500");
-            rs.setMsjResultado("Se ha producido una excepcion en la respuesta a la peticion");
-            return rs;
-        }
 
-        if (output.getEstadoRespuestaHttp() == 200) {
+        // Realizamos la llamada
+        output = postCall(resultado,Servicios.REMOVE_SERIE, peticion, RemoveSerieResult.class);
+        // Si el output es null es que se produjo una excepcion
+        if(output==null){
+            return resultado;
+        }
+        
+
+        if (output.getEstadoRespuestaHttp() == Constantes.CodigosRespuesta.HTTP_RESPUESTA_OK.getValue()) {
             result = (RemoveSerieResult) output.getContenido();
             resultado.setCodigoResultado(result.getRemoveSerieResult().getResult().getCode());
             resultado.setMsjResultado(result.getRemoveSerieResult().getResult().getDescription());
@@ -181,7 +188,9 @@ public class ApiCSGDServices {
         return resultado;
     }
 
-    public Resultado<String> crearFuncion(Funcion funcion, String parentId) throws IOException {
+    
+
+    public Resultado<String> crearFuncion(Funcion funcion, String parentId) {
 
         Resultado<String> result = new Resultado<>();
 
@@ -199,15 +208,15 @@ public class ApiCSGDServices {
         peticion.setCreateFunctionRequest(request);
 
         ResultadoJersey output;
-        try {
-            output = JerseyClientGet.post(this.urlBase, Servicios.CREATE_FUNCTION, peticion, CreateFunctionResult.class, trazas);
-        } catch (UnrecognizedPropertyException e) {
-            log.error("Se ha producido un error desconocido en la llamada en el el cliente: " + e);
-            result.setCodigoResultado("500");
-            result.setMsjResultado("Se ha producido una excepcion en la respuesta a la peticion");
+
+        // Realizamos la llamada
+        output = postCall(result,Servicios.CREATE_FUNCTION, peticion, CreateFunctionResult.class);
+        // Si el output es null es que se produjo una excepcion
+        if(output==null){
             return result;
         }
-        if (output.getEstadoRespuestaHttp() == 200) {
+        
+        if (output.getEstadoRespuestaHttp() == Constantes.CodigosRespuesta.HTTP_RESPUESTA_OK.getValue()) {
             CreateFunctionResult resultado = (CreateFunctionResult) output.getContenido();
             result.setElementoDevuelto(resultado.getCreateFunctionResult().getResParam().getId());
             result.setCodigoResultado(resultado.getCreateFunctionResult().getResult().getCode());
@@ -220,14 +229,9 @@ public class ApiCSGDServices {
         return result;
     }
 
-    private FunctionNode convertirAFunctionNode(Funcion funcion) {
-        FunctionNode dto = new FunctionNode();
-        dto.setCode(funcion.getCodigo());
-        dto.setState(funcion.getEstado() == null ? null : funcion.getEstado().toString());
-        return dto;
-    }
 
-    public ResultadoSimple borrarFuncion(String nodeId) throws IOException {
+
+    public ResultadoSimple borrarFuncion(String nodeId) {
 
         RemoveFunctionResult result = null;
         ResultadoSimple resultado = new ResultadoSimple();
@@ -244,17 +248,14 @@ public class ApiCSGDServices {
         peticion.setRemoveFunctionRequest(request);
 
         ResultadoJersey output;
-        try {
-            output = JerseyClientGet.post(urlBase, Servicios.REMOVE_FUNCTION, peticion, RemoveFunctionResult.class, trazas);
-        } catch (UnrecognizedPropertyException e) {
-            log.error("Se ha producido un error desconocido en la llamada en el el cliente: " + e);
-            ResultadoSimple rs = new ResultadoSimple();
-            rs.setCodigoResultado("500");
-            rs.setMsjResultado("Se ha producido una excepcion en la respuesta a la peticion");
-            return rs;
+        // Realizamos la llamada
+        output = postCall(resultado,Servicios.REMOVE_FUNCTION, peticion, RemoveFunctionResult.class);
+        // Si el output es null es que se produjo una excepcion
+        if(output==null){
+            return resultado;
         }
 
-        if (output.getEstadoRespuestaHttp() == 200) {
+        if (output.getEstadoRespuestaHttp() == Constantes.CodigosRespuesta.HTTP_RESPUESTA_OK.getValue()) {
             result = (RemoveFunctionResult) output.getContenido();
             resultado.setCodigoResultado(result.getRemoveFunctionResult().getResult().getCode());
             resultado.setMsjResultado(result.getRemoveFunctionResult().getResult().getDescription());
@@ -268,10 +269,10 @@ public class ApiCSGDServices {
     }
 
 
-    public Resultado<String> crearCuadro(CuadroClasificacion cuadro) throws IOException {
+    public Resultado<String> crearCuadro(CuadroClasificacion cuadro) {
 
         Resultado<String> result = new Resultado<>();
-        ClassificationTableNode classificationTableNode = convertirAClassificationTableNode(cuadro);
+        RootNode classificationTableNode = convertirAClassificationTableNode(cuadro);
 
         Request<ParamCreateClassificationTable> request = new Request<ParamCreateClassificationTable>();
         CreateClassificationTable peticion = new CreateClassificationTable();
@@ -283,16 +284,15 @@ public class ApiCSGDServices {
         peticion.setCreateClassificationRootRequest(request);
 
         ResultadoJersey output;
-        try {
-            output = JerseyClientGet.post(this.urlBase, Servicios.CREATE_CLASSIFICATION_TABLE, peticion, CreateClassificationTableResult.class, trazas);
-        } catch (UnrecognizedPropertyException e) {
-            log.error("Se ha producido un error desconocido en la llamada en el el cliente: " + e);
-            result.setCodigoResultado("500");
-            result.setMsjResultado("Se ha producido una excepcion en la respuesta a la peticion");
+        
+        // Realizamos la llamada
+        output = postCall(result,Servicios.CREATE_CLASSIFICATION_TABLE, peticion, CreateClassificationTableResult.class);
+        // Si el output es null es que se produjo una excepcion
+        if(output==null){
             return result;
         }
 
-        if (output.getEstadoRespuestaHttp() == 200) {
+        if (output.getEstadoRespuestaHttp() == Constantes.CodigosRespuesta.HTTP_RESPUESTA_OK.getValue()) {
             CreateClassificationTableResult resultado = (CreateClassificationTableResult) output.getContenido();
             result.setElementoDevuelto(resultado.getCreateClassificationRootResult().getResParam().getId());
             result.setCodigoResultado(resultado.getCreateClassificationRootResult().getResult().getCode());
@@ -305,14 +305,9 @@ public class ApiCSGDServices {
         return result;
     }
 
-    private ClassificationTableNode convertirAClassificationTableNode(CuadroClasificacion cuadro) {
-        ClassificationTableNode dto = new ClassificationTableNode();
-        dto.setCode(cuadro.getCodigo());
-        dto.setState(cuadro.getEstado() == null ? null : cuadro.getEstado().toString());
-        return dto;
-    }
 
-    public ResultadoSimple borrarCuadro(String nodeId) throws IOException {
+
+    public ResultadoSimple borrarCuadro(String nodeId) {
 
         RemoveCuadroResult result = null;
         ResultadoSimple resultado = new ResultadoSimple();
@@ -329,17 +324,15 @@ public class ApiCSGDServices {
         peticion.setRemoveRootRequest(request);
 
         ResultadoJersey output;
-        try {
-            output = JerseyClientGet.post(urlBase, Servicios.REMOVE_CLASSIFICATION_TABLE, peticion, RemoveCuadroResult.class, trazas);
-        } catch (UnrecognizedPropertyException e) {
-            log.error("Se ha producido un error desconocido en la llamada en el el cliente: " + e);
-            ResultadoSimple rs = new ResultadoSimple();
-            rs.setCodigoResultado("500");
-            rs.setMsjResultado("Se ha producido una excepcion en la respuesta a la peticion");
-            return rs;
+
+        // Realizamos la llamada
+        output = postCall(resultado, Servicios.REMOVE_CLASSIFICATION_TABLE, peticion, RemoveCuadroResult.class);
+        // Si el output es null es que se produjo una excepcion
+        if(output==null){
+            return resultado;
         }
 
-        if (output.getEstadoRespuestaHttp() == 200) {
+        if (output.getEstadoRespuestaHttp() == Constantes.CodigosRespuesta.HTTP_RESPUESTA_OK.getValue()) {
             result = (RemoveCuadroResult) output.getContenido();
             resultado.setCodigoResultado(result.getRemoveRootResult().getResult().getCode());
             resultado.setMsjResultado(result.getRemoveRootResult().getResult().getDescription());
@@ -352,15 +345,32 @@ public class ApiCSGDServices {
         return resultado;
     }
 
+
+    public CabeceraPeticion getCabeceraPeticion() {
+        return cabeceraPeticion;
+    }
+
+    public String getUrlBase() {
+        return urlBase;
+    }
+
+    public boolean isTrazas() {
+        return trazas;
+    }
+
+    public void setTrazas(boolean trazas) {
+        this.trazas = trazas;
+    }
+
     // -------------------------------------------------
     // -------------------------------------------------
     // ------------------- UTILITATS -------------------
     // -------------------------------------------------
     // -------------------------------------------------
 
-    protected ServiceHeader internalServiceHeader = null;
+    private ServiceHeader internalServiceHeader = null;
 
-    protected ServiceHeader getServiceHeader() {
+    public ServiceHeader getServiceHeader() {
         if (internalServiceHeader == null) {
             CabeceraPeticion cabecera = this.getCabeceraPeticion();
 
@@ -406,7 +416,9 @@ public class ApiCSGDServices {
         return internalServiceHeader;
     }
 
-    ;
+
+    private static final String VERSION_SERVICIO = "1.0";
+
 
     /**
      * @param cabeceraApp
@@ -414,8 +426,8 @@ public class ApiCSGDServices {
      * @param cabeceraTramite
      * @return
      */
-    protected static CabeceraPeticion constructCabeceraPeticion(CabeceraAplicacion cabeceraApp,
-                                                                CabeceraLogin cabeceraLogin, CabeceraTramite cabeceraTramite) {
+    public static CabeceraPeticion constructCabeceraPeticion(CabeceraAplicacion cabeceraApp,
+                                                             CabeceraLogin cabeceraLogin, CabeceraTramite cabeceraTramite) {
         CabeceraPeticion cabeceraTmp = new CabeceraPeticion();
 
         // intern api
@@ -437,28 +449,158 @@ public class ApiCSGDServices {
         return cabeceraTmp;
     }
 
-    private ParamNodeId generarParametrosNodeId(String identificador)
-            throws JsonProcessingException {
+    public <T extends Nodo> Resultado<String> crearNodo(T wsDto, String parentId) {
+        if(wsDto instanceof CuadroClasificacion){
+            return crearCuadro((CuadroClasificacion) wsDto);
+        }else if(wsDto instanceof Funcion){
+            return crearFuncion((Funcion)wsDto,parentId);
+        }else if(wsDto instanceof Serie){
+            return crearSerie((Serie) wsDto,parentId);
+        }
+        return null;
+    }
+
+    public <ID extends Id> ResultadoSimple borrarNodo(ID wsId) {
+        if(wsId instanceof RootId){
+            return borrarCuadro(wsId.getId());
+        }else if(wsId instanceof FunctionId){
+            return borrarFuncion(wsId.getId());
+        }else if(wsId instanceof SerieId){
+            return borrarSerie(wsId.getId());
+        }
+        return null;
+    }
+
+    private SerieNode convertirASerieNode(Serie serie) {
+        SerieNode dto = new SerieNode();
+        dto.setName(serie.getDenominacionClase());
+        dto.setType(TiposObjetoSGD.SERIE_DOCUMENTAL);
+        dto.setId(serie.getNodeId());
+        Content content = new Content();
+        content.setContent(serie.getContent());
+        content.setEncoding(serie.getEncoding());
+        content.setMimetype(serie.getMimeType());
+        dto.setBinaryContent(content);
+
+        setMetadataYAspectosSerie(dto,serie);
+
+        return dto;
+    }
+
+    /**
+     * Establece la lista de propiedades y aspectos del nodo serie
+     *
+     * @param dto
+     * @param serie
+     */
+    private void setMetadataYAspectosSerie(SerieNode dto, Serie serie) {
+        dto.setMetadataCollection(new HashSet<>());
+        // Añadimos las propiedades obligatorias, ya se ha validado que estén informadas
+        dto.getMetadataCollection().add(new Metadata(Constantes.CODIGO_CLASIFICACION_QNAME,serie.getCodigo()));
+        dto.getMetadataCollection().add(new Metadata(Constantes.DENOMINACION_CLASE_QNAME,serie.getDenominacionClase()));
+        dto.getMetadataCollection().add(new Metadata(Constantes.TIPO_CLASIFICACION_QNAME,serie.getTipoClasificacion()));
+        dto.getMetadataCollection().add(new Metadata(Constantes.LOPD_QNAME,serie.getLopd().getValue()));
+        dto.getMetadataCollection().add(new Metadata(Constantes.CONFIDENCIALIDAD_QNAME,serie.getConfidencialidad().getValue()));
+        dto.getMetadataCollection().add(new Metadata(Constantes.TIPO_ACCESO_QNAME,serie.getTipoAcceso().getValue()));
+        dto.getMetadataCollection().add(new Metadata(Constantes.VALOR_SECUNDARIO_QNAME,serie.getValorSecundario()));
+        dto.getMetadataCollection().add(new Metadata(Constantes.TIPO_VALOR_QNAME,serie.getTipoValor()));
+        dto.getMetadataCollection().add(new Metadata(Constantes.TIPO_DICTAMEN_QNAME,serie.getTipoDictamen()));
+        dto.getMetadataCollection().add(new Metadata(Constantes.DOCUMENTO_ESENCIAL_QNAME,serie.getEsencial().booleanValue()));
+        dto.getMetadataCollection().add(new Metadata(Constantes.PLAZO_RESELLADO_QNAME,serie.getResellado()));
+        dto.getMetadataCollection().add(new Metadata(Constantes.PLAZO_UNIDAD_RESELLADO_QNAME,serie.getUnidadResellado()));
+
+
+        // Propiedades optativas, solo las metemos si tienen valor
+        if(StringUtils.trimToNull(serie.getAccionDictaminada())!=null) {
+            dto.getMetadataCollection().add(new Metadata(Constantes.PLAZO_UNIDAD_ACCION_DICTAMINADA_QNAME,serie.getUnidadPlazoAccionDictaminada()));
+        }
+
+        if(serie.getPlazoAccionDictaminada()!=null) {
+            dto.getMetadataCollection().add(new Metadata(Constantes.PLAZO_ACCION_DICTAMINADA_QNAME, serie.getPlazoAccionDictaminada()));
+        }
+        if(StringUtils.trimToNull(serie.getAccionDictaminada())!=null) {
+            dto.getMetadataCollection().add(new Metadata(Constantes.ACCION_DICTAMINADA_QNAME, serie.getAccionDictaminada()));
+        }
+        if(serie.getCondicionReutilizacion()!=null && !serie.getCondicionReutilizacion().isEmpty()) {
+            dto.getMetadataCollection().add(new Metadata(Constantes.CONDICION_REUTILIZACION_QNAME, serie.getCondicionReutilizacion()));
+        }
+        if(serie.getCodigoLimitacion()!=null && !serie.getCodigoLimitacion().isEmpty()) {
+            dto.getMetadataCollection().add(new Metadata(Constantes.CODIGO_CAUSA_LIMITACION_QNAME, serie.getCodigoLimitacion()));
+        }
+
+        // De momento no hay ningun aspecto que tenga todas las propiedades como optativas, por lo tanto vamos a meter
+        // siempre todos los aspectos, si en el futuro hay alguno que pueda no estar, habria que comprobar aqui si alguna
+        // de sus propiedades esta informada para meterlo o no
+        dto.setAspects(Arrays.asList(Aspects.values()));
+
+    }
+
+    /**
+     * Convierte la lista de enumerados en una de String
+     *
+     * @param tipoValor
+     * @return
+     */
+    private List<String> toStringList(List<TipoValor> tipoValor) {
+        if (tipoValor != null && !tipoValor.isEmpty()) {
+            List<String> valores = new ArrayList<>();
+            for (TipoValor t : tipoValor) {
+                valores.add(t.getValue());
+            }
+            return valores;
+        } else {
+            return null;
+        }
+    }
+
+    private FunctionNode convertirAFunctionNode(Funcion funcion) {
+        FunctionNode dto = new FunctionNode();
+        dto.setId(funcion.getNodeId());
+        dto.setName(funcion.getCodigo());
+        dto.setType(TiposObjetoSGD.FUNCION);
+        setMetadataYAspectosFuncion(dto,funcion);
+        return dto;
+    }
+
+    /**
+     * Establece la lista de propiedades y aspectos del nodo funcion
+     *
+     * @param dto
+     * @param funcion
+     */
+    private void setMetadataYAspectosFuncion(FunctionNode dto, Funcion funcion) {
+        dto.setMetadataCollection(new HashSet<>());
+        // Añadimos las propiedades obligatorias, ya se ha validado que estén informadas
+        dto.getMetadataCollection().add(new Metadata(Constantes.CODIGO_FUNCION_QNAME,funcion.getCodigo()));
+        dto.getMetadataCollection().add(new Metadata(Constantes.ESTADO_FUNCION_QNAME,funcion.getEstado().getValue()));
+        dto.getMetadataCollection().add(new Metadata(Constantes.FUNCION_PADRE_QNAME,funcion.getFuncionPadre().booleanValue()));
+
+        // De momento no hay ni propiedades no obligatorias ni tiene aspectos, de tener en el futuro, irian aqui
+    }
+
+    private RootNode convertirAClassificationTableNode(CuadroClasificacion cuadro) {
+        RootNode dto = new RootNode();
+        dto.setId(cuadro.getNodeId());
+        dto.setName(cuadro.getCodigo());
+        dto.setType(TiposObjetoSGD.CUADRO_CLASIFICACION);
+        setMetadataYAspectosCuadro(dto,cuadro);
+        return dto;
+    }
+
+    private void setMetadataYAspectosCuadro(RootNode dto, CuadroClasificacion cuadro) {
+        dto.setMetadataCollection(new HashSet<>());
+        // Añadimos las propiedades obligatorias, ya se ha validado que estén informadas
+        dto.getMetadataCollection().add(new Metadata(Constantes.CODIGO_CUADRO_QNAME,cuadro.getCodigo()));
+        dto.getMetadataCollection().add(new Metadata(Constantes.ESTADO_CUADRO_QNAME,cuadro.getEstado().getValue()));
+
+        // De momento no hay ni propiedades no obligatorias ni tiene aspectos, de tener en el futuro, irian aqui
+    }
+
+    private ParamNodeId generarParametrosNodeId(String identificador){
         ParamNodeId param = new ParamNodeId();
 
         param.setId(identificador);
 
         return param;
-    }
-
-    public CabeceraPeticion getCabeceraPeticion() {
-        return cabeceraPeticion;
-    }
-
-    public String getUrlBase() {
-        return urlBase;
-    }
-
-    public boolean isTrazas() {
-        return trazas;
-    }
-
-    public void setTrazas(boolean trazas) {
-        this.trazas = trazas;
     }
 }

@@ -1,14 +1,14 @@
 package es.caib.archium.services;
 
-import es.caib.archium.csgd.apirest.constantes.Estado;
-import es.caib.archium.csgd.apirest.facade.pojos.CuadroClasificacion;
 import es.caib.archium.commons.i18n.I18NException;
 import es.caib.archium.commons.utils.Constants;
 import es.caib.archium.communication.exception.CSGDException;
 import es.caib.archium.communication.iface.CSGDCuadroService;
+import es.caib.archium.csgd.apirest.constantes.Estado;
+import es.caib.archium.csgd.apirest.csgd.entidades.comunes.RootId;
+import es.caib.archium.csgd.apirest.facade.pojos.CuadroClasificacion;
 import es.caib.archium.ejb.service.QuadreClassificacioService;
 import es.caib.archium.objects.QuadreObject;
-import es.caib.archium.persistence.model.Funcio;
 import es.caib.archium.persistence.model.Quadreclassificacio;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -85,8 +85,10 @@ public class QuadreFrontService {
 
             return listaQuadres;
         } catch (NullPointerException e) {
+            log.error("Se ha producido un nullPointerException en el findAll de los cuadros de clasificacion: "+e);
             throw new I18NException("excepcion.general.NullPointerException", this.getClass().getSimpleName(), "findAll");
         } catch (Exception e) {
+            log.error("Se ha producido un error en el findAll de los cuadros de clasificacion: "+e);
             throw new I18NException("excepcion.general.Exception", this.getClass().getSimpleName(), "findAll");
         }
 
@@ -99,7 +101,6 @@ public class QuadreFrontService {
         try {
 
             QuadreObject nuevo = new QuadreObject();
-            nuevo.setCodi(object.getCodi().trim());
             nuevo.setNom(object.getNom().trim());
             nuevo.setNomCas(object.getNomCas() != null ? object.getNomCas() : null);
             nuevo.setEstat(object.getEstat());
@@ -109,7 +110,6 @@ public class QuadreFrontService {
             nuevo.setFi(null);
 
             Quadreclassificacio nuevoBD = new Quadreclassificacio();
-            nuevoBD.setCodi(nuevo.getCodi());
             nuevoBD.setNom(nuevo.getNom());
             nuevoBD.setNomcas(nuevo.getNomCas());
             nuevoBD.setEstat(nuevo.getEstat());
@@ -134,7 +134,6 @@ public class QuadreFrontService {
         try {
             Quadreclassificacio baseDato = this.quadreEjb.getReference(object.getId());
             baseDato.setNom(object.getNom());
-            baseDato.setCodi(object.getCodi());
             baseDato.setNomcas(object.getNomCas());
             baseDato.setEstat(object.getEstat());
             baseDato.setFi(object.getFi());
@@ -157,7 +156,7 @@ public class QuadreFrontService {
         if(StringUtils.isNotEmpty(cuadro.getNodeId())) {
             log.debug("El cuadro existe en Alfresco, así que procedemos a eliminarlo");
             try {
-                this.csgdCuadroService.removeCuadro(cuadro.getNodeId());
+                this.csgdCuadroService.deleteNode(new RootId(cuadro.getNodeId()));
                 log.info("El cuadro ["+idClassificationTable+"] ha sido eliminada de Alfresco");
             } catch (CSGDException e) {
                 throw new I18NException(getExceptionI18n(e.getClientErrorCode()), this.getClass().getSimpleName(), "deleteClassificationTable");
@@ -174,8 +173,10 @@ public class QuadreFrontService {
             this.quadreEjb.delete(idClassificationTable);
 
         } catch (NullPointerException e) {
+            log.error("Se ha producido un error de NullPointerException borrando la entidad: "+e);
             throw new I18NException("excepcion.general.NullPointerException", this.getClass().getSimpleName(), "deleteClassificationTable");
         } catch (Exception e) {
+            log.error("Se ha producido un error desconocido borrando la entidad: "+e);
             throw new I18NException("excepcion.general.Exception", this.getClass().getSimpleName(), "deleteClassificationTable");
         }
     }
@@ -197,14 +198,14 @@ public class QuadreFrontService {
         this.validarCuadro(cuadrodb);
 
         CuadroClasificacion cuadroWs = new CuadroClasificacion();
-        cuadroWs.setCodigo(cuadrodb.getCodi());
+        cuadroWs.setCodigo(cuadrodb.getNomcas());
         cuadroWs.setEstado(Estado.getEstado(cuadrodb.getEstat()));
 
         log.debug("Dto creado, llamamos al servicio de sincronizacion");
         String nodeId = null;
         try {
             // Realizamos la llamada para la sincronizacion en Alfresco de los datos
-            nodeId = csgdCuadroService.synchronizeClassificationTable(cuadroWs);
+            nodeId = csgdCuadroService.synchronizeNode(cuadroWs);
         } catch (CSGDException e) {
             throw new I18NException(getExceptionI18n(e.getClientErrorCode()), this.getClass().getSimpleName(), "synchronizeClassificationTable");
         } catch (EJBAccessException e){
@@ -227,7 +228,6 @@ public class QuadreFrontService {
                 log.error("Error sincronizando la informacion del cuadro: " + e);
                 throw e;
             } catch (Exception e) {
-                // Cambiar i18n
                 log.error("Error sincronizando la informacion del cuadro: " + e);
                 throw new I18NException("excepcion.general.Exception", this.getClass().getSimpleName(), "update");
             }
@@ -244,8 +244,7 @@ public class QuadreFrontService {
      */
     private void validarCuadro(Quadreclassificacio cuadrodb) throws I18NException {
         log.debug("Validamos los datos del cuadro");
-        if(StringUtils.trimToNull(cuadrodb.getCodi()) == null
-                || StringUtils.trimToNull(cuadrodb.getEstat()) == null
+        if(StringUtils.trimToNull(cuadrodb.getEstat()) == null
                 || Estado.getEstado(cuadrodb.getEstat())==null){
             log.error("Error de validacion del cuadro de clasificacion. Alguno de los campos obligatorios no esta informado");
             throw new I18NException("validaciones.cuadro", this.getClass().getSimpleName());

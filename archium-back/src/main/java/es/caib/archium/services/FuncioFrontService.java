@@ -1,11 +1,12 @@
 package es.caib.archium.services;
 
-import es.caib.archium.csgd.apirest.constantes.Estado;
-import es.caib.archium.csgd.apirest.facade.pojos.Funcion;
 import es.caib.archium.commons.i18n.I18NException;
 import es.caib.archium.commons.utils.Constants;
 import es.caib.archium.communication.exception.CSGDException;
 import es.caib.archium.communication.iface.CSGDFuncionService;
+import es.caib.archium.csgd.apirest.constantes.Estado;
+import es.caib.archium.csgd.apirest.csgd.entidades.comunes.FunctionId;
+import es.caib.archium.csgd.apirest.facade.pojos.Funcion;
 import es.caib.archium.ejb.service.*;
 import es.caib.archium.objects.*;
 import es.caib.archium.persistence.model.Dictamen;
@@ -298,7 +299,7 @@ public class FuncioFrontService {
         if(StringUtils.isNotEmpty(funcion.getNodeId())) {
             log.debug("La funcion existe en Alfresco, así que procedemos a eliminarla");
             try {
-                this.csgdFuncionService.removeFuncion(funcion.getNodeId());
+                this.csgdFuncionService.deleteNode(new FunctionId(funcion.getNodeId()));
                 log.info("La funcion ["+idFuncio+"] ha sido eliminada de Alfresco");
             } catch (CSGDException e) {
                 throw new I18NException(getExceptionI18n(e.getClientErrorCode()), this.getClass().getSimpleName(), "deleteFunction");
@@ -306,6 +307,7 @@ public class FuncioFrontService {
                 log.error("No se cuenta con los permisos adecuados para realiziar la llamada al csgd");
                 throw new I18NException("csgd.permiso.denegado", this.getClass().getSimpleName(), "synchronizeFunction");
             } catch (Exception e) {
+                log.error("Se ha producido un error desconocido en la llamada a Alfresco");
                 throw new I18NException("excepcion.general.Exception", this.getClass().getSimpleName(), "deleteFunction");
             }
         }
@@ -314,8 +316,10 @@ public class FuncioFrontService {
             this.funcionesEJB.delete(idFuncio);
 
         } catch (NullPointerException e) {
+            log.error("Se ha producido un error de NullPointerException borrando la entidad: "+e);
             throw new I18NException("excepcion.general.NullPointerException", this.getClass().getSimpleName(), "deleteFuncio");
         } catch (Exception e) {
+            log.error("Se ha producido un error desconocido borrando la entidad: "+e);
             throw new I18NException("excepcion.general.Exception", this.getClass().getSimpleName(), "deleteFuncio");
         }
     }
@@ -365,7 +369,7 @@ public class FuncioFrontService {
             parent = funciondb.getAchQuadreclassificacio().getNodeId();
             if(!funciondb.getAchQuadreclassificacio().isSynchronized()){
                 log.error("El cuadro de clasificacion [Id = " + funciondb.getAchQuadreclassificacio().getId() + ", " +
-                        "Cod = " + funciondb.getAchQuadreclassificacio().getCodi() +"] debe sincronizarse para poder" +
+                        "Cod = " + funciondb.getAchQuadreclassificacio().getNomcas() +"] debe sincronizarse para poder" +
                         "sincronizar la funcion [Id = "+funciondb.getId()+", Cod = "+funciondb.getCodi()+"]");
                 throw new I18NException("validaciones.funcio.padre.no.sincronizado", this.getClass().getSimpleName());
             }
@@ -379,18 +383,21 @@ public class FuncioFrontService {
         funcion.setCodigo(funciondb.getCodi());
         funcion.setEstado(Estado.getEstado(funciondb.getEstat()));
 
+        // Hayamos los hijos de la funcion, para ver si es funcion padre
+        funcion.setFuncionPadre(isFuncionPadre(funciondb.getId(),funciondb.getAchQuadreclassificacio().getId()));
+
         log.debug("Dto creado, llamamos al servicio de sincronizacion");
         String nodeId = null;
         try {
             // Realizamos la llamada para sincronizar la informacion en Alfresco
-            nodeId = this.csgdFuncionService.synchronizeFunction(funcion,parent);
+            nodeId = this.csgdFuncionService.synchronizeNode(funcion,parent);
         } catch (CSGDException e) {
             throw new I18NException(getExceptionI18n(e.getClientErrorCode()), this.getClass().getSimpleName(), "synchronizeFunction");
         } catch (EJBAccessException e){
             log.error("No se cuenta con los permisos adecuados para realiziar la llamada al csgd");
             throw new I18NException("csgd.permiso.denegado", this.getClass().getSimpleName(), "synchronizeFunction");
         } catch (Exception e) {
-            log.error("Error sincronizando el cuadro: " + e);
+            log.error("Error sincronizando la funcion: " + e);
             throw new I18NException("excepcion.general.Exception", this.getClass().getSimpleName(), "synchronizeFunction");
         }
 
@@ -407,7 +414,6 @@ public class FuncioFrontService {
                 log.error("Error sincronizando la informacion de la funcion: " + e);
                 throw e;
             } catch (Exception e) {
-                // Cambiar i18n
                 log.error("Error sincronizando la informacion de la funcion: " + e);
                 throw new I18NException("excepcion.general.Exception", this.getClass().getSimpleName(), "update");
             }
@@ -415,6 +421,25 @@ public class FuncioFrontService {
             log.error("Se ha devuelto null como nodo de alfresco en la sincronizacion de la funcion");
             throw new I18NException("excepcion.general.Exception", this.getClass().getSimpleName(), "synchronizeError");
         }
+    }
+
+    /**
+     * Hayamos los hijos de la funcion, si devuelve algún resultado es que es funcion padre
+     *
+     * @param funcionId
+     * @param cuadroId
+     * @return
+     */
+    private Boolean isFuncionPadre(Long funcionId, Long cuadroId) throws I18NException {
+        List<Funcio> funcionesHijas = null;
+        try {
+            funcionesHijas = funcionesEJB.getByParentAndQuadre(funcionId,cuadroId);
+        } catch (I18NException e) {
+            // Esta excepcion no deberia saltar nunca
+            log.error("La funcion con id ["+funcionId+"] no tiene informado su cuadro de clasificacion");
+            throw new I18NException("excepcion.general.Exception", this.getClass().getSimpleName(), "synchronizeFunction");
+        }
+        return (funcionesHijas!=null && !funcionesHijas.isEmpty());
     }
 
     /**
@@ -453,10 +478,10 @@ public class FuncioFrontService {
             return isParentsSynchronized(function.getAchFuncio());
         }else{
             if(function.getAchQuadreclassificacio().isSynchronized()){
-                log.debug("El cuadro ["+function.getAchQuadreclassificacio().getCodi()+"] esta sincronizado");
+                log.debug("El cuadro ["+function.getAchQuadreclassificacio().getNomcas()+"] esta sincronizado");
                 return true;
             }else{
-                log.error("El cuadro ["+function.getAchQuadreclassificacio().getCodi()+"] no esta sincronizado");
+                log.error("El cuadro ["+function.getAchQuadreclassificacio().getNomcas()+"] no esta sincronizado");
                 return false;
             }
         }

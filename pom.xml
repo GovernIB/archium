@@ -73,17 +73,7 @@
                 <artifactId>slf4j-api</artifactId>
                 <version>${slf4j.version}</version>
             </dependency>
-            <!--        La implementacion de logs va en el JBoss del CAIB, así que solo se declara la interfaz-->
-            <!--            <dependency>-->
-            <!--                <groupId>org.slf4j</groupId>-->
-            <!--                <artifactId>slf4j-log4j12</artifactId>-->
-            <!--                <version>${slf4j.version}</version>-->
-            <!--            </dependency>-->
-            <!--            <dependency>-->
-            <!--                <groupId>log4j</groupId>-->
-            <!--                <artifactId>log4j</artifactId>-->
-            <!--                <version>${log4j.version}</version>-->
-            <!--            </dependency>-->
+
             <dependency>
                 <groupId>org.keycloak</groupId>
                 <artifactId>keycloak-core</artifactId>

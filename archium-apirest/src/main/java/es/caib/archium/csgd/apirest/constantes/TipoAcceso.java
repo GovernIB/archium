@@ -8,7 +8,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public enum TipoAcceso {
-    LIBRE("Libre"),LIMITADO("Limitado"),PARCIALMENTE_RESTRINGIDO("Parcialmente limitado");
+    LIBRE("Libre"),LIMITADO("Limitado"),PARCIALMENTE_RESTRINGIDO("Parcialmente restringido");
 
     private String value;
 

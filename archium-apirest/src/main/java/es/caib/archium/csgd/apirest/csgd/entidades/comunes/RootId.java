@@ -1,6 +1,8 @@
 package es.caib.archium.csgd.apirest.csgd.entidades.comunes;
 
-public class SerieId extends Id{
+public class RootId extends Id{
+
+
     public String getId() {
         return super.id;
     }
@@ -9,16 +11,16 @@ public class SerieId extends Id{
         super.id = id;
     }
 
-    public SerieId() {
+    public RootId() {
     }
 
-    public SerieId(String id) {
+    public RootId(String id){
         super(id);
     }
 
     @Override
     public String toString() {
-        return "SerieId{" +
+        return "RootId{" +
                 "id='" + id + '\'' +
                 '}';
     }

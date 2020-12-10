@@ -2,18 +2,10 @@ package es.caib.archium.csgd.apirest.facade.pojos;
 
 import es.caib.archium.csgd.apirest.constantes.Estado;
 
-public class Funcion {
+public class Funcion extends Nodo{
 
-    private String codigo;
     private Estado estado;
-
-    public String getCodigo() {
-        return codigo;
-    }
-
-    public void setCodigo(String codigo) {
-        this.codigo = codigo;
-    }
+    private Boolean isFuncionPadre;
 
     public Estado getEstado() {
         return estado;
@@ -21,5 +13,13 @@ public class Funcion {
 
     public void setEstado(Estado estado) {
         this.estado = estado;
+    }
+
+    public Boolean getFuncionPadre() {
+        return isFuncionPadre;
+    }
+
+    public void setFuncionPadre(Boolean funcionPadre) {
+        isFuncionPadre = funcionPadre;
     }
 }

@@ -15,6 +15,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.transaction.Transactional;
 
+import es.caib.archium.commons.utils.Constants;
 import org.primefaces.PrimeFaces;
 import org.primefaces.event.CellEditEvent;
 import org.primefaces.event.RowEditEvent;
@@ -317,7 +318,7 @@ public class DictamenController implements Serializable {
 	    	this.aprovacio = null;
 	    	this.codi = null;
 	    	this.estat = null;
-	    	this.plazoTermini = null;
+	    	this.plazoTermini = messageBundle.getString(Constants.UNIDAD_PLAZO_DICTAMEN_DEFAULT_MESSAGE);
 	    	this.plazoTerminiVal = null;
 	    	this.confirmacionVigent = false;
 	    	this.confirmacionVigentReq = false;
@@ -354,6 +355,8 @@ public class DictamenController implements Serializable {
 						if (a.equals("A"))
 							this.setPlazoTermini(messageBundle.getString("general.plazos.anys"));
 						this.plazoTerminiVal 	= Integer.parseInt(obj.getTermini().substring(0,obj.getTermini().length() - 1));
+					}else{
+			    		this.setPlazoTermini(messageBundle.getString(Constants.UNIDAD_PLAZO_DICTAMEN_DEFAULT_MESSAGE));
 					}
 			    	
 			    	this.setTermini(obj.getTermini());	    	

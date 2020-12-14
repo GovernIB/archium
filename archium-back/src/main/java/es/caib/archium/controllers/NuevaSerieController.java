@@ -20,6 +20,7 @@ import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import es.caib.archium.commons.utils.Constants;
 import org.primefaces.PrimeFaces;
 import org.primefaces.event.UnselectEvent;
 import org.primefaces.model.DefaultTreeNode;
@@ -149,6 +150,7 @@ public class NuevaSerieController implements Serializable {
 			for(TipuValorObject tv: listaTiposValor) {
 				ValorPrimariObject vp = new ValorPrimariObject();
 				vp.setAchTipusvalor(tv);
+				vp.setTerminiType(messageBundle.getString(Constants.UNIDAD_PLAZO_SERIE_DEFAULT_MESSAGE));
 				valoracio.addValorprimari(vp);
 			}
 					
@@ -279,6 +281,7 @@ public class NuevaSerieController implements Serializable {
 					if(existe==false) {
 						
 						ValorPrimariObject vp = new ValorPrimariObject();
+						vp.setTerminiType(messageBundle.getString(Constants.UNIDAD_PLAZO_SERIE_DEFAULT_MESSAGE));
 						vp.setAchTipusvalor(tv);
 						ValoracioObject val = new ValoracioObject();
 						val.setId(dbValoracio.getId());
@@ -388,6 +391,7 @@ public class NuevaSerieController implements Serializable {
 		for(TipuValorObject tv: listaTiposValor) {
 			ValorPrimariObject vp = new ValorPrimariObject();
 			vp.setAchTipusvalor(tv);
+			vp.setTerminiType(messageBundle.getString(Constants.UNIDAD_PLAZO_SERIE_DEFAULT_MESSAGE));
 			valoracio.addValorprimari(vp);
 		}
 	}

@@ -85,71 +85,76 @@ public class NuevaSerieController implements Serializable {
 
 
     ResourceBundle messageBundle = ResourceBundle.getBundle("messages.messages");
-    FuncionesController funcBean = null;
+	FuncionesController funcBean = null;
 
-    @PostConstruct
-    public void init() {
+	private static String UNIDAD_PLAZO_SERIE_DEFAULT_MESSAGE = null;
 
-        Map<String, Object> viewMap = FacesContext.getCurrentInstance().getViewRoot().getViewMap();
-        this.funcBean = (FuncionesController) viewMap.get("funciones");
+	@PostConstruct
+	public void init(){
 
-        seriesArgenSelected = new ArrayList<SerieArgenObject>();
-        listaSeriesSelected = new ArrayList<SerieDocumentalObject>();
-        listaAplicacionesSelected = new ArrayList<AplicacionObject>();
-        normativasSerieSelected = new ArrayList<NormativaAprobacioObject>();
-        listaRelacionLNS = new ArrayList<LimitacioNormativaSerieObject>();
-        valoracio = new ValoracioObject();
+		UNIDAD_PLAZO_SERIE_DEFAULT_MESSAGE = messageBundle.getString("general.plazos.anys");
 
-        try {
-            listaDir3 = service.getListaDir3();
+		Map<String, Object> viewMap = FacesContext.getCurrentInstance().getViewRoot().getViewMap();
+		this.funcBean = (FuncionesController) viewMap.get("funciones");
 
-            listaTiposValor = service.getListaTipusValor();
-            listaValoresSecundarios = service.getListaValorsSecundari();
+		seriesArgenSelected = new ArrayList<SerieArgenObject>();
+		listaSeriesSelected = new ArrayList<SerieDocumentalObject>();
+		listaAplicacionesSelected= new ArrayList<AplicacionObject>();
+		normativasSerieSelected = new ArrayList<NormativaAprobacioObject>();
+		listaRelacionLNS = new ArrayList<LimitacioNormativaSerieObject>();
+		valoracio = new ValoracioObject();
 
-            listaCatalegSerie = service.getListaCatalegSerie();
-            listaFunciones = service.getListaFunciones();
-            listaTipusSerie = service.getListaTipusSerie();
-            listaSeries = service.getListaSeries();
-            listaAplicaciones = service.getListaAplicaciones();
-            listaNormativaAprobacio = service.getListaNormativas();
-            listaCausaLimitacio = service.getListaCausaLimitacio();
-            listaSeriesArgen = service.getListaSeriesArgen();
+		try {
+			listaDir3 = service.getListaDir3();
 
-            for (TipuValorObject tv : listaTiposValor) {
-                ValorPrimariObject vp = new ValorPrimariObject();
-                vp.setAchTipusvalor(tv);
-                valoracio.addValorprimari(vp);
-            }
+			listaTiposValor = service.getListaTipusValor();
+			listaValoresSecundarios = service.getListaValorsSecundari();
 
-        } catch (I18NException e) {
-            listaAplicaciones = new ArrayList<AplicacionObject>();
-            listaNormativaAprobacio = new ArrayList<NormativaAprobacioObject>();
-            listaSeries = new ArrayList<SerieDocumentalObject>();
-            listaSeriesArgen = new ArrayList<SerieArgenObject>();
-            funcBean.setError(true);
-            log.error(FrontExceptionTranslate.translate(e, funcBean.getLocale()));
-        } finally {
-            aplicaciones = new DualListModel<AplicacionObject>(listaAplicaciones, listaAplicacionesSelected);
-            seriesRelacionadas = new DualListModel<SerieDocumentalObject>(listaSeries, listaSeriesSelected);
-            seriesArgenRelacionadas = new DualListModel<SerieArgenObject>(listaSeriesArgen, seriesArgenSelected);
-            normativasSerie = new DualListModel<NormativaAprobacioObject>(listaNormativaAprobacio, normativasSerieSelected);
-        }
+			listaCatalegSerie = service.getListaCatalegSerie();
+			listaFunciones = service.getListaFunciones();
+			listaTipusSerie = service.getListaTipusSerie();
+			listaSeries = service.getListaSeries();
+			listaAplicaciones = service.getListaAplicaciones();
+			listaNormativaAprobacio = service.getListaNormativas();
+			listaCausaLimitacio = service.getListaCausaLimitacio();
+			listaSeriesArgen = service.getListaSeriesArgen();
 
-    }
-
-    public void loadFromFunction(Document<FuncioObject> d) {
-        clearForm();
-        if (d == null) {
-            serieFuncio = null;
-        } else {
-            serieFuncio = d.getObject();
-            if (serieFuncio.getTipoSerie() != null) {
-                tipusSerieId = serieFuncio.getTipoSerie().getId();
-            }
-        }
-    }
-
-    public void deleteSerie(Document<SerieDocumentalObject> s) {
+			for(TipuValorObject tv: listaTiposValor) {
+				ValorPrimariObject vp = new ValorPrimariObject();
+				vp.setAchTipusvalor(tv);
+				vp.setTerminiType(UNIDAD_PLAZO_SERIE_DEFAULT_MESSAGE);
+				valoracio.addValorprimari(vp);
+			}
+					
+		} catch (I18NException e) {
+			listaAplicaciones = new ArrayList<AplicacionObject>();
+			listaNormativaAprobacio = new ArrayList<NormativaAprobacioObject>();
+			listaSeries = new ArrayList<SerieDocumentalObject>();
+			listaSeriesArgen = new ArrayList<SerieArgenObject>();
+			funcBean.setError(true);
+			log.error(FrontExceptionTranslate.translate(e, funcBean.getLocale()));
+		} finally {
+			aplicaciones = new DualListModel<AplicacionObject>(listaAplicaciones, listaAplicacionesSelected);
+			seriesRelacionadas = new DualListModel<SerieDocumentalObject>(listaSeries,listaSeriesSelected);
+			seriesArgenRelacionadas = new DualListModel<SerieArgenObject>(listaSeriesArgen,seriesArgenSelected);
+			normativasSerie = new DualListModel<NormativaAprobacioObject>(listaNormativaAprobacio ,normativasSerieSelected);
+		}
+		
+	}
+	
+	public void loadFromFunction(Document<FuncioObject> d) {
+		clearForm();
+		if (d==null) {
+    		serieFuncio = null;
+    	} else {
+    		serieFuncio = d.getObject();
+    		if(serieFuncio.getTipoSerie()!=null) {
+    			tipusSerieId = serieFuncio.getTipoSerie().getId();
+    		}
+    	} 
+	}
+	
+	public void deleteSerie(Document<SerieDocumentalObject> s) {
 
         try {
             this.service.deleteSerie(s.getId());
@@ -283,6 +288,7 @@ public class NuevaSerieController implements Serializable {
 					if (existe == false) {
 
 						ValorPrimariObject vp = new ValorPrimariObject();
+						vp.setTerminiType(UNIDAD_PLAZO_SERIE_DEFAULT_MESSAGE);
 						vp.setAchTipusvalor(tv);
 						ValoracioObject val = new ValoracioObject();
 						val.setId(dbValoracio.getId());
@@ -328,105 +334,106 @@ public class NuevaSerieController implements Serializable {
                 clearForm();
                 FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(messageBundle.getString("nuevaserie.ok")));
 
-            } else {
-                FacesContext.getCurrentInstance().validationFailed();
-                FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_ERROR, messageBundle.getString("nuevaserie.validate.valoracio"), null);
-                FacesContext.getCurrentInstance().addMessage(null, message);
-            }
-        } catch (I18NException e) {
-            log.error(FrontExceptionTranslate.translate(e, funcBean.getLocale()));
-            FacesMessage message = null;
-            if (serieId == null) {
-                message = new FacesMessage(FacesMessage.SEVERITY_ERROR, messageBundle.getString("nuevaserie.insert.error"), null);
-            } else {
-                message = new FacesMessage(FacesMessage.SEVERITY_ERROR, messageBundle.getString("nuevaserie.update.error"), null);
-            }
-            FacesContext.getCurrentInstance().addMessage(null, message);
-        }
-
-    }
-
-    private Boolean validateValoracion() {
-
-        if (valoracio.getAchValorsecundari() == null
-                && (valoracio.getAchValorprimaris() == null || valoracio.hashValorPrimariSelected() == false)) {
-            return true;
-        } else if (valoracio.getAchValorsecundari() != null
-                && valoracio.getAchValorprimaris() != null
-                && valoracio.hashValorPrimariSelected() == true) {
-            return true;
-        }
-        return false;
-    }
-
-
-    private void clearForm() {
-
-        seriesRelacionadas.setSource(listaSeries);
-        seriesRelacionadas.setTarget(new ArrayList<>());
-        aplicaciones.setSource(listaAplicaciones);
-        aplicaciones.setTarget(new ArrayList<>());
-        seriesArgenRelacionadas.setSource(listaSeriesArgen);
-        seriesArgenRelacionadas.setTarget(new ArrayList<>());
-        normativasSerie.setSource(listaNormativaAprobacio);
-        normativasSerie.setTarget(new ArrayList<>());
-
-        listaRelacionLNS.clear();
-
-        serieId = null;
-        codi = null;
-        nom = null;
-        nomCas = null;
-        catalegSeriId = null;
-        funcioId = null;
-        descripcio = null;
-        descripcioCas = null;
-        resumMigracio = null;
-        dir3Promotor = null;
-        tipusSerieId = null;
-        codiIecisa = null;
-        serieEstat = "ESBORRANY";
-
-        valoracio = new ValoracioObject();
-        for (TipuValorObject tv : listaTiposValor) {
-            ValorPrimariObject vp = new ValorPrimariObject();
-            vp.setAchTipusvalor(tv);
-            valoracio.addValorprimari(vp);
-        }
-    }
-
-    private Boolean validNormativa() {
-        Boolean valid = true;
-
-        Iterator<LimitacioNormativaSerieObject> i = listaRelacionLNS.iterator();
-
-        while (i.hasNext() && valid == true) {
-            if (i.next().getNormativa().equals(selectedNormativa)) {
-                valid = false;
-            }
-        }
-
-        return valid;
-    }
-
-    public void onLimitacioSelectedListener(AjaxBehaviorEvent event) {
-
-
-        if (this.validNormativa()) {
-            LimitacioNormativaSerieObject lns = new LimitacioNormativaSerieObject();
-            lns.setListCausaLimitacio(new ArrayList<CausaLimitacioObject>());
-            lns.setDualListCausas(new DualListModel<CausaLimitacioObject>());
-            lns.getDualListCausas().setSource(listaCausaLimitacio);
-            lns.getDualListCausas().setTarget(new ArrayList<CausaLimitacioObject>());
-            lns.setNormativa(selectedNormativa);
-            listaRelacionLNS.add(lns);
-            selectedNormativa = null;
-        } else {
-            FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_ERROR, messageBundle.getString("nuevaserie.validate.dupnorm"), null);
-            FacesContext.getCurrentInstance().addMessage("mensaje-estado", message);
-        }
-
-
+			} else {
+				FacesContext.getCurrentInstance().validationFailed();
+				FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_ERROR, messageBundle.getString("nuevaserie.validate.valoracio"), null);
+				FacesContext.getCurrentInstance().addMessage(null, message);
+			}
+		}catch (I18NException e) {
+			log.error(FrontExceptionTranslate.translate(e, funcBean.getLocale()));
+			FacesMessage message = null;
+			if(serieId == null) {
+				message = new FacesMessage(FacesMessage.SEVERITY_ERROR, messageBundle.getString("nuevaserie.insert.error"), null);
+			} else {
+				message = new FacesMessage(FacesMessage.SEVERITY_ERROR, messageBundle.getString("nuevaserie.update.error"), null);
+			}
+			FacesContext.getCurrentInstance().addMessage(null, message);
+		}
+       
+	}
+	
+	private Boolean validateValoracion() {
+				
+		if(valoracio.getAchValorsecundari()==null 
+			&& (valoracio.getAchValorprimaris()==null || valoracio.hashValorPrimariSelected()==false)){
+			return true;
+		} else if(valoracio.getAchValorsecundari()!=null 
+			&& valoracio.getAchValorprimaris()!=null
+			&& valoracio.hashValorPrimariSelected()==true) {
+			return true;
+		}
+		return false;
+	}
+	
+	
+	private void clearForm(){
+		
+		seriesRelacionadas.setSource(listaSeries);
+		seriesRelacionadas.setTarget(new ArrayList<>());
+		aplicaciones.setSource(listaAplicaciones);
+		aplicaciones.setTarget(new ArrayList<>());
+		seriesArgenRelacionadas.setSource(listaSeriesArgen);
+		seriesArgenRelacionadas.setTarget(new ArrayList<>());
+		normativasSerie.setSource(listaNormativaAprobacio);
+		normativasSerie.setTarget(new ArrayList<>());
+		
+		listaRelacionLNS.clear();
+		
+		serieId= null;
+		codi = null;
+		nom = null;
+		nomCas = null;
+		catalegSeriId = null;
+		funcioId =  null;
+		descripcio =null;
+		descripcioCas= null;
+		resumMigracio = null;
+		dir3Promotor = null;
+		tipusSerieId = null;
+		codiIecisa = null;
+		serieEstat = "ESBORRANY";
+		
+		valoracio = new ValoracioObject();
+		for(TipuValorObject tv: listaTiposValor) {
+			ValorPrimariObject vp = new ValorPrimariObject();
+			vp.setAchTipusvalor(tv);
+			vp.setTerminiType(UNIDAD_PLAZO_SERIE_DEFAULT_MESSAGE);
+			valoracio.addValorprimari(vp);
+		}
+	}
+	
+	private Boolean validNormativa() {
+		Boolean valid = true;
+		
+		Iterator<LimitacioNormativaSerieObject> i = listaRelacionLNS.iterator();
+		
+		while(i.hasNext() && valid==true) {
+			if(i.next().getNormativa().equals(selectedNormativa)){
+				valid=false;
+			}
+		}
+		
+		return valid;
+	}
+	
+	public void onLimitacioSelectedListener(AjaxBehaviorEvent event){
+		
+		
+		if(this.validNormativa()) {
+			LimitacioNormativaSerieObject lns = new LimitacioNormativaSerieObject();
+    		lns.setListCausaLimitacio(new ArrayList<CausaLimitacioObject>());
+    		lns.setDualListCausas(new DualListModel<CausaLimitacioObject>());
+    		lns.getDualListCausas().setSource(listaCausaLimitacio);
+    		lns.getDualListCausas().setTarget(new ArrayList<CausaLimitacioObject>());
+    		lns.setNormativa(selectedNormativa);
+    		listaRelacionLNS.add(lns);
+    		selectedNormativa = null;
+		} else {
+			FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_ERROR, messageBundle.getString("nuevaserie.validate.dupnorm"), null);
+			FacesContext.getCurrentInstance().addMessage("mensaje-estado", message);
+		}
+		
+			
     }
 
     public void deleteLNS(LimitacioNormativaSerieObject lnsitem) {

@@ -17,6 +17,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.transaction.Transactional;
 
+import es.caib.archium.commons.utils.Constants;
 import org.primefaces.PrimeFaces;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.model.DualListModel;
@@ -131,8 +132,12 @@ public class ProcedimentController implements Serializable {
 	
 	ResourceBundle messageBundle = ResourceBundle.getBundle("messages.messages");
 
+	private static String UNIDAD_PLAZO_PROCEDIMIENTO_DEFAULT_MESSAGE = null;
+
 	@PostConstruct
-	public void init(){   
+	public void init(){
+
+		UNIDAD_PLAZO_PROCEDIMIENTO_DEFAULT_MESSAGE = messageBundle.getString("general.plazos.mesos"); 
 		
 		listaTipusPublicSelected =	new ArrayList<>();
 		materiaSelected	= new ArrayList<>();
@@ -230,7 +235,7 @@ public class ProcedimentController implements Serializable {
 				this.plazo1 	= Integer.parseInt(this.termine.substring(0,this.termine.length() - 1));
 			}
 			else {
-				this.plazo1a 	= null;
+				this.plazo1a 	= UNIDAD_PLAZO_PROCEDIMIENTO_DEFAULT_MESSAGE;
 				this.plazo1 	= null;
 			}
 			if (this.termininotif != null) {
@@ -248,7 +253,7 @@ public class ProcedimentController implements Serializable {
 					this.setPlazo2a(messageBundle.getString("general.plazos.anys"));
 			}
 			else {
-				this.plazo2a 	= null;
+				this.plazo2a 	= UNIDAD_PLAZO_PROCEDIMIENTO_DEFAULT_MESSAGE;
 				this.plazo2 	= null;
 			}
 		
@@ -335,9 +340,9 @@ public class ProcedimentController implements Serializable {
 		
 		this.codirolsac 	= null; 
 		this.plazo1 		= null;
-		this.plazo1a 		= null;
+		this.plazo1a 		= UNIDAD_PLAZO_PROCEDIMIENTO_DEFAULT_MESSAGE;
 		this.plazo2 		= null;
-		this.plazo2a 		= null;
+		this.plazo2a 		= UNIDAD_PLAZO_PROCEDIMIENTO_DEFAULT_MESSAGE;
 		this.termine  		= null;
 		this.termininotif	= null;
 		this.fiViaAdministrativa = null;

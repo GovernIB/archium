@@ -135,7 +135,8 @@
                     <p:cellEditor>
                 		<f:facet name="output"><h:outputText value="#{cuadro.normativaAprovacio.nom}" ></h:outputText></f:facet>
                 		<f:facet name="input">
-                			<p:selectOneMenu id="Idnormativa" value="#{cuadro.normativaAprovacio}" converter="NormativaConverter" required="true" requiredMessage="la nomativa de aprovacio no pot estar buit" style="width:150px">
+                			<p:selectOneMenu id="Idnormativa" value="#{cuadro.normativaAprovacio}" converter="NormativaConverter" required="true" requiredMessage="la nomativa de aprovacio no pot estar buit" style="width:150px"
+											 filter="true" filterMatchMode="contains">
 				                
 				                <f:selectItems value="#{dictamenController.listaNormativaAprovacio}" var="n" itemLabel="#{n.nom}" itemValue="#{n}" />
 				            	<f:converter converterId="NormativaConverter"/>

@@ -13,32 +13,32 @@ public class Serie extends Nodo{
     private List<String> codigoLimitacion;
     private String condicionReutilizacion;
     private List<TipoValor> tipoValor;
-    private String valorSecundario;
+    private ValorSecundario valorSecundario;
     private TipoDictamen tipoDictamen;
     private String accionDictaminada;
     private Integer plazoAccionDictaminada;
-    private String unidadPlazoAccionDictaminada;
+    private UnidadPlazo unidadPlazoAccionDictaminada;
     private Boolean isEsencial;
     private String tipoClasificacion;
     private Integer resellado;
-    private String unidadResellado;
+    private UnidadPlazo unidadResellado;
     private String content;
     private String mimeType;
     private String encoding;
 
-    public String getUnidadPlazoAccionDictaminada() {
+    public UnidadPlazo getUnidadPlazoAccionDictaminada() {
         return unidadPlazoAccionDictaminada;
     }
 
-    public void setUnidadPlazoAccionDictaminada(String unidadPlazoAccionDictaminada) {
+    public void setUnidadPlazoAccionDictaminada(UnidadPlazo unidadPlazoAccionDictaminada) {
         this.unidadPlazoAccionDictaminada = unidadPlazoAccionDictaminada;
     }
 
-    public String getUnidadResellado() {
+    public UnidadPlazo getUnidadResellado() {
         return unidadResellado;
     }
 
-    public void setUnidadResellado(String unidadResellado) {
+    public void setUnidadResellado(UnidadPlazo unidadResellado) {
         this.unidadResellado = unidadResellado;
     }
 
@@ -114,11 +114,11 @@ public class Serie extends Nodo{
         this.tipoValor = tipoValor;
     }
 
-    public String getValorSecundario() {
+    public ValorSecundario getValorSecundario() {
         return valorSecundario;
     }
 
-    public void setValorSecundario(String valorSecundario) {
+    public void setValorSecundario(ValorSecundario valorSecundario) {
         this.valorSecundario = valorSecundario;
     }
 

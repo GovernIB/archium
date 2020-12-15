@@ -13,6 +13,7 @@ import es.caib.archium.persistence.model.Dictamen;
 import es.caib.archium.persistence.model.Funcio;
 import es.caib.archium.persistence.model.Seriedocumental;
 import es.caib.archium.persistence.model.Tipusserie;
+import es.caib.archium.validators.CSGDValidator;
 import org.apache.commons.lang3.StringUtils;
 import org.primefaces.model.DefaultTreeNode;
 import org.primefaces.model.TreeNode;
@@ -54,6 +55,9 @@ public class FuncioFrontService {
 
     @Inject
     CSGDFuncionService csgdFuncionService;
+
+    @Inject
+    private CSGDValidator funcionValidator;
 
     @Transactional
     public TreeNode getContent(QuadreObject quadre) throws I18NException {
@@ -357,27 +361,12 @@ public class FuncioFrontService {
         }
 
         String parent = null;
-        //Comprobamos que el padre este sincronizado
-        if(funciondb.getAchFuncio()!=null) {
-            parent = funciondb.getAchFuncio().getNodeId();
-            if (!this.isParentsSynchronized(funciondb.getAchFuncio())) {
-                log.error("La funcion [Id = "+funciondb.getId()+", Cod = "+funciondb.getCodi()+"] no puede sincronizarse" +
-                        " hasta que todos sus padres esten sincronizados");
-                throw new I18NException("validaciones.funcio.padre.no.sincronizado", this.getClass().getSimpleName());
-            }
-        }else{
-            parent = funciondb.getAchQuadreclassificacio().getNodeId();
-            if(!funciondb.getAchQuadreclassificacio().isSynchronized()){
-                log.error("El cuadro de clasificacion [Id = " + funciondb.getAchQuadreclassificacio().getId() + ", " +
-                        "Cod = " + funciondb.getAchQuadreclassificacio().getNomcas() +"] debe sincronizarse para poder" +
-                        "sincronizar la funcion [Id = "+funciondb.getId()+", Cod = "+funciondb.getCodi()+"]");
-                throw new I18NException("validaciones.funcio.padre.no.sincronizado", this.getClass().getSimpleName());
-            }
-        }
+        //Comprobamos que el padre este sincronizado, obtenemos el padre mas cercano
+        parent = this.funcionValidator.checkSynchronizedParents(funciondb);
 
         log.info("Todos los padres de la funcion se encuentran sincronizados, se procede con la sincronizacion");
 
-        this.validarFuncion(funciondb);
+        this.funcionValidator.validarFuncion(funciondb);
 
         Funcion funcion = new Funcion();
         funcion.setCodigo(funciondb.getCodi());
@@ -423,6 +412,8 @@ public class FuncioFrontService {
         }
     }
 
+
+
     /**
      * Hayamos los hijos de la funcion, si devuelve algún resultado es que es funcion padre
      *
@@ -442,48 +433,7 @@ public class FuncioFrontService {
         return (funcionesHijas!=null && !funcionesHijas.isEmpty());
     }
 
-    /**
-     * Valida que toda la informacion requerida por GDIB este informada
-     *
-     * @param funciondb
-     */
-    private void validarFuncion(Funcio funciondb) throws I18NException {
-        log.debug("Validamos los datos de la funcion");
-        if(StringUtils.trimToNull(funciondb.getCodi()) == null
-        || StringUtils.trimToNull(funciondb.getEstat()) == null
-        || Estado.getEstado(funciondb.getEstat())==null){
-            log.error("Error de validacion de la funcion. Alguno de los campos obligatorios no esta informado");
-            throw new I18NException("validaciones.funcion", this.getClass().getSimpleName());
-        }else{
-            log.info("Funcion validada");
-        }
-    }
 
-    /**
-     * Comprueba que todos los padres hasta el cuadro de clasificacion esten sincronizados
-     *
-     * @param function
-     * @return
-     */
-    private boolean isParentsSynchronized(Funcio function) {
-        if(!function.isSynchronized()){
-            log.error("La funcion ["+function.getId()+"] no esta sincronizada");
-            return false;
-        }else{
-            log.debug("La funcion ["+function.getId()+"] esta sincronizada");
-        }
-        //Comprobamos si tiene funcion padre
-        if(function.getAchFuncio()!=null){
-            log.debug("Comprobamos si la funcion padre esta sincronizada...");
-            return isParentsSynchronized(function.getAchFuncio());
-        }else{
-            if(function.getAchQuadreclassificacio().isSynchronized()){
-                log.debug("El cuadro ["+function.getAchQuadreclassificacio().getNomcas()+"] esta sincronizado");
-                return true;
-            }else{
-                log.error("El cuadro ["+function.getAchQuadreclassificacio().getNomcas()+"] no esta sincronizado");
-                return false;
-            }
-        }
-    }
+
+
 }

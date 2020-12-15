@@ -2,7 +2,8 @@ package es.caib.archium.utils;
 
 import es.caib.archium.commons.i18n.I18NException;
 import es.caib.archium.commons.utils.Constants;
-import es.caib.archium.csgd.apirest.facade.pojos.Serie;
+import es.caib.archium.csgd.apirest.constantes.TipoDictamen;
+import es.caib.archium.csgd.apirest.constantes.UnidadPlazo;
 import es.caib.archium.persistence.model.Dictamen;
 import es.caib.archium.persistence.model.LimitacioNormativaSerie;
 import es.caib.archium.persistence.model.Seriedocumental;
@@ -100,11 +101,7 @@ public class CreateSerieXMLUtils {
 
         // Identificamos si es serie esencial en la etiqueta
         Attr attrEsencial = doc.createAttribute("documento_esencial");
-        if (BigDecimal.ONE.equals(dictamen.getSerieessencial())) {
-            attrEsencial.setValue("Sí");
-        } else {
-            attrEsencial.setValue("No");
-        }
+        attrEsencial.setValue(BigDecimal.ONE.equals(dictamen.getSerieessencial()) ? "Sí" : "No");
         root.setAttributeNode(attrEsencial);
 
         // Codigo y nombre de la funcion
@@ -209,17 +206,21 @@ public class CreateSerieXMLUtils {
             rootValorPrimario.appendChild(tipoValor);
 
             // Extraemos el número y la unidad
-            String unidad = UnidadPlazo.getCSGDUnidad(entry.getTermini().substring(entry.getTermini().length() - 1, entry.getTermini().length()));
-            String valor = entry.getTermini().substring(0, entry.getTermini().length() - 1);
+            UnidadPlazo unidad = this.calculoUtils.extraerUnidadPlazo(entry.getTermini());
+            String valor = String.valueOf(this.calculoUtils.extraerValorPlazo(entry.getTermini()));
 
             // plazo valor (termino)
             Element plazoValor = doc.createElement("plazo_valor");
-            plazoValor.appendChild(doc.createTextNode(valor));
+            if(StringUtils.trimToNull(valor)!=null) {
+                plazoValor.appendChild(doc.createTextNode(valor));
+            }
             rootValorPrimario.appendChild(plazoValor);
 
             // plazo_valor_unidad
             Element plazoValorUnidad = doc.createElement("plazo_valor_unidad");
-            plazoValorUnidad.appendChild(doc.createTextNode(unidad));
+            if(unidad!=null) {
+                plazoValorUnidad.appendChild(doc.createTextNode(unidad.toString()));
+            }
             rootValorPrimario.appendChild(plazoValorUnidad);
         }
 
@@ -234,41 +235,79 @@ public class CreateSerieXMLUtils {
 
         // Accion dictaminada
         Element accionDictaminada = doc.createElement("accion_dictaminada");
-        String ad = rellenarOCalcularAccionDictaminada(serie,dictamen);
+        String ad = this.calculoUtils.rellenarOCalcularAccionDictaminada(serie,dictamen);
         if(StringUtils.trimToNull(ad)!=null) {
             accionDictaminada.appendChild(doc.createTextNode(ad));
         }
         rootDictamen.appendChild(accionDictaminada);
 
-        String plazo = null;
-        if(StringUtils.trimToNull(dictamen.getTermini())!=null){
-            plazo = dictamen.getTermini();
-        }else{
-            plazo = calcularPlazoAccionDictaminada(dictamen);
-        }
-        String unidad = null;
+        String plazo = this.calculoUtils.calcularPlazoAccionDictaminada(dictamen);
+
+        UnidadPlazo unidad = null;
         String valor = null;
-        if(StringUtils.trimToNull(plazo)!=null) {
+        if (StringUtils.trimToNull(plazo) != null) {
             // Extraemos el número y la unidad
-            unidad = UnidadPlazo.getCSGDUnidad(dictamen.getTermini().substring(dictamen.getTermini().length() - 1, dictamen.getTermini().length()));
-            valor = dictamen.getTermini().substring(0, dictamen.getTermini().length() - 1);
+            unidad = this.calculoUtils.extraerUnidadPlazo(dictamen.getTermini());
+            valor =String.valueOf(this.calculoUtils.extraerValorPlazo(dictamen.getTermini()));
         }
 
 
         // Plazo accion dictaminada
         Element plazoAccionDictaminada = doc.createElement("plazo_accion_dictaminada");
-        if(StringUtils.trimToNull(valor)!=null) {
+        if (StringUtils.trimToNull(valor) != null) {
             plazoAccionDictaminada.appendChild(doc.createTextNode(valor));
         }
         rootDictamen.appendChild(plazoAccionDictaminada);
 
         // Plazo accion dictaminada unidad
         Element plazoAccionDictaminadaUnidad = doc.createElement("plazo_accion_dictaminada_unidad");
-        if(StringUtils.trimToNull(unidad)!=null) {
-            plazoAccionDictaminadaUnidad.appendChild(doc.createTextNode(unidad));
+        if(unidad!=null) {
+            plazoAccionDictaminadaUnidad.appendChild(doc.createTextNode(unidad.toString()));
         }
         rootDictamen.appendChild(plazoAccionDictaminadaUnidad);
 
+        // Si el tipo de dictamen es EP, se debe añadir los tipos documentales
+        if(TipoDictamen.EP == TipoDictamen.getTipoDictamen(dictamen.getAchTipusdictamen().getCodi())){
+            // Tipos documentales (<serie><dictamen><tipos_documentales>)
+            Element rootTiposDocumentales = doc.createElement("tipos_documentales");
+            rootDictamen.appendChild(rootTiposDocumentales);
+            // Para cada tipo documental...
+            dictamen.getAchDictamenTipusdocumentals().forEach( x ->  {
+                // Tipo documental (<serie><dictamen><tipos_documentales><tipo_documental>)
+                Element rootTipoDocumental = doc.createElement("tipo_documental");
+                rootTiposDocumentales.appendChild(rootTipoDocumental);
+
+                // Atributo codigo del tipo documental
+                Attr attrCodTipoDoc = doc.createAttribute("codigo");
+                attrCodTipoDoc.setValue(x.getAchTipusdocumental().getCodi());
+                rootTipoDocumental.setAttributeNode(attrCodTipoDoc);
+
+                // Atributo conservable del tipo documental
+                Attr attrConservableTipoDoc = doc.createAttribute("conservable");
+                attrConservableTipoDoc.setValue(BigDecimal.ZERO.equals(x.getConservable()) ? "No" : "Sí");
+                rootTipoDocumental.setAttributeNode(attrConservableTipoDoc);
+
+                // Extraemos el número y la unidad
+                UnidadPlazo unidadTipo = this.calculoUtils.extraerUnidadPlazo(x.getTermini());
+                String valorTipo = String.valueOf(this.calculoUtils.extraerValorPlazo(x.getTermini()));
+
+                // plazo dictamen (termino tipo documental)
+                Element plazoDictamen = doc.createElement("plazo_dictamen");
+                if(StringUtils.trimToNull(valorTipo)!=null) {
+                    plazoDictamen.appendChild(doc.createTextNode(valorTipo));
+                }
+                rootTipoDocumental.appendChild(plazoDictamen);
+
+                // plazo_unidad_dictamen
+                Element plazoDictamenUnidad = doc.createElement("plazo_unidad_dictamen");
+                if(unidadTipo!=null) {
+                    plazoDictamenUnidad.appendChild(doc.createTextNode(unidadTipo.toString()));
+                }
+                rootTipoDocumental.appendChild(plazoDictamenUnidad);
+
+
+            });
+        }
 
         // Preparamos para exportar como fichero el contenido creado
         TransformerFactory transformerFactory = TransformerFactory.newInstance();
@@ -281,70 +320,6 @@ public class CreateSerieXMLUtils {
         log.info("Generado documento xml con los datos de la serie, se guarda codificado en base64");
         // Transformamos el resultado a un String codificado en base64
         return Base64.getEncoder().encodeToString(baos.toByteArray());
-    }
-
-    /**
-     * La accion dictaminada se obtiene directamente del atributo, pero si está vacía, habrá que calcularla:
-     * <p>
-     * Como se ha visto en las verificaciones de coherencia entre serie y dictamen, puede darse el caso en que no se
-     * tenga directamente el campo de «acción dictaminada» rellenado para un dictamen sino que se calcula a partir de
-     * otros campos. Esto, en parte, es deseable de cara a poder automatizar al máximo las tareas de conservación en base
-     * al dictamen (y evitar posibles errores de introducción de datos).
-     * La lógica sería:
-     * 1.	Si tenemos acción dictaminada (campo de la tabla dictamen), ésta prevalece y el metadato se corresponde con
-     * el campo acciodictaminada. Se supone que, en este caso, el gestor ha querido sobreescribir la acción «calculada»
-     * para expresar alguna tarea específica.
-     * 2.	Si no tenemos acción dictaminada:
-     * a)	Si tipus dictamen = 'CP', la acción dictaminada "calculada" (metadato) sería "Conservación permanente" (tipusdictamen.nomcas)
-     * b)	Si tipus dictamen = 'ET', la acción dictaminada estará vacía en Archium, pero es obligatorio disponer de
-     * termini en el dictamen. La acción dictaminada "calculada" (metadato) sería: <tipusdictamen.nomcas> «a los »
-     * <dictamen.termini>  « de la finalización del expediente». Ejemplo: «Eliminación total a los 4 años de la finalización del expediente».
-     * <p>
-     * c)	Si tipus dictamen = 'EP', la acción dictaminada puede estar vacía en Archium, pero han de existir datos en
-     * la tabla que relaciona un dictamen con los tipos documentales para discriminar cuáles se conservan y cuáles
-     * no. La acción dictaminada "calculada" (metadato) sería:
-     * <tipusdictamen.nomcas>
-     * «Conservación:»
-     * - <tipo documental> (<plazo tipodocumental o, en su ausencia, plazo dictamen...pero uno de ellos debe estar especificado>)
-     * - <tipo documental> (<plazo tipodocumental o, en su ausencia, plazo dictamen...pero uno de ellos debe estar especificado>)
-     * ...
-     * «Eliminación:»
-     * - <tipo documental> (<plazo tipodocumental o, en su ausencia, plazo dictamen...pero uno de ellos debe estar especificado>)
-     * ...
-     * d)	Si tipus dictamen = 'PD', la acción dictaminada puede estar vacía (metadato sin especificar), o bien, poner
-     * el nombre del tipo de dictamen “Pendiente de dictamen”
-     *
-     * @param serieWs
-     * @param dictamen
-     */
-    private String rellenarOCalcularAccionDictaminada(Seriedocumental serie, Dictamen dictamen) {
-        if (StringUtils.trimToNull(dictamen.getAcciodictaminada()) != null) {
-            return dictamen.getAcciodictaminada();
-        } else {
-            // Si no esta informada la calculamos
-            return this.calculoUtils.calcularAccionDictaminada(dictamen);
-        }
-    }
-
-    /**
-     * Se extrae valor y unidad del termino del dictamen. Si este esta en blanco se calcula:
-     * <p>
-     * La mayoría de los casos estarán cubiertos con equivalencia directa con el campo termini de la tabla de dictámenes.
-     * No obstante, hay situaciones en los que el plazo de la acción dictaminada se debe calcular:
-     * •	Si es un dictamen de tipo «pendent de dictamen», puede o no haber plazo.
-     * •	Si es un dictamen de tipo «conservación permanente», no debería haber plazo.
-     * •	Si es un dictamen de eliminación parcial, podemos tener diferentes plazos en juego. Cuál de todos ellos poner?
-     * La propuesta sería coger de Archium el mayor de todos los plazos entre el plazo del dictamen y los plazos específicos de los tipos documentales.
-     *
-     * @param serieWs
-     * @param dictamen
-     */
-    private String calcularPlazoAccionDictaminada(Dictamen dictamen) throws I18NException {
-        if (StringUtils.trimToNull(dictamen.getTermini()) == null) {
-            // Si no esta informado, se calcula
-            return this.calculoUtils.calcularPlazoAccionDictaminada(dictamen);
-        }
-        return null;
     }
 
     /**

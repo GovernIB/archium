@@ -44,7 +44,7 @@ import java.util.List;
      private String nodeId;
 
      @Column(name="SYNCHRONIZED")
-     private boolean isSynchronized;
+     private Boolean isSynchronized;
 
      //bi-directional many-to-one association to Funcio
      @ManyToOne
@@ -82,11 +82,11 @@ import java.util.List;
          this.nodeId = nodeId;
      }
 
-     public boolean isSynchronized() {
-         return isSynchronized;
+     public Boolean isSynchronized() {
+         return isSynchronized == null ? false : isSynchronized;
      }
 
-     public void setSynchronized(boolean aSynchronized) {
+     public void setSynchronized(Boolean aSynchronized) {
          isSynchronized = aSynchronized;
      }
 

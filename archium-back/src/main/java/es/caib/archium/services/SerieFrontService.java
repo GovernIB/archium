@@ -13,8 +13,8 @@ import es.caib.archium.objects.*;
 import es.caib.archium.persistence.model.*;
 import es.caib.archium.utils.CalculoUtils;
 import es.caib.archium.utils.CreateSerieXMLUtils;
-import es.caib.archium.utils.UnidadPlazo;
-import es.caib.archium.validators.SerieDictamenValidator;
+import es.caib.archium.csgd.apirest.constantes.UnidadPlazo;
+import es.caib.archium.validators.CSGDValidator;
 import org.apache.commons.lang3.StringUtils;
 import org.primefaces.model.DualListModel;
 import org.slf4j.Logger;
@@ -81,8 +81,9 @@ public class SerieFrontService {
     @Inject
     private CreateSerieXMLUtils toXmlUtil;
     @Inject
-    private SerieDictamenValidator serieValidator;
-
+    private CSGDValidator serieValidator;
+    @Inject
+    private CalculoUtils calculoUtils;
 
     public List<Dir3Object> getListaDir3() throws I18NException {
 
@@ -851,58 +852,39 @@ public class SerieFrontService {
             throw new I18NException("excepcion.general.Exception", this.getClass().getSimpleName(), "get entity");
         }
 
-        //Comprobamos que el padre este sincronizado
-        if (!this.isParentsSynchronized(serie.getAchFuncio())) {
-            log.error("La serie [Id = " + serie.getId() + ", Cod = " + serie.getCodi() + "] no puede sincronizarse hasta que " +
-                    "todos sus padres esten sincronizados");
-            throw new I18NException("validaciones.serie.padre.no.sincronizado", this.getClass().getSimpleName());
-        }
-        log.info("Todos los padres de la serie se encuentran sincronizados, se procede con la sincronizacion");
+        //Comprobamos que los padres esten sincronizados
+        this.serieValidator.checkSynchronizedParents(serie);
 
-        // Validamos los datos de la serie
-        this.serieValidator.validarSincronizarSerieDatosMinimos(serie);
+        // Validamos requisitos de negocio para poder enviar la serie a Alfresco
+        this.serieValidator.validarSincronizarSerie(serie);
+
 
         //Creamos el dto
         Serie serieWs = new Serie();
 
         serieWs.setCodigo(serie.getCodi());
         serieWs.setDenominacionClase(serie.getNomcas());
-        serieWs.setCodigoLimitacion(extraerCodigoLimitacion(serie));
-        extraerValoresYPlazo(serie, serieWs);
+        serieWs.setCodigoLimitacion(this.calculoUtils.extraerCodigoLimitacion(serie));
+        this.calculoUtils.extraerValoresYPlazo(serie, serieWs);
 
         // Recuperamos el dictamen en estado vigente (solo puede tener uno cada serie) o el dictamen en estado esborrany
         // mas reciente
-        Dictamen dictamen = getDictamenActivo(serie.getAchDictamens());
+        Dictamen dictamen = this.calculoUtils.getDictamenActivo(serie);
 
+        serieWs.setAccionDictaminada(this.calculoUtils.calcularAccionDictaminada(dictamen));
+        String plazoAcccionDictaminada = this.calculoUtils.calcularPlazoAccionDictaminada(dictamen);
+        serieWs.setPlazoAccionDictaminada(this.calculoUtils.extraerValorPlazo(plazoAcccionDictaminada));
+        serieWs.setUnidadPlazoAccionDictaminada(this.calculoUtils.extraerUnidadPlazo(plazoAcccionDictaminada));
 
-        if (dictamen != null) {
-            log.info("Dictamen activo de la serie [" + serie.getCodi() + "]: [" + dictamen.getCodi() + "] con estado " +
-                    "[" + dictamen.getEstat() + "]");
-            // Si el dictamen esta en estado activo lleva unas validaciones extra
-            if (Estado.VIGENT.getValue().equalsIgnoreCase(dictamen.getEstat())) {
-                this.serieValidator.validarDictamenVigente(dictamen, serie);
-            }
-            //Validamos que los datos obligatorios del dictamen estén informados
-            this.serieValidator.validarDictamenSicronizarSerieDatosMinimos(dictamen);
+        serieWs.setLopd(LOPD.getLopd(dictamen.getAchLopd().getNomcas()));
+        serieWs.setTipoAcceso(TipoAcceso.getTipoAcceso(dictamen.getAchTipusacce().getNomcas()));
+        serieWs.setConfidencialidad(Confidencialidad.getConfidencialidad(dictamen.getAchEn().getNomcas()));
+        // Para el caso de las series documentales, siempre será un valor por defecto
+        serieWs.setTipoClasificacion(Constants.ArchiumConstants.TIPO_CLASIFICACION_VALOR_POR_DEFECTO.getValue());
+        serieWs.setCondicionReutilizacion(dictamen.getCondicioreutilitzacio());
+        serieWs.setTipoDictamen(TipoDictamen.getTipoDictamen(dictamen.getAchTipusdictamen().getCodi()));
+        serieWs.setEsencial(BigDecimal.ONE.equals(dictamen.getSerieessencial()));
 
-            serieWs.setAccionDictaminada(dictamen.getAcciodictaminada());
-            getPlazoAccionDictaminada(serieWs,dictamen.getTermini());
-
-            serieWs.setLopd(LOPD.getLopd(dictamen.getAchLopd().getNomcas()));
-            serieWs.setTipoAcceso(TipoAcceso.getTipoAcceso(dictamen.getAchTipusacce().getNomcas()));
-            serieWs.setConfidencialidad(Confidencialidad.getConfidencialidad(dictamen.getAchEn().getNomcas()));
-            // Para el caso de las series documentales, siempre será un valor por defecto
-            serieWs.setTipoClasificacion(Constants.ArchiumConstants.TIPO_CLASIFICACION_VALOR_POR_DEFECTO.getValue());
-            serieWs.setCondicionReutilizacion(dictamen.getCondicioreutilitzacio());
-            serieWs.setTipoDictamen(TipoDictamen.getTipoDictamen(dictamen.getAchTipusdictamen().getCodi()));
-            serieWs.setEsencial(BigDecimal.ONE.equals(dictamen.getSerieessencial()));
-        } else {
-            log.error("La serie [" + serie.getCodi() + "] no cuenta con un dictamen en estado activo ('vigent'), por lo que no es posible sincronizarse");
-            throw new I18NException("validaciones.serie.dictamen.novigente", this.getClass().getSimpleName());
-        }
-
-        // Se realizan validaciones de los datos a enviar a Alfresco para asegurar que cumple todos los requisitos de negocio
-        this.serieValidator.validarSincronizarSerie(serieWs, dictamen);
 
         // Se crea xml que  contiene todos los metadatos descriptivos de la serie documental
         // Se guarda transformado en base64
@@ -914,7 +896,7 @@ public class SerieFrontService {
         } catch (ParserConfigurationException | TransformerException e) {
             log.error("Se ha producido un error generando el documento con los datos de la serie: " + e);
             throw new I18NException("excepcion.general.Exception", this.getClass().getSimpleName(), "synchronize");
-        } catch (I18NException e){
+        } catch (I18NException e) {
             throw e;
         }
 
@@ -956,186 +938,7 @@ public class SerieFrontService {
         }
     }
 
-    private void getPlazoAccionDictaminada(Serie serieWs, String termini) {
-        if(StringUtils.trimToNull(termini)!=null) {
-            serieWs.setUnidadPlazoAccionDictaminada(UnidadPlazo.getCSGDUnidad(termini.substring(termini.length() - 1, termini.length())));
-            serieWs.setPlazoAccionDictaminada(Integer.valueOf(termini.substring(0, termini.length() - 1)));
-        }
-    }
 
-    /**
-     * El resellado es el mayor de los plazos de los valores primarios de la serie, se entiende el resellado el periodo
-     * durante el cual se tiene que resellar o revalidar la firma electronica
-     *
-     * @param plazo
-     * @return
-     */
-    private String getResellado(List<String> plazo) {
-        int valorMax = -1;
-        UnidadPlazo unidadMax = null;
-        for (String x : plazo) {
-            int valor = Integer.valueOf(x.substring(0, x.length() - 1));
-            UnidadPlazo unidad = UnidadPlazo.getUnidad(x.substring(x.length() - 1, x.length()));
-            if (valorMax == -1) {
-                unidadMax = unidad;
-                valorMax = valor;
-            } else if (valorMax < valor && !unidadMax.isGreaterThan(unidad)) {
-                unidadMax = unidad;
-                valorMax = valor;
-            }
-        }
-        return valorMax + unidadMax.toString();
-    }
-
-
-    /**
-     * SerieDocumental.valoracio[fi IS NULL].valorPrimari.tipusValor.nomcas
-     * <p>
-     * Dada la serie, escoge la valoración vigente (sin fecha de fin, sólo debería haber una, en caso de haber varias,
-     * nos quedamos con la mas reciente) y coge todos los valores primarios (metadato múltiple).
-     *
-     * @param serie
-     * @param serieWs
-     * @return
-     */
-    private void extraerValoresYPlazo(Seriedocumental serie, Serie serieWs) throws I18NException {
-        serieWs.setTipoValor(new ArrayList<>());
-        List<String> plazos = new ArrayList<>();
-
-        Valoracio valoracionActiva = extraerValoracionActiva(serie.getAchValoracios());
-
-        if (valoracionActiva != null) {
-            serieWs.setValorSecundario(valoracionActiva.getAchValorsecundari().getNomcas());
-            for (Valorprimari p : valoracionActiva.getAchValorprimaris()) {
-                serieWs.getTipoValor().add(TipoValor.getTipoValor(p.getAchTipusvalor().getNomcas()));
-                plazos.add(p.getTermini());
-            }
-            // De todos los plazos del valor primario, el termino sera el mayor de ellos
-            String resellado = getResellado(plazos);
-            Integer value = Integer.valueOf(resellado.substring(0, resellado.length() - 1));
-            String unidad = UnidadPlazo.getCSGDUnidad(resellado.substring(resellado.length() - 1, resellado.length()));
-            serieWs.setResellado(value);
-            serieWs.setUnidadResellado(unidad);
-        }
-
-
-    }
-
-    /**
-     * Valoracion activa de una serie es la que tiene fi == null, solo deberia haber una, pero como se puede dar el caso de que haya varias
-     * ya que Archium no lo controla, cogeremos la mas reciente.
-     *
-     * @param achValoracios
-     * @return
-     */
-    private Valoracio extraerValoracionActiva(List<Valoracio> achValoracios) {
-        Valoracio valoracionActiva = null;
-        for (Valoracio v : achValoracios) {
-            if (v.getFi() == null) {
-                if (valoracionActiva == null) {
-                    // Si todavía no hay ninguna, se escoge esa
-                    valoracionActiva = v;
-                } else if (v.getInici().after(valoracionActiva.getInici())) {
-                    // Si la fecha de inicio es mas cercana a la actual, se escoge
-                    valoracionActiva = v;
-                }
-            }
-        }
-        return valoracionActiva;
-    }
-
-    /**
-     * En la definición de la serie, se utiliza la tabla ach_limitacio_normativa_serie para almacenar las distintas causas de limitación (las causas por las que se limita el acceso) así como las normativas aplicables para cada una de estas causas.
-     * Se trata de una tabla cuya PK es: serie + causaLimitacion + normativa.
-     * Por tanto, dada la serie a migrar a Alfresco:
-     * - Las causas de limitación a transferir son las distintas causas de limitación presentes en esta tabla para esa serie.
-     * - Las normativas son todas las que aparecen para la serie en cuestión y para cada causa de limitación.
-     * <p>
-     * Como propiedades basta con pasar las causas limitacion ya que es lo que realmente interesa a nivel archivistico,
-     * en la generación del documento XML guardaremos la relacion entre causas limitacion y normativas
-     *
-     * Excluir las limitaciones que tengan puesto fecha de fin NOT NULL anterior a la fecha actual (fecha pasada, que haya expirado).
-     *
-     * @param serie
-     * @return
-     */
-    private List<String> extraerCodigoLimitacion(Seriedocumental serie) {
-        // Si no tiene lista de limitaciones no se pueden extraer ni normativas ni causas limitacion
-        if (serie.getAchLimitacioNormativaSeries() == null || serie.getAchLimitacioNormativaSeries().isEmpty()) {
-            return null;
-        }
-        List<String> list = new ArrayList<>();
-        // Extraemos las causas limitacion y series, relacionandolas para mantener la correspondencia
-        for (LimitacioNormativaSerie lm : serie.getAchLimitacioNormativaSeries()) {
-            // Se excluyen las causas limitacion cuya fecha fin es anterior al día de hoy
-            if (lm.getId().getSeriedocumentalId().equals(serie.getId())
-                    && (lm.getFi() == null || (lm.getFi() != null && lm.getFi().after(new Date())))) {
-                list.add(lm.getAchCausalimitacio().getCodi());
-            }
-        }
-        return list;
-    }
-
-    /**
-     * Devuelve el dictamen activo (estado = "vigent"), en caso de no haber ninguno en estado vigente, se considera activo
-     * al dictamen mas reciente de los que esten en estado "esborrany"
-     *
-     * @param achDictamens
-     * @return
-     */
-    private Dictamen getDictamenActivo(List<Dictamen> achDictamens) {
-        log.debug("Comprobamos cual es el dictamen activo para la serie");
-        // Si no tiene dictamenes....
-        if (achDictamens == null || achDictamens.isEmpty()) {
-            return null;
-        }
-
-        Dictamen recienteEsborrany = null;
-        // Buscamos el dictamen activo
-        for (Dictamen dic : achDictamens) {
-            if (Constants.ArchiumConstants.DICTAMEN_ACTIVO.getValue().equalsIgnoreCase(dic.getEstat())) {
-                return dic;
-            } else if (Constants.ArchiumConstants.DICTAMEN_RECIENTE_ESTADO.getValue().equalsIgnoreCase(dic.getEstat())) {
-                if (recienteEsborrany == null) {
-                    recienteEsborrany = dic;
-                } else if (dic.getInici().after(recienteEsborrany.getInici())) {
-                    recienteEsborrany = dic;
-                }
-            }
-        }
-
-        // Si llega aqui es que ningun dictamen esta activo, procedemos a devolver el dictamen en estado esborrany mas
-        // reciente. Si no hay ninguno este sera null, por lo que la serie no pasara las validaciones
-        return recienteEsborrany;
-    }
-
-    /**
-     * Comprueba que todos los padres hasta el cuadro de clasificacion esten sincronizados
-     *
-     * @param function
-     * @return
-     */
-    private boolean isParentsSynchronized(Funcio function) {
-        if (!function.isSynchronized()) {
-            log.error("La funcion [" + function.getId() + "] no esta sincronizada");
-            return false;
-        } else {
-            log.debug("La funcion [" + function.getId() + "] esta sincronizada");
-        }
-        //Comprobamos si tiene funcion padre
-        if (function.getAchFuncio() != null) {
-            log.debug("Comprobamos si la funcion padre esta sincronizada...");
-            return isParentsSynchronized(function.getAchFuncio());
-        } else {
-            if (function.getAchQuadreclassificacio().isSynchronized()) {
-                log.debug("El cuadro [" + function.getAchQuadreclassificacio().getNomcas() + "] esta sincronizado");
-                return true;
-            } else {
-                log.error("El cuadro [" + function.getAchQuadreclassificacio().getNomcas() + "] no esta sincronizado");
-                return false;
-            }
-        }
-    }
 
 
 }

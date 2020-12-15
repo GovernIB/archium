@@ -502,17 +502,17 @@ public class ApiCSGDServices {
         dto.getMetadataCollection().add(new Metadata(Constantes.LOPD_QNAME,serie.getLopd().getValue()));
         dto.getMetadataCollection().add(new Metadata(Constantes.CONFIDENCIALIDAD_QNAME,serie.getConfidencialidad().getValue()));
         dto.getMetadataCollection().add(new Metadata(Constantes.TIPO_ACCESO_QNAME,serie.getTipoAcceso().getValue()));
-        dto.getMetadataCollection().add(new Metadata(Constantes.VALOR_SECUNDARIO_QNAME,serie.getValorSecundario()));
+        dto.getMetadataCollection().add(new Metadata(Constantes.VALOR_SECUNDARIO_QNAME,serie.getValorSecundario().getValue()));
         dto.getMetadataCollection().add(new Metadata(Constantes.TIPO_VALOR_QNAME,serie.getTipoValor()));
         dto.getMetadataCollection().add(new Metadata(Constantes.TIPO_DICTAMEN_QNAME,serie.getTipoDictamen()));
         dto.getMetadataCollection().add(new Metadata(Constantes.DOCUMENTO_ESENCIAL_QNAME,serie.getEsencial().booleanValue()));
         dto.getMetadataCollection().add(new Metadata(Constantes.PLAZO_RESELLADO_QNAME,serie.getResellado()));
-        dto.getMetadataCollection().add(new Metadata(Constantes.PLAZO_UNIDAD_RESELLADO_QNAME,serie.getUnidadResellado()));
+        dto.getMetadataCollection().add(new Metadata(Constantes.PLAZO_UNIDAD_RESELLADO_QNAME,serie.getUnidadResellado().toString()));
 
 
         // Propiedades optativas, solo las metemos si tienen valor
         if(StringUtils.trimToNull(serie.getAccionDictaminada())!=null) {
-            dto.getMetadataCollection().add(new Metadata(Constantes.PLAZO_UNIDAD_ACCION_DICTAMINADA_QNAME,serie.getUnidadPlazoAccionDictaminada()));
+            dto.getMetadataCollection().add(new Metadata(Constantes.PLAZO_UNIDAD_ACCION_DICTAMINADA_QNAME,serie.getUnidadPlazoAccionDictaminada().toString()));
         }
 
         if(serie.getPlazoAccionDictaminada()!=null) {

@@ -51,7 +51,7 @@ public class QuadreObject {
 			this.versio = dbQuadre.getVersio();
 			this.fi = dbQuadre.getFi();
 			this.nodeId = dbQuadre.getNodeId();
-			this.isSynchronized = dbQuadre.isSynchronized();
+			this.isSynchronized = dbQuadre.isSynchronized() == null ? false : dbQuadre.isSynchronized();
 		}
 	}
 

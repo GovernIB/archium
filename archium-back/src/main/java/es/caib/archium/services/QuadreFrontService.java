@@ -10,6 +10,7 @@ import es.caib.archium.csgd.apirest.facade.pojos.CuadroClasificacion;
 import es.caib.archium.ejb.service.QuadreClassificacioService;
 import es.caib.archium.objects.QuadreObject;
 import es.caib.archium.persistence.model.Quadreclassificacio;
+import es.caib.archium.validators.CSGDValidator;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,6 +35,9 @@ public class QuadreFrontService {
 
     @Inject
     CSGDCuadroService csgdCuadroService;
+
+    @Inject
+    private CSGDValidator cuadroValidator;
 
     public Boolean checkNameUnique(Long id, String nombre) throws I18NException {
 
@@ -182,20 +186,20 @@ public class QuadreFrontService {
     }
 
     @Transactional
-    public void synchronize(Long tableId) throws I18NException {
-        log.debug("Procedemos a sincronizar el cuadro de clasificacion con id=[" + tableId + "]");
+    public void synchronize(Long rootId) throws I18NException {
+        log.debug("Procedemos a sincronizar el cuadro de clasificacion con id=[" + rootId + "]");
         log.debug("Obtenemos los datos del cuadro...");
         //Obtenemos el cuadro de clasificacion de base de datos
         Quadreclassificacio cuadrodb = null;
         try {
-            cuadrodb = quadreEjb.getReference(tableId);
+            cuadrodb = quadreEjb.getReference(rootId);
         } catch (Exception e) {
             log.error("Error obteniendo la entidad del cuadro: " + e);
             throw new I18NException("excepcion.general.Exception", this.getClass().getSimpleName(), "get entity");
         }
 
         // Validamos que los datos requeridos por gdib estan informados en el cuadro
-        this.validarCuadro(cuadrodb);
+        this.cuadroValidator.validarCuadro(cuadrodb);
 
         CuadroClasificacion cuadroWs = new CuadroClasificacion();
         cuadroWs.setCodigo(cuadrodb.getNomcas());
@@ -237,21 +241,7 @@ public class QuadreFrontService {
         }
     }
 
-    /**
-     * Valida que toda la informacion requerida por GDIB este informada
-     *
-     * @param cuadrodb
-     */
-    private void validarCuadro(Quadreclassificacio cuadrodb) throws I18NException {
-        log.debug("Validamos los datos del cuadro");
-        if(StringUtils.trimToNull(cuadrodb.getEstat()) == null
-                || Estado.getEstado(cuadrodb.getEstat())==null){
-            log.error("Error de validacion del cuadro de clasificacion. Alguno de los campos obligatorios no esta informado");
-            throw new I18NException("validaciones.cuadro", this.getClass().getSimpleName());
-        }else{
-            log.info("Cuadro de clasificacion validado");
-        }
-    }
+
 
 
     private String getExceptionI18n(String clientErrorCode) {

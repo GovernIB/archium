@@ -68,7 +68,7 @@ public class FuncioObject {
 			this.tipoSerie = new TipusSerieObject(dbFuncio.getAchTipusserie());
 			this.codigoCuadro = new QuadreObject(dbFuncio.getAchQuadreclassificacio());
 			this.nodeId = dbFuncio.getNodeId();
-			this.isSynchronized = dbFuncio.isSynchronized();
+			this.isSynchronized = dbFuncio.isSynchronized() == null ? false : dbFuncio.isSynchronized();
 			
 			if(dbFuncio.getAchFuncio()!=null) {
 				FuncioObject fp = new FuncioObject();

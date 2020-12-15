@@ -8,7 +8,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public enum TipoValor {
-    ADMINISTRATIVO("Administrativo"),FISCAL("Fiscal"),JURIDICO("Jurídico"),OTROS("Otros");
+    ADMINISTRATIVO("Administrativo"),FISCAL("Fiscal"),JURIDICO("Juridico"),OTROS("Otros");
 
     private String value;
 

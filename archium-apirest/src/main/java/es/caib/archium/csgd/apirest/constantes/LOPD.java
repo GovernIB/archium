@@ -8,7 +8,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public enum LOPD {
-    BASICO("Básico"),MEDIO("Medio"),ALTO("Alto");
+    BASICO("Basico"),MEDIO("Medio"),ALTO("Alto");
 
     private String value;
 

@@ -1,4 +1,4 @@
-package es.caib.archium.persistence.test;
+package es.caib.archium.communication.test;
 
 import org.junit.Test;
 

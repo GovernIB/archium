@@ -1,4 +1,4 @@
-package es.caib.archium.utils;
+package es.caib.archium.csgd.apirest.constantes;
 
 import java.util.Arrays;
 import java.util.List;
@@ -7,12 +7,16 @@ import java.util.List;
  * A = Año
  * M = Mes
  * S = Semana
- * D = Dia
+ * DH = Dia Habil
+ * DN = Dia Natural
  * H = Hora
  *
+ * Por el momento Archium solo distingue dia, por lo que lo traduciremos siempre como DN en este caso
+ * El valor numerico corresponde en orden inverso al que equivale a mayor plazo temporal, que utilizaremos para sacar
+ * el mayor plazo en algunas operaciones
  */
 public enum UnidadPlazo {
-    A(0),M(1),S(2),D(3),H(4);
+    A(0),M(1),S(2),DH(3),DN(4),H(5);
 
     int value;
     UnidadPlazo(int value){
@@ -30,30 +34,16 @@ public enum UnidadPlazo {
     public static UnidadPlazo getUnidad(String unidad){
         List<UnidadPlazo> values = Arrays.asList(UnidadPlazo.values());
 
+        // Por el momento Archium solo distingue dia, por lo que lo traduciremos siempre como Dia Natural en este caso
+        if("D".equalsIgnoreCase(unidad)){
+            return UnidadPlazo.DN;
+        }
+
         for(UnidadPlazo u : values){
             if(u.toString().equalsIgnoreCase(unidad)){
                 return u;
             }
         }
         return null;
-    }
-
-    /**
-     * Actualmente en Archium no se hace la distincion entre día natural y día habil, por lo tanto de forma temporal, siempre
-     * que la unidad sea dia, enviaremos a GDIB "DN" (Dia Natural)
-     *
-     * @param unidad
-     * @return
-     */
-    public static String getCSGDUnidad(String unidad){
-        UnidadPlazo u = getUnidad(unidad);
-        if(u==null){
-            return null;
-        }
-        if(D == u){
-            return "DN";
-        }else{
-            return u.toString();
-        }
     }
 }

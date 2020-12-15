@@ -71,8 +71,7 @@ public interface Constants {
     static enum ArchiumConstants{
         DICTAMEN_ACTIVO("vigent"),
         DICTAMEN_RECIENTE_ESTADO("esborrany"),
-        TIPO_CLASIFICACION_VALOR_POR_DEFECTO("Funcional"),
-        VALOR_SECUNDARIO_SI("Sí");
+        TIPO_CLASIFICACION_VALOR_POR_DEFECTO("Funcional");
 
         private String value;
 

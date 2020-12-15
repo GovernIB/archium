@@ -141,7 +141,7 @@
 					    	<div class="ui-g-6 item_1">
 						    	<label class="ui-g-4">#{messages['nuevodictamen.normativaA']}</label>
 				    			<p:selectOneMenu class="ui-g-8 selector_6" id="Normativa" value="#{dictamenController.normativaAprovacio}" label="Normativa" 
-						                              panelStyle=""
+						                              panelStyle="" filter="true" filterMatchMode="contains"
 						                              >
 						             <f:converter converterId="NormativaConverter"/>
 						             <f:selectItem itemLabel="-- #{messages['selecciona']} #{messages['nuevodictamen.normativaA']} -- " itemValue="#{null}" noSelectionOption="true"/>

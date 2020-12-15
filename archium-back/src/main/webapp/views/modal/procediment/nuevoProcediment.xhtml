@@ -182,7 +182,7 @@
 								    <div class="ui-g-6 item_1">
 								    	<label class="ui-g-4">#{messages['nuevoprocediment.SerieDocumental']}</label>		    			
 							        	<p:selectOneMenu class="ui-g-8" id="seriedocumental" value="#{procedimentController.seriedocumental}" label="SerieDocumental" converter="SerieDocumentalConverter" 
-							        					 panelStyle="">
+							        					 panelStyle="" filter="true" filterMatchMode="contains">
 							        		<f:selectItem itemLabel="-- #{messages['selecciona']} #{messages['nuevoprocediment.SerieDocumental']} -- " itemValue="#{null}" noSelectionOption="true"/>
 								            <f:selectItems value="#{procedimentController.listaSerieDocumental}"  var="n" itemLabel="#{n.nom}"  itemValue="#{n}"/>
 								        </p:selectOneMenu>

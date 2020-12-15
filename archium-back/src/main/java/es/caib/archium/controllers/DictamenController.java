@@ -99,10 +99,13 @@ public class DictamenController implements Serializable {
 		DictamenObject nuevoDictamenVigente = null;
 		Boolean confirmacionVigent = false;
 		Boolean confirmacionVigentReq = false;
+
+		private static String UNIDAD_PLAZO_DICTAMEN_DEFAULT_MESSAGE = null;
 	    
 	    @PostConstruct
 	    public void init(){   
 	    		    
+	    	UNIDAD_PLAZO_DICTAMEN_DEFAULT_MESSAGE = messageBundle.getString("general.plazos.anys");
 	    	Map<String, Object> viewMap = FacesContext.getCurrentInstance().getViewRoot().getViewMap();
 			this.funcBean = (FuncionesController) viewMap.get("funciones");
 	    	this.confirmacionVigent = false;
@@ -318,7 +321,7 @@ public class DictamenController implements Serializable {
 	    	this.aprovacio = null;
 	    	this.codi = null;
 	    	this.estat = null;
-	    	this.plazoTermini = messageBundle.getString(Constants.UNIDAD_PLAZO_DICTAMEN_DEFAULT_MESSAGE);
+	    	this.plazoTermini = UNIDAD_PLAZO_DICTAMEN_DEFAULT_MESSAGE;
 	    	this.plazoTerminiVal = null;
 	    	this.confirmacionVigent = false;
 	    	this.confirmacionVigentReq = false;
@@ -356,7 +359,7 @@ public class DictamenController implements Serializable {
 							this.setPlazoTermini(messageBundle.getString("general.plazos.anys"));
 						this.plazoTerminiVal 	= Integer.parseInt(obj.getTermini().substring(0,obj.getTermini().length() - 1));
 					}else{
-			    		this.setPlazoTermini(messageBundle.getString(Constants.UNIDAD_PLAZO_DICTAMEN_DEFAULT_MESSAGE));
+			    		this.setPlazoTermini(UNIDAD_PLAZO_DICTAMEN_DEFAULT_MESSAGE);
 					}
 			    	
 			    	this.setTermini(obj.getTermini());	    	

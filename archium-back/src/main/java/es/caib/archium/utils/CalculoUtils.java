@@ -27,7 +27,7 @@ public class CalculoUtils {
     Logger log = LoggerFactory.getLogger(CalculoUtils.class);
 
     private static String PLANTILLA_TIPO_ET = "TIPO_NOM al/los TERMINI de la finalización del expediente";
-    private static String PLANTILLA_TIPO_EP = "TIPO_NOM \nConservacion: \nCONS_LISTEliminacion:\nELIM_LIST";
+    private static String PLANTILLA_TIPO_EP = "TIPO_NOM \nConservacion: \nCONS_LISTEliminacion:\nELIM_LIST\n";
     private static String PLANTILLA_TIPO_EP_TIPO_DOCUMENTAL = "- TIPO_NOM (TERMINI) \n";
     private static String PLANTILLA_TIPO_EP_TIPO_DOCUMENTAL_SIN_TERMINI = "- TIPO_NOM \n";
     private static final String SUSTITUIR_TIPO_NOM = "TIPO_NOM";
@@ -89,23 +89,28 @@ public class CalculoUtils {
                 List<String> conservacion = new ArrayList<>();
                 List<String> eliminacion = new ArrayList<>();
                 for (DictamenTipusdocumental d : dictamen.getAchDictamenTipusdocumentals()) {
-                    // El plazo se saca del tipo documental, si no esta informado, se deja vaci
-                    String plazo = null;
-                    if (StringUtils.trimToNull(d.getTermini()) != null) {
-                        plazo = getPlazoComoTexto(d.getTermini());
-                    }
-                    // Si conservable = false, es eliminacion, si = true es conservacion
-                    if (BigDecimal.ZERO.equals(d.getConservable())) {
-                        if(StringUtils.trimToNull(plazo)!=null) {
-                            eliminacion.add(PLANTILLA_TIPO_EP_TIPO_DOCUMENTAL.replace(SUSTITUIR_TIPO_NOM, d.getAchTipusdocumental().getNom()).replace(SUSTITUIR_TERMINI, plazo));
-                        }else{
-                            eliminacion.add(PLANTILLA_TIPO_EP_TIPO_DOCUMENTAL_SIN_TERMINI.replace(SUSTITUIR_TIPO_NOM, d.getAchTipusdocumental().getNom()));
+                    // Se descartan los tipos documentales con fecha fin
+                    if(d.getFi()==null) {
+                        // El plazo se saca del tipo documental, si no esta informado, se deja vaci
+                        String plazo = null;
+                        if (StringUtils.trimToNull(d.getTermini()) != null) {
+                            plazo = getPlazoComoTexto(d.getTermini());
+                        } else {
+                            plazo = getPlazoComoTexto(dictamen.getTermini());
                         }
-                    } else {
-                        if(StringUtils.trimToNull(plazo)!=null){
-                            conservacion.add(PLANTILLA_TIPO_EP_TIPO_DOCUMENTAL.replace(SUSTITUIR_TIPO_NOM, d.getAchTipusdocumental().getNom()).replace(SUSTITUIR_TERMINI, plazo));
-                        }else {
-                            conservacion.add(PLANTILLA_TIPO_EP_TIPO_DOCUMENTAL_SIN_TERMINI.replace(SUSTITUIR_TIPO_NOM, d.getAchTipusdocumental().getNom()));
+                        // Si conservable = false, es eliminacion, si = true es conservacion
+                        if (BigDecimal.ZERO.equals(d.getConservable())) {
+                            if (StringUtils.trimToNull(plazo) != null) {
+                                eliminacion.add(PLANTILLA_TIPO_EP_TIPO_DOCUMENTAL.replace(SUSTITUIR_TIPO_NOM, d.getAchTipusdocumental().getNom()).replace(SUSTITUIR_TERMINI, plazo));
+                            } else {
+                                eliminacion.add(PLANTILLA_TIPO_EP_TIPO_DOCUMENTAL_SIN_TERMINI.replace(SUSTITUIR_TIPO_NOM, d.getAchTipusdocumental().getNom()));
+                            }
+                        } else {
+                            if (StringUtils.trimToNull(plazo) != null) {
+                                conservacion.add(PLANTILLA_TIPO_EP_TIPO_DOCUMENTAL.replace(SUSTITUIR_TIPO_NOM, d.getAchTipusdocumental().getNom()).replace(SUSTITUIR_TERMINI, plazo));
+                            } else {
+                                conservacion.add(PLANTILLA_TIPO_EP_TIPO_DOCUMENTAL_SIN_TERMINI.replace(SUSTITUIR_TIPO_NOM, d.getAchTipusdocumental().getNom()));
+                            }
                         }
                     }
                 }
@@ -222,15 +227,18 @@ public class CalculoUtils {
         }
         UnidadPlazo unidadMax = extraerUnidadPlazo(termini);
         for (DictamenTipusdocumental t : tiposDoc) {
-            Integer valor = extraerValorPlazo(t.getTermini());
-            UnidadPlazo unidad = extraerUnidadPlazo(t.getTermini());
-            if (valorMax == -1) {
-                unidadMax = unidad;
-                valorMax = valor;
-            } else if ((valor != null && unidad != null)
-                    && valorMax < valor && !unidadMax.isGreaterThan(unidad)) {
-                unidadMax = unidad;
-                valorMax = valor;
+            // Descartamos los tipos documentales con fecha fin
+            if(t.getFi()==null) {
+                Integer valor = extraerValorPlazo(t.getTermini());
+                UnidadPlazo unidad = extraerUnidadPlazo(t.getTermini());
+                if (valorMax == -1) {
+                    unidadMax = unidad;
+                    valorMax = valor;
+                } else if ((valor != null && unidad != null)
+                        && valorMax < valor && !unidadMax.isGreaterThan(unidad)) {
+                    unidadMax = unidad;
+                    valorMax = valor;
+                }
             }
         }
         return valorMax + unidadMax.toString();
@@ -372,6 +380,11 @@ public class CalculoUtils {
     /**
      * Devuelve el dictamen activo (estado = "vigent"), en caso de no haber ninguno en estado vigente, se considera activo
      * al dictamen mas reciente de los que esten en estado "esborrany"
+     *
+     * "La serie debe tener asociado un dictamen en estado ESBORRANY o VIGENT . Si hubiese un dictamen en estado VIGENT,
+     * sólo habrá uno para la serie en todo momento y éste prevalece ante los demás (se verificarán los controles con los
+     * datos de éste). Si hay varios dictámenes en ESBORRANY y ninguno en VIGENT, se considerará el más reciente de cara
+     * a la verificación de datos."
      *
      * @param serie
      * @return

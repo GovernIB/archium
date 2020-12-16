@@ -1,8 +1,10 @@
 package es.caib.archium.validators;
 
 import es.caib.archium.commons.i18n.I18NException;
-import es.caib.archium.commons.utils.Constants;
-import es.caib.archium.csgd.apirest.constantes.*;
+import es.caib.archium.csgd.apirest.constantes.Estado;
+import es.caib.archium.csgd.apirest.constantes.TipoAcceso;
+import es.caib.archium.csgd.apirest.constantes.TipoDictamen;
+import es.caib.archium.csgd.apirest.constantes.ValorSecundario;
 import es.caib.archium.csgd.apirest.facade.pojos.Serie;
 import es.caib.archium.persistence.model.*;
 import es.caib.archium.utils.CalculoUtils;
@@ -118,7 +120,7 @@ public class CSGDValidator {
             log.debug("Comprobamos si la funcion padre esta sincronizada...");
             return isParentsSynchronized(function.getAchFuncio());
         }else{
-            if(!isSynchronized(function.getAchQuadreclassificacio())){
+            if(isSynchronized(function.getAchQuadreclassificacio())){
                 log.debug("El cuadro ["+function.getAchQuadreclassificacio().getNomcas()+"] esta sincronizado");
                 return true;
             }else{
@@ -148,7 +150,8 @@ public class CSGDValidator {
     }
 
     /**
-     * Valida que toda la informacion requerida por GDIB este informada
+     * Valida que toda la informacion requerida por GDIB este informada (marcada como mandatory = true en el
+     * modelo de Alfresco)
      *
      * @param serie
      */
@@ -186,30 +189,41 @@ public class CSGDValidator {
     /**
      * Valida que toda la informacion requerida por GDIB este informada
      *
+     * 1.	En el dictamen debe estar especificado el nivel de sensibilidad de datos de carácter personal (LOPD).
+     * 2.	En el dictamen debe estar especificado el tipo de acceso a la serie.
+     * 3.	En el dictamen debe estar especificado el nivel de confidencialidad ENS.
+     * 4.	En el dictamen debe estar especificado el tipo de dictamen.
+     * 5.	En el dictamen debe estar especificado si la serie es esencial o no.
+     *
      * @param dictamen
      */
     public void validarDictamenSicronizarSerieDatosMinimos(Dictamen dictamen) throws I18NException {
         log.info("Se valida los datos minimos del dictamen activo de la serie");
+        // 1.
         if (dictamen.getAchLopd() == null || StringUtils.trimToNull(dictamen.getAchLopd().getNomcas()) == null) {
             log.error("Error de validación del dictamen [" + dictamen.getId() + "]. " +
                     "El dictamen ha de tener informado un nivel de lopd");
             throw new I18NException("validaciones.dictamen.lopd", this.getClass().getSimpleName());
         }
+        // 2.
         if (dictamen.getAchTipusacce() == null || StringUtils.trimToNull(dictamen.getAchTipusacce().getNomcas()) == null) {
             log.error("Error de validación del dictamen [" + dictamen.getId() + "]. " +
                     "El dictamen ha de tener informado un tipo de acceso");
             throw new I18NException("validaciones.dictamen.tipusacce", this.getClass().getSimpleName());
         }
+        // 3.
         if (dictamen.getAchEn() == null || StringUtils.trimToNull(dictamen.getAchEn().getNomcas()) == null) {
             log.error("Error de validación del dictamen [" + dictamen.getId() + "]. " +
                     "El dictamen ha de tener informado la confidencialidad (ens)");
             throw new I18NException("validaciones.dictamen.ens", this.getClass().getSimpleName());
         }
+        // 4.
         if (dictamen.getAchTipusdictamen() == null || StringUtils.trimToNull(dictamen.getAchTipusdictamen().getCodi()) == null) {
             log.error("Error de validación del dictamen [" + dictamen.getId() + "]. " +
                     "El dictamen ha de tener informado un tipo");
             throw new I18NException("validaciones.dictamen.tipo", this.getClass().getSimpleName());
         }
+        // 5.
         if (dictamen.getSerieessencial() == null) {
             log.error("Error de validación del dictamen [" + dictamen.getId() + "]. " +
                     "El dictamen ha de tener informado el campo serie esencial");
@@ -319,10 +333,10 @@ public class CSGDValidator {
 
     /**
      * Se realizan una serie de validaciones de negocio para asegurar que la serie se puede sincronizar. Esto es:
-     * 1.   Que cumplan los datos mínimos informados (se informan en el propio metido)
+     * 1.   Que cumplan los datos mínimos marcados como mandatory en el modelo de Alfresco
      * 2.   Que tenga asociado un dictamen activo (estado vigente o esborrany)
      * 3.   Se validan datos minimos del dictamen y que si esta en estado vigent, debe cumplir una serie de validaciones
-     *      extra (se informan en el propio metido)
+     *      extra (se informan en el propio metodo)
      * 4.	Si para una serie documental existen registros en la tabla ACH_limitacio_normativa_serie, el dictamen no debe
      *      tener tipo de acceso “Libre”.
      * 4.1. 3.	Por el contrario, si para una serie documental no existe registro alguno en la tabla
@@ -435,22 +449,25 @@ public class CSGDValidator {
                 boolean conservableNo = false;
                 boolean isDictamenTerminoNull = StringUtils.trimToNull(dictamen.getTermini()) == null;
                 for (var t : dictamen.getAchDictamenTipusdocumentals()) {
-                    // Si el dictamen no tiene informado el termino, es obligatorio que lo tengan los tipos documentales
-                    if (isDictamenTerminoNull && StringUtils.isEmpty(t.getTermini())) {
-                        log.error("La serie a sincronizar no cumple con las validaciones necesarias: Si el tipo dictamen es " +
-                                "'EP', es obligatorio informar un plazo para cada tipo documental del dictamen");
-                        throw new I18NException("validaciones.serie.tipoDictamen.EP.tipoDocumental.termini", this.getClass().getSimpleName());
-                    }
-                    // Ha de existir al menos un tipo documental con conservable a si y otro a no
-                    if(BigDecimal.ZERO.equals(t.getConservable())){
-                        conservableNo = true;
-                    }else if(BigDecimal.ONE.equals(t.getConservable())){
-                        conservableSi = true;
-                    }
-                    if(conservableNo && conservableSi && !isDictamenTerminoNull){
-                        // Si ya encontramos uno de cada tipo, y el dictamen tiene informado plazo, no hace falta seguir
-                        // en el bucle
-                        break;
+                    // Descartamos los tipos documentales con fecha fin
+                    if(t.getFi()==null) {
+                        // Si el dictamen no tiene informado el termino, es obligatorio que lo tengan los tipos documentales
+                        if (isDictamenTerminoNull && StringUtils.isEmpty(t.getTermini())) {
+                            log.error("La serie a sincronizar no cumple con las validaciones necesarias: Si el tipo dictamen es " +
+                                    "'EP', es obligatorio informar un plazo para cada tipo documental del dictamen");
+                            throw new I18NException("validaciones.serie.tipoDictamen.EP.tipoDocumental.termini", this.getClass().getSimpleName());
+                        }
+                        // Ha de existir al menos un tipo documental con conservable a si y otro a no
+                        if (BigDecimal.ZERO.equals(t.getConservable())) {
+                            conservableNo = true;
+                        } else if (BigDecimal.ONE.equals(t.getConservable())) {
+                            conservableSi = true;
+                        }
+                        if (conservableNo && conservableSi && !isDictamenTerminoNull) {
+                            // Si ya encontramos uno de cada tipo, y el dictamen tiene informado plazo, no hace falta seguir
+                            // en el bucle
+                            break;
+                        }
                     }
                 }
                 // Si no se encontro alguno de los dos tipos, error de validacion

@@ -69,6 +69,24 @@ import java.util.*;
  * 		<accion_dictaminada>Eliminación total a los 6 meses de la finalización del expediente</accion_dictaminada>
  * 		<plazo_accion_dictaminada>6</plazo_accion_dictaminada>
  * 		<plazo_accion_dictaminada_unidad>M</plazo_accion_dictaminada_unidad>
+ *  	<tipos_documentales>
+ *          <tipo_documental codigo="TD01-019" conservable="Sí">
+ *             <plazo_dictamen>4</plazo_dictamen>
+ *             <plazo_unidad_dictamen>A</plazo_unidad_dictamen>
+ *          </tipo_documental>
+ *          <tipo_documental codigo="TD01-021" conservable="Sí">
+ *             <plazo_dictamen>12</plazo_dictamen>
+ *             <plazo_unidad_dictamen>A</plazo_unidad_dictamen>
+ *          </tipo_documental>
+ *          <tipo_documental codigo="TD02-004" conservable="No">
+ *             <plazo_dictamen>2</plazo_dictamen>
+ *             <plazo_unidad_dictamen>A</plazo_unidad_dictamen>
+ *          </tipo_documental>
+ *          <tipo_documental codigo="TD06-004" conservable="Sí">
+ *             <plazo_dictamen />
+ *             <plazo_unidad_dictamen />
+ *          </tipo_documental>
+ *       </tipos_documentales>
  * 	</dictamen>
  * </serie>
  */
@@ -244,18 +262,18 @@ public class CreateSerieXMLUtils {
         String plazo = this.calculoUtils.calcularPlazoAccionDictaminada(dictamen);
 
         UnidadPlazo unidad = null;
-        String valor = null;
+        Integer valor = null;
         if (StringUtils.trimToNull(plazo) != null) {
             // Extraemos el número y la unidad
-            unidad = this.calculoUtils.extraerUnidadPlazo(dictamen.getTermini());
-            valor =String.valueOf(this.calculoUtils.extraerValorPlazo(dictamen.getTermini()));
+            unidad = this.calculoUtils.extraerUnidadPlazo(plazo);
+            valor =this.calculoUtils.extraerValorPlazo(plazo);
         }
 
 
         // Plazo accion dictaminada
         Element plazoAccionDictaminada = doc.createElement("plazo_accion_dictaminada");
-        if (StringUtils.trimToNull(valor) != null) {
-            plazoAccionDictaminada.appendChild(doc.createTextNode(valor));
+        if (valor != null) {
+            plazoAccionDictaminada.appendChild(doc.createTextNode(String.valueOf(valor)));
         }
         rootDictamen.appendChild(plazoAccionDictaminada);
 
@@ -273,39 +291,41 @@ public class CreateSerieXMLUtils {
             rootDictamen.appendChild(rootTiposDocumentales);
             // Para cada tipo documental...
             dictamen.getAchDictamenTipusdocumentals().forEach( x ->  {
-                // Tipo documental (<serie><dictamen><tipos_documentales><tipo_documental>)
-                Element rootTipoDocumental = doc.createElement("tipo_documental");
-                rootTiposDocumentales.appendChild(rootTipoDocumental);
+                // Descartamos los tipos documentales con fecha fin
+                if(x.getFi()==null) {
+                    // Tipo documental (<serie><dictamen><tipos_documentales><tipo_documental>)
+                    Element rootTipoDocumental = doc.createElement("tipo_documental");
+                    rootTiposDocumentales.appendChild(rootTipoDocumental);
 
-                // Atributo codigo del tipo documental
-                Attr attrCodTipoDoc = doc.createAttribute("codigo");
-                attrCodTipoDoc.setValue(x.getAchTipusdocumental().getCodi());
-                rootTipoDocumental.setAttributeNode(attrCodTipoDoc);
+                    // Atributo codigo del tipo documental
+                    Attr attrCodTipoDoc = doc.createAttribute("codigo");
+                    attrCodTipoDoc.setValue(x.getAchTipusdocumental().getCodi());
+                    rootTipoDocumental.setAttributeNode(attrCodTipoDoc);
 
-                // Atributo conservable del tipo documental
-                Attr attrConservableTipoDoc = doc.createAttribute("conservable");
-                attrConservableTipoDoc.setValue(BigDecimal.ZERO.equals(x.getConservable()) ? "No" : "Sí");
-                rootTipoDocumental.setAttributeNode(attrConservableTipoDoc);
+                    // Atributo conservable del tipo documental
+                    Attr attrConservableTipoDoc = doc.createAttribute("conservable");
+                    attrConservableTipoDoc.setValue(BigDecimal.ZERO.equals(x.getConservable()) ? "No" : "Sí");
+                    rootTipoDocumental.setAttributeNode(attrConservableTipoDoc);
 
-                // Extraemos el número y la unidad
-                UnidadPlazo unidadTipo = this.calculoUtils.extraerUnidadPlazo(x.getTermini());
-                String valorTipo = String.valueOf(this.calculoUtils.extraerValorPlazo(x.getTermini()));
+                    // Extraemos el número y la unidad
+                    UnidadPlazo unidadTipo = this.calculoUtils.extraerUnidadPlazo(x.getTermini());
+                    Integer valorTipo = this.calculoUtils.extraerValorPlazo(x.getTermini());
 
-                // plazo dictamen (termino tipo documental)
-                Element plazoDictamen = doc.createElement("plazo_dictamen");
-                if(StringUtils.trimToNull(valorTipo)!=null) {
-                    plazoDictamen.appendChild(doc.createTextNode(valorTipo));
+
+                    // plazo dictamen (termino tipo documental)
+                    Element plazoDictamen = doc.createElement("plazo_dictamen");
+                    if (valorTipo != null) {
+                        plazoDictamen.appendChild(doc.createTextNode(String.valueOf(valorTipo)));
+                    }
+                    rootTipoDocumental.appendChild(plazoDictamen);
+
+                    // plazo_unidad_dictamen
+                    Element plazoDictamenUnidad = doc.createElement("plazo_unidad_dictamen");
+                    if (unidadTipo != null) {
+                        plazoDictamenUnidad.appendChild(doc.createTextNode(unidadTipo.toString()));
+                    }
+                    rootTipoDocumental.appendChild(plazoDictamenUnidad);
                 }
-                rootTipoDocumental.appendChild(plazoDictamen);
-
-                // plazo_unidad_dictamen
-                Element plazoDictamenUnidad = doc.createElement("plazo_unidad_dictamen");
-                if(unidadTipo!=null) {
-                    plazoDictamenUnidad.appendChild(doc.createTextNode(unidadTipo.toString()));
-                }
-                rootTipoDocumental.appendChild(plazoDictamenUnidad);
-
-
             });
         }
 

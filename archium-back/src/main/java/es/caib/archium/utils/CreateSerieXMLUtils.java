@@ -175,7 +175,7 @@ public class CreateSerieXMLUtils {
         rootAcceso.appendChild(rootLimitacion);
 
         // Obtenemos la lista completa de normativas para cada causa limitacion de la serie
-        Map<String, HashSet<String>> map = getNormativaLimitacion(serie);
+        Map<String, HashSet<String>> map = this.calculoUtils.getNormativaLimitacion(serie);
 
         // Creamos la estructura de limitaciones
         for (Map.Entry<String, HashSet<String>> entry : map.entrySet()) {
@@ -201,7 +201,7 @@ public class CreateSerieXMLUtils {
         root.appendChild(rootValoracion);
 
         // Obtenemos la valoracion vigente
-        Valoracio valoracion = getValoracionVigente(serie.getAchValoracios());
+        Valoracio valoracion = this.calculoUtils.extraerValoracionActiva(serie.getAchValoracios());
 
         // valoracion secundario
         Element valoracionSecundario = doc.createElement("valoracion_secundario");
@@ -292,7 +292,7 @@ public class CreateSerieXMLUtils {
             // Para cada tipo documental...
             dictamen.getAchDictamenTipusdocumentals().forEach( x ->  {
                 // Descartamos los tipos documentales con fecha fin
-                if(x.getFi()==null) {
+                if(!x.isObsolete()) {
                     // Tipo documental (<serie><dictamen><tipos_documentales><tipo_documental>)
                     Element rootTipoDocumental = doc.createElement("tipo_documental");
                     rootTiposDocumentales.appendChild(rootTipoDocumental);
@@ -342,51 +342,4 @@ public class CreateSerieXMLUtils {
         return Base64.getEncoder().encodeToString(baos.toByteArray());
     }
 
-    /**
-     * Valoracion activa de una serie es la que tiene fi == null, solo deberia haber una, pero como se puede dar el caso de que haya varias
-     * ya que Archium no lo controla, cogeremos la mas reciente.
-     *
-     * @param achValoracios
-     * @return
-     */
-    private Valoracio getValoracionVigente(List<Valoracio> achValoracios) {
-        Valoracio valoracionActiva = null;
-        for (Valoracio v : achValoracios) {
-            if (v.getFi() == null) {
-                if (valoracionActiva == null) {
-                    // Si todavía no hay ninguna, se escoge esa
-                    valoracionActiva = v;
-                } else if (v.getInici().after(valoracionActiva.getInici())) {
-                    // Si la fecha de inicio es mas cercana a la actual, se escoge
-                    valoracionActiva = v;
-                }
-            }
-        }
-        return valoracionActiva;
-    }
-
-    /**
-     * Obtiene un mapa en el que guarda todas las normativas para cada causa limitacion
-     *
-     * @param serie
-     * @return
-     */
-    private Map<String, HashSet<String>> getNormativaLimitacion(Seriedocumental serie) {
-        Map<String, HashSet<String>> map = new HashMap<>();
-        for (LimitacioNormativaSerie lm : serie.getAchLimitacioNormativaSeries()) {
-            if (lm.getAchSeriedocumental().getId().equals(serie.getId())) {
-                if (map.get(lm.getAchCausalimitacio().getCodi()) == null) {
-                    HashSet<String> list = new HashSet<String>();
-                    // TODO : Cambiar estos dos get a getNomcas en el futuro
-                    list.add(lm.getAchNormativa().getNom());
-                    map.put(lm.getAchCausalimitacio().getCodi(), list);
-                } else {
-                    HashSet<String> list = map.get(lm.getAchCausalimitacio().getCodi());
-                    list.add(lm.getAchNormativa().getNom());
-                    map.put(lm.getAchCausalimitacio().getCodi(), list);
-                }
-            }
-        }
-        return map;
-    }
 }

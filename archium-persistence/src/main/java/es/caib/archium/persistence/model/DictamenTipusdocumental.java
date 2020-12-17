@@ -1,6 +1,7 @@
 package es.caib.archium.persistence.model;
 
-import java.io.Serializable;
+import es.caib.archium.persistence.funcional.ObsolescenteAbstract;
+
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.util.Date;
@@ -13,7 +14,7 @@ import java.util.Date;
 @Entity
 @Table(name="ACH_DICTAMEN_TIPUSDOCUMENTAL")
 @NamedQuery(name="DictamenTipusdocumental.findAll", query="SELECT d FROM DictamenTipusdocumental d")
-public class DictamenTipusdocumental implements Serializable {
+public class DictamenTipusdocumental extends ObsolescenteAbstract {
 	private static final long serialVersionUID = 1L;
 
 	@EmbeddedId
@@ -63,6 +64,7 @@ public class DictamenTipusdocumental implements Serializable {
 		this.conservable = conservable;
 	}
 
+	@Override
 	public Date getFi() {
 		return this.fi;
 	}
@@ -110,5 +112,6 @@ public class DictamenTipusdocumental implements Serializable {
 	public void setAchTipusdocumental(Tipusdocumental achTipusdocumental) {
 		this.achTipusdocumental = achTipusdocumental;
 	}
+
 
 }

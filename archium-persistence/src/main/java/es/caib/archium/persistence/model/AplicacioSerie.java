@@ -1,6 +1,7 @@
 package es.caib.archium.persistence.model;
 
-import java.io.Serializable;
+import es.caib.archium.persistence.funcional.ObsolescenteAbstract;
+
 import javax.persistence.*;
 import java.util.Date;
 
@@ -12,7 +13,7 @@ import java.util.Date;
 @Entity
 @Table(name="ACH_APLICACIO_SERIE")
 @NamedQuery(name="AplicacioSerie.findAll", query="SELECT a FROM AplicacioSerie a")
-public class AplicacioSerie implements Serializable {
+public class AplicacioSerie extends ObsolescenteAbstract {
 	private static final long serialVersionUID = 1L;
 
 	@EmbeddedId
@@ -57,6 +58,7 @@ public class AplicacioSerie implements Serializable {
 		this.descripcio = descripcio;
 	}
 
+	@Override
 	public Date getFi() {
 		return this.fi;
 	}

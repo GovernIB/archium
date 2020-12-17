@@ -1,6 +1,7 @@
 package es.caib.archium.persistence.model;
 
-import java.io.Serializable;
+import es.caib.archium.persistence.funcional.ObsolescenteAbstract;
+
 import javax.persistence.*;
 import java.util.Date;
 import java.util.List;
@@ -13,7 +14,7 @@ import java.util.List;
 @Entity
 @Table(name="ACH_TIPUSDOCUMENTAL")
 @NamedQuery(name="Tipusdocumental.findAll", query="SELECT t FROM Tipusdocumental t")
-public class Tipusdocumental implements Serializable {
+public class Tipusdocumental extends ObsolescenteAbstract {
 	private static final long serialVersionUID = 1L;
 
 	@Id
@@ -116,6 +117,7 @@ public class Tipusdocumental implements Serializable {
 		this.estat = estat;
 	}
 
+	@Override
 	public Date getFi() {
 		return this.fi;
 	}

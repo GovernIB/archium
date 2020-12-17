@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 
 @ApplicationScoped
@@ -32,6 +33,12 @@ public class CSGDValidator {
      */
     public void validarCuadro(Quadreclassificacio cuadrodb) throws I18NException {
         log.debug("Validamos los datos del cuadro");
+
+        if(cuadrodb.isObsolete()){
+            log.error("Error de validacion del cuadro. El cuadro esta obsoleto y no se puede sincronizar");
+            throw new I18NException("validaciones.cuadro.obsoleto", this.getClass().getSimpleName());
+        }
+
         if(StringUtils.trimToNull(cuadrodb.getEstat()) == null
                 || Estado.getEstado(cuadrodb.getEstat())==null){
             log.error("Error de validacion del cuadro de clasificacion. Alguno de los campos obligatorios no esta informado");
@@ -48,10 +55,21 @@ public class CSGDValidator {
      */
     public void validarFuncion(Funcio funciondb) throws I18NException {
         log.debug("Validamos los datos de la funcion");
+
+        if(funciondb.isObsolete()){
+            log.error("Error de validacion de la funcion ["+funciondb.getCodi()+"]. La funcion esta obsoleta y no se puede sincronizar");
+            throw new I18NException("validaciones.funcion.obsoleta", this.getClass().getSimpleName());
+        }
+
+        if(funciondb.getAchQuadreclassificacio().isObsolete()){
+            log.error("La funcion ["+funciondb.getCodi()+"] pertenece a un cuadro obsoleto y no se puede sincronizar");
+            throw new I18NException("validaciones.funcion.padre.obsoleto", this.getClass().getSimpleName());
+        }
+
         if(StringUtils.trimToNull(funciondb.getCodi()) == null
                 || StringUtils.trimToNull(funciondb.getEstat()) == null
                 || Estado.getEstado(funciondb.getEstat())==null){
-            log.error("Error de validacion de la funcion. Alguno de los campos obligatorios no esta informado");
+            log.error("Error de validacion de la funcion ["+funciondb.getCodi()+"]. Alguno de los campos obligatorios no esta informado");
             throw new I18NException("validaciones.funcion", this.getClass().getSimpleName());
         }else{
             log.info("Funcion validada");
@@ -334,20 +352,21 @@ public class CSGDValidator {
     /**
      * Se realizan una serie de validaciones de negocio para asegurar que la serie se puede sincronizar. Esto es:
      * 1.   Que cumplan los datos mínimos marcados como mandatory en el modelo de Alfresco
-     * 2.   Que tenga asociado un dictamen activo (estado vigente o esborrany)
-     * 3.   Se validan datos minimos del dictamen y que si esta en estado vigent, debe cumplir una serie de validaciones
+     * 2.   La funcion a la que pertenezca no puede estar obsoleta (con fi anterior a la actual)
+     * 3.   Que tenga asociado un dictamen activo (estado vigente o esborrany)
+     * 4.   Se validan datos minimos del dictamen y que si esta en estado vigent, debe cumplir una serie de validaciones
      *      extra (se informan en el propio metodo)
-     * 4.	Si para una serie documental existen registros en la tabla ACH_limitacio_normativa_serie, el dictamen no debe
+     * 5.	Si para una serie documental existen registros en la tabla ACH_limitacio_normativa_serie, el dictamen no debe
      *      tener tipo de acceso “Libre”.
-     * 4.1. 3.	Por el contrario, si para una serie documental no existe registro alguno en la tabla
+     * 5.1. Por el contrario, si para una serie documental no existe registro alguno en la tabla
      *      ACH_limitacio_normativa_serie, el dictamen debe tener tipo de acceso “Libre”.
-     * 5.	La serie debe tener, en la valoración más reciente y sin fecha de fin, alguna valoración primaria (algún tipo
+     * 6.	La serie debe tener, en la valoración más reciente y sin fecha de fin, alguna valoración primaria (algún tipo
      *      de valor con su plazo obligatorio). Es decir, la serie a sincronizar debe tener valores primarios (tipo valor)
-     * 6.	La serie debe tener, en la valoración más reciente y sin fecha de fin, especificado el valor secundario de
+     * 7.	La serie debe tener, en la valoración más reciente y sin fecha de fin, especificado el valor secundario de
      *      la serie.
-     * 7.	Si valor_secundario de esta valoración = 'Sí' y tipo_dictamen no es 'CP' (Conservación permanente), error.
+     * 8.	Si valor_secundario de esta valoración = 'Sí' y tipo_dictamen no es 'CP' (Conservación permanente), error.
      *      Siempre que haya valor secundario, el tipo de dictamen ha de ser CP.
-     * 8.	Sobre plazo de la acción dictaminada,
+     * 9.	Sobre plazo de la acción dictaminada,
      * a)	Si tipo de dictamen = 'CP', no habría que indicar plazo ni accion dictaminada.
      * b)	Si tipo de dictamen = 'ET', entonces plazo accion dictaminada es obligatorio, pero la accion dic no.
      * c)	Si tipo de dictamen = 'PD', entonces plazo dictamen y accion dictaminada son opcionales.
@@ -361,7 +380,7 @@ public class CSGDValidator {
      *          Por tanto, podría darse el caso de un dictamen con plazo general y sin plazo concreto en los tipos
      *          documentales. Y podría darse el caso de un dictamen sin plazo general y entonces sí que todas las
      *          entradas en ACH_dictamen_tipusdocumental han de tener la columna termini rellenada.
-     * 9.	Si el tipo de acceso es “Libre”, la condición de reutilización es obligatoria.
+     * 10.	Si el tipo de acceso es “Libre”, la condición de reutilización es obligatoria.
      *
      * @param serie
      */
@@ -371,14 +390,19 @@ public class CSGDValidator {
         // 1.
         validarSincronizarSerieDatosMinimos(serie);
 
-        Dictamen dictamen = this.calculoUtils.getDictamenActivo(serie);
-
         // 2.
+        if(serie.getAchFuncio().isObsolete()){
+            log.error("La serie [" + serie.getCodi() + "] pertenece a una funcion obsoleta y no se puede sincronizar");
+            throw new I18NException("validaciones.serie.padre.obsoleta", this.getClass().getSimpleName());
+        }
+
+        // 3.
+        Dictamen dictamen = this.calculoUtils.getDictamenActivo(serie);
         if(dictamen==null){
             log.error("La serie [" + serie.getCodi() + "] no cuenta con un dictamen en estado activo ('vigent'), por lo que no es posible sincronizarse");
             throw new I18NException("validaciones.serie.dictamen.novigente", this.getClass().getSimpleName());
         }else{
-            // 3.
+            // 4.
 
             //Validamos que los datos obligatorios del dictamen estén informados
             this.validarDictamenSicronizarSerieDatosMinimos(dictamen);
@@ -389,7 +413,7 @@ public class CSGDValidator {
             }
         }
 
-        // 4. y 4.1
+        // 5. y 5.1
         List<String> codigoLimitacion = this.calculoUtils.extraerCodigoLimitacion(serie);
         if (codigoLimitacion != null && !codigoLimitacion.isEmpty() && TipoAcceso.LIBRE ==
                 TipoAcceso.getTipoAcceso(dictamen.getAchTipusacce().getNomcas())) {
@@ -402,7 +426,7 @@ public class CSGDValidator {
                     "causa limitacion, por lo que ha de tener tipo acceso 'Libre'");
             throw new I18NException("validaciones.serie.codigoLimitacion.sinCodigoLimitacion", this.getClass().getSimpleName());
         }
-        // 5.
+        // 6.
         Serie serieAux = new Serie();
         this.calculoUtils.extraerValoresYPlazo(serie,serieAux);
         if (serieAux.getTipoValor() == null || serieAux.getTipoValor().isEmpty()) {
@@ -410,20 +434,20 @@ public class CSGDValidator {
                     "valoracion mas reciente, y sin fecha fin, alguna valoracion primaria");
             throw new I18NException("validaciones.serie.tipoValor", this.getClass().getSimpleName());
         }
-        // 6.
+        // 7.
         if (serieAux.getValorSecundario() == null) {
             log.error("La serie a sincronizar no cumple con las validaciones necesarias: La serie debe tener en su " +
                     "valoracion mas reciente, y sin fecha fin, especificado el valor secundario");
             throw new I18NException("validaciones.serie.valorSecundario", this.getClass().getSimpleName());
         }
-        // 7.
+        // 8.
         if (ValorSecundario.SI == serieAux.getValorSecundario() && TipoDictamen.CP !=
                 TipoDictamen.getTipoDictamen(dictamen.getAchTipusdictamen().getCodi())) {
             log.error("La serie a sincronizar no cumple con las validaciones necesarias: Si el valor secundario de la " +
                     "serie es 'Sí', el tipo del dictamen ha de ser 'CP' (Conservación permanente)");
             throw new I18NException("validaciones.serie.valorSecundario.tipoDictamen", this.getClass().getSimpleName());
         }
-        // 8.
+        // 9.
         switch (TipoDictamen.getTipoDictamen(dictamen.getAchTipusdictamen().getCodi())) {
             case CP:
                 // No hace falta comprobar nada, para este valor es opcional
@@ -450,7 +474,7 @@ public class CSGDValidator {
                 boolean isDictamenTerminoNull = StringUtils.trimToNull(dictamen.getTermini()) == null;
                 for (var t : dictamen.getAchDictamenTipusdocumentals()) {
                     // Descartamos los tipos documentales con fecha fin
-                    if(t.getFi()==null) {
+                    if(t.isObsolete()) {
                         // Si el dictamen no tiene informado el termino, es obligatorio que lo tengan los tipos documentales
                         if (isDictamenTerminoNull && StringUtils.isEmpty(t.getTermini())) {
                             log.error("La serie a sincronizar no cumple con las validaciones necesarias: Si el tipo dictamen es " +
@@ -480,7 +504,7 @@ public class CSGDValidator {
 
                 break;
         }
-        // 9.
+        // 10.
         if (TipoAcceso.LIBRE == TipoAcceso.getTipoAcceso(dictamen.getAchTipusacce().getNomcas())
                 && StringUtils.trimToNull(dictamen.getCondicioreutilitzacio()) == null) {
             log.error("La serie a sincronizar no cumple con las validaciones necesarias: Si el tipo de acceso es 'Libre'," +

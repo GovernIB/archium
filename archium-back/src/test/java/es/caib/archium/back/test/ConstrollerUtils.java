@@ -1,15 +1,10 @@
 package es.caib.archium.back.test;
 
-import es.caib.archium.objects.*;
 import es.caib.archium.services.FuncioFrontService;
 import es.caib.archium.services.QuadreFrontService;
 import es.caib.archium.services.SerieFrontService;
 
 import javax.inject.Inject;
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
 
 public class ConstrollerUtils {
     @Inject
@@ -19,8 +14,55 @@ public class ConstrollerUtils {
     @Inject
     private SerieFrontService serieService;
 
+    // Fallan
+
+    /* Serie de acceso libre, pero con causas de limitación */
+    protected static final Long ID_SERIE_ACCESO_LIBRE_SIN_CAUSAS_LIMITACION = Long.valueOf(9997);
+    /* Serie de acceso parcialmente restringido, pero sin causas de limitación */
+    protected static final Long ID_SERIE_ACCESO_PR_SIN_CAUSAS_LIMITACION = Long.valueOf(9996);
+    /* Serie sin funcion asignada */
+    protected static final Long ID_SERIE_SIN_FUNCION_ASIGNADA = Long.valueOf(9995);
+    /* Serie sin nivel ENS */
+    protected static final Long ID_SERIE_SIN_ENS = Long.valueOf(9994);
+    /* Serie sin nivel LOPD */
+    protected static final Long ID_SERIE_SIN_LOPD = Long.valueOf(9993);
+    /* Serie sin tipo de acceso */
+    protected static final Long ID_SERIE_SIN_TIPO_ACCESO = Long.valueOf(9992);
+    /* Serie sin describir el carácter esencial */
+    protected static final Long ID_SERIE_SIN_CARACTER_ESENCIAL = Long.valueOf(9991);
+    /* Serie con dictamen para el que no se ha especificado el tipo de dictamen */
+    protected static final Long ID_SERIE_SIN_TIPO_DICTAMEN = Long.valueOf(9990);
+    /* Serie sin valor primario */
+    protected static final Long ID_SERIE_SIN_VALOR_PRIMARIO = Long.valueOf(9989);
+    /* Serie con valor primario, pero sin plazo */
+    protected static final Long ID_SERIE_VALOR_PRIMARIO_SIN_PLAZO = Long.valueOf(9988);
+    /* Serie sin valor secundario especificado */
+    protected static final Long ID_SERIE_SIN_VALOR_SECUNDARIO = Long.valueOf(9987);
+    /* Serie con tipo de dictamen ET, pero sin plazo especificado */
+    protected static final Long ID_SERIE_ET_SIN_PLAZO = Long.valueOf(9986);
+    /* Serie con tipo de dictamen EP, pero sin tipos documentales en el dictamen */
+    protected static final Long ID_SERIE_EP_SIN_TIPOS_DOCUMENTALES = Long.valueOf(9985);
+    /* Serie con tipo de dictamen EP con tipos documentales en el dictamen, pero sin plazo general del dictamen ni del
+    documento (debe estar rellenado al menos uno) */
+    protected static final Long ID_SERIE_EP_SIN_PLAZO_TIPOS_DOC = Long.valueOf(9984);
+
+
+
+    // Funcionan
+
+
     // Debera quedarse con el dictamen 9980, valoracion 181
-    protected static final Long ID_SERIE_VARIOS_DICTAMENES = Long.valueOf(9980);
+    protected static final Long ID_SERIE_OK_1 = Long.valueOf(9980);
+    /* Serie de acceso libre (sin causas de limitación), con dictamen de eliminación parcial */
+    /* El plazo de la acción dictaminada será el máximo de los plazos de los tipos documentales */
+    protected static final Long ID_SERIE_OK_2 = Long.valueOf(9981);
+    /* Serie de acceso libre (sin causas de limitación), pendiente de dictamen */
+    /* Varias valoraciones vigentes. Se cogerá la última de ellas */
+    protected static final Long ID_SERIE_OK_3 = Long.valueOf(9999);
+    /* Serie de acceso parcialmente restringido (con causas de limitación), dictamen eliminación parcial */
+    /* Varias limitaciones de acceso. Se cogen las vigentes (las que no tienen fecha de fin) */
+    /* Varios dictámenes. Ninguno VIGENT. Se coge el creado más recientemente */
+    protected static final Long ID_SERIE_OK_4 = Long.valueOf(9998);
 
 
 //    /**

@@ -1,6 +1,7 @@
 package es.caib.archium.persistence.model;
 
-import java.io.Serializable;
+import es.caib.archium.persistence.funcional.ObsolescenteAbstract;
+
 import javax.persistence.*;
 import java.util.Date;
 import java.util.List;
@@ -13,7 +14,7 @@ import java.util.List;
 @Entity
 @Table(name="ACH_QUADRECLASSIFICACIO")
 @NamedQuery(name="Quadreclassificacio.findAll", query="SELECT q FROM Quadreclassificacio q")
-public class Quadreclassificacio implements Serializable {
+public class Quadreclassificacio extends ObsolescenteAbstract {
 	private static final long serialVersionUID = 1L;
 
 	@Id
@@ -82,6 +83,7 @@ public class Quadreclassificacio implements Serializable {
 		this.estat = estat;
 	}
 
+	@Override
 	public Date getFi() {
 		return this.fi;
 	}

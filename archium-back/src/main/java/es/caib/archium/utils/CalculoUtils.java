@@ -14,9 +14,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.enterprise.context.ApplicationScoped;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * Clase que calcula los valores de algunos campos de la sincronización de la serie/dictamen cuando no estan informados
@@ -90,7 +88,7 @@ public class CalculoUtils {
                 List<String> eliminacion = new ArrayList<>();
                 for (DictamenTipusdocumental d : dictamen.getAchDictamenTipusdocumentals()) {
                     // Se descartan los tipos documentales con fecha fin
-                    if(d.getFi()==null) {
+                    if(!d.isObsolete()) {
                         // El plazo se saca del tipo documental, si no esta informado, se deja vaci
                         String plazo = null;
                         if (StringUtils.trimToNull(d.getTermini()) != null) {
@@ -228,7 +226,7 @@ public class CalculoUtils {
         UnidadPlazo unidadMax = extraerUnidadPlazo(termini);
         for (DictamenTipusdocumental t : tiposDoc) {
             // Descartamos los tipos documentales con fecha fin
-            if(t.getFi()==null) {
+            if(!t.isObsolete()) {
                 Integer valor = extraerValorPlazo(t.getTermini());
                 UnidadPlazo unidad = extraerUnidadPlazo(t.getTermini());
                 if (valorMax == -1) {
@@ -307,9 +305,8 @@ public class CalculoUtils {
         List<String> list = new ArrayList<>();
         // Extraemos las causas limitacion y series, relacionandolas para mantener la correspondencia
         for (LimitacioNormativaSerie lm : serie.getAchLimitacioNormativaSeries()) {
-            // Se excluyen las causas limitacion cuya fecha fin es anterior al día de hoy
-            if (lm.getId().getSeriedocumentalId().equals(serie.getId())
-                    && (lm.getFi() == null || (lm.getFi() != null && lm.getFi().after(new Date())))) {
+            // Se excluyen las causas limitacion obsoletas (con fi informada y anterior a fecha actual
+            if (lm.getId().getSeriedocumentalId().equals(serie.getId()) && !lm.isObsolete()) {
                 list.add(lm.getAchCausalimitacio().getCodi());
             }
         }
@@ -361,10 +358,10 @@ public class CalculoUtils {
      * @param achValoracios
      * @return
      */
-    private Valoracio extraerValoracionActiva(List<Valoracio> achValoracios) {
+    public Valoracio extraerValoracionActiva(List<Valoracio> achValoracios) {
         Valoracio valoracionActiva = null;
         for (Valoracio v : achValoracios) {
-            if (v.getFi() == null) {
+            if (!v.isObsolete()) {
                 if (valoracionActiva == null) {
                     // Si todavía no hay ninguna, se escoge esa
                     valoracionActiva = v;
@@ -401,15 +398,17 @@ public class CalculoUtils {
         Dictamen recienteEsborrany = null;
         // Buscamos el dictamen activo
         for (Dictamen dic : achDictamens) {
-            if (Constants.ArchiumConstants.DICTAMEN_ACTIVO.getValue().equalsIgnoreCase(dic.getEstat())) {
-                log.info("Dictamen activo de la serie [" + serie.getCodi() + "]: [" + dic.getCodi() + "] con estado " +
-                        "[" + dic.getEstat() + "]");
-                return dic;
-            } else if (Constants.ArchiumConstants.DICTAMEN_RECIENTE_ESTADO.getValue().equalsIgnoreCase(dic.getEstat())) {
-                if (recienteEsborrany == null) {
-                    recienteEsborrany = dic;
-                } else if (dic.getInici().after(recienteEsborrany.getInici())) {
-                    recienteEsborrany = dic;
+            if(!dic.isObsolete()) {
+                if (Constants.ArchiumConstants.DICTAMEN_ACTIVO.getValue().equalsIgnoreCase(dic.getEstat())) {
+                    log.info("Dictamen activo de la serie [" + serie.getCodi() + "]: [" + dic.getCodi() + "] con estado " +
+                            "[" + dic.getEstat() + "]");
+                    return dic;
+                } else if (Constants.ArchiumConstants.DICTAMEN_RECIENTE_ESTADO.getValue().equalsIgnoreCase(dic.getEstat())) {
+                    if (recienteEsborrany == null) {
+                        recienteEsborrany = dic;
+                    } else if (dic.getInici().after(recienteEsborrany.getInici())) {
+                        recienteEsborrany = dic;
+                    }
                 }
             }
         }
@@ -448,5 +447,32 @@ public class CalculoUtils {
             }
         }
         return valorMax + unidadMax.toString();
+    }
+
+    /**
+     * Obtiene un mapa en el que guarda todas las normativas para cada causa limitacion
+     *
+     * @param serie
+     * @return
+     */
+    public Map<String, HashSet<String>> getNormativaLimitacion(Seriedocumental serie) {
+        Map<String, HashSet<String>> map = new HashMap<>();
+        for (LimitacioNormativaSerie lm : serie.getAchLimitacioNormativaSeries()) {
+            if (lm.getAchSeriedocumental().getId().equals(serie.getId())) {
+                if(!lm.isObsolete()) {
+                    if (map.get(lm.getAchCausalimitacio().getCodi()) == null) {
+                        HashSet<String> list = new HashSet<String>();
+                        // TODO : Cambiar estos dos get a getNomcas en el futuro
+                        list.add(lm.getAchNormativa().getNom());
+                        map.put(lm.getAchCausalimitacio().getCodi(), list);
+                    } else {
+                        HashSet<String> list = map.get(lm.getAchCausalimitacio().getCodi());
+                        list.add(lm.getAchNormativa().getNom());
+                        map.put(lm.getAchCausalimitacio().getCodi(), list);
+                    }
+                }
+            }
+        }
+        return map;
     }
 }

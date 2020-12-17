@@ -8,11 +8,11 @@ import javax.inject.Inject;
 
 public class ConstrollerUtils {
     @Inject
-    private QuadreFrontService cuadroService;
+    protected QuadreFrontService cuadroService;
     @Inject
-    private FuncioFrontService funcionService;
+    protected FuncioFrontService funcionService;
     @Inject
-    private SerieFrontService serieService;
+    protected SerieFrontService serieService;
 
     // Fallan
 
@@ -20,8 +20,6 @@ public class ConstrollerUtils {
     protected static final Long ID_SERIE_ACCESO_LIBRE_SIN_CAUSAS_LIMITACION = Long.valueOf(9997);
     /* Serie de acceso parcialmente restringido, pero sin causas de limitación */
     protected static final Long ID_SERIE_ACCESO_PR_SIN_CAUSAS_LIMITACION = Long.valueOf(9996);
-    /* Serie sin funcion asignada */
-    protected static final Long ID_SERIE_SIN_FUNCION_ASIGNADA = Long.valueOf(9995);
     /* Serie sin nivel ENS */
     protected static final Long ID_SERIE_SIN_ENS = Long.valueOf(9994);
     /* Serie sin nivel LOPD */
@@ -37,8 +35,8 @@ public class ConstrollerUtils {
     /* Serie con valor primario, pero sin plazo */
     protected static final Long ID_SERIE_VALOR_PRIMARIO_SIN_PLAZO = Long.valueOf(9988);
     /* Serie sin valor secundario especificado */
-    protected static final Long ID_SERIE_SIN_VALOR_SECUNDARIO = Long.valueOf(9987);
     /* Serie con tipo de dictamen ET, pero sin plazo especificado */
+    protected static final Long ID_SERIE_SIN_VALOR_SECUNDARIO = Long.valueOf(9987);
     protected static final Long ID_SERIE_ET_SIN_PLAZO = Long.valueOf(9986);
     /* Serie con tipo de dictamen EP, pero sin tipos documentales en el dictamen */
     protected static final Long ID_SERIE_EP_SIN_TIPOS_DOCUMENTALES = Long.valueOf(9985);

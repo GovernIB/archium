@@ -25,4 +25,14 @@ public abstract class ObsolescenteAbstract implements Obsolescente{
         }
         return false;
     }
+
+    /**
+     * Para casos especiales (como el de la serie) que puede estar en caso obsoleto pero no tiene campo fi
+     *
+     * @return
+     */
+    @Override
+    public Date getFi(){
+        return null;
+    }
 }

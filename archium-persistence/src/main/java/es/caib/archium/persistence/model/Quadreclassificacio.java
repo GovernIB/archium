@@ -154,4 +154,19 @@ public class Quadreclassificacio extends ObsolescenteAbstract {
 		return achFuncio;
 	}
 
+	/**
+	 * El cuadro esta obsoleto si tiene fecha fin anterior a la actual o si el estado es obsoleto
+	 *
+	 * @return
+	 */
+	@Override
+	public boolean isObsolete() {
+		boolean superResult = super.isObsolete();
+		if(superResult && !"Obsolet".equalsIgnoreCase(this.estat)){
+			return true;
+		}else{
+			return false;
+		}
+	}
+
 }

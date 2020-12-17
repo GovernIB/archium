@@ -1,9 +1,6 @@
 package es.caib.archium.csgd.apirest;
 
-import es.caib.archium.csgd.apirest.constantes.Aspects;
-import es.caib.archium.csgd.apirest.constantes.Servicios;
-import es.caib.archium.csgd.apirest.constantes.TipoValor;
-import es.caib.archium.csgd.apirest.constantes.TiposObjetoSGD;
+import es.caib.archium.csgd.apirest.constantes.*;
 import es.caib.archium.csgd.apirest.csgd.entidades.comunes.*;
 import es.caib.archium.csgd.apirest.csgd.entidades.parametrosllamada.ParamCreateClassificationTable;
 import es.caib.archium.csgd.apirest.csgd.entidades.parametrosllamada.ParamCreateFunction;
@@ -56,7 +53,7 @@ public class ApiCSGDServices {
 
     /**
      * Llamada post generica para relizara desde todos los metodos que esperan un Resultado<String>
-     * 
+     *
      * @param result
      * @param servicio
      * @param peticion
@@ -65,12 +62,12 @@ public class ApiCSGDServices {
      * @return
      * @throws IOException
      */
-    private <T> ResultadoJersey postCall(Resultado<String> result, String servicio, Object peticion,  Class<T> entityResult) {
+    private <T> ResultadoJersey postCall(Resultado<String> result, String servicio, Object peticion, Class<T> entityResult) {
         try {
             log.debug("Se realiza la llamada con parametros de entrada: " + peticion.toString());
             return JerseyClientGet.post(this.urlBase, servicio, peticion, entityResult, trazas);
-        } catch (ProcessingException e){
-            log.error("No es posible realizar conexion con el servicio. URL = ["+urlBase+servicio+"]: " + e);
+        } catch (ProcessingException e) {
+            log.error("No es posible realizar conexion con el servicio. URL = [" + urlBase + servicio + "]: " + e);
             result.setCodigoResultado(String.valueOf(Constantes.CodigosRespuesta.ERROR_CONEXION.getValue()));
             result.setMsjResultado("No es posible realizar conexion con el servicio");
         } catch (IOException e) {
@@ -96,8 +93,8 @@ public class ApiCSGDServices {
         try {
             log.debug("Se realiza la llamada con parametros de entrada: " + peticion.toString());
             return JerseyClientGet.post(this.urlBase, servicio, peticion, entityResult, trazas);
-        } catch (ProcessingException e){
-            log.error("No es posible realizar conexion con el servicio. URL = ["+urlBase+servicio+"]: " + e);
+        } catch (ProcessingException e) {
+            log.error("No es posible realizar conexion con el servicio. URL = [" + urlBase + servicio + "]: " + e);
             rs.setCodigoResultado(String.valueOf(Constantes.CodigosRespuesta.ERROR_CONEXION.getValue()));
             rs.setMsjResultado("No es posible realizar conexion con el servicio");
         } catch (IOException e) {
@@ -107,7 +104,7 @@ public class ApiCSGDServices {
         }
         return null;
     }
-    
+
 
     public Resultado<String> crearSerie(Serie serie, String funcionPadre) {
         log.debug("Se prepara la llamada en el cliente para crearSerie");
@@ -127,11 +124,11 @@ public class ApiCSGDServices {
         peticion.setCreateSerieRequest(request);
 
         ResultadoJersey output;
-        
+
         // Realizamos la llamada
-        output = postCall(result,Servicios.CREATE_SERIE, peticion, CreateSerieResult.class);
+        output = postCall(result, Servicios.CREATE_SERIE, peticion, CreateSerieResult.class);
         // Si el output es null es que se produjo una excepcion
-        if(output==null){
+        if (output == null) {
             return result;
         }
 
@@ -168,12 +165,12 @@ public class ApiCSGDServices {
         ResultadoJersey output;
 
         // Realizamos la llamada
-        output = postCall(resultado,Servicios.REMOVE_SERIE, peticion, RemoveSerieResult.class);
+        output = postCall(resultado, Servicios.REMOVE_SERIE, peticion, RemoveSerieResult.class);
         // Si el output es null es que se produjo una excepcion
-        if(output==null){
+        if (output == null) {
             return resultado;
         }
-        
+
 
         if (output.getEstadoRespuestaHttp() == Constantes.CodigosRespuesta.HTTP_RESPUESTA_OK.getValue()) {
             result = (RemoveSerieResult) output.getContenido();
@@ -188,7 +185,6 @@ public class ApiCSGDServices {
         return resultado;
     }
 
-    
 
     public Resultado<String> crearFuncion(Funcion funcion, String parentId) {
 
@@ -210,12 +206,12 @@ public class ApiCSGDServices {
         ResultadoJersey output;
 
         // Realizamos la llamada
-        output = postCall(result,Servicios.CREATE_FUNCTION, peticion, CreateFunctionResult.class);
+        output = postCall(result, Servicios.CREATE_FUNCTION, peticion, CreateFunctionResult.class);
         // Si el output es null es que se produjo una excepcion
-        if(output==null){
+        if (output == null) {
             return result;
         }
-        
+
         if (output.getEstadoRespuestaHttp() == Constantes.CodigosRespuesta.HTTP_RESPUESTA_OK.getValue()) {
             CreateFunctionResult resultado = (CreateFunctionResult) output.getContenido();
             result.setElementoDevuelto(resultado.getCreateFunctionResult().getResParam().getId());
@@ -228,7 +224,6 @@ public class ApiCSGDServices {
         }
         return result;
     }
-
 
 
     public ResultadoSimple borrarFuncion(String nodeId) {
@@ -249,9 +244,9 @@ public class ApiCSGDServices {
 
         ResultadoJersey output;
         // Realizamos la llamada
-        output = postCall(resultado,Servicios.REMOVE_FUNCTION, peticion, RemoveFunctionResult.class);
+        output = postCall(resultado, Servicios.REMOVE_FUNCTION, peticion, RemoveFunctionResult.class);
         // Si el output es null es que se produjo una excepcion
-        if(output==null){
+        if (output == null) {
             return resultado;
         }
 
@@ -284,11 +279,11 @@ public class ApiCSGDServices {
         peticion.setCreateClassificationRootRequest(request);
 
         ResultadoJersey output;
-        
+
         // Realizamos la llamada
-        output = postCall(result,Servicios.CREATE_CLASSIFICATION_TABLE, peticion, CreateClassificationTableResult.class);
+        output = postCall(result, Servicios.CREATE_CLASSIFICATION_TABLE, peticion, CreateClassificationTableResult.class);
         // Si el output es null es que se produjo una excepcion
-        if(output==null){
+        if (output == null) {
             return result;
         }
 
@@ -304,7 +299,6 @@ public class ApiCSGDServices {
         }
         return result;
     }
-
 
 
     public ResultadoSimple borrarCuadro(String nodeId) {
@@ -328,7 +322,7 @@ public class ApiCSGDServices {
         // Realizamos la llamada
         output = postCall(resultado, Servicios.REMOVE_CLASSIFICATION_TABLE, peticion, RemoveCuadroResult.class);
         // Si el output es null es que se produjo una excepcion
-        if(output==null){
+        if (output == null) {
             return resultado;
         }
 
@@ -449,28 +443,50 @@ public class ApiCSGDServices {
         return cabeceraTmp;
     }
 
+    /**
+     * Llama al metodo preciso en funcion del tipo del dto
+     *
+     * @param wsDto
+     * @param parentId
+     * @param <T>
+     * @return
+     */
     public <T extends Nodo> Resultado<String> crearNodo(T wsDto, String parentId) {
-        if(wsDto instanceof CuadroClasificacion){
+        if (wsDto instanceof CuadroClasificacion) {
             return crearCuadro((CuadroClasificacion) wsDto);
-        }else if(wsDto instanceof Funcion){
-            return crearFuncion((Funcion)wsDto,parentId);
-        }else if(wsDto instanceof Serie){
-            return crearSerie((Serie) wsDto,parentId);
+        } else if (wsDto instanceof Funcion) {
+            return crearFuncion((Funcion) wsDto, parentId);
+        } else if (wsDto instanceof Serie) {
+            return crearSerie((Serie) wsDto, parentId);
         }
         return null;
     }
 
+    /**
+     * Llama al metodo preciso en funcion del tipo del dto
+     *
+     * @param wsDto
+     * @param parentId
+     * @param <T>
+     * @return
+     */
     public <ID extends Id> ResultadoSimple borrarNodo(ID wsId) {
-        if(wsId instanceof RootId){
+        if (wsId instanceof RootId) {
             return borrarCuadro(wsId.getId());
-        }else if(wsId instanceof FunctionId){
+        } else if (wsId instanceof FunctionId) {
             return borrarFuncion(wsId.getId());
-        }else if(wsId instanceof SerieId){
+        } else if (wsId instanceof SerieId) {
             return borrarSerie(wsId.getId());
         }
         return null;
     }
 
+    /**
+     * Crea el dto de Node para el envio a GDIB
+     *
+     * @param cuadro
+     * @return
+     */
     private SerieNode convertirASerieNode(Serie serie) {
         SerieNode dto = new SerieNode();
         dto.setName(serie.getDenominacionClase());
@@ -482,7 +498,7 @@ public class ApiCSGDServices {
         content.setMimetype(serie.getMimeType());
         dto.setBinaryContent(content);
 
-        setMetadataYAspectosSerie(dto,serie);
+        setMetadataYAspectosSerie(dto, serie);
 
         return dto;
     }
@@ -496,42 +512,42 @@ public class ApiCSGDServices {
     private void setMetadataYAspectosSerie(SerieNode dto, Serie serie) {
         dto.setMetadataCollection(new HashSet<>());
         // Añadimos las propiedades obligatorias, ya se ha validado que estén informadas
-        dto.getMetadataCollection().add(new Metadata(Constantes.CODIGO_CLASIFICACION_QNAME,serie.getCodigo()));
-        dto.getMetadataCollection().add(new Metadata(Constantes.DENOMINACION_CLASE_QNAME,serie.getDenominacionClase()));
-        dto.getMetadataCollection().add(new Metadata(Constantes.TIPO_CLASIFICACION_QNAME,serie.getTipoClasificacion()));
-        dto.getMetadataCollection().add(new Metadata(Constantes.LOPD_QNAME,serie.getLopd().getValue()));
-        dto.getMetadataCollection().add(new Metadata(Constantes.CONFIDENCIALIDAD_QNAME,serie.getConfidencialidad().getValue()));
-        dto.getMetadataCollection().add(new Metadata(Constantes.TIPO_ACCESO_QNAME,serie.getTipoAcceso().getValue()));
-        dto.getMetadataCollection().add(new Metadata(Constantes.VALOR_SECUNDARIO_QNAME,serie.getValorSecundario().getValue()));
-        dto.getMetadataCollection().add(new Metadata(Constantes.TIPO_VALOR_QNAME,serie.getTipoValor()));
-        dto.getMetadataCollection().add(new Metadata(Constantes.TIPO_DICTAMEN_QNAME,serie.getTipoDictamen()));
-        dto.getMetadataCollection().add(new Metadata(Constantes.DOCUMENTO_ESENCIAL_QNAME,serie.getEsencial().booleanValue()));
-        dto.getMetadataCollection().add(new Metadata(Constantes.PLAZO_RESELLADO_QNAME,serie.getResellado()));
-        dto.getMetadataCollection().add(new Metadata(Constantes.PLAZO_UNIDAD_RESELLADO_QNAME,serie.getUnidadResellado().toString()));
+        dto.getMetadataCollection().add(new Metadata(Constantes.CODIGO_CLASIFICACION_QNAME, serie.getCodigo()));
+        dto.getMetadataCollection().add(new Metadata(Constantes.DENOMINACION_CLASE_QNAME, serie.getDenominacionClase()));
+        dto.getMetadataCollection().add(new Metadata(Constantes.TIPO_CLASIFICACION_QNAME, serie.getTipoClasificacion()));
+        dto.getMetadataCollection().add(new Metadata(Constantes.LOPD_QNAME, serie.getLopd().getValue()));
+        dto.getMetadataCollection().add(new Metadata(Constantes.CONFIDENCIALIDAD_QNAME, serie.getConfidencialidad().getValue()));
+        dto.getMetadataCollection().add(new Metadata(Constantes.TIPO_ACCESO_QNAME, serie.getTipoAcceso().getValue()));
+        dto.getMetadataCollection().add(new Metadata(Constantes.VALOR_SECUNDARIO_QNAME, serie.getValorSecundario().getValue()));
+        dto.getMetadataCollection().add(new Metadata(Constantes.TIPO_VALOR_QNAME, serie.getTipoValor()));
+        dto.getMetadataCollection().add(new Metadata(Constantes.TIPO_DICTAMEN_QNAME, serie.getTipoDictamen()));
+        dto.getMetadataCollection().add(new Metadata(Constantes.DOCUMENTO_ESENCIAL_QNAME, serie.getEsencial().booleanValue()));
+        dto.getMetadataCollection().add(new Metadata(Constantes.PLAZO_RESELLADO_QNAME, serie.getResellado()));
+        dto.getMetadataCollection().add(new Metadata(Constantes.PLAZO_UNIDAD_RESELLADO_QNAME, serie.getUnidadResellado().toString()));
 
 
         // Propiedades optativas, solo las metemos si tienen valor
-        if(StringUtils.trimToNull(serie.getAccionDictaminada())!=null) {
-            dto.getMetadataCollection().add(new Metadata(Constantes.PLAZO_UNIDAD_ACCION_DICTAMINADA_QNAME,serie.getUnidadPlazoAccionDictaminada().toString()));
+        if (StringUtils.trimToNull(serie.getAccionDictaminada()) != null) {
+            dto.getMetadataCollection().add(new Metadata(Constantes.PLAZO_UNIDAD_ACCION_DICTAMINADA_QNAME, serie.getUnidadPlazoAccionDictaminada().toString()));
         }
 
-        if(serie.getPlazoAccionDictaminada()!=null) {
+        if (serie.getPlazoAccionDictaminada() != null) {
             dto.getMetadataCollection().add(new Metadata(Constantes.PLAZO_ACCION_DICTAMINADA_QNAME, serie.getPlazoAccionDictaminada()));
         }
-        if(StringUtils.trimToNull(serie.getAccionDictaminada())!=null) {
+        if (StringUtils.trimToNull(serie.getAccionDictaminada()) != null) {
             dto.getMetadataCollection().add(new Metadata(Constantes.ACCION_DICTAMINADA_QNAME, serie.getAccionDictaminada()));
         }
-        if(serie.getCondicionReutilizacion()!=null && !serie.getCondicionReutilizacion().isEmpty()) {
+        if (serie.getCondicionReutilizacion() != null && !serie.getCondicionReutilizacion().isEmpty()) {
             dto.getMetadataCollection().add(new Metadata(Constantes.CONDICION_REUTILIZACION_QNAME, serie.getCondicionReutilizacion()));
         }
-        if(serie.getCodigoLimitacion()!=null && !serie.getCodigoLimitacion().isEmpty()) {
+        if (serie.getCodigoLimitacion() != null && !serie.getCodigoLimitacion().isEmpty()) {
             dto.getMetadataCollection().add(new Metadata(Constantes.CODIGO_CAUSA_LIMITACION_QNAME, serie.getCodigoLimitacion()));
         }
 
         // De momento no hay ningun aspecto que tenga todas las propiedades como optativas, por lo tanto vamos a meter
         // siempre todos los aspectos, si en el futuro hay alguno que pueda no estar, habria que comprobar aqui si alguna
         // de sus propiedades esta informada para meterlo o no
-        dto.setAspects(Arrays.asList(Aspects.values()));
+        dto.setAspects(Aspects.getAspectosSerie());
 
     }
 
@@ -553,12 +569,18 @@ public class ApiCSGDServices {
         }
     }
 
+    /**
+     * Crea el dto de Node para el envio a GDIB
+     *
+     * @param cuadro
+     * @return
+     */
     private FunctionNode convertirAFunctionNode(Funcion funcion) {
         FunctionNode dto = new FunctionNode();
         dto.setId(funcion.getNodeId());
         dto.setName(funcion.getCodigo());
         dto.setType(TiposObjetoSGD.FUNCION);
-        setMetadataYAspectosFuncion(dto,funcion);
+        setMetadataYAspectosFuncion(dto, funcion);
         return dto;
     }
 
@@ -571,32 +593,43 @@ public class ApiCSGDServices {
     private void setMetadataYAspectosFuncion(FunctionNode dto, Funcion funcion) {
         dto.setMetadataCollection(new HashSet<>());
         // Añadimos las propiedades obligatorias, ya se ha validado que estén informadas
-        dto.getMetadataCollection().add(new Metadata(Constantes.CODIGO_FUNCION_QNAME,funcion.getCodigo()));
-        dto.getMetadataCollection().add(new Metadata(Constantes.ESTADO_FUNCION_QNAME,funcion.getEstado().getValue()));
-        dto.getMetadataCollection().add(new Metadata(Constantes.FUNCION_PADRE_QNAME,funcion.getFuncionPadre().booleanValue()));
+        dto.getMetadataCollection().add(new Metadata(Constantes.CODIGO_FUNCION_QNAME, funcion.getCodigo()));
+        dto.getMetadataCollection().add(new Metadata(Constantes.FUNCION_PADRE_QNAME, funcion.getFuncionPadre().booleanValue()));
 
-        // De momento no hay ni propiedades no obligatorias ni tiene aspectos, de tener en el futuro, irian aqui
+        // Si la funcion esta obsoleta, añadimos el aspecto
+        if (Estado.OBSOLET == funcion.getEstado()) {
+            // De momento funcion solo tiene un aspecto, si tuviese mas habria que discriminar en este set
+            dto.setAspects(Aspects.getAspectosFuncion());
+        }
     }
 
+    /**
+     * Crea el dto de Node para el envio a GDIB
+     *
+     * @param cuadro
+     * @return
+     */
     private RootNode convertirAClassificationTableNode(CuadroClasificacion cuadro) {
         RootNode dto = new RootNode();
         dto.setId(cuadro.getNodeId());
         dto.setName(cuadro.getCodigo());
         dto.setType(TiposObjetoSGD.CUADRO_CLASIFICACION);
-        setMetadataYAspectosCuadro(dto,cuadro);
+        setMetadataYAspectosCuadro(dto, cuadro);
         return dto;
     }
 
     private void setMetadataYAspectosCuadro(RootNode dto, CuadroClasificacion cuadro) {
-        dto.setMetadataCollection(new HashSet<>());
-        // Añadimos las propiedades obligatorias, ya se ha validado que estén informadas
-        dto.getMetadataCollection().add(new Metadata(Constantes.CODIGO_CUADRO_QNAME,cuadro.getCodigo()));
-        dto.getMetadataCollection().add(new Metadata(Constantes.ESTADO_CUADRO_QNAME,cuadro.getEstado().getValue()));
+        // dto.setMetadataCollection(new HashSet<>());
+        // Añadimos las propiedades cuando haya
 
-        // De momento no hay ni propiedades no obligatorias ni tiene aspectos, de tener en el futuro, irian aqui
+        // Añadimos los aspectos
+        if(Estado.OBSOLET == cuadro.getEstado()) {
+            // Por el momento solo hay un aspecto, si en el futuro hubiese mas habria que cambiar este set
+            dto.setAspects(Aspects.getAspectosCuadro());
+        }
     }
 
-    private ParamNodeId generarParametrosNodeId(String identificador){
+    private ParamNodeId generarParametrosNodeId(String identificador) {
         ParamNodeId param = new ParamNodeId();
 
         param.setId(identificador);

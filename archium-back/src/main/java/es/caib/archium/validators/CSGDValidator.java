@@ -27,6 +27,7 @@ public class CSGDValidator {
     private CalculoUtils calculoUtils;
 
     /**
+     * Sólo cuadros no obsoletos (con fi NULL o futura y estado diferente de Obsolet).
      * Valida que toda la informacion requerida por GDIB este informada
      *
      * @param cuadrodb
@@ -49,6 +50,7 @@ public class CSGDValidator {
     }
 
     /**
+     * Solo funciones no obsoletas (con fi NULL o futura y estado diferente de Obsolet)
      * Valida que toda la informacion requerida por GDIB este informada
      *
      * @param funciondb
@@ -59,11 +61,6 @@ public class CSGDValidator {
         if(funciondb.isObsolete()){
             log.error("Error de validacion de la funcion ["+funciondb.getCodi()+"]. La funcion esta obsoleta y no se puede sincronizar");
             throw new I18NException("validaciones.funcion.obsoleta", this.getClass().getSimpleName());
-        }
-
-        if(funciondb.getAchQuadreclassificacio().isObsolete()){
-            log.error("La funcion ["+funciondb.getCodi()+"] pertenece a un cuadro obsoleto y no se puede sincronizar");
-            throw new I18NException("validaciones.funcion.padre.obsoleto", this.getClass().getSimpleName());
         }
 
         if(StringUtils.trimToNull(funciondb.getCodi()) == null
@@ -110,7 +107,7 @@ public class CSGDValidator {
             }
         }else{
             parent = funciondb.getAchQuadreclassificacio().getNodeId();
-            if(!funciondb.getAchQuadreclassificacio().isSynchronized()){
+            if(!isSynchronized(funciondb.getAchQuadreclassificacio())){
                 log.error("El cuadro de clasificacion [Id = " + funciondb.getAchQuadreclassificacio().getId() + ", " +
                         "Cod = " + funciondb.getAchQuadreclassificacio().getNomcas() +"] debe sincronizarse para poder" +
                         "sincronizar la funcion [Id = "+ funciondb.getId()+", Cod = "+ funciondb.getCodi()+"]");
@@ -122,6 +119,8 @@ public class CSGDValidator {
 
     /**
      * Comprueba que todos los padres hasta el cuadro de clasificacion esten sincronizados
+     * Esto es que posean nodeId y synchronized = true, y que además no estén obsoletos (fi == NULL o fi!=NULL y
+     * mayor de fecha actual)
      *
      * @param function
      * @return
@@ -133,6 +132,7 @@ public class CSGDValidator {
         }else{
             log.debug("La funcion ["+function.getId()+"] esta sincronizada");
         }
+
         //Comprobamos si tiene funcion padre
         if(function.getAchFuncio()!=null){
             log.debug("Comprobamos si la funcion padre esta sincronizada...");
@@ -149,22 +149,22 @@ public class CSGDValidator {
     }
 
     /**
-     * True si el elemento esta sincronizado y tiene el nodeId informado, falase en caso contrario
+     * True si el elemento esta sincronizado, tiene el nodeId informado y no esta obsoleto, falase en caso contrario
      *
      * @param function
      * @return
      */
     private boolean isSynchronized(Funcio function){
-        return  function.isSynchronized() && StringUtils.trimToNull(function.getNodeId()) != null;
+        return  function.isSynchronized() && StringUtils.trimToNull(function.getNodeId()) != null && !function.isObsolete();
     }
     /**
-     * True si el elemento esta sincronizado y tiene el nodeId informado, falase en caso contrario
+     * True si el elemento esta sincronizado, tiene el nodeId informado y no esta obsoleto, falase en caso contrario
      *
      * @param cuadro
      * @return
      */
     private boolean isSynchronized(Quadreclassificacio cuadro){
-        return  cuadro.isSynchronized() && StringUtils.trimToNull(cuadro.getNodeId()) != null;
+        return  cuadro.isSynchronized() && StringUtils.trimToNull(cuadro.getNodeId()) != null && !cuadro.isObsolete();
     }
 
     /**
@@ -352,7 +352,7 @@ public class CSGDValidator {
     /**
      * Se realizan una serie de validaciones de negocio para asegurar que la serie se puede sincronizar. Esto es:
      * 1.   Que cumplan los datos mínimos marcados como mandatory en el modelo de Alfresco
-     * 2.   La funcion a la que pertenezca no puede estar obsoleta (con fi anterior a la actual)
+     * 2.   Que la serie no esté obsoleta (estado obsolet)
      * 3.   Que tenga asociado un dictamen activo (estado vigente o esborrany)
      * 4.   Se validan datos minimos del dictamen y que si esta en estado vigent, debe cumplir una serie de validaciones
      *      extra (se informan en el propio metodo)
@@ -391,9 +391,9 @@ public class CSGDValidator {
         validarSincronizarSerieDatosMinimos(serie);
 
         // 2.
-        if(serie.getAchFuncio().isObsolete()){
-            log.error("La serie [" + serie.getCodi() + "] pertenece a una funcion obsoleta y no se puede sincronizar");
-            throw new I18NException("validaciones.serie.padre.obsoleta", this.getClass().getSimpleName());
+        if(serie.isObsolete()){
+            log.error("La serie [" + serie.getCodi() + "] esta obsoleta y no se puede sincronizar");
+            throw new I18NException("validaciones.serie.obsoleta", this.getClass().getSimpleName());
         }
 
         // 3.

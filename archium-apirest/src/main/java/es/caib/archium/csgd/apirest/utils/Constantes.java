@@ -7,19 +7,13 @@ public class Constantes {
     public static final String GDIB_NAMESPACE = "gdib:";
 
     // PROPIEDADES
-    // Cuadro
-    public static final String CODIGO_CUADRO = "codigo";
-    public static final String CODIGO_CUADRO_QNAME = GDIB_NAMESPACE + CODIGO_CUADRO;
-    public static final String ESTADO_CUADRO = "estado";
-    public static final String ESTADO_CUADRO_QNAME = GDIB_NAMESPACE + ESTADO_CUADRO;
+    // Cuadro (ninguna por el momento)
 
     // Funcion
     public static final String CODIGO_FUNCION = "codigo_funcion";
     public static final String CODIGO_FUNCION_QNAME = GDIB_NAMESPACE + CODIGO_FUNCION;
     public static final String FUNCION_PADRE = "funcion_padre";
     public static final String FUNCION_PADRE_QNAME = GDIB_NAMESPACE + FUNCION_PADRE;
-    public static final String ESTADO_FUNCION = "estado";
-    public static final String ESTADO_FUNCION_QNAME = GDIB_NAMESPACE + ESTADO_FUNCION;
 
 
     // Serie

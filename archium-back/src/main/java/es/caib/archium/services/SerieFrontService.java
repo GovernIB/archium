@@ -852,7 +852,7 @@ public class SerieFrontService {
             throw new I18NException("excepcion.general.Exception", this.getClass().getSimpleName(), "get entity");
         }
 
-        //Comprobamos que los padres esten sincronizados
+        //Comprobamos que los padres esten sincronizados y no obsoletos
         this.serieValidator.checkSynchronizedParents(serie);
 
         // Validamos requisitos de negocio para poder enviar la serie a Alfresco

@@ -1,5 +1,7 @@
 package es.caib.archium.persistence.model;
 
+import es.caib.archium.persistence.funcional.ObsolescenteAbstract;
+
 import java.io.Serializable;
 import javax.persistence.*;
 import java.util.List;
@@ -12,7 +14,7 @@ import java.util.List;
 @Entity
 @Table(name="ACH_SERIEDOCUMENTAL")
 @NamedQuery(name="Seriedocumental.findAll", query="SELECT s FROM Seriedocumental s")
-public class Seriedocumental implements Serializable {
+public class Seriedocumental extends ObsolescenteAbstract {
 	private static final long serialVersionUID = 1L;
 
 	@Id
@@ -457,7 +459,10 @@ public class Seriedocumental implements Serializable {
 	public void setEstat(String estat) {
 		this.estat = estat;
 	}
-	
-	
+
+	@Override
+	public boolean isObsolete() {
+		return "Obsolet".equalsIgnoreCase(this.estat);
+	}
 
 }

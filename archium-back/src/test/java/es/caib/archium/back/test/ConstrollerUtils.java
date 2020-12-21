@@ -195,7 +195,6 @@ public class ConstrollerUtils {
 //                         String descripcio, String descripcioCas, String resumMigracio, String dir3Promotor, String estat, Long tipusSerieId,
 //                         String codiIecisa, List<AplicacionObject> listaApps, List<SerieDocumentalObject> relateds, List<SerieArgenObject> argensList, List<LimitacioNormativaSerieObject> listaLNS
 //            , List<NormativaAprobacioObject> normativasList, ValoracioObject valoracio){
-//        // TODO
 //        return null;
 //    }
 

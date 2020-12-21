@@ -619,8 +619,9 @@ public class ApiCSGDServices {
     }
 
     private void setMetadataYAspectosCuadro(RootNode dto, CuadroClasificacion cuadro) {
-        // dto.setMetadataCollection(new HashSet<>());
+         dto.setMetadataCollection(new HashSet<>());
         // Añadimos las propiedades cuando haya
+        dto.getMetadataCollection().add(new Metadata(Constantes.CODIGO_CUADRO_QNAME,cuadro.getCodigo()));
 
         // Añadimos los aspectos
         if(Estado.OBSOLET == cuadro.getEstado()) {

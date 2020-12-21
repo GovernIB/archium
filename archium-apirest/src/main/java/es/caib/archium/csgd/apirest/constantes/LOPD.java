@@ -27,7 +27,7 @@ public enum LOPD {
         }
         List<LOPD> lopds = new ArrayList<>(Arrays.asList(values()));
         for(LOPD l : lopds){
-            if(l.getValue().equalsIgnoreCase(lopd)){
+            if(l.getValue().equalsIgnoreCase(lopd.replace("á","a"))){
                 return l;
             }
         }

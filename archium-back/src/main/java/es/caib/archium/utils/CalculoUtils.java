@@ -263,7 +263,7 @@ public class CalculoUtils {
     }
 
     /**
-     * Extrae el valor del plazo, el cual sera todo el String menos el ultimo caracter
+     * Extrae el valor del plazo, el cual sera el String completo menos el ultimo caracter
      *
      * @param plazo
      * @return
@@ -379,7 +379,7 @@ public class CalculoUtils {
      * al dictamen mas reciente de los que esten en estado "esborrany"
      *
      * "La serie debe tener asociado un dictamen en estado ESBORRANY o VIGENT . Si hubiese un dictamen en estado VIGENT,
-     * sólo habrá uno para la serie en todo momento y éste prevalece ante los demás (se verificarán los controles con los
+     * sólo habrá uno para la serie en en ese momento y éste prevalece ante los demás (se verificarán los controles con los
      * datos de éste). Si hay varios dictámenes en ESBORRANY y ninguno en VIGENT, se considerará el más reciente de cara
      * a la verificación de datos."
      *

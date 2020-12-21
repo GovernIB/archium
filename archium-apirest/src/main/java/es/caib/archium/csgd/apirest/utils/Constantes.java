@@ -7,7 +7,9 @@ public class Constantes {
     public static final String GDIB_NAMESPACE = "gdib:";
 
     // PROPIEDADES
-    // Cuadro (ninguna por el momento)
+    // Cuadro
+    public static final String CODIGO_CUADRO = "codigo_cuadro";
+    public static final String CODIGO_CUADRO_QNAME = GDIB_NAMESPACE + CODIGO_CUADRO;
 
     // Funcion
     public static final String CODIGO_FUNCION = "codigo_funcion";

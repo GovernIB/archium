@@ -27,7 +27,7 @@ public enum TipoValor {
         }
         List<TipoValor> valores = new ArrayList<>(Arrays.asList(values()));
         for(TipoValor tv : valores){
-            if(tv.getValue().equalsIgnoreCase(tipoValor)){
+            if(tv.getValue().equalsIgnoreCase(tipoValor.replace("í","i"))){
                 return tv;
             }
         }

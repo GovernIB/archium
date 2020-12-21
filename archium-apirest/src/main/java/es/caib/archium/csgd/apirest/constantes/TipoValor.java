@@ -8,7 +8,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public enum TipoValor {
-    ADMINISTRATIVO("Administrativo"),FISCAL("Fiscal"),JURIDICO("Juridico"),OTROS("Otros");
+    ADMINISTRATIVO("Administrativo"),FISCAL("Fiscal"),JURIDICO("Jurídico"),OTROS("Otros");
 
     private String value;
 
@@ -27,7 +27,7 @@ public enum TipoValor {
         }
         List<TipoValor> valores = new ArrayList<>(Arrays.asList(values()));
         for(TipoValor tv : valores){
-            if(tv.getValue().equalsIgnoreCase(tipoValor.replace("í","i"))){
+            if(tv.getValue().equalsIgnoreCase(tipoValor)){
                 return tv;
             }
         }

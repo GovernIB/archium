@@ -8,7 +8,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public enum LOPD {
-    BASICO("Básico"),MEDIO("Medio"),ALTO("Alto");
+    BASICO("Basico"),MEDIO("Medio"),ALTO("Alto");
 
     private String value;
 
@@ -27,7 +27,7 @@ public enum LOPD {
         }
         List<LOPD> lopds = new ArrayList<>(Arrays.asList(values()));
         for(LOPD l : lopds){
-            if(l.getValue().equalsIgnoreCase(lopd)){
+            if(l.getValue().equalsIgnoreCase(lopd.replace("á","a"))){
                 return l;
             }
         }

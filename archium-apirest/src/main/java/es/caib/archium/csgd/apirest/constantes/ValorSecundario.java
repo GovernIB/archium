@@ -8,7 +8,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public enum ValorSecundario {
-    SI("Sí"),NO("No"),NO_COBERTURA("Sin cobertura de calificación");
+    SI("Si"),NO("No"),NO_COBERTURA("Sin cobertura de calificacion");
 
     private String value;
 
@@ -28,7 +28,7 @@ public enum ValorSecundario {
         List<ValorSecundario> valores = new ArrayList<>(Arrays.asList(values()));
         for(ValorSecundario vs : valores){
             // Quitamos los posibles acentos para realizar la comparacion
-            if(vs.getValue().equalsIgnoreCase(valorSecundario)){
+            if(vs.getValue().equalsIgnoreCase(valorSecundario.replace("í","i").replace("ó","o"))){
                 return vs;
             }
         }

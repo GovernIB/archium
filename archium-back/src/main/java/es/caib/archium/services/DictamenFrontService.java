@@ -283,7 +283,7 @@ public class DictamenFrontService {
 				
 				Iterator<Dictamen> it = listDictamenes.iterator();
 				Boolean existsVigent = false;
-				while(it.hasNext() && existsVigent==false) {
+					while(it.hasNext() && existsVigent==false) {
 					Dictamen d = it.next();
 					if(!(d.getId().equals(id))) {
 						existsVigent = true;

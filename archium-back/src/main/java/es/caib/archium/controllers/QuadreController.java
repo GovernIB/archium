@@ -47,6 +47,8 @@ public class QuadreController implements Serializable{
     private String	 nombreQuadre;
     private String	 estat;
     private Long 	 quadreId;
+
+    private String nouNodeId;
     
     @Inject
     private QuadreFrontService services;
@@ -214,8 +216,10 @@ public class QuadreController implements Serializable{
 			obj.setFi(this.getNouFi());
 			obj.setModificacio(new Date());
 			obj.setVersio(this.getNouVersio());
-			
-			
+			obj.setNodeId(this.getNouNodeId());
+			// Al modificar ponemos siempre  el synchronized a false
+			obj.setSynchronized(false);
+
 	    	if(services.checkNameUnique(obj.getId(), obj.getNom())) {
 			
 				QuadreObject up = services.update(obj);
@@ -275,6 +279,8 @@ public class QuadreController implements Serializable{
 		    	this.setNouEstat(quadre.getEstat());
 		    	this.setNouFi(quadre.getFi());
 		    	this.setNouVersio(quadre.getVersio());
+		    	this.setNouNodeId(quadre.getNodeId());
+
 		    	PrimeFaces.current().executeScript("PF('quadreModalUpdate').show()");
 			} else {
 	 			FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, messageBundle.getString("cuadro.get.error"), null);
@@ -351,6 +357,13 @@ public class QuadreController implements Serializable{
 		this.nouVersio = nouVersio;
 	}
 
+	public String getNouNodeId() {
+		return nouNodeId;
+	}
+
+	public void setNouNodeId(String nouNodeId) {
+		this.nouNodeId = nouNodeId;
+	}
 
 	public List<QuadreObject> getSelectedCuadros() {
 		return selectedCuadros;

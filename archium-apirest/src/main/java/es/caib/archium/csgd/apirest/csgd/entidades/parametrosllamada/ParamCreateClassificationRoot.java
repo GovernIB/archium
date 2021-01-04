@@ -2,7 +2,7 @@ package es.caib.archium.csgd.apirest.csgd.entidades.parametrosllamada;
 
 import es.caib.archium.csgd.apirest.csgd.entidades.comunes.RootNode;
 
-public class ParamCreateClassificationTable {
+public class ParamCreateClassificationRoot {
     private RootNode classificationRoot;
 
     public RootNode getClassificationRoot() {

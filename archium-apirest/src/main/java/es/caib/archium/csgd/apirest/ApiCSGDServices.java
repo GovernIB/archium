@@ -2,10 +2,7 @@ package es.caib.archium.csgd.apirest;
 
 import es.caib.archium.csgd.apirest.constantes.*;
 import es.caib.archium.csgd.apirest.csgd.entidades.comunes.*;
-import es.caib.archium.csgd.apirest.csgd.entidades.parametrosllamada.ParamCreateClassificationTable;
-import es.caib.archium.csgd.apirest.csgd.entidades.parametrosllamada.ParamCreateFunction;
-import es.caib.archium.csgd.apirest.csgd.entidades.parametrosllamada.ParamCreateSerie;
-import es.caib.archium.csgd.apirest.csgd.entidades.parametrosllamada.ParamNodeId;
+import es.caib.archium.csgd.apirest.csgd.entidades.parametrosllamada.*;
 import es.caib.archium.csgd.apirest.csgd.entidades.resultados.*;
 import es.caib.archium.csgd.apirest.csgd.peticiones.*;
 import es.caib.archium.csgd.apirest.facade.pojos.CuadroClasificacion;
@@ -105,6 +102,44 @@ public class ApiCSGDServices {
         return null;
     }
 
+    public ResultadoSimple modificarSerie(Serie serie){
+        SetSerieResult result = null;
+        ResultadoSimple resultado = new ResultadoSimple();
+
+        SerieNode serieNode = convertirASerieNode(serie);
+
+        Request<ParamSetSerie> request = new Request<ParamSetSerie>();
+        SetSerie peticion = new SetSerie();
+        ParamSetSerie param = new ParamSetSerie();
+        param.setSerie(serieNode);
+
+        request.setServiceHeader(getServiceHeader());
+        request.setParam(param);
+        peticion.setSetSerieRequest(request);
+
+        ResultadoJersey output;
+
+        // Realizamos la llamada
+        output = postCall(resultado, Servicios.MODIFY_SERIE, peticion, SetSerieResult.class);
+        // Si el output es null es que se produjo una excepcion
+        if (output == null) {
+            return resultado;
+        }
+
+
+        if (output.getEstadoRespuestaHttp() == Constantes.CodigosRespuesta.HTTP_RESPUESTA_OK.getValue()) {
+            result = (SetSerieResult) output.getContenido();
+            resultado.setCodigoResultado(result.getSetSerieResult().getResult().getCode());
+            resultado.setMsjResultado(result.getSetSerieResult().getResult().getDescription());
+        } else {
+            ExceptionResult except = (ExceptionResult) output.getContenido();
+            resultado.setCodigoResultado(except.getException().getCode());
+            resultado.setMsjResultado(except.getException().getDescription());
+        }
+
+        return resultado;
+    }
+
 
     public Resultado<String> crearSerie(Serie serie, String funcionPadre) {
         log.debug("Se prepara la llamada en el cliente para crearSerie");
@@ -176,6 +211,44 @@ public class ApiCSGDServices {
             result = (RemoveSerieResult) output.getContenido();
             resultado.setCodigoResultado(result.getRemoveSerieResult().getResult().getCode());
             resultado.setMsjResultado(result.getRemoveSerieResult().getResult().getDescription());
+        } else {
+            ExceptionResult except = (ExceptionResult) output.getContenido();
+            resultado.setCodigoResultado(except.getException().getCode());
+            resultado.setMsjResultado(except.getException().getDescription());
+        }
+
+        return resultado;
+    }
+
+    public ResultadoSimple modificarFuncion(Funcion funcion){
+        SetFunctionResult result = null;
+        ResultadoSimple resultado = new ResultadoSimple();
+
+        FunctionNode functionNode = convertirAFunctionNode(funcion);
+
+        Request<ParamSetFunction> request = new Request<ParamSetFunction>();
+        SetFunction peticion = new SetFunction();
+        ParamSetFunction param = new ParamSetFunction();
+        param.setClassificationFunction(functionNode);
+
+        request.setServiceHeader(getServiceHeader());
+        request.setParam(param);
+        peticion.setSetFunctionRequest(request);
+
+        ResultadoJersey output;
+
+        // Realizamos la llamada
+        output = postCall(resultado, Servicios.MODIFY_FUNCTION, peticion, SetFunctionResult.class);
+        // Si el output es null es que se produjo una excepcion
+        if (output == null) {
+            return resultado;
+        }
+
+
+        if (output.getEstadoRespuestaHttp() == Constantes.CodigosRespuesta.HTTP_RESPUESTA_OK.getValue()) {
+            result = (SetFunctionResult) output.getContenido();
+            resultado.setCodigoResultado(result.getSetFunctionResult().getResult().getCode());
+            resultado.setMsjResultado(result.getSetFunctionResult().getResult().getDescription());
         } else {
             ExceptionResult except = (ExceptionResult) output.getContenido();
             resultado.setCodigoResultado(except.getException().getCode());
@@ -263,15 +336,53 @@ public class ApiCSGDServices {
         return resultado;
     }
 
+    public ResultadoSimple modificarCuadro(CuadroClasificacion cuadro){
+        SetRootResult result = null;
+        ResultadoSimple resultado = new ResultadoSimple();
+
+        RootNode rootNode = convertirAClassificationRootNode(cuadro);
+
+        Request<ParamSetRoot> request = new Request<ParamSetRoot>();
+        SetRoot peticion = new SetRoot();
+        ParamSetRoot param = new ParamSetRoot();
+        param.setRoot(rootNode);
+
+        request.setServiceHeader(getServiceHeader());
+        request.setParam(param);
+        peticion.setSetRootRequest(request);
+
+        ResultadoJersey output;
+
+        // Realizamos la llamada
+        output = postCall(resultado, Servicios.SET_CLASSIFICATION_TABLE, peticion, SetFunctionResult.class);
+        // Si el output es null es que se produjo una excepcion
+        if (output == null) {
+            return resultado;
+        }
+
+
+        if (output.getEstadoRespuestaHttp() == Constantes.CodigosRespuesta.HTTP_RESPUESTA_OK.getValue()) {
+            result = (SetRootResult) output.getContenido();
+            resultado.setCodigoResultado(result.getSetRootResult().getResult().getCode());
+            resultado.setMsjResultado(result.getSetRootResult().getResult().getDescription());
+        } else {
+            ExceptionResult except = (ExceptionResult) output.getContenido();
+            resultado.setCodigoResultado(except.getException().getCode());
+            resultado.setMsjResultado(except.getException().getDescription());
+        }
+
+        return resultado;
+    }
+
 
     public Resultado<String> crearCuadro(CuadroClasificacion cuadro) {
 
         Resultado<String> result = new Resultado<>();
-        RootNode classificationTableNode = convertirAClassificationTableNode(cuadro);
+        RootNode classificationTableNode = convertirAClassificationRootNode(cuadro);
 
-        Request<ParamCreateClassificationTable> request = new Request<ParamCreateClassificationTable>();
-        CreateClassificationTable peticion = new CreateClassificationTable();
-        ParamCreateClassificationTable param = new ParamCreateClassificationTable();
+        Request<ParamCreateClassificationRoot> request = new Request<ParamCreateClassificationRoot>();
+        CreateClassificationRoot peticion = new CreateClassificationRoot();
+        ParamCreateClassificationRoot param = new ParamCreateClassificationRoot();
         param.setClassificationRoot(classificationTableNode);
 
         request.setServiceHeader(getServiceHeader());
@@ -281,14 +392,14 @@ public class ApiCSGDServices {
         ResultadoJersey output;
 
         // Realizamos la llamada
-        output = postCall(result, Servicios.CREATE_CLASSIFICATION_TABLE, peticion, CreateClassificationTableResult.class);
+        output = postCall(result, Servicios.CREATE_CLASSIFICATION_TABLE, peticion, CreateClassificationRootResult.class);
         // Si el output es null es que se produjo una excepcion
         if (output == null) {
             return result;
         }
 
         if (output.getEstadoRespuestaHttp() == Constantes.CodigosRespuesta.HTTP_RESPUESTA_OK.getValue()) {
-            CreateClassificationTableResult resultado = (CreateClassificationTableResult) output.getContenido();
+            CreateClassificationRootResult resultado = (CreateClassificationRootResult) output.getContenido();
             result.setElementoDevuelto(resultado.getCreateClassificationRootResult().getResParam().getId());
             result.setCodigoResultado(resultado.getCreateClassificationRootResult().getResult().getCode());
             result.setMsjResultado(resultado.getCreateClassificationRootResult().getResult().getDescription());
@@ -466,6 +577,24 @@ public class ApiCSGDServices {
      * Llama al metodo preciso en funcion del tipo del dto
      *
      * @param wsDto
+     * @param <T>
+     * @return
+     */
+    public <T extends Nodo> ResultadoSimple modificarNodo(T wsDto) {
+        if (wsDto instanceof CuadroClasificacion) {
+            return modificarCuadro((CuadroClasificacion) wsDto);
+        } else if (wsDto instanceof Funcion) {
+            return modificarFuncion((Funcion) wsDto);
+        } else if (wsDto instanceof Serie) {
+            return modificarSerie((Serie) wsDto);
+        }
+        return null;
+    }
+
+    /**
+     * Llama al metodo preciso en funcion del tipo del dto
+     *
+     * @param wsDto
      * @param parentId
      * @param <T>
      * @return
@@ -609,7 +738,7 @@ public class ApiCSGDServices {
      * @param cuadro
      * @return
      */
-    private RootNode convertirAClassificationTableNode(CuadroClasificacion cuadro) {
+    private RootNode convertirAClassificationRootNode(CuadroClasificacion cuadro) {
         RootNode dto = new RootNode();
         dto.setId(cuadro.getNodeId());
         dto.setName(cuadro.getCodigo());

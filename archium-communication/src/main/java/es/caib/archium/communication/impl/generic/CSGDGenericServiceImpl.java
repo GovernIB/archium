@@ -59,25 +59,14 @@ public abstract class CSGDGenericServiceImpl<T extends Nodo, ID extends Id> impl
     public String synchronizeNode(T wsDto, String parentId) throws CSGDException {
         log.info("Se procede a sincronizar el nodo");
         try {
-            Resultado<String> rs = client.crearNodo(wsDto, parentId);
-
-            if (!Constants.CodigosRespuestaCSGD.RESPUESTA_OK.getValue().equals(rs.getCodigoResultado())) {
-                log.error("Se ha devuelto un codigo [" + rs.getCodigoResultado() + "] en el proceso de sincronizacion. " +
-                        "Mensaje: " + rs.getMsjResultado());
-                throw new CSGDException(Constants.ExceptionConstants.ERROR_RETURNED.getValue(), rs.getCodigoResultado(),
-                        rs.getMsjResultado(), "Se ha devuelto un codigo [" + rs.getCodigoResultado() + "] en el " +
-                        "proceso de sincronizacion. Mensaje: " + rs.getMsjResultado());
+            if(StringUtils.trimToNull(wsDto.getNodeId())==null) {
+                Resultado<String> rs = client.crearNodo(wsDto, parentId);
+                return prepararResultado(rs);
+            }else{
+                ResultadoSimple rs = client.modificarNodo(wsDto);
+                prepararResultado(rs);
+                return wsDto.getNodeId();
             }
-
-            if (StringUtils.trimToNull(rs.getElementoDevuelto()) == null) {
-                log.error("Se ha producido un error no esperado al no recibir correctamente los datos de respuesta en " +
-                        "el proceso de creacion de gdib");
-                throw new CSGDException(Constants.ExceptionConstants.MALFORMED_RESULT.name(), "Se ha producido un error " +
-                        "no esperado al no recibir correctamente los datos de respuesta en el proceso de creacion de gdib");
-            }
-
-            log.debug("Sincronizacion realizada correctamente. NodeId: " + rs.getElementoDevuelto());
-            return rs.getElementoDevuelto();
 
         } catch (CSGDException e) {
             throw e;
@@ -91,5 +80,37 @@ public abstract class CSGDGenericServiceImpl<T extends Nodo, ID extends Id> impl
     @Override
     public String synchronizeNode(T wsDto) throws CSGDException {
         return synchronizeNode(wsDto, null);
+    }
+
+    /**
+     * Analiza si la respuesta fue correcta en la sincronizacion y devuelve una respuesta en caso de necesitarla
+     *
+     * @param rs
+     * @return
+     * @throws CSGDException
+     */
+    private String prepararResultado(ResultadoSimple rs) throws CSGDException {
+        if (!Constants.CodigosRespuestaCSGD.RESPUESTA_OK.getValue().equals(rs.getCodigoResultado())) {
+            log.error("Se ha devuelto un codigo [" + rs.getCodigoResultado() + "] en el proceso de sincronizacion. " +
+                    "Mensaje: " + rs.getMsjResultado());
+            throw new CSGDException(Constants.ExceptionConstants.ERROR_RETURNED.getValue(), rs.getCodigoResultado(),
+                    rs.getMsjResultado(), "Se ha devuelto un codigo [" + rs.getCodigoResultado() + "] en el " +
+                    "proceso de sincronizacion. Mensaje: " + rs.getMsjResultado());
+        }
+
+        if(rs instanceof Resultado) {
+            Resultado<String> result = (Resultado<String>) rs;
+            if (StringUtils.trimToNull(result.getElementoDevuelto()) == null) {
+                log.error("Se ha producido un error no esperado al no recibir correctamente los datos de respuesta en " +
+                        "el proceso de creacion de gdib");
+                throw new CSGDException(Constants.ExceptionConstants.MALFORMED_RESULT.name(), "Se ha producido un error " +
+                        "no esperado al no recibir correctamente los datos de respuesta en el proceso de creacion de gdib");
+            }
+
+            log.debug("Sincronizacion realizada correctamente. NodeId: " + result.getElementoDevuelto());
+            return result.getElementoDevuelto();
+        }else{
+            return null;
+        }
     }
 }

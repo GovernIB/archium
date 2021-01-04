@@ -47,6 +47,7 @@ public class NuevaSerieController implements Serializable {
     private FuncioObject serieFuncio;
     private String serieEstat;
     private ValoracioObject valoracio;
+    private String nuevoNodeId;
 
     private SerieDocumentalObject modify;
 
@@ -224,6 +225,7 @@ public class NuevaSerieController implements Serializable {
 				descripcioCas = modify.getDescripcioCas();
 				resumMigracio = modify.getResumMigracio();
 				dir3Promotor = modify.getDir3Promotor();
+				nuevoNodeId = modify.getNodeId();
 
 				tipusSerieId = modify.getTipusSerieId();
 
@@ -327,7 +329,7 @@ public class NuevaSerieController implements Serializable {
                 } else {
                     SerieDocumentalObject upS = service.updateSerieDocumental(serieId, codi, nom, nomCas,
                             catalegSeriId, serieFuncio.getId(), descripcio, descripcioCas, resumMigracio, dir3Promotor, serieEstat, tipusSerieId, codiIecisa, aplicaciones.getTarget(), seriesRelacionadas.getTarget(), seriesArgenRelacionadas.getTarget(), listaRelacionLNS,
-                            normativasSerie.getTarget(), valoracio);
+                            normativasSerie.getTarget(), valoracio, nuevoNodeId);
                     funcBean.getNodeFromFunctionId(serieId, "Serie", "update", upS);
                 }
                 listaSeries = service.getListaSeries();
@@ -392,6 +394,7 @@ public class NuevaSerieController implements Serializable {
 		tipusSerieId = null;
 		codiIecisa = null;
 		serieEstat = "ESBORRANY";
+		nuevoNodeId = null;
 		
 		valoracio = new ValoracioObject();
 		for(TipuValorObject tv: listaTiposValor) {
@@ -510,8 +513,15 @@ public class NuevaSerieController implements Serializable {
         this.catalegSeriId = catalegSeriId;
     }
 
+	public String getNuevoNodeId() {
+		return nuevoNodeId;
+	}
 
-    public Long getFuncioId() {
+	public void setNuevoNodeId(String nuevoNodeId) {
+		this.nuevoNodeId = nuevoNodeId;
+	}
+
+	public Long getFuncioId() {
         return funcioId;
     }
 

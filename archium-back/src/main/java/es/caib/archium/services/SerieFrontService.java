@@ -570,7 +570,7 @@ public class SerieFrontService {
     public SerieDocumentalObject updateSerieDocumental(Long idSerie, String codi, String nom, String nomCas, Long catalegSeriId, Long funcioId,
                                                        String descripcio, String descripcioCas, String resumMigracio, String dir3Promotor, String estat, Long tipusSerieId,
                                                        String codiIecisa, List<AplicacionObject> listaApps, List<SerieDocumentalObject> relateds, List<SerieArgenObject> argenRelateds, List<LimitacioNormativaSerieObject> listaLNS
-            , List<NormativaAprobacioObject> normativasList, ValoracioObject valoracio) throws I18NException {
+            , List<NormativaAprobacioObject> normativasList, ValoracioObject valoracio, String nuevoNodeId) throws I18NException {
 
         try {
             Seriedocumental toPersist = serieService.getReference(idSerie);
@@ -587,6 +587,11 @@ public class SerieFrontService {
             if (nom != null) toPersist.setNom(nom);
             if (nomCas != null) toPersist.setNomcas(nomCas);
             if (estat != null) toPersist.setEstat(estat);
+            if (StringUtils.trimToNull(nuevoNodeId) != null) {
+                toPersist.setNodeId(nuevoNodeId);
+            }
+            // Al modificar ponemos siempre el synchronized a false
+            toPersist.setSynchronized(false);
 
             for (AplicacionObject b : listaApps) {
 

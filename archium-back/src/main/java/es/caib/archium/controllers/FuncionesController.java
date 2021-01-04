@@ -62,6 +62,7 @@ public class FuncionesController implements Serializable {
     private String nuevoEstat;
     private BigDecimal nuevoOrdre;
     private FuncioObject funcioPare;
+    private String nuevoNodeId;
 
     private List<FuncioObject> listaFunciones;
     private List<QuadreObject> listaCuadrosClasificacion = new ArrayList<QuadreObject>();
@@ -155,6 +156,7 @@ public class FuncionesController implements Serializable {
                     this.nuevoTipusserie = f.getTipoSerie();
                     this.funcionSeleccionada = f.getFuncioPare();
                     this.funcioPare = f.getFuncioPare();
+                    this.nuevoNodeId = f.getNodeId();
                     PrimeFaces.current().executeScript("PF('documentDialog').show()");
                 } else {
                     FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, messageBundle.getString("funciones.get.error"), null);
@@ -592,6 +594,7 @@ public class FuncionesController implements Serializable {
         nuevoEstat = null;
         nuevoOrdre = null;
         funcioPare = null;
+        nuevoNodeId = null;
 
     }
 

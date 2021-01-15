@@ -489,7 +489,7 @@ public class ApiCSGDServices {
      */
     private SerieNode convertirASerieNode(Serie serie) {
         SerieNode dto = new SerieNode();
-        dto.setName(serie.getDenominacionClase());
+        dto.setName(serie.getCodigo());
         dto.setType(TiposObjetoSGD.SERIE_DOCUMENTAL);
         dto.setId(serie.getNodeId());
         Content content = new Content();
@@ -527,7 +527,7 @@ public class ApiCSGDServices {
 
 
         // Propiedades optativas, solo las metemos si tienen valor
-        if (StringUtils.trimToNull(serie.getAccionDictaminada()) != null) {
+        if (serie.getUnidadPlazoAccionDictaminada() != null) {
             dto.getMetadataCollection().add(new Metadata(Constantes.PLAZO_UNIDAD_ACCION_DICTAMINADA_QNAME, serie.getUnidadPlazoAccionDictaminada().toString()));
         }
 

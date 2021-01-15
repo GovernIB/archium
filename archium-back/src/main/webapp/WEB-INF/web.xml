@@ -37,7 +37,7 @@
 
     <login-config>
         <auth-method>KEYCLOAK</auth-method>
-        <realm-name>archium-default</realm-name>
+        <realm-name>ARCHIUM</realm-name>
     </login-config>
 
     <error-page>

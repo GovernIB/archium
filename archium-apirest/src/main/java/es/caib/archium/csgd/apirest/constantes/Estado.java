@@ -38,4 +38,18 @@ public enum Estado {
     public String getValue() {
         return value;
     }
+    
+    public static  boolean isEstadoSincronizable(String estat){
+        return isEstadoSincronizable(getEstado(estat));
+    }
+
+    /**
+     * Devuelve true si el estado es alguno de los permitidos para sincronizar
+     * 
+     * @param estat
+     * @return
+     */
+    public static boolean isEstadoSincronizable(Estado estat){
+        return ESBORRANY == estat || VIGENT == estat;        
+    }
 }

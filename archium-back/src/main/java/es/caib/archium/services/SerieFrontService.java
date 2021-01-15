@@ -13,7 +13,6 @@ import es.caib.archium.objects.*;
 import es.caib.archium.persistence.model.*;
 import es.caib.archium.utils.CalculoUtils;
 import es.caib.archium.utils.CreateSerieXMLUtils;
-import es.caib.archium.csgd.apirest.constantes.UnidadPlazo;
 import es.caib.archium.validators.CSGDValidator;
 import org.apache.commons.lang3.StringUtils;
 import org.primefaces.model.DualListModel;
@@ -938,12 +937,118 @@ public class SerieFrontService {
                 throw new I18NException("excepcion.general.Exception", this.getClass().getSimpleName(), "update");
             }
         } else {
-            log.error("Se ha devuelto null como nodo de alfresco en la sincronizacion de la funcion");
+            log.error("Se ha devuelto null como nodo de alfresco en la sincronizacion de la serie");
             throw new I18NException("excepcion.general.Exception", this.getClass().getSimpleName(), "synchronizeError");
         }
     }
 
 
+    /**
+     * Comprueba si el dictamen que se pasa por parametro es el dictamen activo de su serie, en caso de serlo, marca el
+     * booleano a true, el cual es encesario para moestrar el icono apropiado en la vista.
+     * Si hay un nuevo dictamen activo, y la serie esta sincronizada, la actualizamos para marcarla a sincronizar
+     *
+     * @param newD
+     */
+    @Transactional
+    public boolean checkIfNewDictamenActivo(DictamenObject dictamen) throws I18NException {
+        Seriedocumental seriedb = this.serieEJB.getReference(dictamen.getSerieDocumental().getSerieId());
+        // Comprobamos que el estado del dictamen sea un estado valido para la sincronizacion con gdib
+        if (Estado.isEstadoSincronizable(dictamen.getEstat())) {
+            Dictamen activoNuevo = this.calculoUtils.getDictamenActivo(seriedb);
+            // Si el nuevo dictamen activo de la serie es el que acabamos de crear...
+            if (activoNuevo != null && activoNuevo.getId().equals(dictamen.getId())) {
+                // Marcamos el dictamen como el dictamen activo de la serie
+                dictamen.setDictamenActivo(true);
 
+                if(seriedb.isSynchronized()){
+                    seriedb.setSynchronized(false);
+                    seriedb = serieEJB.update(seriedb);
+                    dictamen.setSerieDocumental(new SerieDocumentalObject(seriedb));
+                }
+                return true;
+            }
+        }
+        return false;
+    }
 
+    /**
+     * Devuelve el dictamen activo de la serie indicada
+     *
+     * @param serieId
+     * @return
+     */
+    @Transactional
+    public DictamenObject getDictamenActivo(Long serieId) {
+        Seriedocumental seriedb = this.serieEJB.getReference(serieId);
+        return new DictamenObject(this.calculoUtils.getDictamenActivo(seriedb));
+    }
+
+    /**
+     * Mueve una serie cambiándola de padre, lo que hara que su arbol completo de hijos se mueva con ella (dictamenes)
+     *  @param elementId
+     * @param rootId
+     * @param parentFunctionId
+     * @return
+     */
+    @Transactional
+    public SerieDocumentalObject moveSerie(long serieId, Long rootId, Long parentFunctionId) throws I18NException {
+        log.info("Se comienza servicio de mover serie");
+        Seriedocumental seriedb = this.serieEJB.getReference(serieId);
+        Funcio parentFunction = null;
+
+        // Buscamos el padre nuevo del nodo
+        if(parentFunctionId == null){
+            log.error("No se ha elegido padre para la serie");
+            throw new I18NException("csgd.permiso.denegado", this.getClass().getSimpleName(), "moveSerie");
+        }else{
+            // Si el padre sigue siendo el mismo no hacemos nada
+            if(seriedb.getAchFuncio().getId().equals(parentFunctionId)){
+                return new SerieDocumentalObject(seriedb);
+            }
+
+            parentFunction = this.funcioService.getReference(parentFunctionId);
+            log.debug("Obtenida funcion padre ["+parentFunction.getCodi()+"] de la serie");
+        }
+
+        seriedb.setAchFuncio(parentFunction);
+        // Ponemos como no sincronizada la serie
+        seriedb.setSynchronized(false);
+
+//        if(this.serieValidator.isSynchronized(seriedb)) {
+//            log.debug("Se procede a sincronizar con Alfresco el movimiento de la funcion");
+//            // Preparamos el dto para enviar a GDIB
+//            MoverSerie moveSerie = new MoverSerie();
+//            moveSerie.setParentId(seriedb.getAchFuncio().getNodeId());
+//            moveSerie.setNodoId(seriedb.getNodeId());
+//
+//            // Enviamos la información a Gdib
+//            try {
+//                this.csgdSerieService.moveNode(moveSerie);
+//            } catch (CSGDException e) {
+//                throw new I18NException(getExceptionI18n(e.getClientErrorCode()), this.getClass().getSimpleName(), "moveSerie");
+//            } catch (EJBAccessException e) {
+//                log.error("No se cuenta con los permisos adecuados para realiziar la llamada al csgd");
+//                throw new I18NException("csgd.permiso.denegado", this.getClass().getSimpleName(), "moveSerie");
+//            } catch (Exception e) {
+//                log.error("Error moviendo la serie: " + e);
+//                throw new I18NException("excepcion.general.Exception", this.getClass().getSimpleName(), "moveSerie");
+//            }
+//            log.debug("Completado proceso de mover en el CSGD, se procede a guardar en base de datos");
+//        }
+
+        // Modificamos la serie
+        try {
+            seriedb = this.serieEJB.update(seriedb);
+            log.debug("Serie modificada");
+        } catch (I18NException e) {
+            log.error("Error moviendo la serie: " + e);
+            throw e;
+        } catch (Exception e) {
+            log.error("Error moviendo la serie: " + e);
+            throw new I18NException("excepcion.general.Exception", this.getClass().getSimpleName(), "update");
+        }
+
+        return new SerieDocumentalObject(seriedb);
+    }
 }

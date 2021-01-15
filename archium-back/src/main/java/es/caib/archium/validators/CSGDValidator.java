@@ -6,6 +6,7 @@ import es.caib.archium.csgd.apirest.constantes.TipoAcceso;
 import es.caib.archium.csgd.apirest.constantes.TipoDictamen;
 import es.caib.archium.csgd.apirest.constantes.ValorSecundario;
 import es.caib.archium.csgd.apirest.facade.pojos.Serie;
+import es.caib.archium.ejb.service.FuncioService;
 import es.caib.archium.persistence.model.*;
 import es.caib.archium.utils.CalculoUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -25,6 +26,9 @@ public class CSGDValidator {
 
     @Inject
     private CalculoUtils calculoUtils;
+
+    @Inject
+    FuncioService funcionesEJB;
 
     /**
      * Sólo cuadros no obsoletos (con fi NULL o futura y estado diferente de Obsolet).
@@ -154,8 +158,17 @@ public class CSGDValidator {
      * @param function
      * @return
      */
-    private boolean isSynchronized(Funcio function){
+    public boolean isSynchronized(Funcio function){
         return  function.isSynchronized() && StringUtils.trimToNull(function.getNodeId()) != null && !function.isObsolete();
+    }
+    /**
+     * True si el elemento esta sincronizado, tiene el nodeId informado y no esta obsoleto, falase en caso contrario
+     *
+     * @param serie
+     * @return
+     */
+    public boolean isSynchronized(Seriedocumental serie){
+        return  serie.isSynchronized() && StringUtils.trimToNull(serie.getNodeId()) != null && !serie.isObsolete();
     }
     /**
      * True si el elemento esta sincronizado, tiene el nodeId informado y no esta obsoleto, falase en caso contrario
@@ -163,7 +176,7 @@ public class CSGDValidator {
      * @param cuadro
      * @return
      */
-    private boolean isSynchronized(Quadreclassificacio cuadro){
+    public boolean isSynchronized(Quadreclassificacio cuadro){
         return  cuadro.isSynchronized() && StringUtils.trimToNull(cuadro.getNodeId()) != null && !cuadro.isObsolete();
     }
 
@@ -515,4 +528,39 @@ public class CSGDValidator {
 
         log.info("La serie cumple todas las validaciones para poder ser sincronizada en Alfresco");
     }
+
+    /**
+     * Comprueba si el id que se pasa por parametro es de alguna funcion hija de la funcion actual
+     *
+     * @param functiondb
+     * @param parentFunctionId
+     * @return
+     */
+    public boolean validarFuncionHija(Funcio functiondb, Long parentFunctionId) throws I18NException {
+        List<Funcio> childFunctions = funcionesEJB.getByParentAndQuadre(functiondb.getId(),functiondb.getAchQuadreclassificacio().getId());
+
+        return checkChilds(childFunctions,parentFunctionId);
+    }
+
+    /**
+     * Metodo recursivo para navegar por los hijos de la funcion
+     *
+     * @param childFunctions
+     * @param parentFunctionId
+     * @return
+     * @throws I18NException
+     */
+    private boolean checkChilds(List<Funcio> childFunctions, Long parentFunctionId) throws I18NException {
+        if(childFunctions != null && !childFunctions.isEmpty()){
+            for (Funcio child : childFunctions) {
+                if (child.getId().equals(parentFunctionId)) {
+                    return true;
+                } else {
+                    checkChilds(funcionesEJB.getByParentAndQuadre(child.getId(), child.getAchQuadreclassificacio().getId()), parentFunctionId);
+                }
+            }
+        }
+        return false;
+    }
+
 }

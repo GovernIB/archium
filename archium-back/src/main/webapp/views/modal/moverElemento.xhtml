@@ -1,0 +1,68 @@
+<ui:composition 
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+>
+
+<p:dialog id="moverElementoDialogId" header="Mover" showEffect="fade" widgetVar="moverElementoModalDialog" modal="true" resizable="false" style="max-width:1100px; min-width:1100px;">
+
+	<!-- CONTENIDO -->
+	<div class="views_2">
+		<div class="content_4 modfuncion">
+			<h:form id="moverForm">
+				<p:panel id="panel">
+					<ui:fragment>
+						<h2 class="title_first">Mover</h2>
+					</ui:fragment>
+					<div class="separador_rojo"></div>
+					<div class="ui-g form_new">
+						<div class="ui-g-12 item_1">
+							<label class="ui-g-4">Cuadro</label>
+							<h:panelGrid columns="2" cellpadding="5">
+								<p:selectOneMenu id="listaCuadrosMover"
+												 value="#{moverElementoController.cuadroSeleccionado}"
+												 class="ui-g-8 selector_4"
+												 style="max-width:250px!important;"
+												 panelStyle="width:250px"
+												 required="true"
+												 filter="true"
+												 filterMatchMode="contains">
+<!--									<p:ajax update="moverForm:listaFuncnMover" listener="#{moverElementoController.updateFunctionsList}" />-->
+									<p:ajax update="@form" listener="#{moverElementoController.updateFunctionsList}" />
+									<f:selectItems value="#{moverElementoController.listaCuadros}" var="n" itemLabel="#{n.nom}" itemValue="#{n}" />
+									<f:converter converterId="QuadreclassificacioConverter"/>
+								</p:selectOneMenu>
+							</h:panelGrid>
+						</div>
+
+
+						<div class="ui-g-12 item_1">
+							<label class="ui-g-4">#{messages['nuevafuncion.funcionpadre']}</label>
+							<h:panelGrid columns="2" cellpadding="5">
+								<p:selectOneMenu id="listaFuncnMover"
+												 value="#{moverElementoController.padreElegido}"
+												 class="ui-g-8 selector_4"
+												 style="max-width:250px!important;"
+												 panelStyle="width:250px"
+												 required="false"
+												 filter="true"
+												 filterMatchMode="contains">
+									<f:selectItem itemLabel="-- #{messages['selecciona']} #{messages['nuevafuncion.funcionpadre']} --" itemValue="#{null}"/>
+									<f:selectItems value="#{moverElementoController.listaFunciones}" var="n" itemLabel="#{n.printTab().replace(' ', '&#160;')}#{n.codi} - #{n.nom}" itemValue="#{n}" />
+									<f:converter converterId="FuncioConverter"/>
+								</p:selectOneMenu>
+							</h:panelGrid>
+						</div>
+							<div class="ui-g-12 button_new">
+								<p:commandButton rendered="#{moverElementoController.moverSerie eq false}" widgetVar="funcMoverButtonFuncion" onclick="PF('funcMoverButtonFuncion').disable()" class="boton_modal button_red" update="panel1" value="#{messages['guardar']}" actionListener="#{funciones.move(moverElementoController.cuadroSeleccionado,moverElementoController.padreElegido,moverElementoController.funcion)}" oncomplete="PF('funcMoverButtonFuncion').enable(); PF('moverElementoModalDialog').hide()"></p:commandButton>
+								<p:commandButton rendered="#{moverElementoController.moverSerie eq true}" widgetVar="funcMoverButtonSerie" onclick="PF('funcMoverButtonSerie').disable()" class="boton_modal button_red" update="panel1" value="#{messages['guardar']}" actionListener="#{nuevaSerieController.move(moverElementoController.cuadroSeleccionado,moverElementoController.padreElegido,moverElementoController.serie)}" oncomplete="PF('funcMoverButtonSerie').enable(); PF('moverElementoModalDialog').hide()"></p:commandButton>
+							</div>
+					</div>
+				</p:panel>
+			</h:form>
+		</div>
+	</div>
+  </p:dialog>
+  </ui:composition>

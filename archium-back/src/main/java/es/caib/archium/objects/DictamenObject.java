@@ -28,7 +28,9 @@ public class DictamenObject {
 	private Date 	inici;
 	private Date 	aprovacio;
 	private Date 	fi;
-	
+	private Boolean isDictamenActivo;
+
+
 	ResourceBundle messageBundle = ResourceBundle.getBundle("messages.messages");
 	
 	public DictamenObject() {
@@ -37,7 +39,7 @@ public class DictamenObject {
 	public DictamenObject(Long id, SerieDocumentalObject serieDocumental, TipuDictamenObject tipusdictamen,
 			NormativaAprobacioObject normativaAprovacio, TipuAccesObject tipusAcces, EnsObject ens, LopdObject lopd,
 			Boolean serieEsencial, String termini, String condicioReutilitzacio, String destinatarisRestrigits,
-			String accioDictaminada, String codi, String estat, Date inici, Date aprovacio, Date fi) {
+			String accioDictaminada, String codi, String estat, Date inici, Date aprovacio, Date fi,Boolean isDictamenActivo) {
 		super();
 		this.id = id;
 		this.serieDocumental = serieDocumental;
@@ -56,8 +58,14 @@ public class DictamenObject {
 		this.inici = inici;
 		this.aprovacio = aprovacio;
 		this.fi = fi;
+		this.isDictamenActivo = isDictamenActivo;
 	}
-	
+
+	public DictamenObject(Dictamen dbDictamen,Boolean isDictamenActivo) {
+		this(dbDictamen);
+		this.isDictamenActivo = isDictamenActivo;
+	}
+
 	public DictamenObject(Dictamen dbDictamen) {
 		
 		if(dbDictamen!=null) {
@@ -77,7 +85,8 @@ public class DictamenObject {
 			this.fi = dbDictamen.getFi();
 			this.codi = dbDictamen.getCodi();
 			this.estat = dbDictamen.getEstat();
-			
+			this.isDictamenActivo = false;
+
 			if(dbDictamen.getSerieessencial()!=null) {
 				this.serieEsencial = (dbDictamen.getSerieessencial().signum() == 1 ? true : false);
 			} else {
@@ -154,6 +163,15 @@ public class DictamenObject {
 	public void setDestinatarisRestrigits(String destinatarisRestrigits) {
 		this.destinatarisRestrigits = destinatarisRestrigits;
 	}
+
+	public Boolean getDictamenActivo() {
+		return isDictamenActivo;
+	}
+
+	public void setDictamenActivo(Boolean dictamenActivo) {
+		isDictamenActivo = dictamenActivo;
+	}
+
 	public String getAccioDictaminada() {
 		return accioDictaminada;
 	}
@@ -190,7 +208,7 @@ public class DictamenObject {
 	public void setCodi(String codi) {
 		this.codi = codi;
 	}
-	
+
 	public String getTerminiFormat() {
 		
 		if (this.termini != null) {

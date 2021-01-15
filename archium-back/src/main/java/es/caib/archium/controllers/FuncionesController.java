@@ -117,7 +117,7 @@ public class FuncionesController implements Serializable {
             }
 
             if (quadreId == null) {
-                TreeNode root = new DefaultTreeNode(new Document(0, "All", "All", "All", null, null, null), null);
+                TreeNode root = new DefaultTreeNode(new Document(0, "All", "All", "All", null, null, null, null, null), null);
             } else {
                 this.cuadroSeleccionado = this.servicesCuadroClasificacion.getQuadreById(quadreId);
                 this.root = this.servicesFunciones.getContent(cuadroSeleccionado);
@@ -185,6 +185,55 @@ public class FuncionesController implements Serializable {
             this.funcionSeleccionada = d.getObject();
             this.funcioPare = d.getObject();
         }
+    }
+
+    /**
+     * Mueve una funcion a otro padre
+     *
+     * @param cuadro nuevo cuadro al que pertenece
+     * @param funcion nueva funcion a la que pertenece (si no es hijo directo del cuadro, en ese caso funcion sera null)
+     * @param elemento elemento a actualizar
+     */
+    public void move(QuadreObject cuadro, FuncioObject funcion, Document<FuncioObject> elemento) throws I18NException {
+        log.info("Se inicia proceso de mover la funcion [Id,Codigo] ["+elemento.getId()+","+elemento.getCodi()+"]");
+        TreeNode oldParent = null;
+        // Si la funcion padre es null quiere decir que era el cuadro su padre
+        if(elemento.getParentFunction()!=null){
+            oldParent = this.getNodeFromFunctionId(elemento.getParentFunction(), "Funcio", "insert", null);
+        }else{
+            oldParent = this.getNodeFromFunctionId(elemento.getParentRoot(), "Quadre", "insert", null);
+        }
+
+        FuncioObject result = this.servicesFunciones.moveFunction(elemento.getId(),cuadro.getId(),funcion == null ? null : funcion.getId());
+
+        log.debug("Se completa el proceso de mover funcion");
+        log.debug("Actualizamos el arbol");
+
+
+        this.listaFunciones = this.servicesFunciones.loadTree(quadreId, null);
+
+
+        log.debug("Se mueve dentro del mismo cuadro, así que lo insertamos bajo el padre nuevo");
+
+        if (oldParent != null) {
+            TreeNode node = this.getNodeFromFunctionId(elemento.getId(), "Funcio", "update", result);
+            int index = oldParent.getChildren().indexOf(node);
+            oldParent.getChildren().remove(node);
+            // Si el lugar al que se ha movido pertenece al mismo cuadro, buscamos donde insertarlo
+            if (cuadro.getId().equals(elemento.getParentRoot())) {
+                TreeNode parentNode;
+                if (result.getFuncioPare() != null) {
+                    parentNode = getNodeFromFunctionId(result.getFuncioPare().getId(), "Funcio", "insert", null);
+                } else {
+                    parentNode = root;
+                }
+                node.setParent(parentNode);
+                parentNode.getChildren().add(index, node);
+            }
+        }
+        // TODO : Cambiar mensaje
+        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(messageBundle.getString("funciones.sinc.ok")));
+        log.info("Proceso de mover finalizado");
     }
 
     /**
@@ -268,6 +317,8 @@ public class FuncionesController implements Serializable {
         }
     }
 
+
+
     public void update() {
 
 
@@ -332,6 +383,8 @@ public class FuncionesController implements Serializable {
         }
     }
 
+
+
     public void save() {
 
         try {
@@ -355,7 +408,7 @@ public class FuncionesController implements Serializable {
             }
 
             TreeNode node = new DefaultTreeNode(new Document<FuncioObject>(newF.getId(), newF.getCodi(), newF.getNom(),
-                    "Funcio", newF.getNodeId(), newF.isSynchronized(), newF), parent);
+                    "Funcio", newF.getCodigoCuadro() == null? null : newF.getCodigoCuadro().getId(), newF.getFuncioPare() == null ? null : newF.getFuncioPare().getId(), newF.getNodeId(), newF.isSynchronized(), newF), parent);
 
             parent.getChildren().add(0,node);
 
@@ -387,17 +440,17 @@ public class FuncionesController implements Serializable {
                 switch (typeObject) {
                     case "FuncioObject":
                         FuncioObject f = (FuncioObject) updateObject;
-                        Document<FuncioObject> fdoc = new Document<FuncioObject>(f.getId(), f.getCodi(), f.getNom(), "Funcio", f.getNodeId(), f.isSynchronized(), f);
+                        Document<FuncioObject> fdoc = new Document<FuncioObject>(f.getId(), f.getCodi(), f.getNom(), "Funcio", f.getCodigoCuadro() == null ? null : f.getCodigoCuadro().getId(), f.getFuncioPare() == null ? null : f.getFuncioPare().getId(), f.getNodeId(), f.isSynchronized(), f);
                         ((DefaultTreeNode) node).setData(fdoc);
                         break;
                     case "SerieDocumentalObject":
                         SerieDocumentalObject s = (SerieDocumentalObject) updateObject;
-                        Document<SerieDocumentalObject> sdoc = new Document<SerieDocumentalObject>(s.getSerieId(), s.getCodi(), s.getNom(), "Serie", s.getNodeId(), s.isSynchronized(), s);
+                        Document<SerieDocumentalObject> sdoc = new Document<SerieDocumentalObject>(s.getSerieId(), s.getCodi(), s.getNom(), "Serie", s.getFuncio().getCodigoCuadro().getId(), s.getFuncio().getId(), s.getNodeId(), s.isSynchronized(), s);
                         ((DefaultTreeNode) node).setData(sdoc);
                         break;
                     case "DictamenObject":
                         DictamenObject di = (DictamenObject) updateObject;
-                        Document<DictamenObject> fun = new Document<DictamenObject>(di.getId(), di.getCodi(), di.getAccioDictaminada(), "Dictamen", di);
+                        Document<DictamenObject> fun = new Document<DictamenObject>(di.getId(), di.getCodi(), di.getAccioDictaminada(), "Dictamen", di.getDictamenActivo(), di);
                         ((DefaultTreeNode) node).setData(fun);
                         break;
                     default:

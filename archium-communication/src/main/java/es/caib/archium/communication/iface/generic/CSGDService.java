@@ -1,8 +1,7 @@
 package es.caib.archium.communication.iface.generic;
 
-import es.caib.archium.csgd.apirest.csgd.entidades.comunes.Id;
-import es.caib.archium.csgd.apirest.facade.pojos.CuadroClasificacion;
 import es.caib.archium.communication.exception.CSGDException;
+import es.caib.archium.csgd.apirest.csgd.entidades.comunes.Id;
 import es.caib.archium.csgd.apirest.facade.pojos.Nodo;
 
 import javax.ejb.Local;
@@ -38,4 +37,5 @@ public interface CSGDService<T extends Nodo, ID extends Id> {
      * @throws CSGDException
      */
     String synchronizeNode(T dtoWs) throws CSGDException;
+
 }

@@ -13,6 +13,7 @@ import es.caib.archium.persistence.model.Dictamen;
 import es.caib.archium.persistence.model.Funcio;
 import es.caib.archium.persistence.model.Seriedocumental;
 import es.caib.archium.persistence.model.Tipusserie;
+import es.caib.archium.utils.CalculoUtils;
 import es.caib.archium.validators.CSGDValidator;
 import org.apache.commons.lang3.StringUtils;
 import org.primefaces.model.DefaultTreeNode;
@@ -59,10 +60,13 @@ public class FuncioFrontService {
     @Inject
     private CSGDValidator funcionValidator;
 
+    @Inject
+    private CalculoUtils calculoUtils;
+
     @Transactional
     public TreeNode getContent(QuadreObject quadre) throws I18NException {
 
-        TreeNode root = new DefaultTreeNode(new Document(0, "All", "All", "All", null, null, null), null);
+        TreeNode root = new DefaultTreeNode(new Document(0, "All", "All", "All", null, null, null, null, null), null);
         this.recursiveTree(quadre, root, null);
 
         return root;
@@ -111,12 +115,17 @@ public class FuncioFrontService {
                 List<Seriedocumental> resS = this.getSeriesByFuncio(funcio);
                 if (resS != null) {
                     for (Seriedocumental s : resS) {
-                        TreeNode serieNode = new DefaultTreeNode(new Document<SerieDocumentalObject>(s.getId(), s.getCodi(), s.getNom(), "Serie", s.getNodeId(), s.isSynchronized(), new SerieDocumentalObject(s)), node);
+                        TreeNode serieNode = new DefaultTreeNode(new Document<SerieDocumentalObject>(s.getId(), s.getCodi(), s.getNom(), "Serie",s.getAchFuncio() == null? null :  s.getAchFuncio().getAchQuadreclassificacio() == null ? null : s.getAchFuncio().getAchQuadreclassificacio().getId(), s.getAchFuncio() == null ? null : s.getAchFuncio().getId(), s.getNodeId(), s.isSynchronized(), new SerieDocumentalObject(s)), node);
                         List<Dictamen> resD = this.getDictamenBySerie(s);
 
                         if (resD.size() > 0) {
+                            // En la tabla se marca con un check el dictamen activo, lo comprueba por el booleano dictamenActivo,
+                            // calculamos cual es el dictamen activo para activar este booleano
+                            Dictamen dictamenActivo = this.calculoUtils.getDictamenActivo(s);
                             for (Dictamen d : resD) {
-                                TreeNode dictamenNode = new DefaultTreeNode(new Document<DictamenObject>(d.getId(), d.getCodi(), d.getAcciodictaminada(), "Dictamen", new DictamenObject(d)), serieNode);
+                                TreeNode dictamenNode = new DefaultTreeNode(new Document<DictamenObject>(d.getId(),
+                                        d.getCodi(), d.getAcciodictaminada(), "Dictamen",
+                                        d.getId().equals(dictamenActivo.getId()),new DictamenObject(d)), serieNode);
                             }
                         }
                     }
@@ -126,7 +135,7 @@ public class FuncioFrontService {
 
             if (resF.size() > 0) {
                 for (Funcio f : resF) {
-                    TreeNode funcioNode = new DefaultTreeNode(new Document<FuncioObject>(f.getId(), f.getCodi(), f.getNom(), "Funcio", f.getNodeId(), f.isSynchronized(), new FuncioObject(f)), node);
+                    TreeNode funcioNode = new DefaultTreeNode(new Document<FuncioObject>(f.getId(), f.getCodi(), f.getNom(), "Funcio", f.getAchQuadreclassificacio() == null ? null : f.getAchQuadreclassificacio().getId(), f.getAchFuncio() == null ? null : f.getAchFuncio().getId(), f.getNodeId(), f.isSynchronized(), new FuncioObject(f)), node);
                     this.recursiveTree(quadre, funcioNode, f);
                 }
             }
@@ -361,7 +370,7 @@ public class FuncioFrontService {
         }
 
         String parent = null;
-        //Comprobamos que el padre este sincronizado, obtenemos el padre mas cercano
+        //Comprobamos que todos sus padres esten sincronizados, obtenemos el padre mas cercano
         parent = this.funcionValidator.checkSynchronizedParents(funciondb);
 
         log.info("Todos los padres de la funcion se encuentran sincronizados, se procede con la sincronizacion");
@@ -434,6 +443,65 @@ public class FuncioFrontService {
     }
 
 
+    /**
+     * Mueve una funcion cambiándola de padre, lo que hara que su arbol completo de hijos se mueva con ella
+     *
+     *  @param elementId
+     * @param rootId
+     * @param parentFunctionId
+     * @return
+     */
+    @Transactional
+    public FuncioObject moveFunction(long funcionId, Long rootId, Long parentFunctionId) throws I18NException {
+        log.info("Se comienza servicio de mover funcion");
+        Funcio functiondb = this.funcionesEJB.getReference(funcionId);
+        Funcio parentFunction = null;
+        // Si tiene funcion padre la obtenemos
+        if(parentFunctionId != null){
+            // Si la funcion a la que se intenta mover es hija de la actual, no lo permitimos
+            if(this.funcionValidator.validarFuncionHija(functiondb,parentFunctionId)){
+                log.error("No puedes mover la funcion a una hija, debe cambiar antes el padre de esta");
+                throw new I18NException("funcion.mover.hija", this.getClass().getSimpleName(), "moveFunction");
+            }
+
+            parentFunction = this.funcionesEJB.getReference(parentFunctionId);
+            log.debug("Obtenida funcion padre ["+parentFunction.getCodi()+"]");
+        }
+
+        // El if es por eficiencia, si es el mismo cuadro nos ahorramos volver a buscarlo, sino le seteamos el nuevo,
+        // si tiene una funcion padre, el cuadro sera el de esa funcion, por lo que tambien nos ahorramos realizar la busqueda
+        if(!functiondb.getAchQuadreclassificacio().getId().equals(rootId)) {
+            if(parentFunction!=null){
+                // Hacemos esta comprobacion para verificar la integridad de los datos, ya que el cuadro elegido deberia
+                // ser el mismo que al que pertenece la funcion padre al que se movera
+                if(!parentFunction.getAchQuadreclassificacio().getId().equals(rootId)){
+                    log.error("Datos inconsistentes. El cuadro elegido no es el mismo que el cuadro del padre elegido");
+                    throw new I18NException("funcion.mover.parent.error", this.getClass().getSimpleName(), "moveFunction");
+                }
+                functiondb.setAchQuadreclassificacio(parentFunction.getAchQuadreclassificacio());
+            }else {
+                functiondb.setAchQuadreclassificacio(quadreclassificacioEJB.getReference(rootId));
+            }
+        }
+        functiondb.setAchFuncio(parentFunction);
+        // Ponemos la funcion como no sincronizada
+        functiondb.setSynchronized(false);
 
 
+        // TODO : Poner como no sincronizados a todos sus hijos
+        // Modificamos la funcion
+        try {
+            functiondb = this.funcionesEJB.update(functiondb);
+            log.debug("funcion modificada");
+        } catch (I18NException e) {
+            log.error("Error moviendo la funcion: " + e);
+            throw e;
+        } catch (Exception e) {
+            log.error("Error moviendo la funcion: " + e);
+            throw new I18NException("excepcion.general.Exception", this.getClass().getSimpleName(), "update");
+        }
+
+
+        return new FuncioObject(functiondb);
+    }
 }

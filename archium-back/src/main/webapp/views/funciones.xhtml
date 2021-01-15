@@ -15,6 +15,7 @@
     	<ui:include src="/views/modal/dictamen/nuevoDictamen.xhtml" />
     	<ui:include src="/views/modal/dictamen/confirmDictamenVigent.xhtml" />
     	<ui:include src="/views/modal/dictamen/confirmDictamenVigentReq.xhtml" />
+    	<ui:include src="/views/modal/moverElemento.xhtml" />
 
        	<div class="separador_rojo"></div>
 
@@ -69,9 +70,11 @@
         		<p:ajax event="sort" listener="#{funciones.onSortTree}" update="tabla :info" />
         		<p:ajax event="page" listener="#{funciones.onPageTree}" update="tabla :info" />
 
-		        <p:column headerText="#{messages['funciones.codi']}" style="width:200px;" filterBy="#{document.codi}" sortBy="#{document.codi}" filterMatchMode="contains">
-		            <h:outputText value="#{document.codi}" />
-		        </p:column>
+
+				<p:column headerText="#{messages['funciones.codi']}" style="width:200px;" filterBy="#{document.codi}" sortBy="#{document.codi}" filterMatchMode="contains">
+					<p:commandButton rendered="#{document.type eq 'Dictamen' and document.dictamenActivo eq true}" class="botton_library" icon="pi pi-share-alt" />
+					<h:outputText value="#{document.codi}" />
+				</p:column>
 		        <p:column headerText="#{messages['funciones.nom']}" filterBy="#{document.nom}" sortBy="#{document.nom}" filterMatchMode="contains">
 		            <h:outputText value="#{document.nom}" />
 		        </p:column>
@@ -104,14 +107,16 @@
 		        	<p:commandButton class="botton_library" rendered="#{document.type=='Dictamen'}" icon="pi pi-trash" title="#{messages['funciones.eliminardictamen']}" update="panel1" action="#{dictamenController.deleteDictamen(document)}" oncomplete="">
 		            	<p:confirm header="#{messages['confirmacion']}" message="#{messages['dictamen.eliminar.alert']}" icon="pi pi-exclamation-triangle" />
 		            </p:commandButton>
-
-<!--					icono de sincronizacion-->
-<!--					Si tienes permisos de sincronizar y no esta sincronizado-->
+					<!--mover-->
+					<p:commandButton class="botton_library" rendered="#{funciones.checkPermissionsToCallCSGD() eq true and document.type=='Funcio'}" icon="pi pi-arrow-right" title="mover" update="moverElementoDialogId" action="#{moverElementoController.prepararMoverFuncion(document)}" resetValues="true" oncomplete="PF('moverElementoModalDialog').show()" />
+					<p:commandButton class="botton_library" rendered="#{funciones.checkPermissionsToCallCSGD() eq true and document.type=='Serie'}" icon="pi pi-arrow-right" title="mover" update="moverElementoDialogId" action="#{moverElementoController.prepararMoverSerie(document)}" resetValues="true" oncomplete="PF('moverElementoModalDialog').show()" />
+					<!--	icono de sincronizacion-->
+					<!--	Si tienes permisos de sincronizar y no esta sincronizado-->
 					<p:commandButton class="botton_library" rendered="#{document.type=='Funcio' and funciones.checkPermissionsToCallCSGD() eq true and document.synchronized eq false}" icon="circle-state red" title="#{messages['funciones.sincronizar']}" update="panel1" action="#{funciones.synchronize(document)}" />
 					<p:commandButton class="botton_library" rendered="#{document.type=='Serie' and funciones.checkPermissionsToCallCSGD() eq true and document.synchronized eq false}" icon="circle-state red" title="#{messages['nuevaserie.sincronizar']}" update="panel1" action="#{nuevaSerieController.synchronize(document)}" />
                     <!--                    si ya esta sincronizado-->
 					<p:commandButton rendered="#{document.type ne 'Dictamen' and document.synchronized eq true}" title="#{messages['funciones.sincronizado']}" class="botton_library" icon="circle-state green" />
-<!--                    si no esta sincronizado y no tienes permisos-->
+					<!-- si no esta sincronizado y no tienes permisos-->
 					<p:commandButton rendered="#{funciones.checkPermissionsToCallCSGD() eq false and document.type ne 'Dictamen' and document.synchronized eq false}" title="#{messages['funciones.noSincronizado']}" class="botton_library" icon="circle-state red" />
 		        </p:column>
 		    </p:treeTable>

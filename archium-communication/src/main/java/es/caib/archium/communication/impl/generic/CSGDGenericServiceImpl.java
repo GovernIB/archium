@@ -55,14 +55,34 @@ public abstract class CSGDGenericServiceImpl<T extends Nodo, ID extends Id> impl
         log.info("Nodo borrado correctamente");
     }
 
+//    @Override
+//    public void moveNode(M wsDto) throws CSGDException {
+//        log.info("Se procede a mover el nodo");
+//        try {
+//            ResultadoSimple rs = client.moverNodo(wsDto);
+//
+//            if (!Constants.CodigosRespuestaCSGD.RESPUESTA_OK.getValue().equals(rs.getCodigoResultado())) {
+//                log.error("Se ha devuelto un codigo [" + rs.getCodigoResultado() + "] en el proceso de borrado." +
+//                        " Mensaje: " + rs.getMsjResultado());
+//                throw new CSGDException(Constants.ExceptionConstants.ERROR_RETURNED.getValue(), rs.getCodigoResultado(), rs.getMsjResultado(), "Se ha devuelto un codigo [" + rs.getCodigoResultado() + "] en el proceso de mover. Mensaje: " + rs.getMsjResultado());
+//            }
+//        } catch (CSGDException e) {
+//            throw e;
+//        } catch (Exception e) {
+//            log.error("Se ha producido un error no controlado en el proceso de mover: " + e);
+//            throw new CSGDException(Constants.ExceptionConstants.GENERIC_ERROR.getValue(), "Se ha producido un error no controlado en el proceso de mover", e);
+//        }
+//        log.info("Nodo movido correctamente");
+//    }
+
     @Override
     public String synchronizeNode(T wsDto, String parentId) throws CSGDException {
         log.info("Se procede a sincronizar el nodo");
         try {
-            if(StringUtils.trimToNull(wsDto.getNodeId())==null) {
+            if (StringUtils.trimToNull(wsDto.getNodeId()) == null) {
                 Resultado<String> rs = client.crearNodo(wsDto, parentId);
                 return prepararResultado(rs);
-            }else{
+            } else {
                 ResultadoSimple rs = client.modificarNodo(wsDto);
                 prepararResultado(rs);
                 return wsDto.getNodeId();
@@ -98,7 +118,7 @@ public abstract class CSGDGenericServiceImpl<T extends Nodo, ID extends Id> impl
                     "proceso de sincronizacion. Mensaje: " + rs.getMsjResultado());
         }
 
-        if(rs instanceof Resultado) {
+        if (rs instanceof Resultado) {
             Resultado<String> result = (Resultado<String>) rs;
             if (StringUtils.trimToNull(result.getElementoDevuelto()) == null) {
                 log.error("Se ha producido un error no esperado al no recibir correctamente los datos de respuesta en " +
@@ -109,7 +129,7 @@ public abstract class CSGDGenericServiceImpl<T extends Nodo, ID extends Id> impl
 
             log.debug("Sincronizacion realizada correctamente. NodeId: " + result.getElementoDevuelto());
             return result.getElementoDevuelto();
-        }else{
+        } else {
             return null;
         }
     }

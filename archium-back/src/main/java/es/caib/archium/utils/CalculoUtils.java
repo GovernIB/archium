@@ -400,13 +400,13 @@ public class CalculoUtils {
         for (Dictamen dic : achDictamens) {
             if(!dic.isObsolete()) {
                 if (Constants.ArchiumConstants.DICTAMEN_ACTIVO.getValue().equalsIgnoreCase(dic.getEstat())) {
-                    log.info("Dictamen activo de la serie [" + serie.getCodi() + "]: [" + dic.getCodi() + "] con estado " +
+                    log.debug("Dictamen activo de la serie [" + serie.getCodi() + "]: [" + dic.getCodi() + "] con estado " +
                             "[" + dic.getEstat() + "]");
                     return dic;
                 } else if (Constants.ArchiumConstants.DICTAMEN_RECIENTE_ESTADO.getValue().equalsIgnoreCase(dic.getEstat())) {
                     if (recienteEsborrany == null) {
                         recienteEsborrany = dic;
-                    } else if (dic.getInici().after(recienteEsborrany.getInici())) {
+                    } else if (dic.getInici()!=null && dic.getInici().after(recienteEsborrany.getInici())) {
                         recienteEsborrany = dic;
                     }
                 }
@@ -416,7 +416,7 @@ public class CalculoUtils {
         // Si llega aqui es que ningun dictamen esta activo, procedemos a devolver el dictamen en estado esborrany mas
         // reciente. Si no hay ninguno este sera null, por lo que la serie no pasara las validaciones
         if(recienteEsborrany!=null){
-            log.info("Dictamen activo de la serie [" + serie.getCodi() + "]: [" + recienteEsborrany.getCodi() + "] con estado " +
+            log.debug("Dictamen activo de la serie [" + serie.getCodi() + "]: [" + recienteEsborrany.getCodi() + "] con estado " +
                     "[" + recienteEsborrany.getEstat() + "]");
         }
         return recienteEsborrany;

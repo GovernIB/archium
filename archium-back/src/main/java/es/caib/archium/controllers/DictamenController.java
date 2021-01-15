@@ -1,8 +1,10 @@
 package es.caib.archium.controllers;
 
 import es.caib.archium.commons.i18n.I18NException;
+import es.caib.archium.csgd.apirest.constantes.Estado;
 import es.caib.archium.objects.*;
 import es.caib.archium.services.DictamenFrontService;
+import es.caib.archium.services.SerieFrontService;
 import es.caib.archium.utils.FrontExceptionTranslate;
 import org.primefaces.PrimeFaces;
 import org.primefaces.model.DefaultTreeNode;
@@ -71,7 +73,10 @@ public class DictamenController implements Serializable {
 		private Integer	plazoTerminiVal;
 		
 	    @Inject
-	    private DictamenFrontService serviceDictamen;	    
+	    private DictamenFrontService serviceDictamen;
+
+	    @Inject
+	    private SerieFrontService serviceSerie;
     
 	    ResourceBundle messageBundle = ResourceBundle.getBundle("messages.messages");
 	    
@@ -115,43 +120,66 @@ public class DictamenController implements Serializable {
 	    		funcBean.setError(true);
 	    	}        
 	    }
-	    
-	   
-	    private void save() {    
-	    	
+
+
+		private void save() {
+
 			if (this.plazoTerminiVal != null) {
-				this.setTermini(this.plazoTerminiVal.toString().concat(this.plazoTermini.substring(0,1)));
+				this.setTermini(this.plazoTerminiVal.toString().concat(this.plazoTermini.substring(0, 1)));
 			}
-			
+
 			try {
 				DictamenObject newD = this.serviceDictamen.create(this.serieDocumental,
-										  	this.tipuDictamen,
-										  	this.accioDictaminada,
-										  	this.termini,
-										  	this.destinatariRestringits,
-										  	this.fin,
-										  	this.tipuAcces,
-										  	this.ens,
-										  	this.lopd,
-										  	this.condicioReutilizacio,
-										  	this.serieEsencial,
-										  	this.normativaAprovacio,
-										  	this.aprovacio,
-										  	this.codi,
-										  	this.estat
-											);
-				
-					TreeNode node = new DefaultTreeNode(new Document<DictamenObject>(newD.getId(), newD.getCodi(), newD.getAccioDictaminada(), "Dictamen", newD),
-							funcBean.getNodeFromFunctionId(serieDocumental.getSerieId(), "Serie", "insert", null));
-					FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(messageBundle.getString("dictamen.insert.ok")));
-					
-				
+						this.tipuDictamen,
+						this.accioDictaminada,
+						this.termini,
+						this.destinatariRestringits,
+						this.fin,
+						this.tipuAcces,
+						this.ens,
+						this.lopd,
+						this.condicioReutilizacio,
+						this.serieEsencial,
+						this.normativaAprovacio,
+						this.aprovacio,
+						this.codi,
+						this.estat
+				);
+
+				// Se comprueba si el dictamen creado es el nuevo dictamen activo de la serie, de ser asi, la serie
+				// se marca como no sincronizada (en caso de estarlo)
+				boolean isNewDictamenActivo = this.serviceSerie.checkIfNewDictamenActivo(newD);
+				TreeNode serieParent = null;
+
+				// Si hay un nuevo dictamen activo, actualizamos el nodo padre y sino obtenemos el que esta
+				if (isNewDictamenActivo) {
+					serieParent = funcBean.getNodeFromFunctionId(newD.getSerieDocumental().getSerieId(), "Serie", "update", newD.getSerieDocumental());
+					// Como hay un nuevo dictamen activo, ponemos el actual a false
+					if(serieParent.getChildren()!=null && !serieParent.getChildren().isEmpty()) {
+						for (TreeNode node : serieParent.getChildren()) {
+							Document<DictamenObject> nodo = ((Document<DictamenObject>) node.getData());
+							if(nodo.getDictamenActivo()){
+								nodo.setDictamenActivo(false);
+								nodo.getObject().setDictamenActivo(false);
+							}
+						}
+					}
+				} else {
+					serieParent = funcBean.getNodeFromFunctionId(newD.getSerieDocumental().getSerieId(), "Serie", "insert", null);
+				}
+
+
+				TreeNode node = new DefaultTreeNode(new Document<DictamenObject>(newD.getId(), newD.getCodi(),
+						newD.getAccioDictaminada(), "Dictamen", newD.getDictamenActivo(), newD), serieParent);
+				FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(messageBundle.getString("dictamen.insert.ok")));
+
+
 			} catch (I18NException eee) {
 				log.error(FrontExceptionTranslate.translate(eee, funcBean.getLocale()));
 				FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, messageBundle.getString("dictamen.insert.error"), null));
-			}			
-	    }
-	    
+			}
+		}
+
 	    private void update() {
 	    	
 	    	Map<String, Object> viewMap = FacesContext.getCurrentInstance().getViewRoot().getViewMap();
@@ -184,11 +212,33 @@ public class DictamenController implements Serializable {
 	    		
 	    		
 	    		DictamenObject upD = this.serviceDictamen.update(obj);
-		        FacesMessage msg = new FacesMessage(messageBundle.getString("dictamen.update.ok"));
-		        FacesContext.getCurrentInstance().addMessage(null, msg);		        
-		        
-		        funcBean.getNodeFromFunctionId(upD.getId(), "Dictamen", "update", upD);
-		        
+
+				// Se comprueba si el dictamen creado es el nuevo dictamen activo de la serie, de ser asi, la serie
+				// se marca como no sincronizada (en caso de estarlo)
+				boolean isNewDictamenActivo = this.serviceSerie.checkIfNewDictamenActivo(upD);
+				TreeNode serieParent = null;
+
+				// Si hay un nuevo dictamen activo, actualizamos el nodo padre
+				if (isNewDictamenActivo) {
+					serieParent = funcBean.getNodeFromFunctionId(upD.getSerieDocumental().getSerieId(), "Serie", "update", upD.getSerieDocumental());
+					// Como hay un nuevo dictamen activo, ponemos el actual a false
+					if(serieParent.getChildren()!=null && !serieParent.getChildren().isEmpty()) {
+						for (TreeNode node : serieParent.getChildren()) {
+							Document<DictamenObject> nodo = ((Document<DictamenObject>) node.getData());
+							if(!nodo.getObject().getId().equals(upD.getId()) && nodo.getDictamenActivo()){
+								nodo.setDictamenActivo(false);
+								nodo.getObject().setDictamenActivo(false);
+							}
+						}
+					}
+				}
+
+
+				funcBean.getNodeFromFunctionId(upD.getId(), "Dictamen", "update", upD);
+
+				FacesMessage msg = new FacesMessage(messageBundle.getString("dictamen.update.ok"));
+				FacesContext.getCurrentInstance().addMessage(null, msg);
+
 		    }
 	    	catch (I18NException e) {
 	    		log.error(FrontExceptionTranslate.translate(e, funcBean.getLocale()));
@@ -200,15 +250,36 @@ public class DictamenController implements Serializable {
 	    public void deleteDictamen(Document<DictamenObject> d) {
 
 	    	try {
-	    		
+	    		// No permitimos borrar el dictamen si esta en estado vigente
 	    		if(this.serviceDictamen.findById(d.getObject().getId()).getEstat().equals("Vigent")) {
 					FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, messageBundle.getString("dictamen.delete.vigentError"), null));
 	    		} else {
-	    			this.serviceDictamen.deleteDictamen(d.getId());
-					TreeNode node = funcBean.getNodeFromFunctionId(d.getId(), "Dictamen", "update", d);
-					node.getParent().getChildren().remove(node);
+	    			// Comprobamos si el dictamen a borrar es el dictamen activo de la serie, para ello obtenemos el
+					// activo actual y comprobamos si es el que se va a borrar
+					DictamenObject dictamenActivo = this.serviceSerie.getDictamenActivo(d.getObject().getSerieDocumental().getSerieId());
+
+					this.serviceDictamen.deleteDictamen(d.getId());
+					TreeNode deleteNode = funcBean.getNodeFromFunctionId(d.getId(), "Dictamen", "update", d);
+					TreeNode parent = deleteNode.getParent();
+					parent.getChildren().remove(deleteNode);
+
+					if(dictamenActivo.getId().equals(d.getId())){
+						// Obtenemos el nuevo dictamen activo
+						dictamenActivo = this.serviceSerie.getDictamenActivo(d.getObject().getSerieDocumental().getSerieId());
+						if(dictamenActivo!=null){
+							// Recorremos la lista de los nodos, y lo ponemos como el dictamen activo
+							for(TreeNode node : parent.getChildren()){
+								Document<DictamenObject> nodo = ((Document<DictamenObject>) node.getData());
+								if(nodo.getObject().getId().equals(dictamenActivo.getId())){
+									nodo.setDictamenActivo(true);
+									nodo.getObject().setDictamenActivo(true);
+								}
+							}
+						}
+					}
 					FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(messageBundle.getString("dictamen.delete.ok")));
-	    		}
+
+				}
 				
 			} catch (I18NException e) {
 				log.error(FrontExceptionTranslate.translate(e, funcBean.getLocale()));
@@ -230,7 +301,9 @@ public class DictamenController implements Serializable {
 	    		
 				if(this.serviceDictamen.checkDictamenVigent(this.getId(), this.getEstat(), this.getSerieDocumental().getSerieId())==true
 						&& this.confirmacionVigent==false) {
-					
+					// Si existe otro dictamen en estado vigente se mostrara un mensaje diciendo si se desea poner como
+					// obsoleto y guardar este dictamen como vigente, en caso afirmativo hara una llamada recursiva a este
+					// metodo, pero no entrará por el mismo camino debido al booleano confirmacionVigent
 					this.confirmacionVigent = true;
 					FacesContext.getCurrentInstance().validationFailed();
 					PrimeFaces current = PrimeFaces.current();

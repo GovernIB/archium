@@ -11,6 +11,7 @@ import javax.inject.Named;
 import javax.transaction.Transactional;
 
 import es.caib.archium.commons.i18n.I18NException;
+import es.caib.archium.csgd.apirest.constantes.Estado;
 import es.caib.archium.ejb.service.DictamenService;
 import es.caib.archium.ejb.service.EnsService;
 import es.caib.archium.ejb.service.LopdService;
@@ -26,10 +27,16 @@ import es.caib.archium.objects.SerieDocumentalObject;
 import es.caib.archium.objects.TipuAccesObject;
 import es.caib.archium.objects.TipuDictamenObject;
 import es.caib.archium.persistence.model.*;
+import es.caib.archium.utils.CalculoUtils;
+import es.caib.archium.validators.CSGDValidator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Named
 @ApplicationScoped
 public class DictamenFrontService {
+
+	protected final Logger log = LoggerFactory.getLogger(this.getClass());
 	
 	@Inject
 	DictamenService dictamenEJB;
@@ -45,6 +52,10 @@ public class DictamenFrontService {
 	LopdService lopdEJB;
 	@Inject
 	NormativaService normativaEJB;
+	@Inject
+	private CalculoUtils calculoUtils;
+	@Inject
+	private CSGDValidator dictamenValidator;
 
 	
 	public List<DictamenObject> getBySerie(SerieDocumentalObject serie) throws I18NException{
@@ -238,11 +249,23 @@ public class DictamenFrontService {
 	
 	@Transactional
 	public void changeEstatDictamen(DictamenObject dictamen, String estat) throws I18NException {
-		
+		log.info("Se procede a cambiar el estado del dictamen ["+dictamen.getCodi()+"] a '"+estat+"'");
 		try {
-			
+			Estado estado = Estado.getEstado(estat);
+			if(estado==null){
+				log.error("El estado ["+estat+"] no es un estado valido");
+				throw new I18NException("excepcion.general.Exception", this.getClass().getSimpleName(), "changeEstatDictamen");
+			}
 			Dictamen dic = this.dictamenEJB.getReference(dictamen.getId());
-			dic.setEstat(estat);
+			dic.setEstat(estado.getValue());
+			dictamen.setEstat(estado.getValue());
+			// Si se intenta pasar el dictamen a vigente, checkeamos que cumpla las condiciones de validacion y lo
+			// ponemos como el dictamen activo de la serie
+			if(Estado.VIGENT == estado){
+//				this.dictamenValidator.validarDictamenVigente(dic,dic.getAchSeriedocumental());
+				dictamen.setDictamenActivo(true);
+				// TODO : Checkear demas dictamenes de la serie para ponerlos como no activos?
+			}
 			this.dictamenEJB.update(dic);
 			
 		} catch(NullPointerException e) {
@@ -255,7 +278,7 @@ public class DictamenFrontService {
 	
 	@Transactional
 	public void changeVigent2Obsolet(Long serieId) throws I18NException {
-		
+		log.info("Se procede a cambiar el dictamen vigente de la serie ["+serieId+"] a obsoleto");
 		try {
 			
 			List<Dictamen> listDictamenes = this.serieEJB.getDictamenVigent(serieId);
@@ -269,10 +292,19 @@ public class DictamenFrontService {
 			throw new I18NException("excepcion.general.NullPointerException", this.getClass().getSimpleName(), "changeVigent2Obsolet");
 		} catch(Exception e) {
 			throw new I18NException("excepcion.general.Exception", this.getClass().getSimpleName(), "changeVigent2Obsolet");
-		}		
-		
+		}
 	}
-	
+
+	/**
+	 * Comprueba si hay otro dictamen en estado vigente (que no sea el propio).
+	 *
+	 * @param id
+	 * @param estat
+	 * @param idSerie
+	 * @return true si existe otro dictamen (cuyo id no sea el mismo que se pasa por parametro) en estado vigente, false
+	 * en caso contrario
+	 * @throws I18NException
+	 */
 	public Boolean checkDictamenVigent(Long id, String estat, Long idSerie) throws I18NException {
 		
 		try {
@@ -307,9 +339,10 @@ public class DictamenFrontService {
 	@Transactional
 	public DictamenObject create(SerieDocumentalObject serieDocumental, TipuDictamenObject tipuDictamen, String accioDictaminada, String termini, String destinatariRestringits, Date fin, 
 								TipuAccesObject tipuAcces, EnsObject ens, LopdObject lopd, String condicioReutilizacio, Boolean serieEsencial, NormativaAprobacioObject normativaAprovacio, Date aprovacio,
-								String codi, String estat) throws I18NException {	
-		
+								String codi, String estat) throws I18NException {
+
 		try {
+
 			DictamenObject ob = new DictamenObject();
 			ob.setAccioDictaminada(accioDictaminada);
 			ob.setTermini(termini);
@@ -318,16 +351,16 @@ public class DictamenFrontService {
 			ob.setFi(fin);
 			ob.setCondicioReutilitzacio(condicioReutilizacio);
 			ob.setSerieEsencial(serieEsencial);
-			ob.setAprovacio(aprovacio);		
+			ob.setAprovacio(aprovacio);
 			ob.setCodi(codi);
 			ob.setEstat(estat);
-			Dictamen dictamen = ob.toDbObject((tipuDictamen!=null ? this.tipuDictamenEJB.getReference(tipuDictamen.getId()) : null), 
-											  (ens!=null ? this.ensEJB.getReference(ens.getId()) : null), 
-											  (lopd!=null ? this.lopdEJB.getReference(lopd.getId()) : null), 
-											  (normativaAprovacio!=null ? this.normativaEJB.getReference(normativaAprovacio.getId()) : null), 
-											  (serieDocumental!=null ? this.serieEJB.getReference(serieDocumental.getSerieId()) : null), 
+			Dictamen dictamen = ob.toDbObject((tipuDictamen!=null ? this.tipuDictamenEJB.getReference(tipuDictamen.getId()) : null),
+											  (ens!=null ? this.ensEJB.getReference(ens.getId()) : null),
+											  (lopd!=null ? this.lopdEJB.getReference(lopd.getId()) : null),
+											  (normativaAprovacio!=null ? this.normativaEJB.getReference(normativaAprovacio.getId()) : null),
+							  				  (serieDocumental!=null ? this.serieEJB.getReference(serieDocumental.getSerieId()) : null),
 											  (tipuAcces!=null ? this.tipuAccesEJB.getReference(tipuAcces.getId()) : null));
-			
+
 			return new DictamenObject(this.dictamenEJB.create(dictamen));
 		} catch(NullPointerException e) {
 			throw new I18NException("excepcion.general.NullPointerException", this.getClass().getSimpleName(), "create");
@@ -371,6 +404,6 @@ public class DictamenFrontService {
 		}
 	}
 
-	
-	
+
+
 }

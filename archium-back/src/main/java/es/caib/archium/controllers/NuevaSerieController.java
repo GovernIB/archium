@@ -205,6 +205,7 @@ public class NuevaSerieController implements Serializable {
 	}
 
 
+
 	public void updateSerie(Document<SerieDocumentalObject> obj) {
 
 		clearForm();
@@ -312,6 +313,48 @@ public class NuevaSerieController implements Serializable {
 			FacesContext.getCurrentInstance().addMessage(null, msg);
 		}
 	}
+
+	/**
+	 * Mueve una serie a otro padre
+	 *
+	 * @param cuadro nuevo cuadro al que pertenece
+	 * @param funcion nueva serie a la que pertenece
+	 * @param elemento elemento a actualizar
+	 */
+	public void move(QuadreObject cuadro, FuncioObject funcion, Document<SerieDocumentalObject> elemento) throws I18NException {
+		log.info("Se inicia proceso de mover serie [Id,Codigo] ["+elemento.getId()+","+elemento.getCodi()+"]");
+		TreeNode oldParent = null;
+
+		// Obtenemos el antiguo padre de la funcion
+		oldParent = funcBean.getNodeFromFunctionId(elemento.getParentFunction(), "Funcio", "inset", null);
+
+		SerieDocumentalObject result = this.service.moveSerie(elemento.getId(), cuadro.getId(),funcion.getId());
+
+		log.debug("Se completa el proceso de mover serie");
+		log.debug("Actualizamos el arbol");
+		oldParent.getChildren().removeIf(x -> ((Document)x.getData()).getObject() instanceof SerieDocumentalObject
+				&& ((Document<SerieDocumentalObject>)x.getData()).getId() == elemento.getId());
+
+		// Si pertenece al mismo cuadro que antes, buscamos donde insertarlo
+		if(cuadro.getId().equals(elemento.getParentRoot())){
+			log.debug("Se mueve dentro del mismo cuadro, así que lo insertamos bajo el padre nuevo");
+			TreeNode parent = null;
+			// Si la funcion es null es que es hijo directo del cuadro
+			parent = funcBean.getNodeFromFunctionId(funcion.getId(), "Funcio", "insert", null);
+
+			// Creamos el nuevo nodo
+			TreeNode node = new DefaultTreeNode(new Document<SerieDocumentalObject>(elemento.getId(), elemento.getCodi(), elemento.getNom(), "Serie", cuadro == null ? null : cuadro.getId(), funcion == null ? null : funcion.getId(), elemento.getNodeId(), elemento.getSynchronized(), result),
+					parent);
+
+			// Lo añadimos en la primera posición
+			parent.getChildren().add(0,node);
+		}
+		listaSeries = service.getListaSeries();
+		// TODO : Cambiar mensaje
+		FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(messageBundle.getString("nuevaserie.ok")));
+		log.info("Proceso de mover finalizado");
+	}
+
     public void save() {
 
         try {
@@ -323,7 +366,7 @@ public class NuevaSerieController implements Serializable {
                             tipusSerieId, codiIecisa, aplicaciones.getTarget(), seriesRelacionadas.getTarget(), seriesArgenRelacionadas.getTarget(), listaRelacionLNS, normativasSerie.getTarget(), valoracio);
 
 
-                    TreeNode node = new DefaultTreeNode(new Document<SerieDocumentalObject>(newS.getSerieId(), newS.getCodi(), newS.getNom(), "Serie", newS.getNodeId(), newS.isSynchronized(), newS),
+                    TreeNode node = new DefaultTreeNode(new Document<SerieDocumentalObject>(newS.getSerieId(), newS.getCodi(), newS.getNom(), "Serie", newS.getFuncio().getCodigoCuadro().getId(), newS.getFuncio().getId(), newS.getNodeId(), newS.isSynchronized(), newS),
                             funcBean.getNodeFromFunctionId(serieFuncio.getId(), "Funcio", "insert", null));
 
                 } else {

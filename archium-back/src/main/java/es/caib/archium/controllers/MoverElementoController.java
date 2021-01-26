@@ -17,6 +17,7 @@ import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -49,14 +50,20 @@ public class MoverElementoController implements Serializable {
         funcion = null;
         Map<String, Object> viewMap = FacesContext.getCurrentInstance().getViewRoot().getViewMap();
         this.funcBean = (FuncionesController) viewMap.get("funciones");
-        prepararListas();
+        if (this.funcBean != null) {
+            prepararListas();
+        }
     }
 
-    private void prepararListas(){
+    private void prepararListas() {
         this.listaCuadros = this.funcBean.getListaCuadrosClasificacion();
         this.cuadroSeleccionado = this.funcBean.getCuadroSeleccionado();
-        this.listaFunciones = this.funcBean.getListaFunciones();
+        // Se setea de esta manera para romper la referencia, y que al cambiar la lista de funciones no afecte a la
+        // lista del controller
+        this.listaFunciones = new ArrayList<>();
+        this.funcBean.getListaFunciones().forEach( x -> listaFunciones.add(x));
     }
+
     /**
      * Al cambiar el cuadro seleccionado, se actualiza la lista de funciones
      */
@@ -64,6 +71,7 @@ public class MoverElementoController implements Serializable {
 
         try {
             listaFunciones = this.servicesFunciones.loadTree(this.cuadroSeleccionado.getId(), null);
+            this.padreElegido = null;
             // Si hay funcion seleccionada, comprobamos si esta en la lista y la eliminamos
             checkIfFunctionInList();
         } catch (I18NException e) {
@@ -85,6 +93,11 @@ public class MoverElementoController implements Serializable {
         getParent(element.getParentFunction());
     }
 
+    /**
+     * Selecciona el padre del elemento elegido como elemento seleccionado por defecto en el combobox
+     *
+     * @param parentFunction
+     */
     private void getParent(Long parentFunction) {
         if (parentFunction != null) {
             List<FuncioObject> padre = listaFunciones.stream().filter(x -> x.getId().equals(parentFunction)).collect(Collectors.toList());
@@ -106,6 +119,7 @@ public class MoverElementoController implements Serializable {
         funcion = element;
         isMoverSerie = false;
         prepararListas();
+        // TODO : No renueva bien la lista de funciones despues de que se eliminen hijas en otra seleccion
         getParent(element.getParentFunction());
         // Eliminamos la funcion propia de la lista
         checkIfFunctionInList();
@@ -114,10 +128,9 @@ public class MoverElementoController implements Serializable {
 
     /**
      * Comprueba si la funcion seleccionada esta en la lista de funciones del checkbox, y de ser asi la borra
-     *
      */
     private void checkIfFunctionInList() {
-        if(isMoverSerie!=null && !isMoverSerie && funcion!= null) {
+        if (isMoverSerie != null && !isMoverSerie && funcion != null) {
             if (listaFunciones != null && !listaFunciones.isEmpty()) {
                 TreeNode nodo = this.funcBean.getNodeFromFunctionId(funcion.getId(), "Funcio", "insert", null);
                 removeNodeAndChildrens(nodo);
@@ -131,10 +144,15 @@ public class MoverElementoController implements Serializable {
      * @param nodo
      */
     private void removeNodeAndChildrens(TreeNode nodo) {
-        // TODO : No elimina bien los hijos, elimina nodos que no tiene que eliminar, revisar por que
-        listaFunciones.removeIf(x -> x.getId().equals(((Document)nodo.getData()).getId()));
-        if(nodo.getChildren()!=null && !nodo.getChildren().isEmpty()) {
-            nodo.getChildren().forEach(x -> removeNodeAndChildrens(x));
+
+        listaFunciones.removeIf(x -> ((Document) nodo.getData()).getObject() instanceof FuncioObject
+                && x.getId().equals(((Document) nodo.getData()).getId()));
+        if (nodo.getChildren() != null && !nodo.getChildren().isEmpty()) {
+            nodo.getChildren().forEach(x -> {
+                if (((Document) x.getData()).getObject() instanceof FuncioObject) {
+                    removeNodeAndChildrens(x);
+                }
+            });
         }
     }
 

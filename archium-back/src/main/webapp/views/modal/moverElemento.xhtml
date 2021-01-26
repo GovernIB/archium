@@ -30,7 +30,7 @@
 												 filter="true"
 												 filterMatchMode="contains">
 <!--									<p:ajax update="moverForm:listaFuncnMover" listener="#{moverElementoController.updateFunctionsList}" />-->
-									<p:ajax update="@form" listener="#{moverElementoController.updateFunctionsList}" />
+									<p:ajax update=":moverForm:listaFuncnMover" listener="#{moverElementoController.updateFunctionsList}" />
 									<f:selectItems value="#{moverElementoController.listaCuadros}" var="n" itemLabel="#{n.nom}" itemValue="#{n}" />
 									<f:converter converterId="QuadreclassificacioConverter"/>
 								</p:selectOneMenu>
@@ -51,7 +51,7 @@
 												 filterMatchMode="contains">
 									<f:selectItem itemLabel="-- #{messages['selecciona']} #{messages['nuevafuncion.funcionpadre']} --" itemValue="#{null}"/>
 									<f:selectItems value="#{moverElementoController.listaFunciones}" var="n" itemLabel="#{n.printTab().replace(' ', '&#160;')}#{n.codi} - #{n.nom}" itemValue="#{n}" />
-									<f:converter converterId="FuncioConverter"/>
+									<f:converter converterId="FuncioGenericConverter"/>
 								</p:selectOneMenu>
 							</h:panelGrid>
 						</div>

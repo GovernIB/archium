@@ -5,7 +5,7 @@
     <parent>
         <artifactId>archium</artifactId>
         <groupId>es.caib.archium</groupId>
-        <version>1.0.0</version>
+        <version>2.0.0</version>
     </parent>
 
     <artifactId>archium-back</artifactId>
@@ -14,7 +14,7 @@
     <description>Back de Archium</description>
 
     <properties>
-        <archium-communication.version>1.0.0</archium-communication.version>
+        <archium-communication.version>2.0.0</archium-communication.version>
     </properties>
 
 
@@ -23,7 +23,7 @@
         <dependency>
             <groupId>es.caib.archium</groupId>
             <artifactId>archium-commons</artifactId>
-            <version>1.0.0</version>
+            <version>2.0.0</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -34,13 +34,13 @@
         <dependency>
             <groupId>es.caib.archium</groupId>
             <artifactId>archium-persistence</artifactId>
-            <version>1.0.0</version>
+            <version>2.0.0</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>es.caib.archium</groupId>
             <artifactId>archium-ejb</artifactId>
-            <version>1.0.0</version>
+            <version>2.0.0</version>
             <scope>provided</scope>
         </dependency>
 

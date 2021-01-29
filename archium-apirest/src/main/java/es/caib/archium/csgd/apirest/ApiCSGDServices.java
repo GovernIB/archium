@@ -180,6 +180,7 @@ public class ApiCSGDServices {
         return result;
     }
 
+
     public ResultadoSimple borrarSerie(String nodeId) {
 
         RemoveSerieResult result = null;

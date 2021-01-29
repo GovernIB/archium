@@ -150,7 +150,7 @@
 							    	<div class="ui-g-6 item_1">
 								    	<label class="ui-g-4">#{messages['nuevoprocediment.Destinatari']}</label>
 						    			<p:inputTextarea style="border:1px solid #333!important; width:80%;" id="destinatari" value="#{procedimentController.destinataris}" class="ui-g-8"
-						    				validatorMessage="#{messages['nuevoprocediment.validate.destinatari']}"	>
+						    				validatorMessage="#{messages['nuevoprocediment.validate.destinatari']}"	  autoResize="false">
 						    				<f:validateLength minimum="0" maximum="4000" />
 						    			</p:inputTextarea >				    			
 								    </div>
@@ -267,7 +267,7 @@
 								    <div class="ui-g-5 item_1">
 								    	<label class="ui-g-4">#{messages['nuevoprocediment.Observacions']}</label>
 						    			<p:inputTextarea style="border:1px solid #333!important; width:100%; margin-left: 30px;" id="observacion" value="#{procedimentController.observacions}" class="ui-g-8"
-						    				validatorMessage="#{messages['nuevoprocediment.validate.observacions']}">
+						    				validatorMessage="#{messages['nuevoprocediment.validate.observacions']}"  autoResize="false">
 						    				<f:validateLength minimum="0" maximum="4000" />
 						    			</p:inputTextarea >				    			
 								    </div>

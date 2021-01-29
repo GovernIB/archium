@@ -169,17 +169,17 @@
 					    <div class="ui-g-6">
 					    	<label class="ui-g-5">#{messages['nuevaserie.descripcio']} *</label>
 			    			<p:inputTextarea class="ui-g-7" id="desc" value="#{nuevaSerieController.descripcio}"   required="true"  
-			    				requiredMessage="#{messages['nuevaserie.require.desc']}"
+			    				requiredMessage="#{messages['nuevaserie.require.desc']}"  autoResize="false"
 			    				validatorMessage="#{messages['nuevaserie.validate.desc']}" style="height: 100%!important;">
 			    				<f:validateLength minimum="0" maximum="4000" />
 			    			</p:inputTextarea>
-			    				
+
 			   				<p:message for="desc" />
 					    </div>
 					    
 					    <div class="ui-g-6">
 					    	<label class="ui-g-5">#{messages['nuevaserie.descripciocas']}</label>
-			    			<p:inputTextarea class="ui-g-7" value="#{nuevaSerieController.descripcioCas}"
+			    			<p:inputTextarea class="ui-g-7" value="#{nuevaSerieController.descripcioCas}"  autoResize="false"
 			    				validatorMessage="#{messages['nuevaserie.validate.desccas']}" style="height: 100%!important;">
 			    				<f:validateLength minimum="0" maximum="4000" />
 			    			</p:inputTextarea>				
@@ -187,7 +187,7 @@
 					    
 				    	<div class="ui-g-6">
 					    	<label class="ui-g-5">#{messages['nuevaserie.resummigracio']}</label>
-			    			<p:inputTextarea class="ui-g-7" value="#{nuevaSerieController.resumMigracio}"
+			    			<p:inputTextarea class="ui-g-7" value="#{nuevaSerieController.resumMigracio}"  autoResize="false"
 			    				validatorMessage="#{messages['nuevaserie.validate.resummigracio']}" style="height: 100%!important;">
 			    				<f:validateLength minimum="0" maximum="4000" />
 			    			</p:inputTextarea>

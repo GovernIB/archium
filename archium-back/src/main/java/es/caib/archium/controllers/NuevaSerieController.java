@@ -79,6 +79,7 @@ public class NuevaSerieController implements Serializable {
 	private FuncioObject serieFuncio;
 	private String serieEstat;
 	private ValoracioObject valoracio;
+	private Long oldParentFunction;
 	
 	private SerieDocumentalObject modify;
 	
@@ -211,6 +212,7 @@ public class NuevaSerieController implements Serializable {
 			
 			if(modify!=null) {
 				serieId= obj.getId();
+				oldParentFunction = obj.getObject().getFuncio().getId();
 				codi = modify.getCodi();
 				nom = modify.getNom();
 				nomCas = modify.getNomCas();
@@ -323,10 +325,31 @@ public class NuevaSerieController implements Serializable {
 							funcBean.getNodeFromFunctionId(serieFuncio.getId(), "Funcio", "insert", null));
 					
 				} else {
-					SerieDocumentalObject upS = service.updateSerieDocumental(serieId, codi, nom, nomCas, 
-							catalegSeriId, serieFuncio.getId(), descripcio, descripcioCas, resumMigracio, dir3Promotor, serieEstat, tipusSerieId, codiIecisa, aplicaciones.getTarget(),seriesRelacionadas.getTarget(),seriesArgenRelacionadas.getTarget(), listaRelacionLNS,
+					TreeNode oldParent = null;
+
+					// Obtenemos el antiguo padre de la funcion
+					if (!serieFuncio.getId().equals(oldParentFunction)) {
+						oldParent = funcBean.getNodeFromFunctionId(oldParentFunction, "Funcio", "inset", null);
+					}
+					SerieDocumentalObject upS = service.updateSerieDocumental(serieId, codi, nom, nomCas,
+							catalegSeriId, serieFuncio.getId(), descripcio, descripcioCas, resumMigracio, dir3Promotor, serieEstat, tipusSerieId, codiIecisa, aplicaciones.getTarget(), seriesRelacionadas.getTarget(), seriesArgenRelacionadas.getTarget(), listaRelacionLNS,
 							normativasSerie.getTarget(), valoracio);
-					funcBean.getNodeFromFunctionId(serieId, "Serie", "update", upS);
+					TreeNode node = funcBean.getNodeFromFunctionId(serieId, "Serie", "update", upS);
+
+					log.debug("Se completa el proceso de modificar serie");
+					if (!serieFuncio.getId().equals(oldParentFunction)) {
+						log.debug("Actualizamos el arbol");
+						oldParent.getChildren().removeIf(x -> ((Document) x.getData()).getObject() instanceof SerieDocumentalObject
+								&& ((Document<SerieDocumentalObject>) x.getData()).getId() == serieId);
+
+						TreeNode parent = null;
+						// Si la funcion es null es que es hijo directo del cuadro
+						parent = funcBean.getNodeFromFunctionId(serieFuncio.getId(), "Funcio", "insert", null);
+
+						// Lo añadimos en la primera posición
+						parent.getChildren().add(0, node);
+					}
+
 				}
 				listaSeries = service.getListaSeries();
 				clearForm();

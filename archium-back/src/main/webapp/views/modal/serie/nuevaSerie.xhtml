@@ -112,8 +112,7 @@
 					    <div class="ui-g-6">
 					    	<label class="ui-g-5">#{messages['nuevaserie.codifuncion']} *</label>
 					    	 <p:selectOneMenu 
-					    	 	rendered="#{nuevaSerieController.serieFuncio==null}"
-					    	 	id="funcioList" 
+					    	 	id="funcioList"
    							 	value="#{nuevaSerieController.serieFuncio}" 
    							 	required="true" 
    							 	class="ui-g-7 selector_4"
@@ -122,11 +121,9 @@
    							 	requiredMessage="#{messages['nuevaserie.require.funcio']}"
    							 	filter="true"
    							 	filterMatchMode="contains">
-				                <f:selectItem itemLabel="-- #{messages['selecciona']} #{messages['nuevafuncion.funcionpadre']} --" itemValue="#{null}"/>
 				                <f:selectItems value="#{funciones.listaFunciones}" var="n" itemLabel="#{n.printTab().replace(' ', '&#160;')}#{n.codi} - #{n.nom}" itemValue="#{n}" />
    					             	<f:converter converterId="FuncioConverter"/>
 				            </p:selectOneMenu>
-				            <h:outputText value="#{nuevaSerieController.serieFuncio.nom}" rendered="#{nuevaSerieController.serieFuncio!=null}" style="height: 100%!important;"/>
 					    </div>
 					    
 					    <div class="ui-g-6 item_1" style="padding: 0 7px!important;">

@@ -7,6 +7,7 @@ import es.caib.archium.communication.iface.CSGDCuadroService;
 import es.caib.archium.csgd.apirest.constantes.Estado;
 import es.caib.archium.csgd.apirest.csgd.entidades.comunes.RootId;
 import es.caib.archium.csgd.apirest.facade.pojos.CuadroClasificacion;
+import es.caib.archium.csgd.apirest.facade.pojos.eliminar.EliminarCuadro;
 import es.caib.archium.ejb.service.QuadreClassificacioService;
 import es.caib.archium.objects.QuadreObject;
 import es.caib.archium.persistence.model.Quadreclassificacio;
@@ -160,7 +161,7 @@ public class QuadreFrontService {
         if(StringUtils.isNotEmpty(cuadro.getNodeId())) {
             log.debug("El cuadro existe en Alfresco, así que procedemos a eliminarlo");
             try {
-                this.csgdCuadroService.deleteNode(new RootId(cuadro.getNodeId()));
+                this.csgdCuadroService.deleteNode(new EliminarCuadro(cuadro.getNodeId()));
                 log.info("El cuadro ["+idClassificationTable+"] ha sido eliminada de Alfresco");
             } catch (CSGDException e) {
                 throw new I18NException(getExceptionI18n(e.getClientErrorCode()), this.getClass().getSimpleName(), "deleteClassificationTable");
@@ -202,6 +203,7 @@ public class QuadreFrontService {
         this.cuadroValidator.validarCuadro(cuadrodb);
 
         CuadroClasificacion cuadroWs = new CuadroClasificacion();
+        cuadroWs.setNodeId(cuadrodb.getNodeId());
         cuadroWs.setCodigo(cuadrodb.getNomcas());
         cuadroWs.setEstado(Estado.getEstado(cuadrodb.getEstat()));
 

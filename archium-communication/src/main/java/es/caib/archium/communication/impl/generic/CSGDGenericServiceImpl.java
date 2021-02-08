@@ -4,8 +4,9 @@ import es.caib.archium.commons.utils.Constants;
 import es.caib.archium.communication.exception.CSGDException;
 import es.caib.archium.communication.iface.generic.CSGDService;
 import es.caib.archium.csgd.apirest.ApiCSGDServices;
-import es.caib.archium.csgd.apirest.csgd.entidades.comunes.Id;
 import es.caib.archium.csgd.apirest.facade.pojos.Nodo;
+import es.caib.archium.csgd.apirest.facade.pojos.eliminar.EliminarNodo;
+import es.caib.archium.csgd.apirest.facade.pojos.mover.MoverNodo;
 import es.caib.archium.csgd.apirest.facade.resultados.Resultado;
 import es.caib.archium.csgd.apirest.facade.resultados.ResultadoSimple;
 import org.apache.commons.lang3.StringUtils;
@@ -18,7 +19,7 @@ import javax.inject.Inject;
 
 @ApplicationScoped
 @RolesAllowed({Constants.ACH_CSGD})
-public abstract class CSGDGenericServiceImpl<T extends Nodo, ID extends Id> implements CSGDService<T, ID> {
+public abstract class CSGDGenericServiceImpl<T extends Nodo, R extends EliminarNodo, M extends MoverNodo> implements CSGDService<T, R, M> {
 
     protected final Logger log = LoggerFactory.getLogger(CSGDGenericServiceImpl.class);
 
@@ -26,20 +27,24 @@ public abstract class CSGDGenericServiceImpl<T extends Nodo, ID extends Id> impl
     protected ApiCSGDServices client;
 
     @Override
-    public void deleteNode(ID wsId) throws CSGDException {
+    public void deleteNode(R wsId) throws CSGDException {
         log.info("Se procede a borrar el nodo");
         try {
             ResultadoSimple rs = client.borrarNodo(wsId);
 
             if (!Constants.CodigosRespuestaCSGD.RESPUESTA_OK.getValue().equals(rs.getCodigoResultado())) {
-                // Cuando se produce un error porque el nodo a borrar no existe devuelve el cod_021, por lo que  continuamos
-                // con el proceso
-                //FIXME: Puede producirse que se borre en gdib y en bbdd no, hay que controlar de manera diferente si no
-                // existe en gdib para que siga el proceso como que sí se hizo. Mockeado con el COD_021
                 if (Constants.CodigosRespuestaCSGD.RESPUESTA_EXCEPCION.getValue().equals(rs.getCodigoResultado())) {
-                    log.info("Se ha recibido el código de error COD_021, el nodo no existe en Alfresco, así que " +
-                            "continuamos con el proceso de borrado");
-                    return;
+                    // Cuando se produce un error porque el nodo a borrar no existe devuelve el cod_021, por lo que  continuamos
+                    // con el proceso, si no devuelve nada es que el nodo no existe en gdib y se continua con normalidad
+                    T result = getNode(wsId);
+                    if(result == null) {
+                        log.info("Se ha recibido el código de error COD_021, el nodo no existe en Alfresco, así que " +
+                                "continuamos con el proceso de borrado");
+                        return;
+                    }else{
+                        log.error("Se produjo un error en el proceso de eliminacion del nodo.");
+                        throw new CSGDException(Constants.ExceptionConstants.GENERIC_ERROR.getValue(), "Se produjo un error en el proceso de eliminacion del nodo.");
+                    }
                 } else {
                     log.error("Se ha devuelto un codigo [" + rs.getCodigoResultado() + "] en el proceso de borrado." +
                             " Mensaje: " + rs.getMsjResultado());
@@ -55,25 +60,53 @@ public abstract class CSGDGenericServiceImpl<T extends Nodo, ID extends Id> impl
         log.info("Nodo borrado correctamente");
     }
 
-//    @Override
-//    public void moveNode(M wsDto) throws CSGDException {
-//        log.info("Se procede a mover el nodo");
-//        try {
-//            ResultadoSimple rs = client.moverNodo(wsDto);
-//
-//            if (!Constants.CodigosRespuestaCSGD.RESPUESTA_OK.getValue().equals(rs.getCodigoResultado())) {
-//                log.error("Se ha devuelto un codigo [" + rs.getCodigoResultado() + "] en el proceso de borrado." +
-//                        " Mensaje: " + rs.getMsjResultado());
-//                throw new CSGDException(Constants.ExceptionConstants.ERROR_RETURNED.getValue(), rs.getCodigoResultado(), rs.getMsjResultado(), "Se ha devuelto un codigo [" + rs.getCodigoResultado() + "] en el proceso de mover. Mensaje: " + rs.getMsjResultado());
-//            }
-//        } catch (CSGDException e) {
-//            throw e;
-//        } catch (Exception e) {
-//            log.error("Se ha producido un error no controlado en el proceso de mover: " + e);
-//            throw new CSGDException(Constants.ExceptionConstants.GENERIC_ERROR.getValue(), "Se ha producido un error no controlado en el proceso de mover", e);
-//        }
-//        log.info("Nodo movido correctamente");
-//    }
+    @Override
+    public void moveNode(M wsDto) throws CSGDException {
+        log.info("Se procede a mover el nodo");
+        try {
+            ResultadoSimple rs = client.moverNodo(wsDto);
+
+            if (!Constants.CodigosRespuestaCSGD.RESPUESTA_OK.getValue().equals(rs.getCodigoResultado())) {
+                log.error("Se ha devuelto un codigo [" + rs.getCodigoResultado() + "] en el proceso de borrado." +
+                        " Mensaje: " + rs.getMsjResultado());
+                throw new CSGDException(Constants.ExceptionConstants.ERROR_RETURNED.getValue(), rs.getCodigoResultado(), rs.getMsjResultado(), "Se ha devuelto un codigo [" + rs.getCodigoResultado() + "] en el proceso de mover. Mensaje: " + rs.getMsjResultado());
+            }
+        } catch (CSGDException e) {
+            throw e;
+        } catch (Exception e) {
+            log.error("Se ha producido un error no controlado en el proceso de mover: " + e);
+            throw new CSGDException(Constants.ExceptionConstants.GENERIC_ERROR.getValue(), "Se ha producido un error no controlado en el proceso de mover", e);
+        }
+        log.info("Nodo movido correctamente");
+    }
+
+    /**
+     * Se llama al metodo getNode, se utilizara para comprobara si el nodo existe cuando se devuelve un error realizando
+     * otra accion, ya que en el bus se pierden las excepciones
+     *
+     * @param wsId
+     * @throws CSGDException
+     */
+    private T getNode(R wsId) throws CSGDException {
+        log.info("Se procede a obtener el nodo");
+        try {
+            Resultado<T> rs = client.getNode(wsId);
+
+            if (!Constants.CodigosRespuestaCSGD.RESPUESTA_OK.getValue().equals(rs.getCodigoResultado())) {
+                log.error("Se ha devuelto un codigo [" + rs.getCodigoResultado() + "] en el proceso de obtencion del nodo. " +
+                        "Mensaje: " + rs.getMsjResultado());
+                throw new CSGDException(Constants.ExceptionConstants.ERROR_RETURNED.getValue(), rs.getCodigoResultado(),
+                        rs.getMsjResultado(), "Se ha devuelto un codigo [" + rs.getCodigoResultado() + "] en el " +
+                        "proceso de obtencion del nodo. Mensaje: " + rs.getMsjResultado());
+            }
+            log.debug("Obtencion del nodo realizada correctamente.");
+            return rs.getElementoDevuelto();
+        } catch (Exception e) {
+            log.error("Se ha producido un error no controlado en el proceso de obtencion del nodo: " + e);
+            throw new CSGDException(Constants.ExceptionConstants.GENERIC_ERROR.getValue(), "Se ha producido un error no controlado en el proceso de obtencion del nodo", e);
+        }
+    }
+
 
     @Override
     public String synchronizeNode(T wsDto, String parentId) throws CSGDException {
@@ -133,4 +166,5 @@ public abstract class CSGDGenericServiceImpl<T extends Nodo, ID extends Id> impl
             return null;
         }
     }
+
 }

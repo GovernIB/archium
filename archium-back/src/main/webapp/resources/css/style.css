@@ -1,3 +1,9 @@
+.dictamen-active{
+	margin-left: -34px;
+}
+.dictamen-active > span{
+	padding-top:3px;
+}
 span.ui-button-icon-left.ui-icon.ui-c.ui-icon-pencil {
     top: 13px;
 }

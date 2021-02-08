@@ -8,6 +8,7 @@ import es.caib.archium.persistence.model.Dictamen;
 import es.caib.archium.persistence.model.LimitacioNormativaSerie;
 import es.caib.archium.persistence.model.Seriedocumental;
 import es.caib.archium.persistence.model.Valoracio;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,8 +16,11 @@ import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import javax.activation.DataHandler;
+import javax.activation.DataSource;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import javax.mail.util.ByteArrayDataSource;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -26,6 +30,7 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.*;
 
@@ -38,56 +43,56 @@ import java.util.*;
  * La propuesta del formato del XML es la siguiente:
  *
  * <serie codigo_clasificacion="SD09998" documento_esencial="Sí">
- * 	<funcion codigo="EDU2300">Educació secundària obligatòria (ESO) i Batxillerat</funcion>
- * 	<denominacion_clase>Serie test 9998...</denominacion_clase>
- * 	<tipo_clasificacion>Funcional</tipo_clasificacion>
- * 	<lopd>Medio</lopd>
- * 	<confidencialidad>Medio</confidencialidad>
- * 	<acceso>
- * 		<tipo_acceso>Parcialmente restringido</tipo_acceso>
- * 		<limitacion>
- * 			<causa_limitacion codigo="A">
- * 				<normativa_limitacion>Normativa 1</normativa_limitacion>
- * 				<normativa_limitacion>Normativa 2</normativa_limitacion>
- * 			</causa_limitacion>
- * 			<causa_limitacion codigo="B">
- * 				<normativa_limitacion>Normativa 1</normativa_limitacion>
- * 			</causa_limitacion>
- * 		</limitacion>
- * 	</acceso>
- * 	<valoracion>
- * 		<valor_secundario>No</valor_secundario>
- * 		<valoracion_primaria>
- * 			<valor_primario>
- * 				<tipo_valor>Administrativo</tipo_valor>
- * 				<plazo_valor>5</plazo_valor>
- * 				<plazo_valor_unidad>A</plazo_valor_unidad>
- * 			</valor_primario>
- * 		</valoracion_primaria>
- * 	<valoracion>
- * 	<dictamen tipo_dictamen="ET">
- * 		<accion_dictaminada>Eliminación total a los 6 meses de la finalización del expediente</accion_dictaminada>
- * 		<plazo_accion_dictaminada>6</plazo_accion_dictaminada>
- * 		<plazo_accion_dictaminada_unidad>M</plazo_accion_dictaminada_unidad>
- *  	<tipos_documentales>
- *          <tipo_documental codigo="TD01-019" conservable="Sí">
- *             <plazo_dictamen>4</plazo_dictamen>
- *             <plazo_unidad_dictamen>A</plazo_unidad_dictamen>
- *          </tipo_documental>
- *          <tipo_documental codigo="TD01-021" conservable="Sí">
- *             <plazo_dictamen>12</plazo_dictamen>
- *             <plazo_unidad_dictamen>A</plazo_unidad_dictamen>
- *          </tipo_documental>
- *          <tipo_documental codigo="TD02-004" conservable="No">
- *             <plazo_dictamen>2</plazo_dictamen>
- *             <plazo_unidad_dictamen>A</plazo_unidad_dictamen>
- *          </tipo_documental>
- *          <tipo_documental codigo="TD06-004" conservable="Sí">
- *             <plazo_dictamen />
- *             <plazo_unidad_dictamen />
- *          </tipo_documental>
- *       </tipos_documentales>
- * 	</dictamen>
+ * <funcion codigo="EDU2300">Educació secundària obligatòria (ESO) i Batxillerat</funcion>
+ * <denominacion_clase>Serie test 9998...</denominacion_clase>
+ * <tipo_clasificacion>Funcional</tipo_clasificacion>
+ * <lopd>Medio</lopd>
+ * <confidencialidad>Medio</confidencialidad>
+ * <acceso>
+ * <tipo_acceso>Parcialmente restringido</tipo_acceso>
+ * <limitacion>
+ * <causa_limitacion codigo="A">
+ * <normativa_limitacion>Normativa 1</normativa_limitacion>
+ * <normativa_limitacion>Normativa 2</normativa_limitacion>
+ * </causa_limitacion>
+ * <causa_limitacion codigo="B">
+ * <normativa_limitacion>Normativa 1</normativa_limitacion>
+ * </causa_limitacion>
+ * </limitacion>
+ * </acceso>
+ * <valoracion>
+ * <valor_secundario>No</valor_secundario>
+ * <valoracion_primaria>
+ * <valor_primario>
+ * <tipo_valor>Administrativo</tipo_valor>
+ * <plazo_valor>5</plazo_valor>
+ * <plazo_valor_unidad>A</plazo_valor_unidad>
+ * </valor_primario>
+ * </valoracion_primaria>
+ * <valoracion>
+ * <dictamen tipo_dictamen="ET">
+ * <accion_dictaminada>Eliminación total a los 6 meses de la finalización del expediente</accion_dictaminada>
+ * <plazo_accion_dictaminada>6</plazo_accion_dictaminada>
+ * <plazo_accion_dictaminada_unidad>M</plazo_accion_dictaminada_unidad>
+ * <tipos_documentales>
+ * <tipo_documental codigo="TD01-019" conservable="Sí">
+ * <plazo_dictamen>4</plazo_dictamen>
+ * <plazo_unidad_dictamen>A</plazo_unidad_dictamen>
+ * </tipo_documental>
+ * <tipo_documental codigo="TD01-021" conservable="Sí">
+ * <plazo_dictamen>12</plazo_dictamen>
+ * <plazo_unidad_dictamen>A</plazo_unidad_dictamen>
+ * </tipo_documental>
+ * <tipo_documental codigo="TD02-004" conservable="No">
+ * <plazo_dictamen>2</plazo_dictamen>
+ * <plazo_unidad_dictamen>A</plazo_unidad_dictamen>
+ * </tipo_documental>
+ * <tipo_documental codigo="TD06-004" conservable="Sí">
+ * <plazo_dictamen />
+ * <plazo_unidad_dictamen />
+ * </tipo_documental>
+ * </tipos_documentales>
+ * </dictamen>
  * </serie>
  */
 @ApplicationScoped
@@ -101,7 +106,7 @@ public class CreateSerieXMLUtils {
     @Inject
     private CalculoUtils calculoUtils;
 
-    public String createXMLDocument(Seriedocumental serie, Dictamen dictamen) throws ParserConfigurationException, TransformerException, I18NException {
+    public DataHandler createXMLDocument(Seriedocumental serie, Dictamen dictamen) throws ParserConfigurationException, TransformerException, I18NException {
         log.info("Se genera el documento xml con los datos de la serie...");
         DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
         DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
@@ -165,7 +170,7 @@ public class CreateSerieXMLUtils {
 
         // condicion reutilizacion
         Element condicionReutilizacion = doc.createElement("condicion_reutilizacion");
-        if(StringUtils.trimToNull(dictamen.getCondicioreutilitzacio())!=null) {
+        if (StringUtils.trimToNull(dictamen.getCondicioreutilitzacio()) != null) {
             condicionReutilizacion.appendChild(doc.createTextNode(dictamen.getCondicioreutilitzacio()));
         }
         rootAcceso.appendChild(condicionReutilizacion);
@@ -229,14 +234,14 @@ public class CreateSerieXMLUtils {
 
             // plazo valor (termino)
             Element plazoValor = doc.createElement("plazo_valor");
-            if(StringUtils.trimToNull(valor)!=null) {
+            if (StringUtils.trimToNull(valor) != null) {
                 plazoValor.appendChild(doc.createTextNode(valor));
             }
             rootValorPrimario.appendChild(plazoValor);
 
             // plazo_valor_unidad
             Element plazoValorUnidad = doc.createElement("plazo_valor_unidad");
-            if(unidad!=null) {
+            if (unidad != null) {
                 plazoValorUnidad.appendChild(doc.createTextNode(unidad.toString()));
             }
             rootValorPrimario.appendChild(plazoValorUnidad);
@@ -253,8 +258,8 @@ public class CreateSerieXMLUtils {
 
         // Accion dictaminada
         Element accionDictaminada = doc.createElement("accion_dictaminada");
-        String ad = this.calculoUtils.rellenarOCalcularAccionDictaminada(serie,dictamen);
-        if(StringUtils.trimToNull(ad)!=null) {
+        String ad = this.calculoUtils.rellenarOCalcularAccionDictaminada(serie, dictamen);
+        if (StringUtils.trimToNull(ad) != null) {
             accionDictaminada.appendChild(doc.createTextNode(ad));
         }
         rootDictamen.appendChild(accionDictaminada);
@@ -266,7 +271,7 @@ public class CreateSerieXMLUtils {
         if (StringUtils.trimToNull(plazo) != null) {
             // Extraemos el número y la unidad
             unidad = this.calculoUtils.extraerUnidadPlazo(plazo);
-            valor =this.calculoUtils.extraerValorPlazo(plazo);
+            valor = this.calculoUtils.extraerValorPlazo(plazo);
         }
 
 
@@ -279,20 +284,20 @@ public class CreateSerieXMLUtils {
 
         // Plazo accion dictaminada unidad
         Element plazoAccionDictaminadaUnidad = doc.createElement("plazo_accion_dictaminada_unidad");
-        if(unidad!=null) {
+        if (unidad != null) {
             plazoAccionDictaminadaUnidad.appendChild(doc.createTextNode(unidad.toString()));
         }
         rootDictamen.appendChild(plazoAccionDictaminadaUnidad);
 
         // Si el tipo de dictamen es EP, se debe añadir los tipos documentales
-        if(TipoDictamen.EP == TipoDictamen.getTipoDictamen(dictamen.getAchTipusdictamen().getCodi())){
+        if (TipoDictamen.EP == TipoDictamen.getTipoDictamen(dictamen.getAchTipusdictamen().getCodi())) {
             // Tipos documentales (<serie><dictamen><tipos_documentales>)
             Element rootTiposDocumentales = doc.createElement("tipos_documentales");
             rootDictamen.appendChild(rootTiposDocumentales);
             // Para cada tipo documental...
-            dictamen.getAchDictamenTipusdocumentals().forEach( x ->  {
+            dictamen.getAchDictamenTipusdocumentals().forEach(x -> {
                 // Descartamos los tipos documentales con fecha fin
-                if(!x.isObsolete()) {
+                if (!x.isObsolete()) {
                     // Tipo documental (<serie><dictamen><tipos_documentales><tipo_documental>)
                     Element rootTipoDocumental = doc.createElement("tipo_documental");
                     rootTiposDocumentales.appendChild(rootTipoDocumental);
@@ -337,9 +342,25 @@ public class CreateSerieXMLUtils {
         StreamResult result = new StreamResult(baos);
         transformer.transform(source, result);
 
-        log.info("Generado documento xml con los datos de la serie, se guarda codificado en base64");
-        // Transformamos el resultado a un String codificado en base64
-        return Base64.getEncoder().encodeToString(baos.toByteArray());
+        log.info("Generado documento xml con los datos de la serie");
+
+        // Convertimos a un array binario el contenido creado
+        byte[] content = baos.toByteArray();
+        // Devolvemos este contenido como DataHandler
+        DataSource dataSource = new ByteArrayDataSource(content, "application/xml");
+        return new DataHandler(dataSource);
     }
 
+    /**
+     * Transformamos el DataHandler a base64
+     *
+     * @param binaryContent
+     * @return
+     * @throws IOException
+     */
+    public String toBase64Content(DataHandler binaryContent) throws IOException {
+
+        byte[] content = IOUtils.toByteArray(binaryContent.getInputStream());
+        return Base64.getEncoder().encodeToString(content);
+    }
 }

@@ -1,0 +1,165 @@
+<ui:composition
+        xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:h="http://xmlns.jcp.org/jsf/html"
+        xmlns:f="http://java.sun.com/jsf/core"
+        xmlns:p="http://primefaces.org/ui"
+        xmlns:ui="http://java.sun.com/jsf/facelets"
+>
+
+    <p:dialog id="syncSerieConfirmDialogId" header="Detalle Serie" showEffect="fade"
+              widgetVar="syncSerieConfirmDialog" modal="true" closable="false" resizable="false"
+              style="max-width:1118px; min-width:1118px; max-height:760px;">
+        <p:scrollPanel style="max-width:1100px; min-width:1100px; max-height:700px;min-height:700px" mode="native">
+            <div class="views_3">
+                <div class="panelInfo">
+                    <h:form>
+                        <div class="ui-g-12 info_header">
+                            <strong><label>#{messages['nuevaserie.datos.esenciales']} </label></strong>
+                        </div>
+                        <div class="ui-g-12">
+                            <div class="ui-g-6">
+                                <strong><label class="ui-g-5">#{messages['nuevaserie.codiserie']}: </label></strong>
+                                <div class="ui-g-7">
+                                    <h:outputText value="#{serieDetail.codigo}" style="height: 100%!important;"/>
+                                </div>
+                            </div>
+                            <div class="ui-g-6">
+                                <strong><label class="ui-g-5">#{messages['funciones.tree.type.funcio']}: </label></strong>
+                                <div class="ui-g-7">
+                                    <h:outputText value="#{serieDetail.parentFunctionCode} (#{serieDetail.parentFunctionName})"
+                                                  style="height: 100%!important;"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="ui-g-12">
+                            <div class="ui-g-6">
+                                <strong><label class="ui-g-5">#{messages['nuevaserie.nombreserie']}: </label></strong>
+                                <h:outputText value="#{serieDetail.denominacionClase}"
+                                              style="height: 100%!important;"/>
+                            </div>
+                            <div class="ui-g-6">
+                                <strong><label class="ui-g-5">#{messages['nuevodictamen.lopd']}: </label></strong>
+                                <h:outputText value="#{serieDetail.lopd}" style="height: 100%!important;"/>
+                            </div>
+                        </div>
+                        <div class="ui-g-12">
+                            <div class="ui-g-6">
+                                <strong><label class="ui-g-5">#{messages['nuevaserie.tipo.clasificacion']}: </label></strong>
+                                <h:outputText value="#{serieDetail.tipoClasificacion}" style="height: 100%!important;"/>
+                            </div>
+                            <div class="ui-g-6">
+                                <strong><label class="ui-g-5">#{messages['nuevodictamen.serieEsencial']}: </label></strong>
+                                <h:outputText value="#{serieDetail.esencial}" style="height: 100%!important;"/>
+                            </div>
+                        </div>
+                        <div class="ui-g-12">
+                            <div class="ui-g-6">
+                                <strong><label class="ui-g-5">#{messages['nuevaserie.confidencialidad']}: </label></strong>
+                                <h:outputText value="#{serieDetail.confidencialidad}" style="height: 100%!important;"/>
+                            </div>
+                        </div>
+                        <!--                Acceso-->
+                        <div class="ui-g-12 info_header">
+                            <strong><label>#{messages['nuevaserie.acceso']} </label></strong>
+                        </div>
+                        <div class="ui-g-12">
+                            <div class="ui-g-6">
+                                <strong><label class="ui-g-5">#{messages['nuevodictamen.tipoAcceso']}: </label></strong>
+                                <h:outputText value="#{serieDetail.acceso.tipoAcceso}" style="height: 100%!important;"/>
+                            </div>
+                            <div class="ui-g-6">
+                                <strong><label class="ui-g-5">#{messages['nuevodictamen.condicio']}: </label></strong>
+                                <h:outputText value="#{serieDetail.acceso.condicionReutilizacion}"
+                                              style="height: 100%!important;"/>
+                            </div>
+                        </div>
+                        <div class="ui-g-12">
+                            <div class="ui-g-12">
+                                <strong><label class="ui-g-5">#{messages['nuevaserie.causalimitacion']}: </label></strong>
+                                <h:outputText value="#{serieDetail.acceso.causaLimitacion}"
+                                              style="height: 100%!important;"/>
+                            </div>
+                        </div>
+
+                        <!--                Valoracion-->
+                        <div class="ui-g-12 info_header">
+                            <strong><label>#{messages['nuevaserie.valors']} </label></strong>
+                        </div>
+                        <div class="ui-g-12">
+                            <div class="ui-g-6">
+                                <strong><label class="ui-g-5">#{messages['nuevaserie.valorsprimari']}: </label></strong>
+                                <h:outputText value="#{serieDetail.valoracion.valoracionesPrimarias}"
+                                              style="height: 100%!important;"/>
+                            </div>
+                            <div class="ui-g-6">
+                                <strong><label class="ui-g-5">#{messages['nuevaserie.valorsecundari']}: </label></strong>
+                                <h:outputText value="#{serieDetail.valoracion.valoracionSecundaria}"
+                                              style="height: 100%!important;"/>
+                            </div>
+                        </div>
+                        <!--                Dictamen-->
+                        <div class="ui-g-12 info_header">
+                            <strong><label>#{messages['nuevodictamen.dictamen']} </label></strong>
+                        </div>
+                        <div class="ui-g-12">
+                            <div class="ui-g-6">
+                                <strong><label class="ui-g-5">#{messages['nuevodictamen.tipoDictamen']}: </label></strong>
+                                <h:outputText value="#{serieDetail.dictamen.tipoDictamen}"
+                                              style="height: 100%!important;"/>
+                            </div>
+
+                            <div class="ui-g-6">
+                                <strong><label class="ui-g-5">#{messages['nuevodictamen.termini']}: </label></strong>
+                                <h:outputText value="#{serieDetail.dictamen.plazo}" style="height: 100%!important;"/>
+                            </div>
+                        </div>
+                        <div class="ui-g-12">
+                            <div class="ui-g-12">
+                                <strong><label class="ui-g-5">#{messages['nuevodictamen.accio']}: </label></strong>
+                                <h:outputText value="#{serieDetail.dictamen.accionDictaminada}"
+                                              style="height: 100%!important;"/>
+                            </div>
+                        </div>
+                        <div class="ui-g-12 info_header">
+                            <strong><label>#{messages['nuevaserie.documento.generado']} </label></strong>
+                        </div>
+
+                        <div class="ui-g-12 content_4 modfseries">
+                            <div class="ui-g-6 button_new" align="justify">
+                                <p:commandButton id="downloadButton" value="#{messages['nuevaserie.documento.descargar']}"
+                                                 ajax="false" class="boton_modal button_red"
+                                                 styleClass="margin-rigth: 0px;"
+                                                 onclick="PrimeFaces.monitorDownload(start, stop);" update="@form">
+                                    <p:fileDownload value="#{synchronizeSerieController.download()}"/>
+                                </p:commandButton>
+                            </div>
+                        </div>
+                        <!--            botones-->
+                        <div class="ui-g-12 content_4 modfseries">
+                            <div class="ui-g-6 button_new" align="justify">
+                                <p:commandButton widgetVar="confirmSyncButton"
+                                                 onclick="PF('confirmSyncButton').disable()"
+                                                 class="boton_modal button_red" update="panel1"
+                                                 value="#{messages['si']}"
+                                                 action="#{synchronizeSerieController.synchronize}"
+                                                 oncomplete="PF('confirmSyncButton').enable();if (args &amp;&amp; !args.validationFailed) PF('syncSerieConfirmDialog').hide();"
+                                                 style="margin-rigth: 0px;"></p:commandButton>
+                            </div>
+
+                            <div class="ui-g-6 button_new" align="justify">
+                                <p:commandButton widgetVar="confirmCancelSyncButton"
+                                                 onclick="PF('confirmCancelSyncButton').disable()"
+                                                 class="boton_modal button_red"
+                                                 update="panel1" value="#{messages['no']}"
+                                                 action="#{synchronizeSerieController.cancelSynchronize}"
+                                                 oncomplete="PF('confirmCancelSyncButton').enable();if (args &amp;&amp; !args.validationFailed) PF('syncSerieConfirmDialog').hide()"
+                                                 style="margin-rigth: 0px;"></p:commandButton>
+                            </div>
+                        </div>
+                    </h:form>
+                </div>
+            </div>
+        </p:scrollPanel>
+    </p:dialog>
+
+</ui:composition>

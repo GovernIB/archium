@@ -90,11 +90,13 @@
 				<p:column class="first-column column_acciones" style="width: 15%;">
 <!--				<p:column class="acciones-t" style="width: 10%;">-->
 					<p:commandButton update="quadreModalUpdateId" icon="ui-icon-pencil" resetValues="true" title="#{messages['actualizar']}" action="#{quadreController.abrirModalUpdate(cuadro)}" />
-					<p:commandButton class="botton_library" icon="pi pi-trash" title="#{messages['cuadro.eliminarcuadro']}" update="panel1" action="#{quadreController.deleteClassificationTable(cuadro)}" />
-<!--						<p:confirm header="#{messages['confirmacion']}" message="#{messages['cuadro.eliminar.alert']}" icon="pi pi-exclamation-triangle" />-->
-<!--					</p:commandButton>-->
+					<p:commandButton class="botton_library" icon="pi pi-trash" title="#{messages['cuadro.eliminarcuadro']}" update="panel1" action="#{quadreController.deleteClassificationTable(cuadro)}" >
+						<p:confirm header="#{messages['confirmacion']}" message="#{messages['cuadro.eliminar.alert']}" icon="pi pi-exclamation-triangle" />
+					</p:commandButton>
 <!--					No sincronizado y tiene permisos-->
-					<p:commandButton rendered="#{quadreController.checkPermissionsToCallCSGD() eq true and cuadro.synchronized eq false}" class="botton_library" icon="circle-state red" title="#{messages['cuadro.sincronizar']}" update="panel1" action="#{quadreController.synchronize(cuadro)}" />
+					<p:commandButton rendered="#{quadreController.checkPermissionsToCallCSGD() eq true and cuadro.synchronized eq false}" class="botton_library" icon="circle-state red" title="#{messages['cuadro.sincronizar']}" update="panel1" action="#{quadreController.synchronize(cuadro)}" >
+						<p:confirm header="#{messages['confirmacion']}" message="#{messages['cuadro.sync.alert']}" icon="pi pi-exclamation-triangle" />
+					</p:commandButton>
 					<!--					no sincronizado sin permisos-->
 					<p:commandButton rendered="#{quadreController.checkPermissionsToCallCSGD() eq false and cuadro.synchronized eq false}" title="#{messages['cuadro.noSincronizado']}" class="botton_library" icon="circle-state red" />
 <!--					sincronizado-->
@@ -103,6 +105,12 @@
 	    	</p:dataTable>
 
 		</h:form>
+
+		<p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+			<p:commandButton value="#{messages['si']}" type="button" styleClass="ui-confirmdialog-yes" icon="pi pi-check" />
+			<p:commandButton value="#{messages['no']}" type="button" styleClass="ui-confirmdialog-no" icon="pi pi-times" />
+		</p:confirmDialog>
+
 	    <hr/>
   	</ui:define>
 

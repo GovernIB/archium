@@ -1,6 +1,7 @@
 package es.caib.archium.controllers;
 
 import es.caib.archium.commons.i18n.I18NException;
+import es.caib.archium.csgd.apirest.facade.pojos.Serie;
 import es.caib.archium.objects.*;
 import es.caib.archium.persistence.model.Seriedocumental;
 import es.caib.archium.services.SerieFrontService;
@@ -126,7 +127,7 @@ public class NuevaSerieController implements Serializable {
 				vp.setTerminiType(UNIDAD_PLAZO_SERIE_DEFAULT_MESSAGE);
 				valoracio.addValorprimari(vp);
 			}
-					
+
 		} catch (I18NException e) {
 			listaAplicaciones = new ArrayList<AplicacionObject>();
 			listaNormativaAprobacio = new ArrayList<NormativaAprobacioObject>();
@@ -140,9 +141,9 @@ public class NuevaSerieController implements Serializable {
 			seriesArgenRelacionadas = new DualListModel<SerieArgenObject>(listaSeriesArgen,seriesArgenSelected);
 			normativasSerie = new DualListModel<NormativaAprobacioObject>(listaNormativaAprobacio ,normativasSerieSelected);
 		}
-		
+
 	}
-	
+
 	public void loadFromFunction(Document<FuncioObject> d) {
 		clearForm();
 		if (d==null) {
@@ -152,9 +153,9 @@ public class NuevaSerieController implements Serializable {
     		if(serieFuncio.getTipoSerie()!=null) {
     			tipusSerieId = serieFuncio.getTipoSerie().getId();
     		}
-    	} 
+    	}
 	}
-	
+
 	public void deleteSerie(Document<SerieDocumentalObject> s) {
 
         try {
@@ -172,37 +173,6 @@ public class NuevaSerieController implements Serializable {
             }
         }
     }
-
-	/**
-	 * Proceso de sincronizacion de la serie en GDIB
-	 *
-	 * @param serie
-	 */
-	public void synchronize(Document<SerieDocumentalObject> serie) {
-		log.debug("Se sincroniza la serie: " + serie.toString());
-
-		try {
-			SerieDocumentalObject upS =this.service.synchronize(serie.getObject().getSerieId());
-			log.debug("Proceso de sincronizacion finalizado con exito");
-			// Se carga de nuevo la lista de series para mostrar los datos de esta serie actualizados
-			funcBean.getNodeFromFunctionId(serie.getId(), "Serie", "update", upS);
-			listaSeries = service.getListaSeries();
-
-			FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(messageBundle.getString("nuevaserie.sinc.ok")));
-		} catch (I18NException e) {
-			log.error(FrontExceptionTranslate.translate(e, funcBean.getLocale()));
-			FacesMessage message = new FacesMessage();
-			message.setSeverity(FacesMessage.SEVERITY_ERROR);
-			if("excepcion.general.Exception".equals(e.getMessage())){
-				message.setSummary(messageBundle.getString("nuevaserie.sinc.error"));
-				message.setDetail(messageBundle.getString("nuevaserie.sinc.error"));
-			}else {
-				message.setSummary(messageBundle.getString(e.getMessage()));
-				message.setDetail(messageBundle.getString(e.getMessage()));
-			}
-			FacesContext.getCurrentInstance().addMessage(null, message);
-		}
-	}
 
 
 
@@ -323,36 +293,50 @@ public class NuevaSerieController implements Serializable {
 	 */
 	public void move(QuadreObject cuadro, FuncioObject funcion, Document<SerieDocumentalObject> elemento) throws I18NException {
 		log.info("Se inicia proceso de mover serie [Id,Codigo] ["+elemento.getId()+","+elemento.getCodi()+"]");
-		TreeNode oldParent = null;
+		try{
+			TreeNode oldParent = null;
 
-		// Obtenemos el antiguo padre de la funcion
-		oldParent = funcBean.getNodeFromFunctionId(elemento.getParentFunction(), "Funcio", "inset", null);
+			// Obtenemos el antiguo padre de la funcion
+			oldParent = funcBean.getNodeFromFunctionId(elemento.getParentFunction(), "Funcio", "inset", null);
 
-		SerieDocumentalObject result = this.service.moveSerie(elemento.getId(), cuadro.getId(),funcion.getId());
+			SerieDocumentalObject result = this.service.moveSerie(elemento.getId(), cuadro.getId(),funcion.getId());
 
-		log.debug("Se completa el proceso de mover serie");
-		log.debug("Actualizamos el arbol");
-		oldParent.getChildren().removeIf(x -> ((Document)x.getData()).getObject() instanceof SerieDocumentalObject
-				&& ((Document<SerieDocumentalObject>)x.getData()).getId() == elemento.getId());
+			log.debug("Se completa el proceso de mover serie");
+			log.debug("Actualizamos el arbol");
+			oldParent.getChildren().removeIf(x -> ((Document)x.getData()).getObject() instanceof SerieDocumentalObject
+					&& ((Document<SerieDocumentalObject>)x.getData()).getId() == elemento.getId());
 
-		// Si pertenece al mismo cuadro que antes, buscamos donde insertarlo
-		if(cuadro.getId().equals(elemento.getParentRoot())){
-			log.debug("Se mueve dentro del mismo cuadro, así que lo insertamos bajo el padre nuevo");
-			TreeNode parent = null;
-			// Si la funcion es null es que es hijo directo del cuadro
-			parent = funcBean.getNodeFromFunctionId(funcion.getId(), "Funcio", "insert", null);
+			// Si pertenece al mismo cuadro que antes, buscamos donde insertarlo
+			if(cuadro.getId().equals(elemento.getParentRoot())){
+				log.debug("Se mueve dentro del mismo cuadro, así que lo insertamos bajo el padre nuevo");
+				TreeNode parent = null;
+				// Si la funcion es null es que es hijo directo del cuadro
+				parent = funcBean.getNodeFromFunctionId(funcion.getId(), "Funcio", "insert", null);
 
-			// Creamos el nuevo nodo
-			TreeNode node = new DefaultTreeNode(new Document<SerieDocumentalObject>(elemento.getId(), elemento.getCodi(), elemento.getNom(), "Serie", cuadro == null ? null : cuadro.getId(), funcion == null ? null : funcion.getId(), elemento.getNodeId(), elemento.getSynchronized(), result),
-					parent);
+				// Creamos el nuevo nodo
+				TreeNode node = new DefaultTreeNode(new Document<SerieDocumentalObject>(elemento.getId(), elemento.getCodi(), elemento.getNom(), "Serie", cuadro == null ? null : cuadro.getId(), funcion == null ? null : funcion.getId(), elemento.getNodeId(), elemento.getSynchronized(), result),
+						parent);
 
-			// Lo añadimos en la primera posición
-			parent.getChildren().add(0,node);
+				// Lo añadimos en la primera posición
+				parent.getChildren().add(0,node);
+			}
+			listaSeries = service.getListaSeries();
+
+			FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(messageBundle.getString("nuevaserie.ok")));
+			log.info("Proceso de mover finalizado");
+		} catch (I18NException e) {
+			log.error(FrontExceptionTranslate.translate(e, funcBean.getLocale()));
+			FacesMessage message = new FacesMessage();
+			message.setSeverity(FacesMessage.SEVERITY_ERROR);
+			if("excepcion.general.Exception".equals(e.getMessage())){
+				message.setSummary(messageBundle.getString("nuevaserie.sinc.error"));
+				message.setDetail(messageBundle.getString("nuevaserie.sinc.error"));
+			}else {
+				message.setSummary(messageBundle.getString(e.getMessage()));
+				message.setDetail(messageBundle.getString(e.getMessage()));
+			}
+			FacesContext.getCurrentInstance().addMessage(null, message);
 		}
-		listaSeries = service.getListaSeries();
-		// TODO : Cambiar mensaje
-		FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(messageBundle.getString("nuevaserie.ok")));
-		log.info("Proceso de mover finalizado");
 	}
 
     public void save() {
@@ -394,25 +378,25 @@ public class NuevaSerieController implements Serializable {
 			}
 			FacesContext.getCurrentInstance().addMessage(null, message);
 		}
-       
+
 	}
-	
+
 	private Boolean validateValoracion() {
-				
-		if(valoracio.getAchValorsecundari()==null 
+
+		if(valoracio.getAchValorsecundari()==null
 			&& (valoracio.getAchValorprimaris()==null || valoracio.hashValorPrimariSelected()==false)){
 			return true;
-		} else if(valoracio.getAchValorsecundari()!=null 
+		} else if(valoracio.getAchValorsecundari()!=null
 			&& valoracio.getAchValorprimaris()!=null
 			&& valoracio.hashValorPrimariSelected()==true) {
 			return true;
 		}
 		return false;
 	}
-	
-	
+
+
 	private void clearForm(){
-		
+
 		seriesRelacionadas.setSource(listaSeries);
 		seriesRelacionadas.setTarget(new ArrayList<>());
 		aplicaciones.setSource(listaAplicaciones);
@@ -421,9 +405,9 @@ public class NuevaSerieController implements Serializable {
 		seriesArgenRelacionadas.setTarget(new ArrayList<>());
 		normativasSerie.setSource(listaNormativaAprobacio);
 		normativasSerie.setTarget(new ArrayList<>());
-		
+
 		listaRelacionLNS.clear();
-		
+
 		serieId= null;
 		codi = null;
 		nom = null;
@@ -438,7 +422,7 @@ public class NuevaSerieController implements Serializable {
 		codiIecisa = null;
 		serieEstat = "ESBORRANY";
 		nuevoNodeId = null;
-		
+
 		valoracio = new ValoracioObject();
 		for(TipuValorObject tv: listaTiposValor) {
 			ValorPrimariObject vp = new ValorPrimariObject();
@@ -447,24 +431,24 @@ public class NuevaSerieController implements Serializable {
 			valoracio.addValorprimari(vp);
 		}
 	}
-	
+
 	private Boolean validNormativa() {
 		Boolean valid = true;
-		
+
 		Iterator<LimitacioNormativaSerieObject> i = listaRelacionLNS.iterator();
-		
+
 		while(i.hasNext() && valid==true) {
 			if(i.next().getNormativa().equals(selectedNormativa)){
 				valid=false;
 			}
 		}
-		
+
 		return valid;
 	}
-	
+
 	public void onLimitacioSelectedListener(AjaxBehaviorEvent event){
-		
-		
+
+
 		if(this.validNormativa()) {
 			LimitacioNormativaSerieObject lns = new LimitacioNormativaSerieObject();
     		lns.setListCausaLimitacio(new ArrayList<CausaLimitacioObject>());
@@ -478,8 +462,8 @@ public class NuevaSerieController implements Serializable {
 			FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_ERROR, messageBundle.getString("nuevaserie.validate.dupnorm"), null);
 			FacesContext.getCurrentInstance().addMessage("mensaje-estado", message);
 		}
-		
-			
+
+
     }
 
     public void deleteLNS(LimitacioNormativaSerieObject lnsitem) {

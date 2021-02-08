@@ -264,7 +264,6 @@ public class DictamenFrontService {
 			if(Estado.VIGENT == estado){
 //				this.dictamenValidator.validarDictamenVigente(dic,dic.getAchSeriedocumental());
 				dictamen.setDictamenActivo(true);
-				// TODO : Checkear demas dictamenes de la serie para ponerlos como no activos?
 			}
 			this.dictamenEJB.update(dic);
 			

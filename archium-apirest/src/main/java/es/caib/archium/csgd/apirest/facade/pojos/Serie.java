@@ -2,6 +2,7 @@ package es.caib.archium.csgd.apirest.facade.pojos;
 
 import es.caib.archium.csgd.apirest.constantes.*;
 
+import javax.activation.DataHandler;
 import java.util.List;
 
 public class Serie extends Nodo{
@@ -25,6 +26,15 @@ public class Serie extends Nodo{
     private String content;
     private String mimeType;
     private String encoding;
+    private DataHandler binaryContent;
+
+    public DataHandler getBinaryContent() {
+        return binaryContent;
+    }
+
+    public void setBinaryContent(DataHandler binaryContent) {
+        this.binaryContent = binaryContent;
+    }
 
     public UnidadPlazo getUnidadPlazoAccionDictaminada() {
         return unidadPlazoAccionDictaminada;

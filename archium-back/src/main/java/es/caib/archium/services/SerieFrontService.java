@@ -7,6 +7,8 @@ import es.caib.archium.communication.iface.CSGDSerieService;
 import es.caib.archium.csgd.apirest.constantes.*;
 import es.caib.archium.csgd.apirest.csgd.entidades.comunes.SerieId;
 import es.caib.archium.csgd.apirest.facade.pojos.Serie;
+import es.caib.archium.csgd.apirest.facade.pojos.eliminar.EliminarSerie;
+import es.caib.archium.csgd.apirest.facade.pojos.mover.MoverSerie;
 import es.caib.archium.ejb.objects.Dir3;
 import es.caib.archium.ejb.service.*;
 import es.caib.archium.objects.*;
@@ -26,6 +28,7 @@ import javax.inject.Named;
 import javax.transaction.Transactional;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
@@ -798,7 +801,7 @@ public class SerieFrontService {
         if (StringUtils.isNotEmpty(serie.getNodeId())) {
             log.debug("La serie existe en Alfresco, así que procedemos a eliminarla");
             try {
-                this.csgdSerieService.deleteNode(new SerieId(serie.getNodeId()));
+                this.csgdSerieService.deleteNode(new EliminarSerie(serie.getNodeId()));
                 log.info("La serie [" + idSerie + "] ha sido eliminada de Alfresco");
             } catch (CSGDException e) {
                 throw new I18NException(getExceptionI18n(e.getClientErrorCode()), this.getClass().getSimpleName(), "deleteSerie");
@@ -837,14 +840,17 @@ public class SerieFrontService {
         return "nuevaserie.sinc.error";
     }
 
+
     /**
-     * Proceso de sincronizacion de la serie en GDIB
+     * Prepara el objeto para sincronizar con todos sus datos, se utilizará para preparar la modal de confirmación antes de
      *
-     * @param serie
+     * @param serieId
+     * @param serieWs
+     * @return
      */
     @Transactional
-    public SerieDocumentalObject synchronize(Long s) throws I18NException {
-        log.debug("Procedemos a sincronizar la serie con id=[" + s + "]");
+    public Long prepareSync(Long s, Serie serieWs) throws I18NException {
+        log.debug("Procedemos a preparar el objeto a sincronizar para la serie con id=[" + s + "]");
         log.debug("Obtenemos los datos de la serie...");
 
         Seriedocumental serie = null;
@@ -862,10 +868,8 @@ public class SerieFrontService {
         // Validamos requisitos de negocio para poder enviar la serie a Alfresco
         this.serieValidator.validarSincronizarSerie(serie);
 
-
-        //Creamos el dto
-        Serie serieWs = new Serie();
-
+        //Rellenamos el dto
+        serieWs.setNodeId(serie.getNodeId());
         serieWs.setCodigo(serie.getCodi());
         serieWs.setDenominacionClase(serie.getNomcas());
         serieWs.setCodigoLimitacion(this.calculoUtils.extraerCodigoLimitacion(serie));
@@ -893,17 +897,53 @@ public class SerieFrontService {
         // Se crea xml que  contiene todos los metadatos descriptivos de la serie documental
         // Se guarda transformado en base64
         try {
-            serieWs.setContent(toXmlUtil.createXMLDocument(serie, dictamen));
-            // Seteamos los metadatos del contenido, que serán siempre los mismos
-            serieWs.setMimeType(toXmlUtil.MIME_TYPE);
-            serieWs.setEncoding(toXmlUtil.ENCODING);
+            serieWs.setBinaryContent(toXmlUtil.createXMLDocument(serie, dictamen));
+
         } catch (ParserConfigurationException | TransformerException e) {
             log.error("Se ha producido un error generando el documento con los datos de la serie: " + e);
             throw new I18NException("excepcion.general.Exception", this.getClass().getSimpleName(), "synchronize");
         } catch (I18NException e) {
             throw e;
         }
+        // Una vez creado el objeto a sincronizar, devolvemos el codigo de la funcion padre
+        return serie.getAchFuncio().getId();
+    }
 
+
+    /**
+     * roceso de sincronizacion de la serie en GDIB
+     *
+     * @param serieWs
+     * @param serieId
+     * @return
+     * @throws I18NException
+     */
+    @Transactional
+    public SerieDocumentalObject synchronize(Serie serieWs, Long serieId) throws I18NException {
+        log.debug("Procedemos a sincronizar la serie con id=[" + serieId + "]");
+        log.debug("Obtenemos los datos de la serie...");
+
+        Seriedocumental serie = null;
+        try {
+            //Obtenemos toda la informacion de la serie y dictamen activo relacionado para sincronizar en alfresco
+            serie = serieEJB.getReference(serieId);
+        } catch (Exception e) {
+            log.error("Error obteniendo la entidad de la serie: " + e);
+            throw new I18NException("excepcion.general.Exception", this.getClass().getSimpleName(), "get entity");
+        }
+
+        try {
+            // Se crea xml que  contiene todos los metadatos descriptivos de la serie documental
+            // Se guarda transformado en base64
+            serieWs.setContent(toXmlUtil.toBase64Content(serieWs.getBinaryContent()));
+            // Seteamos los metadatos del contenido, que serán siempre los mismos
+            serieWs.setMimeType(toXmlUtil.MIME_TYPE);
+            serieWs.setEncoding(toXmlUtil.ENCODING);
+            serieWs.setBinaryContent(null);
+        } catch (IOException e) {
+            log.error("Se ha producido un error generando el documento con los datos de la serie: " + e);
+            throw new I18NException("excepcion.general.Exception", this.getClass().getSimpleName(), "synchronize");
+        }
 
         log.debug("Dto creado, llamamos al servicio de sincronizacion");
         String nodeId = null;
@@ -925,7 +965,9 @@ public class SerieFrontService {
         // Una vez creada la serie en el arbol de alfresco, guardamos la referencia con el nodo creado
         if (StringUtils.isNotEmpty(nodeId)) {
             try {
-                serie.setNodeId(nodeId);
+                if (StringUtils.trimToNull(serie.getNodeId()) == null) {
+                    serie.setNodeId(nodeId);
+                }
                 serie.setSynchronized(true);
                 serieEJB.update(serie);
                 return new SerieDocumentalObject(serie);
@@ -961,7 +1003,7 @@ public class SerieFrontService {
                 // Marcamos el dictamen como el dictamen activo de la serie
                 dictamen.setDictamenActivo(true);
 
-                if(seriedb.isSynchronized()){
+                if (seriedb.isSynchronized()) {
                     seriedb.setSynchronized(false);
                     seriedb = serieEJB.update(seriedb);
                     dictamen.setSerieDocumental(new SerieDocumentalObject(seriedb));
@@ -986,7 +1028,8 @@ public class SerieFrontService {
 
     /**
      * Mueve una serie cambiándola de padre, lo que hara que su arbol completo de hijos se mueva con ella (dictamenes)
-     *  @param elementId
+     *
+     * @param elementId
      * @param rootId
      * @param parentFunctionId
      * @return
@@ -998,44 +1041,43 @@ public class SerieFrontService {
         Funcio parentFunction = null;
 
         // Buscamos el padre nuevo del nodo
-        if(parentFunctionId == null){
+        if (parentFunctionId == null) {
             log.error("No se ha elegido padre para la serie");
             throw new I18NException("csgd.permiso.denegado", this.getClass().getSimpleName(), "moveSerie");
-        }else{
+        } else {
             // Si el padre sigue siendo el mismo no hacemos nada
-            if(seriedb.getAchFuncio().getId().equals(parentFunctionId)){
+            if (seriedb.getAchFuncio().getId().equals(parentFunctionId)) {
                 return new SerieDocumentalObject(seriedb);
             }
 
             parentFunction = this.funcioService.getReference(parentFunctionId);
-            log.debug("Obtenida funcion padre ["+parentFunction.getCodi()+"] de la serie");
+            log.debug("Obtenida funcion padre [" + parentFunction.getCodi() + "] de la serie");
         }
 
         seriedb.setAchFuncio(parentFunction);
-        // Ponemos como no sincronizada la serie
-        seriedb.setSynchronized(false);
 
-//        if(this.serieValidator.isSynchronized(seriedb)) {
-//            log.debug("Se procede a sincronizar con Alfresco el movimiento de la funcion");
-//            // Preparamos el dto para enviar a GDIB
-//            MoverSerie moveSerie = new MoverSerie();
-//            moveSerie.setParentId(seriedb.getAchFuncio().getNodeId());
-//            moveSerie.setNodoId(seriedb.getNodeId());
-//
-//            // Enviamos la información a Gdib
-//            try {
-//                this.csgdSerieService.moveNode(moveSerie);
-//            } catch (CSGDException e) {
-//                throw new I18NException(getExceptionI18n(e.getClientErrorCode()), this.getClass().getSimpleName(), "moveSerie");
-//            } catch (EJBAccessException e) {
-//                log.error("No se cuenta con los permisos adecuados para realiziar la llamada al csgd");
-//                throw new I18NException("csgd.permiso.denegado", this.getClass().getSimpleName(), "moveSerie");
-//            } catch (Exception e) {
-//                log.error("Error moviendo la serie: " + e);
-//                throw new I18NException("excepcion.general.Exception", this.getClass().getSimpleName(), "moveSerie");
-//            }
-//            log.debug("Completado proceso de mover en el CSGD, se procede a guardar en base de datos");
-//        }
+        // Si la serie ya tiene asignado un nodeId en alfresco, la actualizamos
+        if (StringUtils.trimToNull(seriedb.getNodeId()) != null) {
+            log.debug("Se procede a sincronizar con Alfresco el movimiento de la funcion");
+            // Preparamos el dto para enviar a GDIB
+            MoverSerie moveSerie = new MoverSerie();
+            moveSerie.setParentId(seriedb.getAchFuncio().getNodeId());
+            moveSerie.setNodoId(seriedb.getNodeId());
+
+            // Enviamos la información a Gdib
+            try {
+                this.csgdSerieService.moveNode(moveSerie);
+            } catch (CSGDException e) {
+                throw new I18NException(getExceptionI18n(e.getClientErrorCode()), this.getClass().getSimpleName(), "moveSerie");
+            } catch (EJBAccessException e) {
+                log.error("No se cuenta con los permisos adecuados para realiziar la llamada al csgd");
+                throw new I18NException("csgd.permiso.denegado", this.getClass().getSimpleName(), "moveSerie");
+            } catch (Exception e) {
+                log.error("Error moviendo la serie: " + e);
+                throw new I18NException("excepcion.general.Exception", this.getClass().getSimpleName(), "moveSerie");
+            }
+            log.debug("Completado proceso de mover en el CSGD, se procede a guardar en base de datos");
+        }
 
         // Modificamos la serie
         try {
@@ -1051,4 +1093,6 @@ public class SerieFrontService {
 
         return new SerieDocumentalObject(seriedb);
     }
+
+
 }

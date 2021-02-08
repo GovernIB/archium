@@ -13,6 +13,14 @@ import es.caib.archium.csgd.apirest.facade.pojos.cabecera.CabeceraAplicacion;
 import es.caib.archium.csgd.apirest.facade.pojos.cabecera.CabeceraLogin;
 import es.caib.archium.csgd.apirest.facade.pojos.cabecera.CabeceraPeticion;
 import es.caib.archium.csgd.apirest.facade.pojos.cabecera.CabeceraTramite;
+import es.caib.archium.csgd.apirest.facade.pojos.comun.NodoAlfresco;
+import es.caib.archium.csgd.apirest.facade.pojos.eliminar.EliminarCuadro;
+import es.caib.archium.csgd.apirest.facade.pojos.eliminar.EliminarFuncion;
+import es.caib.archium.csgd.apirest.facade.pojos.eliminar.EliminarNodo;
+import es.caib.archium.csgd.apirest.facade.pojos.eliminar.EliminarSerie;
+import es.caib.archium.csgd.apirest.facade.pojos.mover.MoverFuncion;
+import es.caib.archium.csgd.apirest.facade.pojos.mover.MoverNodo;
+import es.caib.archium.csgd.apirest.facade.pojos.mover.MoverSerie;
 import es.caib.archium.csgd.apirest.facade.resultados.Resultado;
 import es.caib.archium.csgd.apirest.facade.resultados.ResultadoSimple;
 import es.caib.archium.csgd.apirest.jerseyclient.JerseyClientGet;
@@ -24,7 +32,11 @@ import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.ProcessingException;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class ApiCSGDServices {
 
@@ -78,13 +90,12 @@ public class ApiCSGDServices {
     /**
      * Llamada post generica para relizara desde todos los metodos que esperan un ResultadoSimple
      *
-     * @param result
+     * @param rs
      * @param servicio
      * @param peticion
      * @param entityResult
      * @param <T>
      * @return
-     * @throws IOException
      */
     private <T> ResultadoJersey postCall(ResultadoSimple rs, String servicio, Object peticion, Class<T> entityResult) {
         try {
@@ -120,7 +131,7 @@ public class ApiCSGDServices {
         ResultadoJersey output;
 
         // Realizamos la llamada
-        output = postCall(resultado, Servicios.MODIFY_SERIE, peticion, SetSerieResult.class);
+        output = postCall(resultado, Servicios.SET_SERIE, peticion, SetSerieResult.class);
         // Si el output es null es que se produjo una excepcion
         if (output == null) {
             return resultado;
@@ -140,6 +151,41 @@ public class ApiCSGDServices {
         return resultado;
     }
 
+    public Resultado<Serie> getSerie(String nodeId) {
+        Resultado<Serie> result = new Resultado<>();
+
+        Request<ParamNodeId> request = new Request<ParamNodeId>();
+        ParamNodeId param;
+        GetSerie peticion = new GetSerie();
+
+        param = generarParametrosNodeId(nodeId);
+
+        request.setServiceHeader(getServiceHeader());
+        request.setParam(param);
+
+        peticion.setGetSerieRequest(request);
+
+        ResultadoJersey output;
+
+        // Realizamos la llamada
+        output = postCall(result, Servicios.GET_SERIE, peticion, GetSerieResult.class);
+        // Si el output es null es que se produjo una excepcion
+        if (output == null) {
+            return result;
+        }
+
+        if (output.getEstadoRespuestaHttp() == Constantes.CodigosRespuesta.HTTP_RESPUESTA_OK.getValue()) {
+            GetSerieResult resultado = (GetSerieResult) output.getContenido();
+            result.setElementoDevuelto(toSerie(resultado.getGetSerieResult().getResParam()));
+            result.setCodigoResultado(resultado.getGetSerieResult().getResult().getCode());
+            result.setMsjResultado(resultado.getGetSerieResult().getResult().getDescription());
+        } else {
+            ExceptionResult except = (ExceptionResult) output.getContenido();
+            result.setCodigoResultado(except.getException().getCode());
+            result.setMsjResultado(except.getException().getDescription());
+        }
+        return result;
+    }
 
     public Resultado<String> crearSerie(Serie serie, String funcionPadre) {
         log.debug("Se prepara la llamada en el cliente para crearSerie");
@@ -180,6 +226,44 @@ public class ApiCSGDServices {
         return result;
     }
 
+    public ResultadoSimple moverSerie(String serieId, String newParent){
+
+        MoveSerieResult result = null;
+        ResultadoSimple resultado = new ResultadoSimple();
+
+        Request<ParamMoveNode> request = new Request<>();
+        ParamMoveNode param;
+        MoveSerie peticion = new MoveSerie();
+
+        param = generarParametrosMoveNode(serieId,newParent);
+
+        request.setServiceHeader(getServiceHeader());
+        request.setParam(param);
+
+        peticion.setMoveSerieRequest(request);
+
+
+        ResultadoJersey output;
+        // Realizamos la llamada
+        output = postCall(resultado, Servicios.MOVE_SERIE, peticion, MoveSerieResult.class);
+        // Si el output es null es que se produjo una excepcion
+        if (output == null) {
+            return resultado;
+        }
+
+        if (output.getEstadoRespuestaHttp() == Constantes.CodigosRespuesta.HTTP_RESPUESTA_OK.getValue()) {
+            result = (MoveSerieResult) output.getContenido();
+            resultado.setCodigoResultado(result.getMoveSerieResult().getResult().getCode());
+            resultado.setMsjResultado(result.getMoveSerieResult().getResult().getDescription());
+        } else {
+            ExceptionResult except = (ExceptionResult) output.getContenido();
+            resultado.setCodigoResultado(except.getException().getCode());
+            resultado.setMsjResultado(except.getException().getDescription());
+        }
+
+        return resultado;
+
+    }
 
     public ResultadoSimple borrarSerie(String nodeId) {
 
@@ -238,7 +322,7 @@ public class ApiCSGDServices {
         ResultadoJersey output;
 
         // Realizamos la llamada
-        output = postCall(resultado, Servicios.MODIFY_FUNCTION, peticion, SetFunctionResult.class);
+        output = postCall(resultado, Servicios.SET_FUNCTION, peticion, SetFunctionResult.class);
         // Si el output es null es que se produjo una excepcion
         if (output == null) {
             return resultado;
@@ -258,6 +342,41 @@ public class ApiCSGDServices {
         return resultado;
     }
 
+    public Resultado<Funcion> getFuncion(String nodeId) {
+        Resultado<Funcion> result = new Resultado<>();
+
+        Request<ParamNodeId> request = new Request<ParamNodeId>();
+        ParamNodeId param;
+        GetFunction peticion = new GetFunction();
+
+        param = generarParametrosNodeId(nodeId);
+
+        request.setServiceHeader(getServiceHeader());
+        request.setParam(param);
+
+        peticion.setGetFunctionRequest(request);
+
+        ResultadoJersey output;
+
+        // Realizamos la llamada
+        output = postCall(result, Servicios.GET_FUNCTION, peticion, GetFunctionResult.class);
+        // Si el output es null es que se produjo una excepcion
+        if (output == null) {
+            return result;
+        }
+
+        if (output.getEstadoRespuestaHttp() == Constantes.CodigosRespuesta.HTTP_RESPUESTA_OK.getValue()) {
+            GetFunctionResult resultado = (GetFunctionResult) output.getContenido();
+            result.setElementoDevuelto(toFuncion(resultado.getGetFunctionResult().getResParam()));
+            result.setCodigoResultado(resultado.getGetFunctionResult().getResult().getCode());
+            result.setMsjResultado(resultado.getGetFunctionResult().getResult().getDescription());
+        } else {
+            ExceptionResult except = (ExceptionResult) output.getContenido();
+            result.setCodigoResultado(except.getException().getCode());
+            result.setMsjResultado(except.getException().getDescription());
+        }
+        return result;
+    }
 
     public Resultado<String> crearFuncion(Funcion funcion, String parentId) {
 
@@ -296,6 +415,45 @@ public class ApiCSGDServices {
             result.setMsjResultado(except.getException().getDescription());
         }
         return result;
+    }
+
+    public ResultadoSimple moverFuncion(String functionId, String newParent){
+
+        MoveFunctionResult result = null;
+        ResultadoSimple resultado = new ResultadoSimple();
+
+        Request<ParamMoveNode> request = new Request<>();
+        ParamMoveNode param;
+        MoveFunction peticion = new MoveFunction();
+
+        param = generarParametrosMoveNode(functionId,newParent);
+
+        request.setServiceHeader(getServiceHeader());
+        request.setParam(param);
+
+        peticion.setMoveFunctionRequest(request);
+
+
+        ResultadoJersey output;
+        // Realizamos la llamada
+        output = postCall(resultado, Servicios.MOVE_FUNCTION, peticion, MoveFunctionResult.class);
+        // Si el output es null es que se produjo una excepcion
+        if (output == null) {
+            return resultado;
+        }
+
+        if (output.getEstadoRespuestaHttp() == Constantes.CodigosRespuesta.HTTP_RESPUESTA_OK.getValue()) {
+            result = (MoveFunctionResult) output.getContenido();
+            resultado.setCodigoResultado(result.getMoveFunctionResult().getResult().getCode());
+            resultado.setMsjResultado(result.getMoveFunctionResult().getResult().getDescription());
+        } else {
+            ExceptionResult except = (ExceptionResult) output.getContenido();
+            resultado.setCodigoResultado(except.getException().getCode());
+            resultado.setMsjResultado(except.getException().getDescription());
+        }
+
+        return resultado;
+
     }
 
 
@@ -337,24 +495,24 @@ public class ApiCSGDServices {
     }
 
     public ResultadoSimple modificarCuadro(CuadroClasificacion cuadro){
-        SetRootResult result = null;
+        SetClassificationRootResult result = null;
         ResultadoSimple resultado = new ResultadoSimple();
 
         RootNode rootNode = convertirAClassificationRootNode(cuadro);
 
         Request<ParamSetRoot> request = new Request<ParamSetRoot>();
-        SetRoot peticion = new SetRoot();
+        SetClassificationRoot peticion = new SetClassificationRoot();
         ParamSetRoot param = new ParamSetRoot();
-        param.setRoot(rootNode);
+        param.setClassificationRoot(rootNode);
 
         request.setServiceHeader(getServiceHeader());
         request.setParam(param);
-        peticion.setSetRootRequest(request);
+        peticion.setSetClassificationRootRequest(request);
 
         ResultadoJersey output;
 
         // Realizamos la llamada
-        output = postCall(resultado, Servicios.SET_CLASSIFICATION_ROOT, peticion, SetFunctionResult.class);
+        output = postCall(resultado, Servicios.SET_CLASSIFICATION_ROOT, peticion, SetClassificationRootResult.class);
         // Si el output es null es que se produjo una excepcion
         if (output == null) {
             return resultado;
@@ -362,9 +520,9 @@ public class ApiCSGDServices {
 
 
         if (output.getEstadoRespuestaHttp() == Constantes.CodigosRespuesta.HTTP_RESPUESTA_OK.getValue()) {
-            result = (SetRootResult) output.getContenido();
-            resultado.setCodigoResultado(result.getSetRootResult().getResult().getCode());
-            resultado.setMsjResultado(result.getSetRootResult().getResult().getDescription());
+            result = (SetClassificationRootResult) output.getContenido();
+            resultado.setCodigoResultado(result.getSetClassificationRootResult().getResult().getCode());
+            resultado.setMsjResultado(result.getSetClassificationRootResult().getResult().getDescription());
         } else {
             ExceptionResult except = (ExceptionResult) output.getContenido();
             resultado.setCodigoResultado(except.getException().getCode());
@@ -374,6 +532,41 @@ public class ApiCSGDServices {
         return resultado;
     }
 
+    public Resultado<CuadroClasificacion> getCuadro(String nodeId) {
+        Resultado<CuadroClasificacion> result = new Resultado<>();
+
+        Request<ParamNodeId> request = new Request<ParamNodeId>();
+        ParamNodeId param;
+        GetClassificationRoot peticion = new GetClassificationRoot();
+
+        param = generarParametrosNodeId(nodeId);
+
+        request.setServiceHeader(getServiceHeader());
+        request.setParam(param);
+
+        peticion.setGetClassificationRootRequest(request);
+
+        ResultadoJersey output;
+
+        // Realizamos la llamada
+        output = postCall(result, Servicios.GET_CLASSIFICATION_ROOT, peticion, GetClassificationRootResult.class);
+        // Si el output es null es que se produjo una excepcion
+        if (output == null) {
+            return result;
+        }
+
+        if (output.getEstadoRespuestaHttp() == Constantes.CodigosRespuesta.HTTP_RESPUESTA_OK.getValue()) {
+            GetClassificationRootResult resultado = (GetClassificationRootResult) output.getContenido();
+            result.setElementoDevuelto(toCuadroClasificacion(resultado.getGetClassificationRootResult().getResParam()));
+            result.setCodigoResultado(resultado.getGetClassificationRootResult().getResult().getCode());
+            result.setMsjResultado(resultado.getGetClassificationRootResult().getResult().getDescription());
+        } else {
+            ExceptionResult except = (ExceptionResult) output.getContenido();
+            result.setCodigoResultado(except.getException().getCode());
+            result.setMsjResultado(except.getException().getDescription());
+        }
+        return result;
+    }
 
     public Resultado<String> crearCuadro(CuadroClasificacion cuadro) {
 
@@ -411,36 +604,35 @@ public class ApiCSGDServices {
         return result;
     }
 
-
     public ResultadoSimple borrarCuadro(String nodeId) {
 
-        RemoveCuadroResult result = null;
+        RemoveClassificationRootResult result = null;
         ResultadoSimple resultado = new ResultadoSimple();
 
         Request<ParamNodeId> request = new Request<ParamNodeId>();
         ParamNodeId param;
-        RemoveCuadro peticion = new RemoveCuadro();
+        RemoveClassificationRoot peticion = new RemoveClassificationRoot();
 
         param = generarParametrosNodeId(nodeId);
 
         request.setServiceHeader(getServiceHeader());
         request.setParam(param);
 
-        peticion.setRemoveRootRequest(request);
+        peticion.setRemoveClassificationRootRequest(request);
 
         ResultadoJersey output;
 
         // Realizamos la llamada
-        output = postCall(resultado, Servicios.REMOVE_CLASSIFICATION_ROOT, peticion, RemoveCuadroResult.class);
+        output = postCall(resultado, Servicios.REMOVE_CLASSIFICATION_ROOT, peticion, RemoveClassificationRootResult.class);
         // Si el output es null es que se produjo una excepcion
         if (output == null) {
             return resultado;
         }
 
         if (output.getEstadoRespuestaHttp() == Constantes.CodigosRespuesta.HTTP_RESPUESTA_OK.getValue()) {
-            result = (RemoveCuadroResult) output.getContenido();
-            resultado.setCodigoResultado(result.getRemoveRootResult().getResult().getCode());
-            resultado.setMsjResultado(result.getRemoveRootResult().getResult().getDescription());
+            result = (RemoveClassificationRootResult) output.getContenido();
+            resultado.setCodigoResultado(result.getRemoveClassificationRootResult().getResult().getCode());
+            resultado.setMsjResultado(result.getRemoveClassificationRootResult().getResult().getDescription());
         } else {
             ExceptionResult except = (ExceptionResult) output.getContenido();
             resultado.setCodigoResultado(except.getException().getCode());
@@ -594,17 +786,67 @@ public class ApiCSGDServices {
     /**
      * Llama al metodo preciso en funcion del tipo del dto
      *
-     * @param wsDto
+     * @param wsId
      * @param <T>
      * @return
      */
-    public <ID extends Id> ResultadoSimple borrarNodo(ID wsId) {
-        if (wsId instanceof RootId) {
-            return borrarCuadro(wsId.getId());
-        } else if (wsId instanceof FunctionId) {
-            return borrarFuncion(wsId.getId());
-        } else if (wsId instanceof SerieId) {
-            return borrarSerie(wsId.getId());
+    public <ID extends EliminarNodo> ResultadoSimple borrarNodo(ID wsId) {
+        if (wsId instanceof EliminarCuadro) {
+            return borrarCuadro(wsId.getNodoId());
+        } else if (wsId instanceof EliminarFuncion) {
+            return borrarFuncion(wsId.getNodoId());
+        } else if (wsId instanceof EliminarSerie) {
+            return borrarSerie(wsId.getNodoId());
+        }
+        return null;
+    }
+
+    /**
+     * Llama al metodo preciso en fucnion del tipo del dto
+     *
+     * @param wsDto
+     * @param <M>
+     * @return
+     */
+    public <M extends MoverNodo> ResultadoSimple moverNodo(M wsDto) {
+        if (wsDto instanceof MoverFuncion) {
+            return moverFuncion(wsDto.getNodoId(),wsDto.getParentId());
+        } else if (wsDto instanceof MoverSerie) {
+            return moverSerie(wsDto.getNodoId(),wsDto.getParentId());
+        }
+        return null;
+    }
+
+    /**
+     * Crea el dto para mover funcion
+     *
+     * @param functionId
+     * @param newParent
+     * @return
+     */
+    private ParamMoveNode generarParametrosMoveNode(String functionId, String newParent) {
+        ParamMoveNode param = new ParamMoveNode();
+        param.setTargetParent(newParent);
+        param.setNodeId(functionId);
+        return param;
+    }
+
+    /**
+     * Llama al metodo preciso en funcion del tipo de dto, utiliza el dto de eliminar porque esta accion se creo para
+     * complementar la logica de este otro debido a las limitacioneos del bus
+     *
+     * @param wsId
+     * @param <T>
+     * @param <ID>
+     * @return
+     */
+    public <T extends Nodo, ID extends EliminarNodo> Resultado<T> getNode(ID wsId) {
+        if (wsId instanceof EliminarCuadro) {
+            return (Resultado<T>) getCuadro(wsId.getNodoId());
+        } else if (wsId instanceof EliminarFuncion) {
+            return (Resultado<T>) getFuncion(wsId.getNodoId());
+        } else if (wsId instanceof EliminarSerie) {
+            return (Resultado<T>) getSerie(wsId.getNodoId());
         }
         return null;
     }
@@ -648,7 +890,7 @@ public class ApiCSGDServices {
         dto.getMetadataCollection().add(new Metadata(Constantes.CONFIDENCIALIDAD_QNAME, serie.getConfidencialidad().getValue()));
         dto.getMetadataCollection().add(new Metadata(Constantes.TIPO_ACCESO_QNAME, serie.getTipoAcceso().getValue()));
         dto.getMetadataCollection().add(new Metadata(Constantes.VALOR_SECUNDARIO_QNAME, serie.getValorSecundario().getValue()));
-        dto.getMetadataCollection().add(new Metadata(Constantes.TIPO_VALOR_QNAME, toStringList(serie.getTipoValor())));
+        dto.getMetadataCollection().add(new Metadata(Constantes.TIPO_VALOR_QNAME, serie.getTipoValor().stream().map(x -> x.getValue()).collect(Collectors.joining(", "))));
         dto.getMetadataCollection().add(new Metadata(Constantes.TIPO_DICTAMEN_QNAME, serie.getTipoDictamen()));
         dto.getMetadataCollection().add(new Metadata(Constantes.DOCUMENTO_ESENCIAL_QNAME, serie.getEsencial().booleanValue()));
         dto.getMetadataCollection().add(new Metadata(Constantes.PLAZO_RESELLADO_QNAME, serie.getResellado()));
@@ -681,27 +923,9 @@ public class ApiCSGDServices {
     }
 
     /**
-     * Convierte la lista de enumerados en una de String
-     *
-     * @param tipoValor
-     * @return
-     */
-    private List<String> toStringList(List<TipoValor> tipoValor) {
-        if (tipoValor != null && !tipoValor.isEmpty()) {
-            List<String> valores = new ArrayList<>();
-            for (TipoValor t : tipoValor) {
-                valores.add(t.getValue());
-            }
-            return valores;
-        } else {
-            return null;
-        }
-    }
-
-    /**
      * Crea el dto de Node para el envio a GDIB
      *
-     * @param cuadro
+     * @param funcion
      * @return
      */
     private FunctionNode convertirAFunctionNode(Funcion funcion) {
@@ -730,6 +954,89 @@ public class ApiCSGDServices {
             // De momento funcion solo tiene un aspecto, si tuviese mas habria que discriminar en este set
             dto.setAspects(Aspects.getAspectosFuncion());
         }
+    }
+
+    /**
+     * Crea el deto de serie a partir del nodo devuelto
+     *
+     * @param serie
+     * @return
+     */
+    private Serie toSerie(SerieNode serie) {
+        Serie dto = new Serie();
+        dto.setCodigo(serie.getName());
+        dto.setNodeId(serie.getId());
+        // FIXME : En un principio no hace falta los demas atributos asi que no se setean, si algun dia hacen falta,
+        //  se añadiran aqui
+        return dto;
+    }
+
+    /**
+     * Crea el dto de funcion a partir del nodo devuelto
+     *
+     * @param funcion
+     * @return
+     */
+    private Funcion toFuncion(FunctionNode funcion) {
+        Funcion dto = new Funcion();
+        dto.setCodigo(funcion.getName());
+        dto.setNodeId(funcion.getId());
+        Metadata funcionPadre = getMetadata(funcion.getMetadataCollection(),Constantes.FUNCION_PADRE_QNAME);
+        dto.setFuncionPadre(funcionPadre == null? null : (Boolean) funcionPadre.getValue());
+        Boolean isObsolete = getEstado(funcion.getAspects());
+        if(isObsolete){
+            dto.setEstado(Estado.OBSOLET);
+        }
+        return dto;
+    }
+
+
+    /**
+     * Crea el dto de cuadro a partir del nodo devuelto
+     *
+     * @param cuadro
+     * @return
+     */
+    private CuadroClasificacion toCuadroClasificacion(RootNode cuadro) {
+        CuadroClasificacion dto = new CuadroClasificacion();
+        dto.setCodigo(cuadro.getName());
+        dto.setNodeId(cuadro.getId());
+        Boolean isObsolete = getEstado(cuadro.getAspects());
+        if(isObsolete){
+            dto.setEstado(Estado.OBSOLET);
+        }
+        return dto;
+    }
+
+    /**
+     * Devuelve true si entre la lista de aspectos esta el de obsoleto
+     *
+     * @param aspects
+     * @return
+     */
+    private Boolean getEstado(List<Aspects> aspects) {
+        for(Aspects entry : aspects){
+            if(entry.equals(Aspects.OBSOLETO.getValue())){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * En la lista de metadatos del nodo, encuentra la propiedad indicada
+     *
+     * @param metadataCollection
+     * @param qname
+     * @return
+     */
+    private Metadata getMetadata(Set<Metadata> metadataCollection, String qname) {
+        for(Metadata entry : metadataCollection){
+            if(entry.getQname().equalsIgnoreCase(qname)){
+                return entry;
+            }
+        }
+        return null;
     }
 
     /**
@@ -766,6 +1073,4 @@ public class ApiCSGDServices {
 
         return param;
     }
-
-
 }

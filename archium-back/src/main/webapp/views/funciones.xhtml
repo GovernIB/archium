@@ -15,6 +15,7 @@
     	<ui:include src="/views/modal/dictamen/nuevoDictamen.xhtml" />
     	<ui:include src="/views/modal/dictamen/confirmDictamenVigent.xhtml" />
     	<ui:include src="/views/modal/dictamen/confirmDictamenVigentReq.xhtml" />
+    	<ui:include src="/views/modal/serie/confirmSerieASincronizar.xhtml" />
     	<ui:include src="/views/modal/moverElemento.xhtml" />
 
        	<div class="separador_rojo"></div>
@@ -72,7 +73,7 @@
 
 
 				<p:column headerText="#{messages['funciones.codi']}" style="width:200px;" filterBy="#{document.codi}" sortBy="#{document.codi}" filterMatchMode="contains">
-					<p:commandButton rendered="#{document.type eq 'Dictamen' and document.dictamenActivo eq true}" class="botton_library" icon="pi pi-share-alt" />
+					<p:commandButton rendered="#{document.type eq 'Dictamen' and document.dictamenActivo eq true}" class="botton_library dictamen-active" icon="pi pi-share-alt" />
 					<h:outputText value="#{document.codi}" />
 				</p:column>
 		        <p:column headerText="#{messages['funciones.nom']}" filterBy="#{document.nom}" sortBy="#{document.nom}" filterMatchMode="contains">
@@ -112,8 +113,10 @@
 					<p:commandButton class="botton_library" rendered="#{funciones.checkPermissionsToCallCSGD() eq true and document.type=='Serie'}" icon="pi pi-arrow-right" title="mover" update="moverElementoDialogId" action="#{moverElementoController.prepararMoverSerie(document)}" resetValues="true" oncomplete="PF('moverElementoModalDialog').show()" />
 					<!--	icono de sincronizacion-->
 					<!--	Si tienes permisos de sincronizar y no esta sincronizado-->
-					<p:commandButton class="botton_library" rendered="#{document.type=='Funcio' and funciones.checkPermissionsToCallCSGD() eq true and document.synchronized eq false}" icon="circle-state red" title="#{messages['funciones.sincronizar']}" update="panel1" action="#{funciones.synchronize(document)}" />
-					<p:commandButton class="botton_library" rendered="#{document.type=='Serie' and funciones.checkPermissionsToCallCSGD() eq true and document.synchronized eq false}" icon="circle-state red" title="#{messages['nuevaserie.sincronizar']}" update="panel1" action="#{nuevaSerieController.synchronize(document)}" />
+					<p:commandButton class="botton_library" rendered="#{document.type=='Funcio' and funciones.checkPermissionsToCallCSGD() eq true and document.synchronized eq false}" icon="circle-state red" title="#{messages['funciones.sincronizar']}" update="panel1" action="#{funciones.synchronize(document)}" >
+						<p:confirm header="#{messages['confirmacion']}" message="#{messages['funcio.sync.alert']}" icon="pi pi-exclamation-triangle" />
+					</p:commandButton>
+					<p:commandButton class="botton_library" rendered="#{document.type=='Serie' and funciones.checkPermissionsToCallCSGD() eq true and document.synchronized eq false}" icon="circle-state red" title="#{messages['nuevaserie.sincronizar']}" update="syncSerieConfirmDialogId" action="#{synchronizeSerieController.prepareSync(document)}" oncomplete="if (args &amp;&amp; !args.validationFailed) PF('syncSerieConfirmDialog').show();" />
                     <!--                    si ya esta sincronizado-->
 					<p:commandButton rendered="#{document.type ne 'Dictamen' and document.synchronized eq true}" title="#{messages['funciones.sincronizado']}" class="botton_library" icon="circle-state green" />
 					<!-- si no esta sincronizado y no tienes permisos-->

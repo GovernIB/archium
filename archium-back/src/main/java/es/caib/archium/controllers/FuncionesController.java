@@ -196,44 +196,58 @@ public class FuncionesController implements Serializable {
      */
     public void move(QuadreObject cuadro, FuncioObject funcion, Document<FuncioObject> elemento) throws I18NException {
         log.info("Se inicia proceso de mover la funcion [Id,Codigo] ["+elemento.getId()+","+elemento.getCodi()+"]");
-        TreeNode oldParent = null;
-        // Si la funcion padre es null quiere decir que era el cuadro su padre
-        if(elemento.getParentFunction()!=null){
-            oldParent = this.getNodeFromFunctionId(elemento.getParentFunction(), "Funcio", "insert", null);
-        }else{
-            oldParent = this.getNodeFromFunctionId(elemento.getParentRoot(), "Quadre", "insert", null);
-        }
-
-        FuncioObject result = this.servicesFunciones.moveFunction(elemento.getId(),cuadro.getId(),funcion == null ? null : funcion.getId());
-
-        log.debug("Se completa el proceso de mover funcion");
-        log.debug("Actualizamos el arbol");
-
-
-        this.listaFunciones = this.servicesFunciones.loadTree(quadreId, null);
-
-
-        log.debug("Se mueve dentro del mismo cuadro, así que lo insertamos bajo el padre nuevo");
-
-        if (oldParent != null) {
-            TreeNode node = this.getNodeFromFunctionId(elemento.getId(), "Funcio", "update", result);
-            int index = oldParent.getChildren().indexOf(node);
-            oldParent.getChildren().remove(node);
-            // Si el lugar al que se ha movido pertenece al mismo cuadro, buscamos donde insertarlo
-            if (cuadro.getId().equals(elemento.getParentRoot())) {
-                TreeNode parentNode;
-                if (result.getFuncioPare() != null) {
-                    parentNode = getNodeFromFunctionId(result.getFuncioPare().getId(), "Funcio", "insert", null);
-                } else {
-                    parentNode = root;
-                }
-                node.setParent(parentNode);
-                parentNode.getChildren().add(index, node);
+        try{
+            TreeNode oldParent = null;
+            // Si la funcion padre es null quiere decir que era el cuadro su padre
+            if(elemento.getParentFunction()!=null){
+                oldParent = this.getNodeFromFunctionId(elemento.getParentFunction(), "Funcio", "insert", null);
+            }else{
+                oldParent = this.getNodeFromFunctionId(elemento.getParentRoot(), "Quadre", "insert", null);
             }
+
+            FuncioObject result = this.servicesFunciones.moveFunction(elemento.getId(),cuadro.getId(),funcion == null ? null : funcion.getId());
+
+            log.debug("Se completa el proceso de mover funcion");
+            log.debug("Actualizamos el arbol");
+
+
+            this.listaFunciones = this.servicesFunciones.loadTree(quadreId, null);
+
+
+            log.debug("Se mueve dentro del mismo cuadro, así que lo insertamos bajo el padre nuevo");
+
+            if (oldParent != null) {
+                TreeNode node = this.getNodeFromFunctionId(elemento.getId(), "Funcio", "update", result);
+                int index = oldParent.getChildren().indexOf(node);
+                oldParent.getChildren().remove(node);
+                // Si el lugar al que se ha movido pertenece al mismo cuadro, buscamos donde insertarlo
+                if (cuadro.getId().equals(elemento.getParentRoot())) {
+                    TreeNode parentNode;
+                    if (result.getFuncioPare() != null) {
+                        parentNode = getNodeFromFunctionId(result.getFuncioPare().getId(), "Funcio", "insert", null);
+                    } else {
+                        parentNode = root;
+                    }
+                    node.setParent(parentNode);
+                    parentNode.getChildren().add(index, node);
+                }
+            }
+
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(messageBundle.getString("funciones.sinc.ok")));
+            log.info("Proceso de mover finalizado");
+        } catch (I18NException e) {
+            log.error(FrontExceptionTranslate.translate(e, this.getLocale()));
+            FacesMessage message = new FacesMessage();
+            message.setSeverity(FacesMessage.SEVERITY_ERROR);
+            if("excepcion.general.Exception".equals(e.getMessage())){
+                message.setSummary(messageBundle.getString("funciones.sincro.error"));
+                message.setDetail(messageBundle.getString("funciones.sincro.error"));
+            }else {
+                message.setSummary(messageBundle.getString(e.getMessage()));
+                message.setDetail(messageBundle.getString(e.getMessage()));
+            }
+            FacesContext.getCurrentInstance().addMessage(null, message);
         }
-        // TODO : Cambiar mensaje
-        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(messageBundle.getString("funciones.sinc.ok")));
-        log.info("Proceso de mover finalizado");
     }
 
     /**

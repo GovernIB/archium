@@ -7,6 +7,8 @@ import es.caib.archium.communication.iface.CSGDFuncionService;
 import es.caib.archium.csgd.apirest.constantes.Estado;
 import es.caib.archium.csgd.apirest.csgd.entidades.comunes.FunctionId;
 import es.caib.archium.csgd.apirest.facade.pojos.Funcion;
+import es.caib.archium.csgd.apirest.facade.pojos.eliminar.EliminarFuncion;
+import es.caib.archium.csgd.apirest.facade.pojos.mover.MoverFuncion;
 import es.caib.archium.ejb.service.*;
 import es.caib.archium.objects.*;
 import es.caib.archium.persistence.model.Dictamen;
@@ -271,6 +273,7 @@ public class FuncioFrontService {
             funcio.setNomcas(funcioObject.getNomcas());
             funcio.setEstat(funcioObject.getEstat());
             funcio.setOrdre(funcioObject.getOrdre());
+            funcio.setSynchronized(false);
             if (funcioObject.getFuncioPare() == null)
                 funcio.setAchFuncio(null);
             else
@@ -312,7 +315,7 @@ public class FuncioFrontService {
         if(StringUtils.isNotEmpty(funcion.getNodeId())) {
             log.debug("La funcion existe en Alfresco, así que procedemos a eliminarla");
             try {
-                this.csgdFuncionService.deleteNode(new FunctionId(funcion.getNodeId()));
+                this.csgdFuncionService.deleteNode(new EliminarFuncion(funcion.getNodeId()));
                 log.info("La funcion ["+idFuncio+"] ha sido eliminada de Alfresco");
             } catch (CSGDException e) {
                 throw new I18NException(getExceptionI18n(e.getClientErrorCode()), this.getClass().getSimpleName(), "deleteFunction");
@@ -380,7 +383,7 @@ public class FuncioFrontService {
         Funcion funcion = new Funcion();
         funcion.setCodigo(funciondb.getCodi());
         funcion.setEstado(Estado.getEstado(funciondb.getEstat()));
-
+        funcion.setNodeId(funciondb.getNodeId());
         // Hayamos los hijos de la funcion, para ver si es funcion padre
         funcion.setFuncionPadre(isFuncionPadre(funciondb.getId(),funciondb.getAchQuadreclassificacio().getId()));
 
@@ -404,7 +407,9 @@ public class FuncioFrontService {
         // Asignamos a la funcion el nodo creado en Alfresco
         if (StringUtils.isNotEmpty(nodeId)) {
             try {
-                funciondb.setNodeId(nodeId);
+                if(StringUtils.trimToNull(funciondb.getNodeId())==null) {
+                    funciondb.setNodeId(nodeId);
+                }
                 funciondb.setSynchronized(true);
                 funcionesEJB.update(funciondb);
                 return new FuncioObject(funciondb);
@@ -484,11 +489,31 @@ public class FuncioFrontService {
             }
         }
         functiondb.setAchFuncio(parentFunction);
-        // Ponemos la funcion como no sincronizada
-        functiondb.setSynchronized(false);
 
+        // Si la funcion tiene asignado un nodeId en alfresco, procedemos a actualizarla
+        if(StringUtils.trimToNull(functiondb.getNodeId())!=null) {
+            log.debug("Se procede a sincronizar con Alfresco el movimiento de la funcion");
+            // Preparamos el dto para enviar a GDIB
+            MoverFuncion moveFunction = new MoverFuncion();
+            moveFunction.setParentId(functiondb.getAchFuncio() == null ? functiondb.getAchQuadreclassificacio().getNodeId()
+                    : functiondb.getAchFuncio().getNodeId());
+            moveFunction.setNodoId(functiondb.getNodeId());
 
-        // TODO : Poner como no sincronizados a todos sus hijos
+            try {
+                this.csgdFuncionService.moveNode(moveFunction);
+            } catch (CSGDException e) {
+                throw new I18NException(getExceptionI18n(e.getClientErrorCode()), this.getClass().getSimpleName(), "moveFunction");
+            } catch (EJBAccessException e) {
+                log.error("No se cuenta con los permisos adecuados para realiziar la llamada al csgd");
+                throw new I18NException("csgd.permiso.denegado", this.getClass().getSimpleName(), "moveFunction");
+            } catch (Exception e) {
+                log.error("Error moviendo la funcion: " + e);
+                throw new I18NException("excepcion.general.Exception", this.getClass().getSimpleName(), "moveFunction");
+            }
+
+            log.debug("Completado proceso de mover en el CSGD, se procede a guardar en base de datos");
+        }
+
         // Modificamos la funcion
         try {
             functiondb = this.funcionesEJB.update(functiondb);

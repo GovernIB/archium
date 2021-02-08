@@ -119,7 +119,7 @@ public class MoverElementoController implements Serializable {
         funcion = element;
         isMoverSerie = false;
         prepararListas();
-        // TODO : No renueva bien la lista de funciones despues de que se eliminen hijas en otra seleccion
+
         getParent(element.getParentFunction());
         // Eliminamos la funcion propia de la lista
         checkIfFunctionInList();

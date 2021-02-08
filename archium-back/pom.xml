@@ -15,10 +15,18 @@
 
     <properties>
         <archium-communication.version>2.0.0</archium-communication.version>
+        <commons-io.verion>2.6</commons-io.verion>
     </properties>
 
 
     <dependencies>
+        <!-- https://mvnrepository.com/artifact/commons-io/commons-io -->
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>${commons-io.verion}</version>
+        </dependency>
+
         <!-- Altres mòduls del projecte -->
         <dependency>
             <groupId>es.caib.archium</groupId>

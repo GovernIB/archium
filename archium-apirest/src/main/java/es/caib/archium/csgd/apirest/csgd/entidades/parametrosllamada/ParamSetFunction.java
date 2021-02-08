@@ -16,7 +16,7 @@ public class ParamSetFunction {
     @Override
     public String toString() {
         return "ParamSetFunction{" +
-                "serie=" + classificationFunction +
+                "classificationFunction=" + classificationFunction +
                 '}';
     }
 }

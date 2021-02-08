@@ -12,6 +12,9 @@ import es.caib.archium.csgd.apirest.csgd.entidades.comunes.SerieId;
 import es.caib.archium.csgd.apirest.facade.pojos.CuadroClasificacion;
 import es.caib.archium.csgd.apirest.facade.pojos.Funcion;
 import es.caib.archium.csgd.apirest.facade.pojos.Serie;
+import es.caib.archium.csgd.apirest.facade.pojos.eliminar.EliminarCuadro;
+import es.caib.archium.csgd.apirest.facade.pojos.eliminar.EliminarFuncion;
+import es.caib.archium.csgd.apirest.facade.pojos.eliminar.EliminarSerie;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -189,7 +192,7 @@ public class CommunicationUtils {
      * @param nodeId
      */
     protected void borrarCuadro(String nodeId) {
-        RootId rootId = new RootId(nodeId);
+        EliminarCuadro rootId = new EliminarCuadro(nodeId);
         try {
             cuadroService.deleteNode(rootId);
         } catch (Exception e) {
@@ -218,7 +221,7 @@ public class CommunicationUtils {
      * @param funcionId
      */
     protected void borrarFuncion(String funcionId) {
-        FunctionId nodeId = new FunctionId(funcionId);
+        EliminarFuncion nodeId = new EliminarFuncion(funcionId);
         try {
             funcionService.deleteNode(nodeId);
         } catch (Exception e) {
@@ -247,7 +250,7 @@ public class CommunicationUtils {
      * @param serieId
      */
     protected void borrarSerie(String serieId) {
-        SerieId nodeId = new SerieId(serieId);
+        EliminarSerie nodeId = new EliminarSerie(serieId);
         try {
             serieService.deleteNode(nodeId);
         } catch (Exception e) {

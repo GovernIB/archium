@@ -1,23 +1,22 @@
 package es.caib.archium.csgd.apirest.csgd.entidades.parametrosllamada;
 
-import es.caib.archium.csgd.apirest.csgd.entidades.comunes.FunctionNode;
 import es.caib.archium.csgd.apirest.csgd.entidades.comunes.RootNode;
 
 public class ParamSetRoot {
-    private RootNode root;
+    private RootNode classificationRoot;
 
-    public RootNode getRoot() {
-        return root;
+    public RootNode getClassificationRoot() {
+        return classificationRoot;
     }
 
-    public void setRoot(RootNode root) {
-        this.root = root;
+    public void setClassificationRoot(RootNode classificationRoot) {
+        this.classificationRoot = classificationRoot;
     }
 
     @Override
     public String toString() {
         return "ParamSetRoot{" +
-                "root=" + root +
+                "classificationRoot=" + classificationRoot +
                 '}';
     }
 }

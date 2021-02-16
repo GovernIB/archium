@@ -6,6 +6,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 
 public class CSVReader {
@@ -19,7 +20,7 @@ public class CSVReader {
 
 		try {
 			InputStream input = CSVReader.class.getResourceAsStream(filePath);
-		    br = new BufferedReader(new InputStreamReader(input));
+			br = new BufferedReader(new InputStreamReader(input, StandardCharsets.ISO_8859_1));
 		    while ((line = br.readLine()) != null) {                
 		        String[] lineData = line.split(separator);
 		        data.add(lineData);

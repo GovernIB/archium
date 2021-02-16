@@ -69,8 +69,8 @@
 	    }
 	    //]]>
 	</script>
-<p:dialog id="serieModalDialogId" header="Serie Documental" showEffect="fade" widgetVar="serieModalDialog" onShow="PF('tabSerie').select(0)" modal="true" resizable="false" style="max-width:1100px; min-width:1100px;">
-	
+<p:dialog id="serieModalDialogId" header="Serie Documental" showEffect="fade" widgetVar="serieModalDialog" onShow="PF('tabSerie').select(0)" modal="true" resizable="false" style="max-width:1118px; min-width:1118px; max-height:760px;">
+	<p:scrollPanel style="max-width:1100px; min-width:1100px; max-height:600px;min-height:600px" mode="native">
   <!-- CONTENIDO -->
   <div class="views_3">
   	<div class="content_4 modfseries">
@@ -87,7 +87,7 @@
 			
 			<p:tabView id="tabSerie" widgetVar="tabSerie">
 		        <p:tab title="#{messages['nuevaserie.datosBasicos']}" class="datosbasic">
-		        
+
 		        	<div class="ui-g">
 		        
 		                <div class="ui-g-12 item_1" style="margin-bottom: 10px;">
@@ -212,7 +212,7 @@
 					    
 					   
 					</div>
-					    
+
 		        </p:tab>
 		        <p:tab title="#{messages['nuevaserie.seriesRelacionadas']}">
 		        	<div class="ui-g">
@@ -363,5 +363,6 @@
 
   </div>
   <!-- FIN DEL CONTENIDO -->
+	</p:scrollPanel>
   </p:dialog>
   </ui:composition>

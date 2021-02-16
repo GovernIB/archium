@@ -14,6 +14,8 @@ import javax.inject.Named;
 import javax.transaction.Transactional;
 
 import es.caib.archium.commons.i18n.I18NException;
+import es.caib.archium.commons.query.OrderBy;
+import es.caib.archium.commons.query.OrderType;
 import es.caib.archium.ejb.AplicacioEJB;
 import es.caib.archium.ejb.FamiliaProcedimentEJB;
 import es.caib.archium.ejb.FormaIniciEJB;
@@ -262,7 +264,7 @@ public class ProcedimentFrontService {
 		
 		try {
 			List<AplicacioObject> lista = new ArrayList< >();
-			List<Aplicacio> res= aplicacioEJB.findAll();
+			List<Aplicacio> res= aplicacioEJB.findAll(new OrderBy("nom", OrderType.ASC));
 			
 			for(Aplicacio  i : res)
 			{				

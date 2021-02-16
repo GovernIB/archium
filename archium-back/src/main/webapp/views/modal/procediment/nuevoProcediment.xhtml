@@ -162,7 +162,7 @@
 								                              filter="true" filterMatchMode="contains">
 								            <f:selectItem itemLabel="-- #{messages['selecciona']} #{messages['nuevoprocediment.Dir3Instructor']} -- " itemValue="#{null}" noSelectionOption="true"/>
 								            <f:selectItems value="#{procedimentController.listaDir3}"  var="n"  itemValue="#{n.codi}" itemLabel="#{n.codi}-#{n.nom}"/>
-								        </p:selectOneMenu>			    			
+								        </p:selectOneMenu>
 								    </div>
 								    
 							   	</div>
@@ -391,7 +391,7 @@
 							    	<div class="ui-g-6 item_1">
 								    	<label class="ui-g-4">#{messages['nuevoprocediment.Aplicacio']}</label>		    			
 							        	<p:selectOneMenu id="aplicacio" value="#{procedimentController.aplicacio}" label="Serie" converter="AplicacioConverter"
-								                              panelStyle="width:450px">
+								                              panelStyle="width:450px" filter="true" filterMatchMode="contains">
 								            <f:selectItem itemLabel="-- #{messages['selecciona']} #{messages['nuevoprocediment.Aplicacio']} -- " itemValue="#{null}" noSelectionOption="true"/>
 								            <f:selectItems value="#{procedimentController.listaAplicacio}"  var="n" itemLabel="#{n.nom}"  itemValue="#{n}"/>
 								        </p:selectOneMenu>

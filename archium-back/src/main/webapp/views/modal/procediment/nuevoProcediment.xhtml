@@ -347,9 +347,13 @@
 											    	<label class="ui-g-4">#{messages['nuevoprocediment.Recapitulatiu']}</label>
 									    			<p:selectBooleanCheckbox style="margin: 0 10px;" id="recap" value="#{tdp.recapitulatiu}"/>				    			
 											    </div>	
-											    
+											    <div class="ui-g-4" style="display: flex; align-items:center;">
+											    	<label class="ui-g-4">#{messages['nuevoprocediment.Multiple']}</label>
+									    			<p:selectBooleanCheckbox style="margin: 0 10px;" id="multiple" value="#{tdp.multiple}"/>
+											    </div>
+
 												<div class="ui-g-4" style="padding:0!important;">
-													<p:commandButton style="margin: 0;padding: 0px 10px;" class="boton_modal botton_red button_aceptar" partialSubmit="true" process="@this obligatori, recap" update="@this" value="#{messages['aceptar']}"  actionListener="#{procedimentController.saveTDP(tdp)}" ></p:commandButton> 
+													<p:commandButton style="margin: 0;padding: 0px 10px;" class="boton_modal botton_red button_aceptar" partialSubmit="true" process="@this obligatori, recap, multiple" update="@this" value="#{messages['aceptar']}"  actionListener="#{procedimentController.saveTDP(tdp)}" ></p:commandButton>
 												</div>
 											</div>
 								        </p:tab>

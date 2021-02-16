@@ -13,18 +13,20 @@ public class TipuDocumentalProcedimentObject {
 	private TipuDocumentalObject	tipusDocumental;
 	private Boolean 				obligatori;
 	private Boolean 				recapitulatiu;
+	private Boolean					multiple;
 	
 	public TipuDocumentalProcedimentObject() {
 		super();
 	}
 
 	public TipuDocumentalProcedimentObject(ProcedimentObject procediment, TipuDocumentalObject tipusDocumentalt, Boolean obligatori,
-			Boolean recapitulatiu) {
+			Boolean recapitulatiu,Boolean multiple) {
 		super();
 		this.procediment = procediment;
 		this.tipusDocumental = tipusDocumentalt;
 		this.obligatori = obligatori;
 		this.recapitulatiu = recapitulatiu;
+		this.multiple = multiple;
 	}
 	
 	public TipuDocumentalProcedimentObject(TipusdocumentProcediment i) {
@@ -41,6 +43,7 @@ public class TipuDocumentalProcedimentObject {
 		
 		this.obligatori = (i.getObligatori().intValue()==1 ? true : false);
 		this.recapitulatiu = (i.getRecapitulatiu().intValue()==1 ? true : false);
+		this.multiple = (i.getMultiple().intValue()==1 ? true : false);
 	}
 
 	public TipusdocumentProcediment toDbObject() {
@@ -57,6 +60,7 @@ public class TipuDocumentalProcedimentObject {
 		db.setId(pk);
 		db.setObligatori((obligatori==true ? new BigDecimal(1) : new BigDecimal(0)));
 		db.setRecapitulatiu((recapitulatiu==true ? new BigDecimal(1) : new BigDecimal(0)));
+		db.setMultiple((multiple==true ? new BigDecimal(1) : new BigDecimal(0)));
 		return db;
 	}
 	
@@ -99,46 +103,37 @@ public class TipuDocumentalProcedimentObject {
 	public void setRecapitulatiu(Boolean recapitulatiu) {
 		this.recapitulatiu = recapitulatiu;
 	}
-	
-	
-	
 
-	@Override
-	public int hashCode() {
-		return Objects.hash(id);
+	public Boolean getMultiple() {
+		return multiple;
+	}
+
+	public void setMultiple(Boolean multiple) {
+		this.multiple = multiple;
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		TipuDocumentalProcedimentObject other = (TipuDocumentalProcedimentObject) obj;
-		return Objects.equals(id, other.id);
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		TipuDocumentalProcedimentObject that = (TipuDocumentalProcedimentObject) o;
+		return Objects.equals(id, that.id) && Objects.equals(procediment, that.procediment) && Objects.equals(tipusDocumental, that.tipusDocumental) && Objects.equals(obligatori, that.obligatori) && Objects.equals(recapitulatiu, that.recapitulatiu) && Objects.equals(multiple, that.multiple);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(id, procediment, tipusDocumental, obligatori, recapitulatiu, multiple);
 	}
 
 	@Override
 	public String toString() {
-		StringBuilder builder = new StringBuilder();
-		builder.append("TipuDocumentalProcedimentObject [id=");
-		builder.append(id);
-		builder.append(", procediment=");
-		builder.append(procediment);
-		builder.append(", tipusDocumental=");
-		builder.append(tipusDocumental);
-		builder.append(", obligatori=");
-		builder.append(obligatori);
-		builder.append(", recapitulatiu=");
-		builder.append(recapitulatiu);
-		builder.append("]");
-		return builder.toString();
+		return "TipuDocumentalProcedimentObject{" +
+				"id=" + id +
+				", procediment=" + procediment +
+				", tipusDocumental=" + tipusDocumental +
+				", obligatori=" + obligatori +
+				", recapitulatiu=" + recapitulatiu +
+				", multiple=" + multiple +
+				'}';
 	}
-
-	
-
-	
-
 }

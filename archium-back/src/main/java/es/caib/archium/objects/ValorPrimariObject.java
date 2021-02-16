@@ -75,10 +75,10 @@ public class ValorPrimariObject {
 		}
 		
 		db.setId(pk);
-				
-		if(terminiVal!=null && terminiType!=null) {
-			db.setTermini(String.valueOf(terminiVal) + terminiType.substring(0, 1).toUpperCase());
-		}
+
+		String termini = terminiVal == null ? "0" : String.valueOf(terminiVal);
+		String unidad =    terminiType == null ? "A" : terminiType.substring(0, 1).toUpperCase();
+		db.setTermini(termini + unidad);
 				
 		return db;
 	}

@@ -22,6 +22,8 @@ public class TipusdocumentProcediment implements Serializable {
 
 	private BigDecimal recapitulatiu;
 
+	private BigDecimal multiple;
+
 	//bi-directional many-to-one association to Procediment
 	@ManyToOne
 	@MapsId("procedimentId")
@@ -77,4 +79,11 @@ public class TipusdocumentProcediment implements Serializable {
 		this.achTipusdocumental = achTipusdocumental;
 	}
 
+	public BigDecimal getMultiple() {
+		return multiple;
+	}
+
+	public void setMultiple(BigDecimal multiple) {
+		this.multiple = multiple;
+	}
 }

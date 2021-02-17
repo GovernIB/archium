@@ -1,12 +1,9 @@
 package es.caib.archium.objects;
 
-import java.math.BigDecimal;
-import java.util.Objects;
-
-import es.caib.archium.persistence.model.TipusdocumentProcediment;
-import es.caib.archium.persistence.model.TipusdocumentProcedimentPK;
 import es.caib.archium.persistence.model.Valorprimari;
 import es.caib.archium.persistence.model.ValorprimariPK;
+
+import java.util.Objects;
 
 public class ValorPrimariObject {
 
@@ -56,8 +53,13 @@ public class ValorPrimariObject {
                     this.setTerminiType("Mesos");
                 if (a.equals("A"))
                     this.setTerminiType("Anys");
-                this.terminiVal = Integer.parseInt(db.getTermini().substring(0, db.getTermini().length() - 1));
-            }
+                String termVal = db.getTermini().substring(0, db.getTermini().length() - 1);
+                if(!termVal.equals("")) {
+                    this.terminiVal = Integer.parseInt(termVal);
+                }else{
+                    this.terminiVal = null;
+                }
+           }
         }
     }
 
@@ -75,7 +77,7 @@ public class ValorPrimariObject {
 
         db.setId(pk);
 
-        String termini = terminiVal == null ? "0" : String.valueOf(terminiVal);
+        String termini = terminiVal == null ? "" : String.valueOf(terminiVal);
         String unidad =    terminiType == null ? "A" : terminiType.substring(0, 1).toUpperCase();
         db.setTermini(termini + unidad);
 

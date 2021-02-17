@@ -209,7 +209,13 @@
 						    </div>
 						    <div class="ui-g-6 item_1">
 						     	<label class="ui-g-4">#{messages['nuevodictamen.serieEsencial']}</label>
-        						<p:selectBooleanButton class="selectosino" id="serieEsencial" value="#{dictamenController.serieEsencial}" onLabel="#{messages['si']}" offLabel="#{messages['no']}" style="width:60px" />
+								<p:selectOneMenu class="ui-g-8" id="serieEsencial" value="#{dictamenController.serieEsencial}"
+												 panelStyle="">
+									<f:selectItem itemLabel="-- #{messages['selecciona']} --" itemValue="#{null}" />
+									<f:selectItem itemLabel=" #{messages['si']} " itemValue="true" />
+									<f:selectItem itemLabel=" #{messages['no']} " itemValue="false" />
+									<f:converter converterId="BooleanConverter"/>
+								</p:selectOneMenu>
 						    </div>
 					    </div>
 					    

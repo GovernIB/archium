@@ -169,10 +169,8 @@
 						        </p:selectOneMenu>
 						    </div>
 						    <div class="ui-g-6 item_1">
-						    	<label class="ui-g-4">#{messages['nuevodictamen.termini']}*</label>
-				    			<p:inputNumber  class="ui-g-4" id="plazo1" value="#{dictamenController.plazoTerminiVal}" required="true" decimalPlaces="0"
-						    	  	requiredMessage="#{messages['nuevodictamen.require.termini']}"
-				    				validatorMessage="#{messages['nuevodictamen.validate.termini']}">
+						    	<label class="ui-g-4">#{messages['nuevodictamen.termini']}</label>
+				    			<p:inputNumber  class="ui-g-4" id="plazo1" value="#{dictamenController.plazoTerminiVal}" decimalPlaces="0">
 						    	 	<f:validateLength minimum="0" maximum="5"/>
 						    	 </p:inputNumber>
 						    	 

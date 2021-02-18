@@ -313,7 +313,15 @@ public class NuevaSerieController implements Serializable {
 		
 		try {
 			if(this.validateValoracion()) {
-					
+
+				if(!this.service.checkValidClassificationCode(codi,serieId)){
+					log.error("Error en la creacion de la serie, ya existe otra serie con el codigo ["+codi+"]");
+					FacesContext.getCurrentInstance().validationFailed();
+					FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_ERROR, messageBundle.getString("nuevaserie.validate.codigo"), null);
+					FacesContext.getCurrentInstance().addMessage(null, message);
+					return;
+				}
+
 				if(serieId == null) {
 					SerieDocumentalObject newS = service.createNuevaSerie(codi,nom,nomCas,catalegSeriId,serieFuncio.getId()
 							,descripcio,descripcioCas,resumMigracio,dir3Promotor, serieEstat,

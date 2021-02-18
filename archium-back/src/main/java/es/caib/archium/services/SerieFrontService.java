@@ -839,6 +839,24 @@ public class SerieFrontService {
 			throw new I18NException("excepcion.general.Exception", this.getClass().getSimpleName(), "deleteSerie");
 		}
 	}
-	
-	
+
+
+	/**
+	 * Comprueba que el codigo de la serie sea unico
+	 *
+	 * @param codi
+	 * @param serieId
+	 * @return true si es un codigo nuevo, false si ya existe serie con dicho codigo
+	 */
+	public boolean checkValidClassificationCode(String codi, Long serieId) throws I18NException {
+		Map<String, Object> map = new HashMap<>();
+		map.put("codi", codi);
+		List<Seriedocumental> result = this.serieService.findFiltered(map, null);
+		if (result == null
+				|| result.isEmpty()
+				|| (result.size() == 1 && serieId != null && result.get(0).getId().equals(serieId))) {
+			return true;
+		}
+		return false;
+	}
 }

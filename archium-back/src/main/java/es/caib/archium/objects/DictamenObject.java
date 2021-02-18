@@ -258,6 +258,8 @@ public class DictamenObject {
 		
 		if(serieEsencial!=null) {
 			db.setSerieessencial((serieEsencial ? new BigDecimal(1) : new BigDecimal(0)));
+		}else{
+			db.setSerieessencial(null);
 		}
 		
 		return db;

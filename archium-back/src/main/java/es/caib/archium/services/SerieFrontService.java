@@ -1095,4 +1095,20 @@ public class SerieFrontService {
     }
 
 
+    /**
+     * Comprueba si el codigo de la serie ya existe en el cuadro
+     *
+     * @param codi
+     * @param serieId
+     * @param cuadroId
+     * @return true si existe una serie con el mismo codigo en el cuadro (y no es ella misma), false en caso contrario
+     */
+    public boolean checkClassificationCode(String codi, Long serieId, Long cuadroId) throws I18NException {
+        List<Seriedocumental> result = this.serieEJB.getByCuadro(cuadroId);
+        if(result == null || result.isEmpty()){
+            return false;
+        }
+        return result.stream().anyMatch(x -> x.getCodi().equalsIgnoreCase(codi) && !x.getId().equals(serieId));
+
+    }
 }

@@ -371,7 +371,7 @@ public class DictamenController implements Serializable {
 	    	this.ens = null;
 	    	this.lopd = null;
 	    	this.condicioReutilizacio = null;
-	    	this.serieEsencial = false;
+	    	this.serieEsencial = null;
 	    	this.normativaAprovacio = null;
 	    	this.aprovacio = null;
 	    	this.codi = null;

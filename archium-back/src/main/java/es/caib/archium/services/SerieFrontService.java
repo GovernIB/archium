@@ -30,10 +30,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 @Named
 @ApplicationScoped
@@ -1096,19 +1093,21 @@ public class SerieFrontService {
 
 
     /**
-     * Comprueba si el codigo de la serie ya existe en el cuadro
+     * Comprueba que el codigo de la serie sea unico
      *
      * @param codi
      * @param serieId
-     * @param cuadroId
-     * @return true si existe una serie con el mismo codigo en el cuadro (y no es ella misma), false en caso contrario
+     * @return true si es un codigo nuevo, false si ya existe serie con dicho codigo
      */
-    public boolean checkClassificationCode(String codi, Long serieId, Long cuadroId) throws I18NException {
-        List<Seriedocumental> result = this.serieEJB.getByCuadro(cuadroId);
-        if(result == null || result.isEmpty()){
-            return false;
+    public boolean checkValidClassificationCode(String codi, Long serieId) throws I18NException {
+        Map<String, Object> map = new HashMap<>();
+        map.put("codi", codi);
+        List<Seriedocumental> result = this.serieService.findFiltered(map, null);
+        if (result == null
+                || result.isEmpty()
+                || (result.size() == 1 && serieId != null && result.get(0).getId().equals(serieId))) {
+            return true;
         }
-        return result.stream().anyMatch(x -> x.getCodi().equalsIgnoreCase(codi) && !x.getId().equals(serieId));
-
+        return false;
     }
 }

@@ -318,7 +318,7 @@
 								             <f:converter converterId="tiposDocumentalRelacionadoConverter"/>
 								             <f:selectItem itemLabel="-- #{messages['selecciona']} #{messages['nuevoprocediment.Tipusdocumental']} -- " itemValue="#{null}" noSelectionOption="true"/>
 								             <f:selectItems value="#{procedimentController.listatipoDocumental}"  var="n" itemLabel="#{n.nom}"  itemValue="#{n}"/>
-								             <p:ajax event="valueChange" listener="#{procedimentController.onTipoDocumentalSelectedListener}" update="selectTipoDocumental, listaTiposDocumentales" />
+											<p:ajax event="valueChange" listener="#{procedimentController.onTipoDocumentalSelectedListener}" update="selectTipoDocumental, listaTiposDocumentales" process="@this listaTiposDocumentales" />
 								        </p:selectOneMenu>
 						    		</div>
 									
@@ -351,10 +351,6 @@
 											    	<label class="ui-g-4">#{messages['nuevoprocediment.Multiple']}</label>
 									    			<p:selectBooleanCheckbox style="margin: 0 10px;" id="multiple" value="#{tdp.multiple}"/>
 											    </div>
-
-												<div class="ui-g-4" style="padding:0!important;">
-													<p:commandButton style="margin: 0;padding: 0px 10px;" class="boton_modal botton_red button_aceptar" partialSubmit="true" process="@this obligatori, recap, multiple" update="@this" value="#{messages['aceptar']}"  actionListener="#{procedimentController.saveTDP(tdp)}" ></p:commandButton>
-												</div>
 											</div>
 								        </p:tab>
 									</p:accordionPanel>

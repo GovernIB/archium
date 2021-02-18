@@ -32,23 +32,6 @@ public class SerieEJB extends AbstractDAO<Seriedocumental, Long> implements Seri
 	DictamenService dictamenEJB;
 
 	@Override
-	public List<Seriedocumental> getByCuadro(Long cuadroId) throws I18NException {
-
-		if(cuadroId!=null){
-			List<Funcio> funciones = funcionesEJB.getByParentAndQuadre(null,cuadroId);
-			List<Seriedocumental> listSeries = new ArrayList<>();
-			if(funciones!=null && !funciones.isEmpty()){
-				for(Funcio f : funciones){
-					listSeries.addAll(this.getByFuncio(f.getId()));
-				}
-			}
-			return listSeries;
-		}else{
-			throw new I18NException("serie.getByCuadro.id.null", this.getClass().getSimpleName(), "getByCuadro");
-		}
-	}
-
-	@Override
 	public List<Seriedocumental> getByFuncio(Long funcioId) throws I18NException {
 		if(funcioId!=null) {
 			Map<String, Object> filtersS = new HashMap<String, Object>();		

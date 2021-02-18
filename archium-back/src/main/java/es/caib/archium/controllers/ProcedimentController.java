@@ -471,12 +471,12 @@ public class ProcedimentController implements Serializable {
 		if(this.validateTDP()) {
 			TipuDocumentalProcedimentObject tdp = new TipuDocumentalProcedimentObject();
 			tdp.setTipusDocumental(selectedTipoDocumental);
-			if(listaTDP.size()==0) {
-				tdp.setId(0);
-			} else {
-				int lastid = listaTDP.get(listaTDP.size()-1).getId();
-				tdp.setId(lastid+1);
+			// Si estamos en una operacion de modificacion, le establecemos el procedimiento que se esta modificando
+			if(id!=null) {
+				tdp.setProcediment(modify);
 			}
+
+			tdp.setId(listaTDP.size());
 			
 			listaTDP.add(tdp);
 		} else {
@@ -489,9 +489,7 @@ public class ProcedimentController implements Serializable {
 	}
 	
 	public void deleteTDP(TipuDocumentalProcedimentObject tdpitem) {
-		int index = listaTDP.indexOf(tdpitem);
-		if(index>=0) {
-			listaTDP.remove(index);
+		if(listaTDP.remove(tdpitem)) {
 			FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_INFO, messageBundle.getString("procediment.tdp.delete.ok"), null);
 			FacesContext.getCurrentInstance().addMessage("mensaje-estado", message);
 		} else {
@@ -500,22 +498,9 @@ public class ProcedimentController implements Serializable {
 		}
 	}
 	
-	public void saveTDP(TipuDocumentalProcedimentObject tdpitem) {
-
-		int index = listaTDP.indexOf(tdpitem);
-		if(id!=null) tdpitem.setProcediment(modify);
-		if(index>=0) {
-			listaTDP.set(index, tdpitem);
-		} else {
-			listaTDP.add(tdpitem);
-		}	
-		FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_INFO, messageBundle.getString("procediment.tdp.save.ok"), null);
-		FacesContext.getCurrentInstance().addMessage("mensaje-estado", message);
-	}
-	
 	private Boolean validateTDP() {
 		
-		if(listaTDP==null) return true;
+		if(listaTDP==null || listaTDP.isEmpty()) return true;
 		
 		boolean duplicado = false;
 		Iterator<TipuDocumentalProcedimentObject> it = listaTDP.iterator();

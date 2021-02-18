@@ -344,14 +344,14 @@ public class NuevaSerieController implements Serializable {
         try {
             if (this.validateValoracion()) {
 
-                if (serieId == null) {
-                	if(service.checkClassificationCode(codi, serieId, serieFuncio.getCodigoCuadro().getId())){
-						log.error("Ya existe una serie con el código de clasificación informado dentro del mismo cuadro");
-						FacesMessage message = null;
-						message = new FacesMessage(FacesMessage.SEVERITY_ERROR, messageBundle.getString("nuevaserie.codi.repeptido"), null);
-						FacesContext.getCurrentInstance().addMessage(null, message);
-						return;
-					}
+				if(service.checkValidClassificationCode(codi, serieId)){
+					log.error("Ya existe una serie con el código de clasificación ["+codi+"]");
+					FacesMessage message = null;
+					message = new FacesMessage(FacesMessage.SEVERITY_ERROR, messageBundle.getString("nuevaserie.codi.repeptido"), null);
+					FacesContext.getCurrentInstance().addMessage(null, message);
+					return;
+				}
+				if (serieId == null) {
                     SerieDocumentalObject newS = service.createNuevaSerie(codi, nom, nomCas, catalegSeriId, serieFuncio.getId()
                             , descripcio, descripcioCas, resumMigracio, dir3Promotor, serieEstat,
                             tipusSerieId, codiIecisa, aplicaciones.getTarget(), seriesRelacionadas.getTarget(), seriesArgenRelacionadas.getTarget(), listaRelacionLNS, normativasSerie.getTarget(), valoracio);
@@ -361,13 +361,7 @@ public class NuevaSerieController implements Serializable {
                             funcBean.getNodeFromFunctionId(serieFuncio.getId(), "Funcio", "insert", null));
 
                 } else {
-					if(service.checkClassificationCode(codi, serieId, serieFuncio.getCodigoCuadro().getId())){
-						log.error("Ya existe una serie con el código de clasificación informado dentro del mismo cuadro");
-						FacesMessage message = null;
-						message = new FacesMessage(FacesMessage.SEVERITY_ERROR, messageBundle.getString("nuevaserie.codi.repeptido"), null);
-						FacesContext.getCurrentInstance().addMessage(null, message);
-						return;
-					}
+
                     SerieDocumentalObject upS = service.updateSerieDocumental(serieId, codi, nom, nomCas,
                             catalegSeriId, serieFuncio.getId(), descripcio, descripcioCas, resumMigracio, dir3Promotor, serieEstat, tipusSerieId, codiIecisa, aplicaciones.getTarget(), seriesRelacionadas.getTarget(), seriesArgenRelacionadas.getTarget(), listaRelacionLNS,
                             normativasSerie.getTarget(), valoracio, nuevoNodeId);

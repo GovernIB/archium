@@ -177,6 +177,8 @@ public class DictamenController implements Serializable {
 	    	
 			if (this.plazoTerminiVal != null) {
 				this.setTermini(this.plazoTerminiVal.toString().concat(this.plazoTermini.substring(0,1)));
+			}else{
+				this.setTermini(null);
 			}
 			
 	    	try {

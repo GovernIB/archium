@@ -5,6 +5,7 @@ public class Constantes {
     // NAMESPACE
     public static final String ARCHIUM_NAMESPACE = "eemgde:";
     public static final String GDIB_NAMESPACE = "gdib:";
+    public static final String EGOIB_NAMESPACE = "egoib:";
 
     // PROPIEDADES
     // Cuadro
@@ -53,6 +54,10 @@ public class Constantes {
     public static final String PLAZO_RESELLADO_QNAME = ARCHIUM_NAMESPACE + PLAZO_RESELLADO;
     public static final String PLAZO_UNIDAD_RESELLADO = "plazo_unidad_resellado";
     public static final String PLAZO_UNIDAD_RESELLADO_QNAME = ARCHIUM_NAMESPACE + PLAZO_UNIDAD_RESELLADO;
+    public static final String SERIE_ARGEN = "series_argen";
+    public static final String SERIE_ARGEN_QNAME = EGOIB_NAMESPACE + SERIE_ARGEN;
+    public static final String USUARIO_APLICACION = "usuarios_aplicaciones";
+    public static final String USUARIO_APLICACION_QNAME = EGOIB_NAMESPACE + USUARIO_APLICACION;
 
 
 

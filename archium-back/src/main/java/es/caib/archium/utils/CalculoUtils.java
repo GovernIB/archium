@@ -41,7 +41,7 @@ public class CalculoUtils {
      * @param dictamen
      * @return
      */
-    public String rellenarOCalcularAccionDictaminada(Seriedocumental serie, Dictamen dictamen){
+    public String rellenarOCalcularAccionDictaminada(Seriedocumental serie, Dictamen dictamen) {
         if (StringUtils.trimToNull(dictamen.getAcciodictaminada()) != null) {
             return dictamen.getAcciodictaminada();
         } else {
@@ -88,7 +88,7 @@ public class CalculoUtils {
                 List<String> eliminacion = new ArrayList<>();
                 for (DictamenTipusdocumental d : dictamen.getAchDictamenTipusdocumentals()) {
                     // Se descartan los tipos documentales con fecha fin
-                    if(!d.isObsolete()) {
+                    if (!d.isObsolete()) {
                         // El plazo se saca del tipo documental, si no esta informado, se deja vaci
                         String plazo = null;
                         if (StringUtils.trimToNull(d.getTermini()) != null) {
@@ -163,9 +163,9 @@ public class CalculoUtils {
             return termino.replace(UnidadPlazo.M.toString(), " mes(es)");
         } else if (UnidadPlazo.DN == unidad) {
             // Para el caso en el que el dia unicamente sea "D" en vez de "DN"
-            if(Character.isDigit(termino.toCharArray()[termino.length()-2])){
+            if (Character.isDigit(termino.toCharArray()[termino.length() - 2])) {
                 return termino.replace("D", " día(s)");
-            }else {
+            } else {
                 return termino.replace(UnidadPlazo.DN.toString(), " día(s)");
             }
         } else if (UnidadPlazo.H == unidad) {
@@ -196,11 +196,11 @@ public class CalculoUtils {
         } else if (TipoDictamen.CP == TipoDictamen.getTipoDictamen(dictamen.getAchTipusdictamen().getCodi())) {
             return dictamen.getTermini();
         } else if (TipoDictamen.ET == TipoDictamen.getTipoDictamen(dictamen.getAchTipusdictamen().getCodi())) {
-            if(StringUtils.trimToNull(dictamen.getTermini()) == null) {
+            if (StringUtils.trimToNull(dictamen.getTermini()) == null) {
                 log.error("Error de validacion del dictamen de la serie. Es obligatorio informar el plazo de la accion dictaminada para " +
                         "el tipo ET. Id dictamen, codigo = [" + dictamen.getId() + "," + dictamen.getCodi() + "]");
                 throw new I18NException("nuevodictamen.validate.tipo.et.accionDictaminada", this.getClass().getSimpleName());
-            }else{
+            } else {
                 return dictamen.getTermini();
             }
         } else if (TipoDictamen.EP == TipoDictamen.getTipoDictamen(dictamen.getAchTipusdictamen().getCodi())) {
@@ -226,7 +226,7 @@ public class CalculoUtils {
         UnidadPlazo unidadMax = extraerUnidadPlazo(termini);
         for (DictamenTipusdocumental t : tiposDoc) {
             // Descartamos los tipos documentales con fecha fin
-            if(!t.isObsolete()) {
+            if (!t.isObsolete()) {
                 Integer valor = extraerValorPlazo(t.getTermini());
                 UnidadPlazo unidad = extraerUnidadPlazo(t.getTermini());
                 if (valorMax == -1) {
@@ -252,10 +252,15 @@ public class CalculoUtils {
         if (StringUtils.trimToNull(plazo) != null) {
             // Para los casos de DN y DH, la unidad ocupa los dos ultimos caracteres, por lo tanto, si el penultimo
             // caracter es un numero, es que no se trata de ninguna de estas dos unidades
-            if(Character.isDigit(plazo.toCharArray()[plazo.length()-2])) {
+            try {
+                if (Character.isDigit(plazo.toCharArray()[plazo.length() - 2])) {
+                    return UnidadPlazo.getUnidad(plazo.substring(plazo.length() - 1, plazo.length()));
+                } else {
+                    return UnidadPlazo.getUnidad(plazo.substring(plazo.length() - 2, plazo.length()));
+                }
+            } catch (IndexOutOfBoundsException e) {
+                // Cuando unicamente tiene informada la unidad, saltara esta excepcion por salirse del limite, al no ser que sea DN o DH
                 return UnidadPlazo.getUnidad(plazo.substring(plazo.length() - 1, plazo.length()));
-            }else{
-                return UnidadPlazo.getUnidad(plazo.substring(plazo.length() - 2, plazo.length()));
             }
         } else {
             return null;
@@ -272,9 +277,14 @@ public class CalculoUtils {
         if (StringUtils.trimToNull(plazo) != null) {
             try {
                 return Integer.valueOf(plazo.substring(0, plazo.length() - 1));
-            }catch (NumberFormatException e){
+            } catch (NumberFormatException e) {
                 // Para los casos de DH y DN, ocupara los dos ultimos caracteres del String
-                return Integer.valueOf(plazo.substring(0, plazo.length() - 2));
+                try {
+                    return Integer.valueOf(plazo.substring(0, plazo.length() - 2));
+                } catch (IndexOutOfBoundsException ex) {
+                    // Cuando unicamente tiene informada la unidad, saltara un index out of bounds exception
+                    return null;
+                }
             }
         } else {
             return null;
@@ -377,7 +387,7 @@ public class CalculoUtils {
     /**
      * Devuelve el dictamen activo (estado = "vigent"), en caso de no haber ninguno en estado vigente, se considera activo
      * al dictamen mas reciente de los que esten en estado "esborrany"
-     *
+     * <p>
      * "La serie debe tener asociado un dictamen en estado ESBORRANY o VIGENT . Si hubiese un dictamen en estado VIGENT,
      * sólo habrá uno para la serie en en ese momento y éste prevalece ante los demás (se verificarán los controles con los
      * datos de éste). Si hay varios dictámenes en ESBORRANY y ninguno en VIGENT, se considerará el más reciente de cara
@@ -398,7 +408,7 @@ public class CalculoUtils {
         Dictamen recienteEsborrany = null;
         // Buscamos el dictamen activo
         for (Dictamen dic : achDictamens) {
-            if(!dic.isObsolete()) {
+            if (!dic.isObsolete()) {
                 if (Constants.ArchiumConstants.DICTAMEN_ACTIVO.getValue().equalsIgnoreCase(dic.getEstat())) {
                     log.debug("Dictamen activo de la serie [" + serie.getCodi() + "]: [" + dic.getCodi() + "] con estado " +
                             "[" + dic.getEstat() + "]");
@@ -406,7 +416,7 @@ public class CalculoUtils {
                 } else if (Constants.ArchiumConstants.DICTAMEN_RECIENTE_ESTADO.getValue().equalsIgnoreCase(dic.getEstat())) {
                     if (recienteEsborrany == null) {
                         recienteEsborrany = dic;
-                    } else if (dic.getInici()!=null && dic.getInici().after(recienteEsborrany.getInici())) {
+                    } else if (dic.getInici() != null && dic.getInici().after(recienteEsborrany.getInici())) {
                         recienteEsborrany = dic;
                     }
                 }
@@ -415,7 +425,7 @@ public class CalculoUtils {
 
         // Si llega aqui es que ningun dictamen esta activo, procedemos a devolver el dictamen en estado esborrany mas
         // reciente. Si no hay ninguno este sera null, por lo que la serie no pasara las validaciones
-        if(recienteEsborrany!=null){
+        if (recienteEsborrany != null) {
             log.debug("Dictamen activo de la serie [" + serie.getCodi() + "]: [" + recienteEsborrany.getCodi() + "] con estado " +
                     "[" + recienteEsborrany.getEstat() + "]");
         }
@@ -438,7 +448,7 @@ public class CalculoUtils {
         for (String x : plazo) {
             Integer valor = this.extraerValorPlazo(x);
             UnidadPlazo unidad = this.extraerUnidadPlazo(x);
-            if (valorMax == -1) {
+            if (valorMax == null || valorMax == -1) {
                 unidadMax = unidad;
                 valorMax = valor;
             } else if (valorMax < valor && !unidadMax.isGreaterThan(unidad)) {
@@ -446,7 +456,11 @@ public class CalculoUtils {
                 valorMax = valor;
             }
         }
-        return valorMax + unidadMax.toString();
+        if(valorMax !=null) {
+            return valorMax + unidadMax.toString();
+        }else{
+            return unidadMax.toString();
+        }
     }
 
     /**
@@ -459,7 +473,7 @@ public class CalculoUtils {
         Map<String, HashSet<String>> map = new HashMap<>();
         for (LimitacioNormativaSerie lm : serie.getAchLimitacioNormativaSeries()) {
             if (lm.getAchSeriedocumental().getId().equals(serie.getId())) {
-                if(!lm.isObsolete()) {
+                if (!lm.isObsolete()) {
                     if (map.get(lm.getAchCausalimitacio().getCodi()) == null) {
                         HashSet<String> list = new HashSet<String>();
                         // TODO : Cambiar estos dos get a getNomcas en el futuro

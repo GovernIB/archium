@@ -12,6 +12,8 @@ public class Serie extends Nodo{
     private Confidencialidad confidencialidad;
     private TipoAcceso tipoAcceso;
     private List<String> codigoLimitacion;
+    private List<String> usuariosAplicacion;
+    private List<String> seriesArgen;
     private String condicionReutilizacion;
     private List<TipoValor> tipoValor;
     private ValorSecundario valorSecundario;
@@ -27,6 +29,22 @@ public class Serie extends Nodo{
     private String mimeType;
     private String encoding;
     private DataHandler binaryContent;
+
+    public List<String> getUsuariosAplicacion() {
+        return usuariosAplicacion;
+    }
+
+    public void setUsuariosAplicacion(List<String> usuariosAplicacion) {
+        this.usuariosAplicacion = usuariosAplicacion;
+    }
+
+    public List<String> getSeriesArgen() {
+        return seriesArgen;
+    }
+
+    public void setSeriesArgen(List<String> seriesArgen) {
+        this.seriesArgen = seriesArgen;
+    }
 
     public DataHandler getBinaryContent() {
         return binaryContent;

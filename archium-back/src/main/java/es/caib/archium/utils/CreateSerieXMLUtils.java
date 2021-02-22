@@ -4,10 +4,7 @@ import es.caib.archium.commons.i18n.I18NException;
 import es.caib.archium.commons.utils.Constants;
 import es.caib.archium.csgd.apirest.constantes.TipoDictamen;
 import es.caib.archium.csgd.apirest.constantes.UnidadPlazo;
-import es.caib.archium.persistence.model.Dictamen;
-import es.caib.archium.persistence.model.LimitacioNormativaSerie;
-import es.caib.archium.persistence.model.Seriedocumental;
-import es.caib.archium.persistence.model.Valoracio;
+import es.caib.archium.persistence.model.*;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -44,6 +41,15 @@ import java.util.*;
  *
  * <serie codigo_clasificacion="SD09998" documento_esencial="Sí">
  * <funcion codigo="EDU2300">Educació secundària obligatòria (ESO) i Batxillerat</funcion>
+ * <series_argen>
+ * <serie_argen>A01</serie_argen>
+ * <serie_argen>A02</serie_argen>
+ * <serie_argen>A07</serie_argen>
+ * </series_argen>
+ * <usuarios_aplicaciones>
+ * <usuario_aplicacion>RIPEA</usuario_aplicacion>
+ * <usuario_aplicacion>REGISTRE</usuario_aplicacion>
+ * </usuarios_aplicaciones>
  * <denominacion_clase>Serie test 9998...</denominacion_clase>
  * <tipo_clasificacion>Funcional</tipo_clasificacion>
  * <lopd>Medio</lopd>
@@ -138,6 +144,25 @@ public class CreateSerieXMLUtils {
         attrCodFuncion.setValue(serie.getAchFuncio().getCodi());
         funcionCodigo.setAttributeNode(attrCodFuncion);
 
+        // Series argen
+        Element rootSeriesArgen = doc.createElement("series_argen");
+        root.appendChild(rootSeriesArgen);
+
+        for (Serierelacionada entry : serie.getAchSerierelacionadas1()) {
+            Element serieArgen = doc.createElement("serie_argen");
+            serieArgen.appendChild(doc.createTextNode(entry.getAchSerieargen().getCodi()));
+            rootSeriesArgen.appendChild(serieArgen);
+        }
+
+        // Aplicaciones
+        Element rootUsuariosAplicacion = doc.createElement("usuarios_aplicaciones");
+        root.appendChild(rootUsuariosAplicacion);
+
+        for (AplicacioSerie entry : serie.getAchAplicacioSeries()) {
+            Element usuarioAplicacion = doc.createElement("usuario_aplicacion");
+            usuarioAplicacion.appendChild(doc.createTextNode(entry.getAchAplicacio().getNom()));
+            rootUsuariosAplicacion.appendChild(usuarioAplicacion);
+        }
 
         // Nombre de la clase (denominacion_clase)
         Element denominacionClase = doc.createElement("denominacion_clase");

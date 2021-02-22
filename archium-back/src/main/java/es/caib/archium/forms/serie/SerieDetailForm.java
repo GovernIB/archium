@@ -24,6 +24,8 @@ public class SerieDetailForm implements Serializable {
     private String tipoClasificacion;
     private String lopd;
     private String confidencialidad;
+    private String usuariosAplicacion;
+    private String seriesArgen;
     private AccesoForm acceso;
     private ValoracionForm valoracion;
     private DictamenForm dictamen;
@@ -125,6 +127,22 @@ public class SerieDetailForm implements Serializable {
         this.denominacionClase = denominacionClase;
     }
 
+    public String getUsuariosAplicacion() {
+        return usuariosAplicacion;
+    }
+
+    public void setUsuariosAplicacion(String usuariosAplicacion) {
+        this.usuariosAplicacion = usuariosAplicacion;
+    }
+
+    public String getSeriesArgen() {
+        return seriesArgen;
+    }
+
+    public void setSeriesArgen(String seriesArgen) {
+        this.seriesArgen = seriesArgen;
+    }
+
     public void converter(Serie serieWs, FuncioObject parentFunction) {
         this.parentFunctionCode = parentFunction == null ? campoVacio() : parentFunction.getCodi();
         this.parentFunctionName = parentFunction == null ? campoVacio() : parentFunction.getNom();
@@ -135,13 +153,20 @@ public class SerieDetailForm implements Serializable {
         this.codigo = serieWs.getCodigo() == null ? campoVacio() : serieWs.getCodigo();
         this.esencial = serieWs.getEsencial() == null ? "No" : serieWs.getEsencial() == true ? "Sí" : "No";
 
+        if (serieWs.getSeriesArgen() != null && !serieWs.getSeriesArgen().isEmpty()) {
+            this.seriesArgen = serieWs.getSeriesArgen().stream().collect(Collectors.joining(", "));
+        }
+
+        if (serieWs.getUsuariosAplicacion() != null && !serieWs.getUsuariosAplicacion().isEmpty()) {
+            this.usuariosAplicacion = serieWs.getUsuariosAplicacion().stream().collect(Collectors.joining(", "));
+        }
         AccesoForm acceso = new AccesoForm();
         acceso.setTipoAcceso(serieWs.getTipoAcceso() == null ? campoVacio() : serieWs.getTipoAcceso().getValue());
         acceso.setCondicionReutilizacion(serieWs.getCondicionReutilizacion() == null ? campoVacio() : serieWs.getCondicionReutilizacion());
         if (serieWs.getCodigoLimitacion() != null && !serieWs.getCodigoLimitacion().isEmpty()) {
             // Pasamos a un set para quitar las limitaciones repetidas y despues creamos el string separado por ','
             acceso.setCausaLimitacion(serieWs.getCodigoLimitacion().stream().collect(Collectors.toSet()).stream().collect(Collectors.joining(", ")));
-        }else{
+        } else {
             acceso.setCausaLimitacion(campoVacio());
         }
         this.acceso = acceso;
@@ -150,7 +175,7 @@ public class SerieDetailForm implements Serializable {
         valoracion.setValoracionSecundaria(serieWs.getValorSecundario() == null ? campoVacio() : serieWs.getValorSecundario().getValue());
         if (serieWs.getTipoValor() != null && !serieWs.getTipoValor().isEmpty()) {
             valoracion.setValoracionesPrimarias(serieWs.getTipoValor().stream().map(x -> x.getValue()).collect(Collectors.joining(", ")));
-        }else{
+        } else {
             valoracion.setValoracionesPrimarias(campoVacio());
         }
         this.valoracion = valoracion;

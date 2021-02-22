@@ -5,7 +5,6 @@ import es.caib.archium.commons.utils.Constants;
 import es.caib.archium.communication.exception.CSGDException;
 import es.caib.archium.communication.iface.CSGDSerieService;
 import es.caib.archium.csgd.apirest.constantes.*;
-import es.caib.archium.csgd.apirest.csgd.entidades.comunes.SerieId;
 import es.caib.archium.csgd.apirest.facade.pojos.Serie;
 import es.caib.archium.csgd.apirest.facade.pojos.eliminar.EliminarSerie;
 import es.caib.archium.csgd.apirest.facade.pojos.mover.MoverSerie;
@@ -31,6 +30,7 @@ import javax.xml.transform.TransformerException;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Named
 @ApplicationScoped
@@ -870,6 +870,10 @@ public class SerieFrontService {
         serieWs.setCodigo(serie.getCodi());
         serieWs.setDenominacionClase(serie.getNomcas());
         serieWs.setCodigoLimitacion(this.calculoUtils.extraerCodigoLimitacion(serie));
+        serieWs.setSeriesArgen(serie.getAchSerierelacionadas1() == null ? null : serie.getAchSerierelacionadas1().stream()
+                .map(x -> x.getAchSerieargen().getCodi()).collect(Collectors.toList()));
+        serieWs.setUsuariosAplicacion(serie.getAchAplicacioSeries() == null ? null : serie.getAchAplicacioSeries().stream()
+                .map(x -> x.getAchAplicacio().getNom()).collect(Collectors.toList()));
         this.calculoUtils.extraerValoresYPlazo(serie, serieWs);
 
         // Recuperamos el dictamen en estado vigente (solo puede tener uno cada serie) o el dictamen en estado esborrany

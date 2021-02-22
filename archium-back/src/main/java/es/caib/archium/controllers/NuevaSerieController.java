@@ -344,7 +344,7 @@ public class NuevaSerieController implements Serializable {
         try {
             if (this.validateValoracion()) {
 
-				if(service.checkValidClassificationCode(codi, serieId)){
+				if(!service.checkValidClassificationCode(codi, serieId)){
 					log.error("Ya existe una serie con el código de clasificación ["+codi+"]");
 					FacesMessage message = null;
 					message = new FacesMessage(FacesMessage.SEVERITY_ERROR, messageBundle.getString("nuevaserie.codi.repeptido"), null);

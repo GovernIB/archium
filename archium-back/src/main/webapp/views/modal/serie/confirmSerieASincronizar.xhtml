@@ -24,10 +24,12 @@
                                 </div>
                             </div>
                             <div class="ui-g-6">
-                                <strong><label class="ui-g-5">#{messages['funciones.tree.type.funcio']}: </label></strong>
+                                <strong><label
+                                        class="ui-g-5">#{messages['funciones.tree.type.funcio']}: </label></strong>
                                 <div class="ui-g-7">
-                                    <h:outputText value="#{serieDetail.parentFunctionCode} (#{serieDetail.parentFunctionName})"
-                                                  style="height: 100%!important;"/>
+                                    <h:outputText
+                                            value="#{serieDetail.parentFunctionCode} (#{serieDetail.parentFunctionName})"
+                                            style="height: 100%!important;"/>
                                 </div>
                             </div>
                         </div>
@@ -44,18 +46,34 @@
                         </div>
                         <div class="ui-g-12">
                             <div class="ui-g-6">
-                                <strong><label class="ui-g-5">#{messages['nuevaserie.tipo.clasificacion']}: </label></strong>
+                                <strong><label
+                                        class="ui-g-5">#{messages['nuevaserie.tipo.clasificacion']}: </label></strong>
                                 <h:outputText value="#{serieDetail.tipoClasificacion}" style="height: 100%!important;"/>
                             </div>
                             <div class="ui-g-6">
-                                <strong><label class="ui-g-5">#{messages['nuevodictamen.serieEsencial']}: </label></strong>
+                                <strong><label
+                                        class="ui-g-5">#{messages['nuevodictamen.serieEsencial']}: </label></strong>
                                 <h:outputText value="#{serieDetail.esencial}" style="height: 100%!important;"/>
                             </div>
                         </div>
                         <div class="ui-g-12">
                             <div class="ui-g-6">
-                                <strong><label class="ui-g-5">#{messages['nuevaserie.confidencialidad']}: </label></strong>
+                                <strong><label
+                                        class="ui-g-5">#{messages['nuevaserie.confidencialidad']}: </label></strong>
                                 <h:outputText value="#{serieDetail.confidencialidad}" style="height: 100%!important;"/>
+                            </div>
+                            <div class="ui-g-6">
+                            </div>
+                        </div>
+                        <div class="ui-g-12">
+                            <div class="ui-g-6">
+                                <strong><label class="ui-g-5">#{messages['nuevaserie.seriesAregen']}: </label></strong>
+                                <h:outputText value="#{serieDetail.seriesArgen}" style="height: 100%!important;"/>
+                            </div>
+                            <div class="ui-g-6">
+                                <strong><label class="ui-g-5">#{messages['nuevaserie.aplicaciones']}: </label></strong>
+                                <h:outputText value="#{serieDetail.usuariosAplicacion}"
+                                              style="height: 100%!important;"/>
                             </div>
                         </div>
                         <!--                Acceso-->
@@ -74,10 +92,13 @@
                             </div>
                         </div>
                         <div class="ui-g-12">
-                            <div class="ui-g-12">
-                                <strong><label class="ui-g-5">#{messages['nuevaserie.causalimitacion']}: </label></strong>
+                            <div class="ui-g-6">
+                                <strong><label
+                                        class="ui-g-5">#{messages['nuevaserie.causalimitacion']}: </label></strong>
                                 <h:outputText value="#{serieDetail.acceso.causaLimitacion}"
                                               style="height: 100%!important;"/>
+                            </div>
+                            <div class="ui-g-6">
                             </div>
                         </div>
 
@@ -92,7 +113,8 @@
                                               style="height: 100%!important;"/>
                             </div>
                             <div class="ui-g-6">
-                                <strong><label class="ui-g-5">#{messages['nuevaserie.valorsecundari']}: </label></strong>
+                                <strong><label
+                                        class="ui-g-5">#{messages['nuevaserie.valorsecundari']}: </label></strong>
                                 <h:outputText value="#{serieDetail.valoracion.valoracionSecundaria}"
                                               style="height: 100%!important;"/>
                             </div>
@@ -103,7 +125,8 @@
                         </div>
                         <div class="ui-g-12">
                             <div class="ui-g-6">
-                                <strong><label class="ui-g-5">#{messages['nuevodictamen.tipoDictamen']}: </label></strong>
+                                <strong><label
+                                        class="ui-g-5">#{messages['nuevodictamen.tipoDictamen']}: </label></strong>
                                 <h:outputText value="#{serieDetail.dictamen.tipoDictamen}"
                                               style="height: 100%!important;"/>
                             </div>
@@ -114,10 +137,12 @@
                             </div>
                         </div>
                         <div class="ui-g-12">
-                            <div class="ui-g-12">
+                            <div class="ui-g-6">
                                 <strong><label class="ui-g-5">#{messages['nuevodictamen.accio']}: </label></strong>
                                 <h:outputText value="#{serieDetail.dictamen.accionDictaminada}"
                                               style="height: 100%!important;"/>
+                            </div>
+                            <div class="ui-g-6">
                             </div>
                         </div>
                         <div class="ui-g-12 info_header">
@@ -126,7 +151,8 @@
 
                         <div class="ui-g-12 content_4 modfseries">
                             <div class="ui-g-6 button_new" align="justify">
-                                <p:commandButton id="downloadButton" value="#{messages['nuevaserie.documento.descargar']}"
+                                <p:commandButton id="downloadButton"
+                                                 value="#{messages['nuevaserie.documento.descargar']}"
                                                  ajax="false" class="boton_modal button_red"
                                                  styleClass="margin-rigth: 0px;"
                                                  onclick="PrimeFaces.monitorDownload(start, stop);" update="@form">

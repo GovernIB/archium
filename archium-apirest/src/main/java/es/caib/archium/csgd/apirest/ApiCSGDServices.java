@@ -13,7 +13,6 @@ import es.caib.archium.csgd.apirest.facade.pojos.cabecera.CabeceraAplicacion;
 import es.caib.archium.csgd.apirest.facade.pojos.cabecera.CabeceraLogin;
 import es.caib.archium.csgd.apirest.facade.pojos.cabecera.CabeceraPeticion;
 import es.caib.archium.csgd.apirest.facade.pojos.cabecera.CabeceraTramite;
-import es.caib.archium.csgd.apirest.facade.pojos.comun.NodoAlfresco;
 import es.caib.archium.csgd.apirest.facade.pojos.eliminar.EliminarCuadro;
 import es.caib.archium.csgd.apirest.facade.pojos.eliminar.EliminarFuncion;
 import es.caib.archium.csgd.apirest.facade.pojos.eliminar.EliminarNodo;
@@ -32,7 +31,6 @@ import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.ProcessingException;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -898,6 +896,13 @@ public class ApiCSGDServices {
 
 
         // Propiedades optativas, solo las metemos si tienen valor
+        if(serie.getUsuariosAplicacion() != null && !serie.getUsuariosAplicacion().isEmpty()){
+            dto.getMetadataCollection().add(new Metadata(Constantes.USUARIO_APLICACION_QNAME,serie.getUsuariosAplicacion()));
+        }
+        if(serie.getSeriesArgen() != null && !serie.getSeriesArgen().isEmpty()){
+            dto.getMetadataCollection().add(new Metadata(Constantes.SERIE_ARGEN_QNAME,serie.getSeriesArgen()));
+        }
+
         if (serie.getUnidadPlazoAccionDictaminada() != null) {
             dto.getMetadataCollection().add(new Metadata(Constantes.PLAZO_UNIDAD_ACCION_DICTAMINADA_QNAME, serie.getUnidadPlazoAccionDictaminada().toString()));
         }

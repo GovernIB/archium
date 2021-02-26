@@ -236,7 +236,7 @@ public class Serie extends Nodo {
             aux = getProperty(dto.getMetadataCollection(), Constantes.CONDICION_REUTILIZACION_QNAME);
             this.condicionReutilizacion = aux == null ? null : (String) aux;
             aux = getProperty(dto.getMetadataCollection(), Constantes.TIPO_VALOR_QNAME);
-            this.tipoValor = aux == null ? null : aux instanceof TipoValor ? Arrays.asList((TipoValor) aux) : (List<TipoValor>) aux;
+            this.tipoValor = aux == null ? null : aux instanceof String ? Arrays.asList(TipoValor.getTipoValor((String) aux)) : (List<TipoValor>) aux;
             aux = getProperty(dto.getMetadataCollection(), Constantes.VALOR_SECUNDARIO_QNAME);
             this.valorSecundario = aux == null ? null : ValorSecundario.getValorSecundario((String) aux);
             aux = getProperty(dto.getMetadataCollection(), Constantes.TIPO_DICTAMEN_QNAME);

@@ -50,7 +50,8 @@ public interface Constants {
         CLIENT_ERROR("CSGD501"),
         MALFORMED_RESULT("CSGD502"),
         ERROR_RETURNED("CSGD503"),
-        HEADER_ERROR("CSGD504");
+        HEADER_ERROR("CSGD504"),
+        FUNCION_NO_IMPLEMENTADA("CSGD505");
 
         private String value;
 

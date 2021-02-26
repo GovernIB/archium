@@ -13,10 +13,10 @@ import es.caib.archium.csgd.apirest.facade.pojos.cabecera.CabeceraAplicacion;
 import es.caib.archium.csgd.apirest.facade.pojos.cabecera.CabeceraLogin;
 import es.caib.archium.csgd.apirest.facade.pojos.cabecera.CabeceraPeticion;
 import es.caib.archium.csgd.apirest.facade.pojos.cabecera.CabeceraTramite;
-import es.caib.archium.csgd.apirest.facade.pojos.eliminar.EliminarCuadro;
-import es.caib.archium.csgd.apirest.facade.pojos.eliminar.EliminarFuncion;
-import es.caib.archium.csgd.apirest.facade.pojos.eliminar.EliminarNodo;
-import es.caib.archium.csgd.apirest.facade.pojos.eliminar.EliminarSerie;
+import es.caib.archium.csgd.apirest.facade.pojos.comun.CuadroId;
+import es.caib.archium.csgd.apirest.facade.pojos.comun.FuncionId;
+import es.caib.archium.csgd.apirest.facade.pojos.comun.NodoAlfresco;
+import es.caib.archium.csgd.apirest.facade.pojos.comun.SerieId;
 import es.caib.archium.csgd.apirest.facade.pojos.mover.MoverFuncion;
 import es.caib.archium.csgd.apirest.facade.pojos.mover.MoverNodo;
 import es.caib.archium.csgd.apirest.facade.pojos.mover.MoverSerie;
@@ -33,7 +33,6 @@ import javax.ws.rs.ProcessingException;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 public class ApiCSGDServices {
@@ -111,7 +110,7 @@ public class ApiCSGDServices {
         return null;
     }
 
-    public ResultadoSimple modificarSerie(Serie serie){
+    public ResultadoSimple modificarSerie(Serie serie) {
         SetSerieResult result = null;
         ResultadoSimple resultado = new ResultadoSimple();
 
@@ -174,7 +173,9 @@ public class ApiCSGDServices {
 
         if (output.getEstadoRespuestaHttp() == Constantes.CodigosRespuesta.HTTP_RESPUESTA_OK.getValue()) {
             GetSerieResult resultado = (GetSerieResult) output.getContenido();
-            result.setElementoDevuelto(toSerie(resultado.getGetSerieResult().getResParam()));
+            Serie dto = new Serie();
+            dto.converter(resultado.getGetSerieResult().getResParam());
+            result.setElementoDevuelto(dto);
             result.setCodigoResultado(resultado.getGetSerieResult().getResult().getCode());
             result.setMsjResultado(resultado.getGetSerieResult().getResult().getDescription());
         } else {
@@ -224,7 +225,7 @@ public class ApiCSGDServices {
         return result;
     }
 
-    public ResultadoSimple moverSerie(String serieId, String newParent){
+    public ResultadoSimple moverSerie(String serieId, String newParent) {
 
         MoveSerieResult result = null;
         ResultadoSimple resultado = new ResultadoSimple();
@@ -233,7 +234,7 @@ public class ApiCSGDServices {
         ParamMoveNode param;
         MoveSerie peticion = new MoveSerie();
 
-        param = generarParametrosMoveNode(serieId,newParent);
+        param = generarParametrosMoveNode(serieId, newParent);
 
         request.setServiceHeader(getServiceHeader());
         request.setParam(param);
@@ -302,7 +303,78 @@ public class ApiCSGDServices {
         return resultado;
     }
 
-    public ResultadoSimple modificarFuncion(Funcion funcion){
+    public ResultadoSimple otorgarPermisosSerie(List<String> nodeIds, List<String> authorities, Permisos permission) {
+        ParamGrantPermissions param;
+        GrantPermissionsOnSerieResult result = null;
+        ResultadoSimple resultado = new ResultadoSimple();
+
+        param = generarParametrosGrantPermissions(nodeIds, authorities, permission);
+
+        Request<ParamGrantPermissions> request = new Request<ParamGrantPermissions>();
+        request.setServiceHeader(getServiceHeader());
+        request.setParam(param);
+
+        GrantPermissionsOnSeries peticion = new GrantPermissionsOnSeries();
+        peticion.setGrantPermissionsOnSeriesRequest(request);
+
+        ResultadoJersey output;
+
+        // Realizamos la llamada
+        output = postCall(resultado, Servicios.GRANT_PERMISOS_SERIE, peticion, GrantPermissionsOnSerieResult.class);
+        // Si el output es null es que se produjo una excepcion
+        if (output == null) {
+            return resultado;
+        }
+
+        if (output.getEstadoRespuestaHttp() == Constantes.CodigosRespuesta.HTTP_RESPUESTA_OK.getValue()) {
+            result = (GrantPermissionsOnSerieResult) output.getContenido();
+            resultado.setCodigoResultado(result.getGrantPermissionsOnSeriesResult().getResult().getCode());
+            resultado.setMsjResultado(result.getGrantPermissionsOnSeriesResult().getResult().getDescription());
+        } else {
+            ExceptionResult except = (ExceptionResult) output.getContenido();
+            resultado.setCodigoResultado(except.getException().getCode());
+            resultado.setMsjResultado(except.getException().getDescription());
+        }
+        return resultado;
+    }
+
+
+    public ResultadoSimple cancelarPermisosSerie(List<String> nodeIds, List<String> authorities) {
+        ParamCancelPermissions param;
+        CancelPermissionsOnSerieResult result = null;
+        ResultadoSimple resultado = new ResultadoSimple();
+
+        param = generarParametrosCancelPermissions(nodeIds, authorities);
+
+        Request<ParamCancelPermissions> request = new Request<ParamCancelPermissions>();
+        request.setServiceHeader(getServiceHeader());
+        request.setParam(param);
+
+        CancelPermissionsOnSeries peticion = new CancelPermissionsOnSeries();
+        peticion.setCancelPermissionsOnSeriesRequest(request);
+
+        ResultadoJersey output;
+
+        // Realizamos la llamada
+        output = postCall(resultado, Servicios.CANCEL_PERMISOS_SERIE, peticion, CancelPermissionsOnSerieResult.class);
+        // Si el output es null es que se produjo una excepcion
+        if (output == null) {
+            return resultado;
+        }
+
+        if (output.getEstadoRespuestaHttp() == Constantes.CodigosRespuesta.HTTP_RESPUESTA_OK.getValue()) {
+            result = (CancelPermissionsOnSerieResult) output.getContenido();
+            resultado.setCodigoResultado(result.getCancelPermissionsOnSeriesResult().getResult().getCode());
+            resultado.setMsjResultado(result.getCancelPermissionsOnSeriesResult().getResult().getDescription());
+        } else {
+            ExceptionResult except = (ExceptionResult) output.getContenido();
+            resultado.setCodigoResultado(except.getException().getCode());
+            resultado.setMsjResultado(except.getException().getDescription());
+        }
+        return resultado;
+    }
+
+    public ResultadoSimple modificarFuncion(Funcion funcion) {
         SetFunctionResult result = null;
         ResultadoSimple resultado = new ResultadoSimple();
 
@@ -365,7 +437,9 @@ public class ApiCSGDServices {
 
         if (output.getEstadoRespuestaHttp() == Constantes.CodigosRespuesta.HTTP_RESPUESTA_OK.getValue()) {
             GetFunctionResult resultado = (GetFunctionResult) output.getContenido();
-            result.setElementoDevuelto(toFuncion(resultado.getGetFunctionResult().getResParam()));
+            Funcion dto = new Funcion();
+            dto.converter(resultado.getGetFunctionResult().getResParam());
+            result.setElementoDevuelto(dto);
             result.setCodigoResultado(resultado.getGetFunctionResult().getResult().getCode());
             result.setMsjResultado(resultado.getGetFunctionResult().getResult().getDescription());
         } else {
@@ -415,7 +489,7 @@ public class ApiCSGDServices {
         return result;
     }
 
-    public ResultadoSimple moverFuncion(String functionId, String newParent){
+    public ResultadoSimple moverFuncion(String functionId, String newParent) {
 
         MoveFunctionResult result = null;
         ResultadoSimple resultado = new ResultadoSimple();
@@ -424,7 +498,7 @@ public class ApiCSGDServices {
         ParamMoveNode param;
         MoveFunction peticion = new MoveFunction();
 
-        param = generarParametrosMoveNode(functionId,newParent);
+        param = generarParametrosMoveNode(functionId, newParent);
 
         request.setServiceHeader(getServiceHeader());
         request.setParam(param);
@@ -492,7 +566,7 @@ public class ApiCSGDServices {
         return resultado;
     }
 
-    public ResultadoSimple modificarCuadro(CuadroClasificacion cuadro){
+    public ResultadoSimple modificarCuadro(CuadroClasificacion cuadro) {
         SetClassificationRootResult result = null;
         ResultadoSimple resultado = new ResultadoSimple();
 
@@ -555,7 +629,9 @@ public class ApiCSGDServices {
 
         if (output.getEstadoRespuestaHttp() == Constantes.CodigosRespuesta.HTTP_RESPUESTA_OK.getValue()) {
             GetClassificationRootResult resultado = (GetClassificationRootResult) output.getContenido();
-            result.setElementoDevuelto(toCuadroClasificacion(resultado.getGetClassificationRootResult().getResParam()));
+            CuadroClasificacion dto = new CuadroClasificacion();
+            dto.converter(resultado.getGetClassificationRootResult().getResParam());
+            result.setElementoDevuelto(dto);
             result.setCodigoResultado(resultado.getGetClassificationRootResult().getResult().getCode());
             result.setMsjResultado(resultado.getGetClassificationRootResult().getResult().getDescription());
         } else {
@@ -788,12 +864,12 @@ public class ApiCSGDServices {
      * @param <T>
      * @return
      */
-    public <ID extends EliminarNodo> ResultadoSimple borrarNodo(ID wsId) {
-        if (wsId instanceof EliminarCuadro) {
+    public <ID extends NodoAlfresco> ResultadoSimple borrarNodo(ID wsId) {
+        if (wsId instanceof CuadroId) {
             return borrarCuadro(wsId.getNodoId());
-        } else if (wsId instanceof EliminarFuncion) {
+        } else if (wsId instanceof FuncionId) {
             return borrarFuncion(wsId.getNodoId());
-        } else if (wsId instanceof EliminarSerie) {
+        } else if (wsId instanceof SerieId) {
             return borrarSerie(wsId.getNodoId());
         }
         return null;
@@ -808,9 +884,9 @@ public class ApiCSGDServices {
      */
     public <M extends MoverNodo> ResultadoSimple moverNodo(M wsDto) {
         if (wsDto instanceof MoverFuncion) {
-            return moverFuncion(wsDto.getNodoId(),wsDto.getParentId());
+            return moverFuncion(wsDto.getNodoId(), wsDto.getParentId());
         } else if (wsDto instanceof MoverSerie) {
-            return moverSerie(wsDto.getNodoId(),wsDto.getParentId());
+            return moverSerie(wsDto.getNodoId(), wsDto.getParentId());
         }
         return null;
     }
@@ -838,15 +914,51 @@ public class ApiCSGDServices {
      * @param <ID>
      * @return
      */
-    public <T extends Nodo, ID extends EliminarNodo> Resultado<T> getNode(ID wsId) {
-        if (wsId instanceof EliminarCuadro) {
+    public <T extends Nodo, ID extends NodoAlfresco> Resultado<T> getNode(ID wsId) {
+        if (wsId instanceof CuadroId) {
             return (Resultado<T>) getCuadro(wsId.getNodoId());
-        } else if (wsId instanceof EliminarFuncion) {
+        } else if (wsId instanceof FuncionId) {
             return (Resultado<T>) getFuncion(wsId.getNodoId());
-        } else if (wsId instanceof EliminarSerie) {
+        } else if (wsId instanceof SerieId) {
             return (Resultado<T>) getSerie(wsId.getNodoId());
         }
         return null;
+    }
+
+    /**
+     * Crea el dto para la asignacion de permisos a un nodo
+     *
+     * @param nodeIds
+     * @param authorities
+     * @param permission
+     * @return
+     */
+    private ParamGrantPermissions generarParametrosGrantPermissions(List<String> nodeIds, List<String> authorities, Permisos permission) {
+        ParamGrantPermissions param = new ParamGrantPermissions();
+
+        param.setNodeIds(nodeIds);
+        param.setAuthorities(authorities);
+        param.setPermission(permission);
+
+        return param;
+    }
+
+    /**
+     * Crea el dto para la cancelacion de permisos a un nodo
+     *
+     * @param nodeIds
+     * @param authorities
+     * @return
+     */
+    private ParamCancelPermissions generarParametrosCancelPermissions(List<String> nodeIds,
+                                                                      List<String> authorities) {
+        ParamCancelPermissions param = new ParamCancelPermissions();
+
+        param.setNodeIds(nodeIds);
+        param.setAuthorities(authorities);
+
+        return param;
+
     }
 
     /**
@@ -896,11 +1008,11 @@ public class ApiCSGDServices {
 
 
         // Propiedades optativas, solo las metemos si tienen valor
-        if(serie.getUsuariosAplicacion() != null && !serie.getUsuariosAplicacion().isEmpty()){
-            dto.getMetadataCollection().add(new Metadata(Constantes.USUARIO_APLICACION_QNAME,serie.getUsuariosAplicacion()));
+        if (serie.getUsuariosAplicacion() != null && !serie.getUsuariosAplicacion().isEmpty()) {
+            dto.getMetadataCollection().add(new Metadata(Constantes.USUARIO_APLICACION_QNAME, serie.getUsuariosAplicacion()));
         }
-        if(serie.getSeriesArgen() != null && !serie.getSeriesArgen().isEmpty()){
-            dto.getMetadataCollection().add(new Metadata(Constantes.SERIE_ARGEN_QNAME,serie.getSeriesArgen()));
+        if (serie.getSeriesArgen() != null && !serie.getSeriesArgen().isEmpty()) {
+            dto.getMetadataCollection().add(new Metadata(Constantes.SERIE_ARGEN_QNAME, serie.getSeriesArgen()));
         }
 
         if (serie.getUnidadPlazoAccionDictaminada() != null) {
@@ -961,88 +1073,6 @@ public class ApiCSGDServices {
         }
     }
 
-    /**
-     * Crea el deto de serie a partir del nodo devuelto
-     *
-     * @param serie
-     * @return
-     */
-    private Serie toSerie(SerieNode serie) {
-        Serie dto = new Serie();
-        dto.setCodigo(serie.getName());
-        dto.setNodeId(serie.getId());
-        // FIXME : En un principio no hace falta los demas atributos asi que no se setean, si algun dia hacen falta,
-        //  se añadiran aqui
-        return dto;
-    }
-
-    /**
-     * Crea el dto de funcion a partir del nodo devuelto
-     *
-     * @param funcion
-     * @return
-     */
-    private Funcion toFuncion(FunctionNode funcion) {
-        Funcion dto = new Funcion();
-        dto.setCodigo(funcion.getName());
-        dto.setNodeId(funcion.getId());
-        Metadata funcionPadre = getMetadata(funcion.getMetadataCollection(),Constantes.FUNCION_PADRE_QNAME);
-        dto.setFuncionPadre(funcionPadre == null? null : (Boolean) funcionPadre.getValue());
-        Boolean isObsolete = getEstado(funcion.getAspects());
-        if(isObsolete){
-            dto.setEstado(Estado.OBSOLET);
-        }
-        return dto;
-    }
-
-
-    /**
-     * Crea el dto de cuadro a partir del nodo devuelto
-     *
-     * @param cuadro
-     * @return
-     */
-    private CuadroClasificacion toCuadroClasificacion(RootNode cuadro) {
-        CuadroClasificacion dto = new CuadroClasificacion();
-        dto.setCodigo(cuadro.getName());
-        dto.setNodeId(cuadro.getId());
-        Boolean isObsolete = getEstado(cuadro.getAspects());
-        if(isObsolete){
-            dto.setEstado(Estado.OBSOLET);
-        }
-        return dto;
-    }
-
-    /**
-     * Devuelve true si entre la lista de aspectos esta el de obsoleto
-     *
-     * @param aspects
-     * @return
-     */
-    private Boolean getEstado(List<Aspects> aspects) {
-        for(Aspects entry : aspects){
-            if(entry.equals(Aspects.OBSOLETO.getValue())){
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /**
-     * En la lista de metadatos del nodo, encuentra la propiedad indicada
-     *
-     * @param metadataCollection
-     * @param qname
-     * @return
-     */
-    private Metadata getMetadata(Set<Metadata> metadataCollection, String qname) {
-        for(Metadata entry : metadataCollection){
-            if(entry.getQname().equalsIgnoreCase(qname)){
-                return entry;
-            }
-        }
-        return null;
-    }
 
     /**
      * Crea el dto de Node para el envio a GDIB
@@ -1060,12 +1090,12 @@ public class ApiCSGDServices {
     }
 
     private void setMetadataYAspectosCuadro(RootNode dto, CuadroClasificacion cuadro) {
-         dto.setMetadataCollection(new HashSet<>());
+        dto.setMetadataCollection(new HashSet<>());
         // Añadimos las propiedades cuando haya
-        dto.getMetadataCollection().add(new Metadata(Constantes.CODIGO_CUADRO_QNAME,cuadro.getCodigo()));
+        dto.getMetadataCollection().add(new Metadata(Constantes.CODIGO_CUADRO_QNAME, cuadro.getCodigo()));
 
         // Añadimos los aspectos
-        if(Estado.OBSOLET == cuadro.getEstado()) {
+        if (Estado.OBSOLET == cuadro.getEstado()) {
             // Por el momento solo hay un aspecto, si en el futuro hubiese mas habria que cambiar este set
             dto.setAspects(Aspects.getAspectosCuadro());
         }

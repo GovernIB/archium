@@ -66,6 +66,7 @@ public class SerieDocumentalObject {
 			this.funcio = new FuncioObject(dbSerie.getAchFuncio());
 			this.estat = dbSerie.getEstat();
 			this.isSynchronized = dbSerie.isSynchronized() == null ? false : dbSerie.isSynchronized();
+			this.nodeId = dbSerie.getNodeId();
 		}
 			
 	}

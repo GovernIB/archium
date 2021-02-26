@@ -6,7 +6,7 @@ import es.caib.archium.communication.exception.CSGDException;
 import es.caib.archium.communication.iface.CSGDSerieService;
 import es.caib.archium.csgd.apirest.constantes.*;
 import es.caib.archium.csgd.apirest.facade.pojos.Serie;
-import es.caib.archium.csgd.apirest.facade.pojos.eliminar.EliminarSerie;
+import es.caib.archium.csgd.apirest.facade.pojos.comun.SerieId;
 import es.caib.archium.csgd.apirest.facade.pojos.mover.MoverSerie;
 import es.caib.archium.ejb.objects.Dir3;
 import es.caib.archium.ejb.service.*;
@@ -798,7 +798,7 @@ public class SerieFrontService {
         if (StringUtils.isNotEmpty(serie.getNodeId())) {
             log.debug("La serie existe en Alfresco, así que procedemos a eliminarla");
             try {
-                this.csgdSerieService.deleteNode(new EliminarSerie(serie.getNodeId()));
+                this.csgdSerieService.deleteNode(new SerieId(serie.getNodeId()));
                 log.info("La serie [" + idSerie + "] ha sido eliminada de Alfresco");
             } catch (CSGDException e) {
                 throw new I18NException(getExceptionI18n(e.getClientErrorCode()), this.getClass().getSimpleName(), "deleteSerie");
@@ -870,8 +870,8 @@ public class SerieFrontService {
         serieWs.setCodigo(serie.getCodi());
         serieWs.setDenominacionClase(serie.getNomcas());
         serieWs.setCodigoLimitacion(this.calculoUtils.extraerCodigoLimitacion(serie));
-        serieWs.setSeriesArgen(serie.getAchSerierelacionadas1() == null ? null : serie.getAchSerierelacionadas1().stream()
-                .map(x -> x.getAchSerieargen().getCodi()).collect(Collectors.toList()));
+        serieWs.setSeriesArgen(serie.getAchSerieargens() == null ? null : serie.getAchSerieargens().stream()
+                .map(x -> x.getCodi()).collect(Collectors.toList()));
         serieWs.setUsuariosAplicacion(serie.getAchAplicacioSeries() == null ? null : serie.getAchAplicacioSeries().stream()
                 .map(x -> x.getAchAplicacio().getNom()).collect(Collectors.toList()));
         this.calculoUtils.extraerValoresYPlazo(serie, serieWs);
@@ -1113,5 +1113,66 @@ public class SerieFrontService {
             return true;
         }
         return false;
+    }
+
+    /**
+     * Hace llamada al getSerie del CSGD, se pasa el id del nodo de Alfresco
+     *
+     * @param serieId
+     * @return
+     */
+    public Serie getSerie(String serieId) throws I18NException {
+        try {
+            return this.csgdSerieService.getNode(new SerieId(serieId));
+        } catch (CSGDException e) {
+            throw new I18NException(getExceptionI18n(e.getClientErrorCode()), this.getClass().getSimpleName(), "getSerie");
+        } catch (EJBAccessException e) {
+            log.error("No se cuenta con los permisos adecuados para realiziar la llamada al csgd");
+            throw new I18NException("csgd.permiso.denegado", this.getClass().getSimpleName(), "getSerie");
+        } catch (Exception e) {
+            log.error("Error obteniendo la serie: " + e);
+            throw new I18NException("excepcion.general.Exception", this.getClass().getSimpleName(), "getSerie");
+        }
+    }
+
+    /**
+     * Llama al metodo del cliente para cancelar permisos de un nodo
+     *
+     * @param nodeId
+     * @param usersCancelPermissions
+     */
+    public void cancelPermissionsOnSerie(String nodeId, List<String> usersCancelPermissions) throws I18NException {
+
+        try {
+            this.csgdSerieService.cancelPermissions(Arrays.asList(new SerieId(nodeId)),usersCancelPermissions);
+        } catch (CSGDException e) {
+            throw new I18NException(getExceptionI18n(e.getClientErrorCode()), this.getClass().getSimpleName(), "cancelPermissionsOnSerie");
+        } catch (EJBAccessException e) {
+            log.error("No se cuenta con los permisos adecuados para realiziar la llamada al csgd");
+            throw new I18NException("csgd.permiso.denegado", this.getClass().getSimpleName(), "cancelPermissionsOnSerie");
+        } catch (Exception e) {
+            log.error("Error cancelando permisos a usuarios para la serie: " + e);
+            throw new I18NException("excepcion.general.Exception", this.getClass().getSimpleName(), "cancelPermissionsOnSerie");
+        }
+    }
+
+    /**
+     * Llama al metodo del cliente para establecer permisos sobre un nodo
+     *
+     * @param nodeId
+     * @param usersGrantPermissions
+     */
+    public void grantPermissionsOnSerie(String nodeId, List<String> usersGrantPermissions) throws I18NException {
+        try {
+            this.csgdSerieService.grantPermissions(Arrays.asList(new SerieId(nodeId)),usersGrantPermissions);
+        } catch (CSGDException e) {
+            throw new I18NException(getExceptionI18n(e.getClientErrorCode()), this.getClass().getSimpleName(), "grantPermissionsOnSerie");
+        } catch (EJBAccessException e) {
+            log.error("No se cuenta con los permisos adecuados para realiziar la llamada al csgd");
+            throw new I18NException("csgd.permiso.denegado", this.getClass().getSimpleName(), "grantPermissionsOnSerie");
+        } catch (Exception e) {
+            log.error("Error estableciendo permisos a usuarios para la serie: " + e);
+            throw new I18NException("excepcion.general.Exception", this.getClass().getSimpleName(), "grantPermissionsOnSerie");
+        }
     }
 }

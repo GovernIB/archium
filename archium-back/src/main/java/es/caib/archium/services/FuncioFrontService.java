@@ -5,9 +5,8 @@ import es.caib.archium.commons.utils.Constants;
 import es.caib.archium.communication.exception.CSGDException;
 import es.caib.archium.communication.iface.CSGDFuncionService;
 import es.caib.archium.csgd.apirest.constantes.Estado;
-import es.caib.archium.csgd.apirest.csgd.entidades.comunes.FunctionId;
 import es.caib.archium.csgd.apirest.facade.pojos.Funcion;
-import es.caib.archium.csgd.apirest.facade.pojos.eliminar.EliminarFuncion;
+import es.caib.archium.csgd.apirest.facade.pojos.comun.FuncionId;
 import es.caib.archium.csgd.apirest.facade.pojos.mover.MoverFuncion;
 import es.caib.archium.ejb.service.*;
 import es.caib.archium.objects.*;
@@ -315,7 +314,7 @@ public class FuncioFrontService {
         if(StringUtils.isNotEmpty(funcion.getNodeId())) {
             log.debug("La funcion existe en Alfresco, así que procedemos a eliminarla");
             try {
-                this.csgdFuncionService.deleteNode(new EliminarFuncion(funcion.getNodeId()));
+                this.csgdFuncionService.deleteNode(new FuncionId(funcion.getNodeId()));
                 log.info("La funcion ["+idFuncio+"] ha sido eliminada de Alfresco");
             } catch (CSGDException e) {
                 throw new I18NException(getExceptionI18n(e.getClientErrorCode()), this.getClass().getSimpleName(), "deleteFunction");

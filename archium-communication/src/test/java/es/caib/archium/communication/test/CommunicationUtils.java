@@ -8,10 +8,12 @@ import es.caib.archium.communication.iface.CSGDSerieService;
 import es.caib.archium.csgd.apirest.constantes.*;
 import es.caib.archium.csgd.apirest.csgd.entidades.comunes.FunctionId;
 import es.caib.archium.csgd.apirest.csgd.entidades.comunes.RootId;
-import es.caib.archium.csgd.apirest.csgd.entidades.comunes.SerieId;
 import es.caib.archium.csgd.apirest.facade.pojos.CuadroClasificacion;
 import es.caib.archium.csgd.apirest.facade.pojos.Funcion;
 import es.caib.archium.csgd.apirest.facade.pojos.Serie;
+import es.caib.archium.csgd.apirest.facade.pojos.comun.CuadroId;
+import es.caib.archium.csgd.apirest.facade.pojos.comun.FuncionId;
+import es.caib.archium.csgd.apirest.facade.pojos.comun.SerieId;
 import es.caib.archium.csgd.apirest.facade.pojos.eliminar.EliminarCuadro;
 import es.caib.archium.csgd.apirest.facade.pojos.eliminar.EliminarFuncion;
 import es.caib.archium.csgd.apirest.facade.pojos.eliminar.EliminarSerie;
@@ -192,7 +194,7 @@ public class CommunicationUtils {
      * @param nodeId
      */
     protected void borrarCuadro(String nodeId) {
-        EliminarCuadro rootId = new EliminarCuadro(nodeId);
+        CuadroId rootId = new CuadroId(nodeId);
         try {
             cuadroService.deleteNode(rootId);
         } catch (Exception e) {
@@ -221,9 +223,9 @@ public class CommunicationUtils {
      * @param funcionId
      */
     protected void borrarFuncion(String funcionId) {
-        EliminarFuncion nodeId = new EliminarFuncion(funcionId);
+        FuncionId nodeId = new FuncionId(funcionId);
         try {
-            funcionService.deleteNode(nodeId);
+           this.funcionService.deleteNode(nodeId);
         } catch (Exception e) {
             // Devuelve error si no se borra correctamente
             Assert.fail("Se ha producido un error borrando la funcion " + e);
@@ -250,7 +252,7 @@ public class CommunicationUtils {
      * @param serieId
      */
     protected void borrarSerie(String serieId) {
-        EliminarSerie nodeId = new EliminarSerie(serieId);
+        SerieId nodeId = new SerieId(serieId);
         try {
             serieService.deleteNode(nodeId);
         } catch (Exception e) {

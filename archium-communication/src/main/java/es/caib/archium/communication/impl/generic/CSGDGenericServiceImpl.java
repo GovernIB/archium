@@ -5,7 +5,7 @@ import es.caib.archium.communication.exception.CSGDException;
 import es.caib.archium.communication.iface.generic.CSGDService;
 import es.caib.archium.csgd.apirest.ApiCSGDServices;
 import es.caib.archium.csgd.apirest.facade.pojos.Nodo;
-import es.caib.archium.csgd.apirest.facade.pojos.eliminar.EliminarNodo;
+import es.caib.archium.csgd.apirest.facade.pojos.comun.NodoAlfresco;
 import es.caib.archium.csgd.apirest.facade.pojos.mover.MoverNodo;
 import es.caib.archium.csgd.apirest.facade.resultados.Resultado;
 import es.caib.archium.csgd.apirest.facade.resultados.ResultadoSimple;
@@ -19,38 +19,21 @@ import javax.inject.Inject;
 
 @ApplicationScoped
 @RolesAllowed({Constants.ACH_CSGD})
-public abstract class CSGDGenericServiceImpl<T extends Nodo, R extends EliminarNodo, M extends MoverNodo> implements CSGDService<T, R, M> {
+public abstract class CSGDGenericServiceImpl<T extends Nodo, ID extends NodoAlfresco, M extends MoverNodo> implements CSGDService<T, ID, M> {
 
     protected final Logger log = LoggerFactory.getLogger(CSGDGenericServiceImpl.class);
 
     @Inject
     protected ApiCSGDServices client;
 
+
     @Override
-    public void deleteNode(R wsId) throws CSGDException {
+    public void deleteNode(ID wsId) throws CSGDException {
         log.info("Se procede a borrar el nodo");
         try {
             ResultadoSimple rs = client.borrarNodo(wsId);
 
-            if (!Constants.CodigosRespuestaCSGD.RESPUESTA_OK.getValue().equals(rs.getCodigoResultado())) {
-                if (Constants.CodigosRespuestaCSGD.RESPUESTA_EXCEPCION.getValue().equals(rs.getCodigoResultado())) {
-                    // Cuando se produce un error porque el nodo a borrar no existe devuelve el cod_021, por lo que  continuamos
-                    // con el proceso, si no devuelve nada es que el nodo no existe en gdib y se continua con normalidad
-                    T result = getNode(wsId);
-                    if(result == null) {
-                        log.info("Se ha recibido el código de error COD_021, el nodo no existe en Alfresco, así que " +
-                                "continuamos con el proceso de borrado");
-                        return;
-                    }else{
-                        log.error("Se produjo un error en el proceso de eliminacion del nodo.");
-                        throw new CSGDException(Constants.ExceptionConstants.GENERIC_ERROR.getValue(), "Se produjo un error en el proceso de eliminacion del nodo.");
-                    }
-                } else {
-                    log.error("Se ha devuelto un codigo [" + rs.getCodigoResultado() + "] en el proceso de borrado." +
-                            " Mensaje: " + rs.getMsjResultado());
-                    throw new CSGDException(Constants.ExceptionConstants.ERROR_RETURNED.getValue(), rs.getCodigoResultado(), rs.getMsjResultado(), "Se ha devuelto un codigo [" + rs.getCodigoResultado() + "] en el proceso de borrado. Mensaje: " + rs.getMsjResultado());
-                }
-            }
+            this.prepararRespuestaSinResultado(rs, wsId);
         } catch (CSGDException e) {
             throw e;
         } catch (Exception e) {
@@ -65,12 +48,7 @@ public abstract class CSGDGenericServiceImpl<T extends Nodo, R extends EliminarN
         log.info("Se procede a mover el nodo");
         try {
             ResultadoSimple rs = client.moverNodo(wsDto);
-
-            if (!Constants.CodigosRespuestaCSGD.RESPUESTA_OK.getValue().equals(rs.getCodigoResultado())) {
-                log.error("Se ha devuelto un codigo [" + rs.getCodigoResultado() + "] en el proceso de borrado." +
-                        " Mensaje: " + rs.getMsjResultado());
-                throw new CSGDException(Constants.ExceptionConstants.ERROR_RETURNED.getValue(), rs.getCodigoResultado(), rs.getMsjResultado(), "Se ha devuelto un codigo [" + rs.getCodigoResultado() + "] en el proceso de mover. Mensaje: " + rs.getMsjResultado());
-            }
+            prepararRespuestaSinResultado(rs,null);
         } catch (CSGDException e) {
             throw e;
         } catch (Exception e) {
@@ -87,20 +65,13 @@ public abstract class CSGDGenericServiceImpl<T extends Nodo, R extends EliminarN
      * @param wsId
      * @throws CSGDException
      */
-    private T getNode(R wsId) throws CSGDException {
+    public T getNode(ID wsId) throws CSGDException {
         log.info("Se procede a obtener el nodo");
         try {
             Resultado<T> rs = client.getNode(wsId);
-
-            if (!Constants.CodigosRespuestaCSGD.RESPUESTA_OK.getValue().equals(rs.getCodigoResultado())) {
-                log.error("Se ha devuelto un codigo [" + rs.getCodigoResultado() + "] en el proceso de obtencion del nodo. " +
-                        "Mensaje: " + rs.getMsjResultado());
-                throw new CSGDException(Constants.ExceptionConstants.ERROR_RETURNED.getValue(), rs.getCodigoResultado(),
-                        rs.getMsjResultado(), "Se ha devuelto un codigo [" + rs.getCodigoResultado() + "] en el " +
-                        "proceso de obtencion del nodo. Mensaje: " + rs.getMsjResultado());
-            }
+            T result = (T) prepararRespuestaConResultado(rs);
             log.debug("Obtencion del nodo realizada correctamente.");
-            return rs.getElementoDevuelto();
+            return result;
         } catch (Exception e) {
             log.error("Se ha producido un error no controlado en el proceso de obtencion del nodo: " + e);
             throw new CSGDException(Constants.ExceptionConstants.GENERIC_ERROR.getValue(), "Se ha producido un error no controlado en el proceso de obtencion del nodo", e);
@@ -114,11 +85,11 @@ public abstract class CSGDGenericServiceImpl<T extends Nodo, R extends EliminarN
         try {
             if (StringUtils.trimToNull(wsDto.getNodeId()) == null) {
                 Resultado<String> rs = client.crearNodo(wsDto, parentId);
-                return prepararResultado(rs);
+                return (String) prepararRespuestaConResultado(rs);
             } else {
                 ResultadoSimple rs = client.modificarNodo(wsDto);
-                prepararResultado(rs);
-                return wsDto.getNodeId();
+                prepararRespuestaConResultado(rs);
+                return (String) wsDto.getNodeId();
             }
 
         } catch (CSGDException e) {
@@ -142,28 +113,60 @@ public abstract class CSGDGenericServiceImpl<T extends Nodo, R extends EliminarN
      * @return
      * @throws CSGDException
      */
-    private String prepararResultado(ResultadoSimple rs) throws CSGDException {
+    private Object prepararRespuestaConResultado(ResultadoSimple rs) throws CSGDException {
         if (!Constants.CodigosRespuestaCSGD.RESPUESTA_OK.getValue().equals(rs.getCodigoResultado())) {
             log.error("Se ha devuelto un codigo [" + rs.getCodigoResultado() + "] en el proceso de sincronizacion. " +
                     "Mensaje: " + rs.getMsjResultado());
             throw new CSGDException(Constants.ExceptionConstants.ERROR_RETURNED.getValue(), rs.getCodigoResultado(),
                     rs.getMsjResultado(), "Se ha devuelto un codigo [" + rs.getCodigoResultado() + "] en el " +
-                    "proceso de sincronizacion. Mensaje: " + rs.getMsjResultado());
+                    "proceso de tratamiento de la respuesta. Mensaje: " + rs.getMsjResultado());
         }
 
         if (rs instanceof Resultado) {
-            Resultado<String> result = (Resultado<String>) rs;
-            if (StringUtils.trimToNull(result.getElementoDevuelto()) == null) {
-                log.error("Se ha producido un error no esperado al no recibir correctamente los datos de respuesta en " +
-                        "el proceso de creacion de gdib");
+            Resultado<Object> result = (Resultado<Object>) rs;
+            if (result.getElementoDevuelto() == null) {
+                log.error("Se ha producido un error no esperado al no recibir correctamente los datos de respuesta");
                 throw new CSGDException(Constants.ExceptionConstants.MALFORMED_RESULT.name(), "Se ha producido un error " +
-                        "no esperado al no recibir correctamente los datos de respuesta en el proceso de creacion de gdib");
+                        "no esperado al no recibir correctamente los datos de respuesta");
             }
 
-            log.debug("Sincronizacion realizada correctamente. NodeId: " + result.getElementoDevuelto());
+            log.debug("Respuesta tratada correctamente. Respuesta: " + result.getElementoDevuelto().toString());
             return result.getElementoDevuelto();
         } else {
             return null;
+        }
+    }
+
+    /**
+     * Interpreta el ResultadoSimple devuelto por el cliente, devuelve excepcion en los casos que lo precise
+     *
+     * @param rs
+     */
+    protected void prepararRespuestaSinResultado(ResultadoSimple rs, ID wsId) throws CSGDException {
+        if (!Constants.CodigosRespuestaCSGD.RESPUESTA_OK.getValue().equals(rs.getCodigoResultado())) {
+            if (Constants.CodigosRespuestaCSGD.RESPUESTA_EXCEPCION.getValue().equals(rs.getCodigoResultado())) {
+                if(wsId==null){
+                    // wsId para acciones como conceder permisos o mover, no se sabe el nodo por el que da el error por
+                    // lo tanto no se comprueba
+                    log.error("Se produjo un error desconocido.");
+                    throw new CSGDException(Constants.ExceptionConstants.GENERIC_ERROR.getValue(), "Se produjo un error en el proceso de eliminacion del nodo.");
+                }
+                // Cuando se produce un error porque el nodo no existe devuelve el cod_021, por lo que  continuamos
+                // con el proceso, si no devuelve nada es que el nodo no existe en gdib y se continua con normalidad
+                T result = getNode(wsId);
+                if(result == null) {
+                    log.info("Se ha recibido el código de error COD_021, el nodo no existe en Alfresco, así que " +
+                            "continuamos con el proceso");
+                    return;
+                }else{
+                    log.error("Se produjo un error desconocido.");
+                    throw new CSGDException(Constants.ExceptionConstants.GENERIC_ERROR.getValue(), "Se produjo un error desconocido.");
+                }
+            } else {
+                log.error("Se ha devuelto un codigo [" + rs.getCodigoResultado() + "]." +
+                        " Mensaje: " + rs.getMsjResultado());
+                throw new CSGDException(Constants.ExceptionConstants.ERROR_RETURNED.getValue(), rs.getCodigoResultado(), rs.getMsjResultado(), "Se ha devuelto un codigo [" + rs.getCodigoResultado() + "]. Mensaje: " + rs.getMsjResultado());
+            }
         }
     }
 

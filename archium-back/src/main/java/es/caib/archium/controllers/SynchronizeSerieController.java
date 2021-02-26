@@ -6,10 +6,10 @@ import es.caib.archium.forms.serie.SerieDetailForm;
 import es.caib.archium.objects.Document;
 import es.caib.archium.objects.FuncioObject;
 import es.caib.archium.objects.SerieDocumentalObject;
-import es.caib.archium.persistence.model.Funcio;
 import es.caib.archium.services.FuncioFrontService;
 import es.caib.archium.services.SerieFrontService;
 import es.caib.archium.utils.FrontExceptionTranslate;
+import org.apache.commons.lang3.StringUtils;
 import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.StreamedContent;
 import org.slf4j.Logger;
@@ -24,7 +24,10 @@ import javax.inject.Named;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Se necesita un controlador propio, cambiando el funcionamiento normal de la sincronizacion, para poder mostrar la
@@ -39,6 +42,9 @@ public class SynchronizeSerieController implements Serializable {
     private Serie serieWs;
     private Long serieId;
 
+    private List<String> usersCancelPermissions;
+    private List<String> usersGrantPermissions;
+
     @Inject
     private SerieFrontService serieService;
     @Inject
@@ -50,6 +56,8 @@ public class SynchronizeSerieController implements Serializable {
     public void init() {
         serieWs = null;
         serieId = null;
+        usersCancelPermissions = new ArrayList<>();
+        usersGrantPermissions = new ArrayList<>();
         Map<String, Object> viewMap = FacesContext.getCurrentInstance().getViewRoot().getViewMap();
         this.serieController = (NuevaSerieController) viewMap.get("nuevaSerieController");
 
@@ -75,6 +83,20 @@ public class SynchronizeSerieController implements Serializable {
             // Preparamos el form con los datos a mostrar
             SerieDetailForm form = new SerieDetailForm();
             form.converter(serieWs, parentFunction);
+
+            usersGrantPermissions = new ArrayList<>();
+            usersCancelPermissions = new ArrayList<>();
+
+            if(StringUtils.trimToNull(serieWs.getNodeId())!=null) {
+                // Si ya fue sincronizada en algun momento, obtenemos el nodo actual de alfresco y comparamos los permisos
+                Serie serieRepositorio = this.serieService.getSerie(serieWs.getNodeId());
+                // Comparamos las listas de permisos y establecemos los adecuados
+                obtenerPermisos(serieRepositorio.getUsuariosAplicacion(),serieWs.getUsuariosAplicacion(),usersGrantPermissions,usersCancelPermissions);
+            }else{
+                // Si la serie es nueva todos los permisos seran para añadir
+                usersGrantPermissions.addAll(serieWs.getUsuariosAplicacion());
+            }
+
             // Guardamos el form en el contexto para acceder a el desde la vista
             FacesContext.getCurrentInstance().getViewRoot().getViewMap().put("serieDetail", form);
 
@@ -96,6 +118,59 @@ public class SynchronizeSerieController implements Serializable {
     }
 
     /**
+     * Compara los permisos del repositorio con los nuevos establecidos, y obtiene los permisos nuevos y los permisos para quitar
+     *
+     * Si un nuevo permiso no esta en la lista de permisos del repositorio, es que es un permiso para añadir
+     * Si un permiso del repositorio no esta en la lista de permisos nuevos, es que es un permiso para quitar
+     *
+     * @param permisosRepositorio
+     * @param nuevosPermisos
+     * @param usersGrantPermissions
+     * @param usersCancelPermissions
+     */
+    private void obtenerPermisos(List<String> permisosRepositorio, List<String> nuevosPermisos,
+                                 List<String> usersGrantPermissions, List<String> usersCancelPermissions) {
+        // Permisos para añadir...
+        if(permisosRepositorio!=null && !permisosRepositorio.isEmpty()) {
+            for (String np : nuevosPermisos) {
+                boolean encontrado = false;
+                for (String pr : permisosRepositorio) {
+                    if (pr.equals(np)) {
+                        encontrado = true;
+                        break;
+                    }
+                }
+                if (!encontrado) {
+                    usersGrantPermissions.add(np);
+                    encontrado = false;
+                }
+            }
+        }else{
+            usersGrantPermissions.addAll(nuevosPermisos);
+        }
+
+        if(permisosRepositorio!=null && !nuevosPermisos.isEmpty()) {
+            // Permisos para quitar...
+            for (String pr : permisosRepositorio) {
+                boolean encontrado = false;
+                for (String np : nuevosPermisos) {
+                    if (pr.equals(np)) {
+                        encontrado = true;
+                        break;
+                    }
+                }
+                if (!encontrado) {
+                    usersCancelPermissions.add(pr);
+                }
+            }
+        }else{
+            if(permisosRepositorio!=null && !permisosRepositorio.isEmpty()) {
+                usersCancelPermissions.addAll(permisosRepositorio);
+            }
+        }
+    }
+
+    /**
      * Proceso de sincronizacion de la serie en GDIB
      */
     public void synchronize() {
@@ -113,7 +188,15 @@ public class SynchronizeSerieController implements Serializable {
         }
 
         try {
+            // Sincronizamos su informacion
             SerieDocumentalObject upS = this.serieService.synchronize(this.serieWs, this.serieId);
+            // Si tiene permisos que añadir o quitar lo hacemos ahora...
+            if(!usersGrantPermissions.isEmpty()){
+                this.serieService.grantPermissionsOnSerie(upS.getNodeId(),usersGrantPermissions);
+            }
+            if(!usersCancelPermissions.isEmpty()){
+                this.serieService.cancelPermissionsOnSerie(upS.getNodeId(),usersCancelPermissions);
+            }
             LOGGER.debug("Proceso de sincronizacion finalizado con exito");
             // Se carga de nuevo la lista de series para mostrar los datos de esta serie actualizados
             this.serieController.funcBean.getNodeFromFunctionId(serieId, "Serie", "update", upS);
@@ -142,6 +225,11 @@ public class SynchronizeSerieController implements Serializable {
     }
 
 
+    /**
+     * Prepara el documento en formato xml para descargar desde la vista
+     *
+     * @return
+     */
     public StreamedContent download() {
 
         InputStream stream = null;

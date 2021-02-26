@@ -8,6 +8,8 @@ public abstract class Servicios {
     public static final String SET_SERIE                    =   "/services/setSerie";
     public static final String MOVE_SERIE                   =   "/services/moveSerie";
     public static final String GET_SERIE                    =   "/services/getSerie";
+    public static final String GRANT_PERMISOS_SERIE         =   "/services/grantPermissionsOnSeries";
+    public static final String CANCEL_PERMISOS_SERIE         =   "/services/cancelPermissionsOnSeries";
 
     //Funciones
     public static final String REMOVE_FUNCTION              =   "/services/removeFunction";

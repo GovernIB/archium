@@ -3,14 +3,13 @@ package es.caib.archium.communication.iface.generic;
 import es.caib.archium.communication.exception.CSGDException;
 import es.caib.archium.csgd.apirest.facade.pojos.Nodo;
 import es.caib.archium.csgd.apirest.facade.pojos.comun.NodoAlfresco;
-import es.caib.archium.csgd.apirest.facade.pojos.eliminar.EliminarNodo;
 import es.caib.archium.csgd.apirest.facade.pojos.mover.MoverNodo;
 
 import javax.ejb.Local;
 
 
 @Local
-public interface CSGDService<T extends Nodo, ID extends EliminarNodo, M extends MoverNodo> {
+public interface CSGDService<T extends Nodo, ID extends NodoAlfresco, M extends MoverNodo> {
 
     /**
      * Envía la instrucción a GDIB de borrar el nodeId indicado
@@ -48,4 +47,14 @@ public interface CSGDService<T extends Nodo, ID extends EliminarNodo, M extends 
      * @throws CSGDException
      */
     void moveNode(M dtoId) throws CSGDException;
+
+
+    /**
+     * Obtiene la informacion del nodo de GDIB
+     *
+     * @param wsId
+     * @return
+     * @throws CSGDException
+     */
+    T getNode(ID wsId) throws CSGDException;
 }

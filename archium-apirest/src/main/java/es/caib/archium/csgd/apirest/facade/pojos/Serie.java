@@ -1,11 +1,16 @@
 package es.caib.archium.csgd.apirest.facade.pojos;
 
 import es.caib.archium.csgd.apirest.constantes.*;
+import es.caib.archium.csgd.apirest.csgd.entidades.comunes.Node;
+import es.caib.archium.csgd.apirest.csgd.entidades.comunes.RootNode;
+import es.caib.archium.csgd.apirest.csgd.entidades.comunes.SerieNode;
+import es.caib.archium.csgd.apirest.utils.Constantes;
 
 import javax.activation.DataHandler;
+import java.util.Arrays;
 import java.util.List;
 
-public class Serie extends Nodo{
+public class Serie extends Nodo {
 
     private String denominacionClase;
     private LOPD lopd;
@@ -204,5 +209,57 @@ public class Serie extends Nodo{
 
     public void setCodigoLimitacion(List<String> codigoLimitacion) {
         this.codigoLimitacion = codigoLimitacion;
+    }
+
+    @Override
+    public void converter(Node nodo) {
+        if(nodo!=null) {
+            SerieNode dto = (SerieNode) nodo;
+            // Utilizo el objeto aux para evitar los nullPointers en los casteos
+            Object aux = null;
+            this.codigo = dto.getName();
+            this.nodeId = dto.getId();
+            aux = getProperty(dto.getMetadataCollection(), Constantes.DENOMINACION_CLASE_QNAME);
+            this.denominacionClase = aux == null ? null : (String) aux;
+            aux = getProperty(dto.getMetadataCollection(), Constantes.LOPD_QNAME);
+            this.lopd = aux == null ? null : LOPD.getLopd((String) aux);
+            aux = getProperty(dto.getMetadataCollection(), Constantes.CONFIDENCIALIDAD_QNAME);
+            this.confidencialidad = aux == null ? null : Confidencialidad.getConfidencialidad((String) aux);
+            aux = getProperty(dto.getMetadataCollection(), Constantes.TIPO_ACCESO_QNAME);
+            this.tipoAcceso = aux == null ? null : TipoAcceso.getTipoAcceso((String) aux);
+            aux = getProperty(dto.getMetadataCollection(), Constantes.CODIGO_CAUSA_LIMITACION_QNAME);
+            this.codigoLimitacion = aux == null ? null : aux instanceof String ? Arrays.asList((String) aux) : (List<String>) aux;
+            aux = getProperty(dto.getMetadataCollection(), Constantes.USUARIO_APLICACION_QNAME);
+            this.usuariosAplicacion = aux == null ? null : aux instanceof String ? Arrays.asList((String) aux) : (List<String>) aux;
+            aux = getProperty(dto.getMetadataCollection(), Constantes.SERIE_ARGEN_QNAME);
+            this.seriesArgen = aux == null ? null : aux instanceof String ? Arrays.asList((String) aux) : (List<String>) aux;
+            aux = getProperty(dto.getMetadataCollection(), Constantes.CONDICION_REUTILIZACION_QNAME);
+            this.condicionReutilizacion = aux == null ? null : (String) aux;
+            aux = getProperty(dto.getMetadataCollection(), Constantes.TIPO_VALOR_QNAME);
+            this.tipoValor = aux == null ? null : aux instanceof TipoValor ? Arrays.asList((TipoValor) aux) : (List<TipoValor>) aux;
+            aux = getProperty(dto.getMetadataCollection(), Constantes.VALOR_SECUNDARIO_QNAME);
+            this.valorSecundario = aux == null ? null : ValorSecundario.getValorSecundario((String) aux);
+            aux = getProperty(dto.getMetadataCollection(), Constantes.TIPO_DICTAMEN_QNAME);
+            this.tipoDictamen = aux == null ? null : TipoDictamen.getTipoDictamen((String) aux);
+            aux = getProperty(dto.getMetadataCollection(), Constantes.ACCION_DICTAMINADA_QNAME);
+            this.accionDictaminada = aux == null ? null : (String) aux;
+            aux = getProperty(dto.getMetadataCollection(), Constantes.PLAZO_ACCION_DICTAMINADA_QNAME);
+            this.plazoAccionDictaminada = aux == null ? null : (Integer) aux;
+            aux = getProperty(dto.getMetadataCollection(), Constantes.PLAZO_UNIDAD_ACCION_DICTAMINADA_QNAME);
+            this.unidadPlazoAccionDictaminada = aux == null ? null : UnidadPlazo.getUnidad((String) aux);
+            aux = getProperty(dto.getMetadataCollection(), Constantes.DOCUMENTO_ESENCIAL_QNAME);
+            this.isEsencial = aux == null ? null : (Boolean) aux;
+            aux = getProperty(dto.getMetadataCollection(), Constantes.TIPO_CLASIFICACION_QNAME);
+            this.tipoClasificacion = aux == null ? null : (String) aux;
+            aux = getProperty(dto.getMetadataCollection(), Constantes.PLAZO_RESELLADO_QNAME);
+            this.resellado = aux == null ? null : (Integer) aux;
+            aux = getProperty(dto.getMetadataCollection(), Constantes.PLAZO_UNIDAD_RESELLADO_QNAME);
+            this.unidadResellado = aux == null ? null : UnidadPlazo.getUnidad((String) aux);
+            if (dto.getBinaryContent() != null) {
+                this.content = dto.getBinaryContent().getContent();
+                this.mimeType = dto.getBinaryContent().getMimetype();
+                this.encoding = dto.getBinaryContent().getEncoding();
+            }
+        }
     }
 }

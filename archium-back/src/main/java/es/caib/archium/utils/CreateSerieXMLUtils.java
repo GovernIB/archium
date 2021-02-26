@@ -41,15 +41,15 @@ import java.util.*;
  *
  * <serie codigo_clasificacion="SD09998" documento_esencial="Sí">
  * <funcion codigo="EDU2300">Educació secundària obligatòria (ESO) i Batxillerat</funcion>
- * <series_argen>
+ * <series_argen_migracion>
  * <serie_argen>A01</serie_argen>
  * <serie_argen>A02</serie_argen>
  * <serie_argen>A07</serie_argen>
- * </series_argen>
- * <usuarios_aplicaciones>
- * <usuario_aplicacion>RIPEA</usuario_aplicacion>
- * <usuario_aplicacion>REGISTRE</usuario_aplicacion>
- * </usuarios_aplicaciones>
+ * </series_argen_migracion>
+ * <aplicacion_serie>
+ * <aplicacion>RIPEA</aplicacion>
+ * <aplicacion>REGISTRE</aplicacion>
+ * </aplicacion_serie>
  * <denominacion_clase>Serie test 9998...</denominacion_clase>
  * <tipo_clasificacion>Funcional</tipo_clasificacion>
  * <lopd>Medio</lopd>
@@ -145,21 +145,21 @@ public class CreateSerieXMLUtils {
         funcionCodigo.setAttributeNode(attrCodFuncion);
 
         // Series argen
-        Element rootSeriesArgen = doc.createElement("series_argen");
+        Element rootSeriesArgen = doc.createElement("series_argen_migracion");
         root.appendChild(rootSeriesArgen);
 
-        for (Serierelacionada entry : serie.getAchSerierelacionadas1()) {
+        for (Serieargen entry : serie.getAchSerieargens()) {
             Element serieArgen = doc.createElement("serie_argen");
-            serieArgen.appendChild(doc.createTextNode(entry.getAchSerieargen().getCodi()));
+            serieArgen.appendChild(doc.createTextNode(entry.getCodi()));
             rootSeriesArgen.appendChild(serieArgen);
         }
 
         // Aplicaciones
-        Element rootUsuariosAplicacion = doc.createElement("usuarios_aplicaciones");
+        Element rootUsuariosAplicacion = doc.createElement("aplicacion_serie");
         root.appendChild(rootUsuariosAplicacion);
 
         for (AplicacioSerie entry : serie.getAchAplicacioSeries()) {
-            Element usuarioAplicacion = doc.createElement("usuario_aplicacion");
+            Element usuarioAplicacion = doc.createElement("aplicacion");
             usuarioAplicacion.appendChild(doc.createTextNode(entry.getAchAplicacio().getNom()));
             rootUsuariosAplicacion.appendChild(usuarioAplicacion);
         }

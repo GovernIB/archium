@@ -1,0 +1,180 @@
+<ui:composition template="/WEB-INF/templates/layout.xhtml"
+ 	  xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://java.sun.com/jsf/facelets">
+
+	<ui:param name="title" value="Dictaments | Archium" />
+	
+	<ui:define name="content">
+	<ui:include src="/views/modal/dictamen/nuevoDictamen.xhtml" />
+	
+  	<!-- CONTENIDO -->
+  				
+  		<h2 class="title_first">#{messages['dictamen.dictamen']}</h2>
+  		<div class="separador_rojo"></div>
+  		<h:form id="panel1"  class="table_action">
+  			<p:commandButton class="button_add" value="Añadir nuevo" icon="icono_add" action="#{dictamenController.abrirModal}" oncomplete="PF('dictamenModalDialog').show()" update="dictamenModalDialogId"/>  		
+	  		<p:growl>
+		        <p:autoUpdate />
+		    </p:growl>
+			<p:dataTable id="Cuadros" var="cuadro" value="#{dictamenController.listaDictamen}" rows="10" editable="true"
+                 paginator="true"
+                 paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                 currentPageReportTemplate="{startRecord}-{endRecord} of {totalRecords} records">
+                 <f:facet name="header">
+            		#{messages['dictamen.dictamen']}
+        		</f:facet>
+                <p:ajax event="rowEdit" 		listener="#{dictamenController.onRowEdit(cuadro)}" update="Cuadros" />
+        		<p:ajax event="rowEditCancel" 	listener="#{dictamenController.onRowCancel}" 		update="Cuadros" />
+		        
+		        <p:column class="first-column" headerText="#{messages['dictamen.dictamen']}" sortBy="#{cuadro.id}"  style="width: 20%;">
+		            <h:outputText value="#{cuadro.id}" />
+		        </p:column>
+		 
+		        <p:column class="first-column" headerText="#{messages['dictamen.accion']}" sortBy="#{cuadro.accioDictaminada}"  filterBy="multiple" style="width: 20%;"> 
+		            <p:cellEditor>
+                		<f:facet name="output"><h:outputText value="#{cuadro.accioDictaminada}" /></f:facet>
+                		<f:facet name="input"><p:inputText  value="#{cuadro.accioDictaminada}" style="width:100%"/></f:facet>
+            		</p:cellEditor>
+		        </p:column>
+		 
+		        <p:column class="first-column" headerText="#{messages['dictamen.condicioReu']}" sortBy="#{cuadro.condicioReutilitzacio}"  style="width: 35%;">
+		            <p:cellEditor>
+                		<f:facet name="output"><h:outputText value="#{cuadro.condicioReutilitzacio}" /></f:facet>
+                		<f:facet name="input"><p:inputText  value="#{cuadro.condicioReutilitzacio}" style="width:100%"/></f:facet>
+            		</p:cellEditor>
+		        </p:column>
+		        
+		        <p:column class="first-column" headerText="#{messages['dictamen.destRest']}" sortBy="#{cuadro.destinatarisRestrigits}"  style="width: 35%;">
+		            <p:cellEditor>
+                		<f:facet name="output"><h:outputText value="#{cuadro.destinatarisRestrigits}" /></f:facet>
+                		<f:facet name="input"><p:inputText  value="#{cuadro.destinatarisRestrigits}" style="width:100%"/></f:facet>
+            		</p:cellEditor>
+		        </p:column>
+		         <!--
+		        <p:column class="first-column" headerText="#{messages['dictamen.dictamen']}Serie Esencial" sortBy="#{cuadro.serieEsencial}"  style="width: 35%;">
+		            <p:cellEditor>
+                		<f:facet name="output"><h:outputText value="#{cuadro.serieEsencial}" /></f:facet>
+                		<f:facet name="input"><p:inputText  value="#{cuadro.serieEsencial}" style="width:100%"/></f:facet>
+            		</p:cellEditor>
+		        </p:column>
+		 		-->	
+		 		<p:column class="first-column" headerText="#{messages['dictamen.termini']}" sortBy="#{cuadro.termini}"  style="width: 35%;">
+		            <p:cellEditor>
+                		<f:facet name="output"><h:outputText value="#{cuadro.termini}" /></f:facet>
+                		<f:facet name="input"><p:inputText  value="#{cuadro.termini}" style="width:100%"/></f:facet>
+            		</p:cellEditor>
+		        </p:column>
+		        	 
+		                  
+                <p:column class="first-column" headerText="#{messages['dictamen.serieDoc']}"  sortBy="#{cuadro.serieDocumental.nom}" style="width: 35%;">
+                    <p:cellEditor>
+                		<f:facet name="output"><h:outputText value="#{cuadro.serieDocumental.nom}" ></h:outputText></f:facet>
+                		<f:facet name="input">
+                			<p:selectOneMenu id="Idserie" value="#{cuadro.serieDocumental}"  converter="SeriesConverter" required="true" requiredMessage="la serie no pot estar buit" style="width:150px">
+				                
+				                <f:selectItems value="#{dictamenController.listaDocumental}" var="n" itemLabel="#{n.nom}" itemValue="#{n}" />
+				                <f:converter converterId="SeriesConverter"/>				                				            
+				            </p:selectOneMenu>
+                		</f:facet>
+            		</p:cellEditor>
+                </p:column>
+                
+                <p:column class="first-column" headerText="#{messages['dictamen.tipuDic']}"  sortBy="#{cuadro.tipusdictamen.nom}" style="width: 35%;">
+                    <p:cellEditor>
+                        <f:facet name="output"><h:outputText value="#{cuadro.tipusdictamen.nom}" ></h:outputText></f:facet>
+                        <f:facet name="input">
+                            <p:selectOneMenu id="IdtipuDictamen" value="#{cuadro.tipusdictamen}"  converter="TipusDictamenConverter" required="true" requiredMessage="El tipu d dictamen no pot estar buit" style="width:150px">
+                                
+                                <f:selectItems value="#{dictamenController.listatipuDictamen}" var="n" itemLabel="#{n.nom}" itemValue="#{n}" />
+                                <f:converter converterId="TipusDictamenConverter"/>
+                            </p:selectOneMenu>
+                        </f:facet>
+                    </p:cellEditor>
+                </p:column>
+
+                <p:column class="first-column" headerText="#{messages['dictamen.tipuAcc']}" sortBy="#{cuadro.tipusAcces.nom}" style="width: 35%;">
+                    <p:cellEditor>
+                		<f:facet name="output"><h:outputText value="#{cuadro.tipusAcces.nom}" ></h:outputText></f:facet>
+                		<f:facet name="input">
+                			<p:selectOneMenu id="IdTipuacces" value="#{cuadro.tipusAcces}" converter="TipusAccesConverter" required="true" requiredMessage="El tipu Acces no pot estar buit" style="width:150px">
+                                
+				                <f:selectItems value="#{dictamenController.listaTipuAcces}" var="n" itemLabel="#{n.nom}" itemValue="#{n}" />
+				            	<f:converter converterId="TipusAccesConverter"/>
+				            </p:selectOneMenu>
+                		</f:facet>
+            		</p:cellEditor>
+                </p:column>
+                <p:column class="first-column" headerText="#{messages['dictamen.ens']}" sortBy="#{cuadro.ens.nom}" style="width: 35%;">
+                    <p:cellEditor>
+                		<f:facet name="output"><h:outputText value="#{cuadro.ens.nom}" ></h:outputText></f:facet>
+                		<f:facet name="input">
+                			<p:selectOneMenu id="IdEns" value="#{cuadro.ens}" converter="EnsConverter" required="true" requiredMessage="Ens no pot estar buit" style="width:150px">
+                                
+				                <f:selectItems value="#{dictamenController.listaEns}" var="n" itemLabel="#{n.nom}" itemValue="#{n}"  />
+				            	<f:converter converterId="EnsConverter"/>
+				            </p:selectOneMenu>
+                		</f:facet>
+            		</p:cellEditor>
+                </p:column>
+                <p:column class="first-column" headerText="#{messages['dictamen.lopd']}" sortBy="#{cuadro.lopd.nom}" style="width: 35%;">
+                    <p:cellEditor>
+                		<f:facet name="output"><h:outputText value="#{cuadro.lopd.nom}" ></h:outputText></f:facet>
+                		<f:facet name="input">
+                			<p:selectOneMenu id="Idlopd" value="#{cuadro.lopd}" converter="LopdConverter" required="true" requiredMessage="la Lopd no pot estar buit" style="width:150px">
+				                
+				                <f:selectItems value="#{dictamenController.listaLopd}" var="n" itemLabel="#{n.nom}" itemValue="#{n}" />
+				            	<f:converter converterId="LopdConverter"/>
+				            </p:selectOneMenu>
+                		</f:facet>
+            		</p:cellEditor>
+                </p:column>
+                <p:column class="first-column" headerText="#{messages['dictamen.normApro']}" sortBy="#{cuadro.normativaAprovacio.nom}" style="width: 35%;">
+                    <p:cellEditor>
+                		<f:facet name="output"><h:outputText value="#{cuadro.normativaAprovacio.nom}" ></h:outputText></f:facet>
+                		<f:facet name="input">
+                			<p:selectOneMenu id="Idnormativa" value="#{cuadro.normativaAprovacio}" converter="NormativaConverter" required="true" requiredMessage="la nomativa de aprovacio no pot estar buit" style="width:150px"
+											 filter="true" filterMatchMode="contains">
+				                
+				                <f:selectItems value="#{dictamenController.listaNormativaAprovacio}" var="n" itemLabel="#{n.nom}" itemValue="#{n}" />
+				            	<f:converter converterId="NormativaConverter"/>
+				            </p:selectOneMenu>
+                		</f:facet>
+            		</p:cellEditor>
+                </p:column>
+
+		        <p:column class="first-column" headerText="#{messages['dictamen.dataApro']}" sortBy="#{cuadro.aprovacio}" style="width: 20%;">
+		            <p:cellEditor>
+                		<f:facet name="output"><h:outputText value="#{cuadro.aprovacio}" pattern="yyyy-MM-dd"/></f:facet>
+                		<f:facet name="input"><p:datePicker  value="#{cuadro.aprovacio}" locale="es" appendTo="@(body)" pattern="yyyy-MM-dd"/></f:facet>
+            		</p:cellEditor>
+		        </p:column>
+		        <p:column class="first-column" headerText="#{messages['dictamen.dataIni']}" sortBy="#{cuadro.inici}" style="width: 20%;">
+		            <p:cellEditor>
+                		<f:facet name="output"><h:outputText value="#{cuadro.inici}" pattern="yyyy-MM-dd"/></f:facet>
+                		<f:facet name="input"><p:datePicker  value="#{cuadro.inici}" locale="es" appendTo="@(body)" pattern="yyyy-MM-dd"/></f:facet>
+            		</p:cellEditor>
+		        </p:column>
+		        <p:column class="first-column" headerText="#{messages['dictamen.dataFin']}" sortBy="#{cuadro.fi}" style="width: 20%;">
+		            <p:cellEditor>
+                		<f:facet name="output"><h:outputText value="#{cuadro.fi}" pattern="yyyy-MM-dd" ></h:outputText></f:facet>
+                		<f:facet name="input"><p:datePicker  value="#{cuadro.fi}" locale="es" appendTo="@(body)" pattern="yyyy-MM-dd"/></f:facet>
+            		</p:cellEditor>
+		        </p:column>
+		        
+
+		        <p:column class="first-column column_acciones" style="width: 5%;">
+		        	<f:facet name="header">
+		        		<p:button icon="pi ui-icon-anadir-tabla">
+						</p:button>
+		        	</f:facet>
+			        <p:rowEditor />
+		        </p:column>		        		    
+	    	</p:dataTable> 	    
+		</h:form>
+	    <hr/> 
+  	</ui:define>
+  	
+ </ui:composition>

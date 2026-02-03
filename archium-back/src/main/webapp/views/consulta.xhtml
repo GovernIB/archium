@@ -1,0 +1,45 @@
+<ui:composition template="/WEB-INF/templates/layout.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+>
+
+    <ui:param name="title" value="#{messages['page.consulta.title']}"/>
+
+    <ui:define name="content">
+        <!-- CONTENIDO -->
+
+        <h2 class="title_first">#{messages['consulta.titulo']}</h2>
+        <div class="separador_rojo"/>
+
+        <h:form id="formConsulta">
+            <p:growl>
+                <p:autoUpdate/>
+            </p:growl>
+            <div class="mt-3 mb-5">
+                <p:inputTextarea id="consulta" value="#{adminController.query}" rows="5" cols="30" autoResize="false"/>
+                <hr/>
+                <p:commandButton update="taula" action="#{adminController.updateDades()}" value="Query"
+                                 process="@parent" icon="pi pi-refresh"
+                                 oncomplete="PF('tablita').clearFilters()"/>
+            </div>
+
+            <p:dataTable id="taula" value="#{adminController.dades}" var="item" widgetVar="tablita" rows="50" paginator="true"
+                         paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                         currentPageReportTemplate="{startRecord}-{endRecord} of {totalRecords} records">
+                <f:facet name="header">
+                    <h:outputText value="#{messages['procediment.cercador']}"/>
+                    <p:inputText id="globalFilter" onkeyup="PF('tablita').filter()" style="width:400px"
+                                 placeholder="#{messages['procediment.cerqui']}"/>
+                </f:facet>
+                <p:columns value="#{adminController.columns}" var="columnName" columnIndexVar="i" sortBy="#{item[i]}" filterBy="#{item[i]}" filterMatchMode="contains">
+                    <f:facet name="header">#{columnName}</f:facet>
+                    #{item[i]}
+                </p:columns>
+            </p:dataTable>
+        </h:form>
+    </ui:define>
+
+</ui:composition>

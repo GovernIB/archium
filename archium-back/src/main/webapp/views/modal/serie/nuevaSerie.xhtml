@@ -1,0 +1,631 @@
+<ui:composition
+        xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:h="http://xmlns.jcp.org/jsf/html"
+        xmlns:f="http://java.sun.com/jsf/core"
+        xmlns:p="http://primefaces.org/ui"
+        xmlns:ui="http://java.sun.com/jsf/facelets"
+>
+
+    <!-- SCRIPT -->
+    <script type="text/javascript">
+	    PrimeFaces.locales['es'] = {
+	        closeText: 'Cerrar',
+	        prevText: 'Anterior',
+	        nextText: 'Siguiente',
+	        monthNames: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
+	        monthNamesShort: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'],
+	        dayNames: ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'],
+	        dayNamesShort: ['Dom', 'Lun', 'Mar', 'Mie', 'Jue', 'Vie', 'Sab'],
+	        dayNamesMin: ['D', 'L', 'M', 'X', 'J', 'V', 'S'],
+	        weekHeader: 'Semana',
+	        firstDay: 1,
+	        isRTL: false,
+	        showMonthAfterYear: false,
+	        yearSuffix: '',
+	        timeOnlyTitle: 'Sólo hora',
+	        timeText: 'Tiempo',
+	        hourText: 'Hora',
+	        minuteText: 'Minuto',
+	        secondText: 'Segundo',
+	        currentText: 'Fecha actual',
+	        ampm: false,
+	        month: 'Mes',
+	        week: 'Semana',
+	        day: 'Día',
+	        allDayText: 'Todo el día'
+	    };
+	    PrimeFaces.locales ['de'] = {
+	        closeText: 'Schließen',
+	        prevText: 'Zurück',
+	        nextText: 'Weiter',
+	        monthNames: ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember' ],
+	        monthNamesShort: ['Jan', 'Feb', 'Mär', 'Apr', 'Mai', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dez' ],
+	        dayNames: ['Sonntag', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag'],
+	        dayNamesShort: ['Son', 'Mon', 'Die', 'Mit', 'Don', 'Fre', 'Sam'],
+	        dayNamesMin: ['S', 'M', 'D', 'M ', 'D', 'F ', 'S'],
+	        weekHeader: 'Woche',
+	        firstDay: 1,
+	        isRTL: false,
+	        showMonthAfterYear: false,
+	        yearSuffix:'',
+	        timeOnlyTitle: 'Nur Zeit',
+	        timeText: 'Zeit',
+	        hourText: 'Stunde',
+	        minuteText: 'Minute',
+	        secondText: 'Sekunde',
+	        currentText: 'Aktuelles Datum',
+	        ampm: false,
+	        month: 'Monat',
+	        week: 'Woche',
+	        day: 'Tag',
+	        allDayText: 'Ganzer Tag'
+	    };
+
+    </script>
+
+    <script type="text/javascript">
+	    /*<![CDATA[*/
+	    function dateTemplateFunc(date) {
+	        return '<span style="background-color:' + ((date.day < 21 && date.day > 10) ? '#81C784' : 'inherit') + ';border-radius:50%;padding: .25em;width: 1.75em; height:1.75em; display:block;">' + date.day + '</span>';
+	    }
+	    /*]]>*/
+
+    </script>
+    <p:dialog id="serieModalDialogId" header="Serie Documental" showEffect="fade" widgetVar="serieModalDialog"
+              onShow="PF('tabSerie').select(0)" modal="true" resizable="false"
+              style="max-width:1118px; min-width:1118px; max-height:760px;">
+        <p:scrollPanel style="max-width:1100px; min-width:1100px; max-height:600px;min-height:600px" mode="native">
+            <!-- CONTENIDO -->
+            <div class="views_3">
+                <div class="content_4 modfseries">
+                    <h:form id="nuevaSerieForm">
+                        <ui:fragment rendered="#{nuevaSerieController.serieId!=null}">
+                            <h2 class="title_first">#{messages['nuevaserie.modificaserie']}</h2>
+                        </ui:fragment>
+                        <ui:fragment rendered="#{nuevaSerieController.serieId==null}">
+                            <h2 class="title_first">#{messages['nuevaserie.nuevaserie']}</h2>
+                        </ui:fragment>
+                        <div class="separador_rojo"></div>
+
+
+                        <p:tabView id="tabSerie" widgetVar="tabSerie">
+                            <p:tab title="#{messages['nuevaserie.datosBasicos']}" class="datosbasic">
+
+                                <div class="ui-g">
+
+                                    <div class="ui-g-12 item_1" style="margin-bottom: 10px;">
+                                        <label class="ui-g-2">#{messages['nuevaserie.nombreserie']} *</label>
+                                        <p:inputText id="nom" class="ui-g-10" value="#{nuevaSerieController.nom}"
+                                                     required="true"
+                                                     validatorMessage="#{messages['nuevaserie.validate.nom']}"
+                                                     requiredMessage="#{messages['nuevaserie.require.nom']}"
+                                                     style="height: 100%!important;">
+                                            <f:validateLength minimum="0" maximum="1000"/>
+                                        </p:inputText>
+                                        <p:message for="nom"/>
+                                    </div>
+
+                                    <div class="ui-g-6">
+                                        <label class="ui-g-5">#{messages['nuevaserie.codiserie']} *</label>
+                                        <p:inputText id="codi" class="ui-g-7" value="#{nuevaSerieController.codi}"
+                                                     required="true"
+                                                     requiredMessage="#{messages['nuevaserie.require.codi']}"
+                                                     validatorMessage="#{messages['nuevaserie.validate.codi']}"
+                                                     style="height: 100%!important;">
+                                            <f:validateLength minimum="0" maximum="10"/>
+                                        </p:inputText>
+                                        <p:message for="codi"/>
+                                    </div>
+                                    <div class="ui-g-6">
+                                        <label class="ui-g-5">#{messages['nuevaserie.codifuncion']} *</label>
+                                        <p:selectOneMenu
+                                                id="funcioList"
+                                                value="#{nuevaSerieController.serieFuncio}"
+                                                required="true"
+                                                class="ui-g-7 selector_4"
+                                                style="max-width:450px!important;"
+                                                panelStyle="width:450px"
+                                                requiredMessage="#{messages['nuevaserie.require.funcio']}"
+                                                filter="true"
+                                                filterMatchMode="contains">
+                                            <f:selectItems value="#{funciones.listaFunciones}" var="n"
+                                                           itemLabel="#{n.printTab().replace(' ', '&#160;')}#{n.codi} - #{n.nom}"
+                                                           itemValue="#{n}"/>
+                                            <f:converter converterId="FuncioConverter"/>
+                                        </p:selectOneMenu>
+                                    </div>
+
+                                    <div class="ui-g-6 item_1" style="padding: 0 7px!important;">
+                                        <label class="ui-g-5">#{messages['nuevaserie.tiposerie']}</label>
+                                        <p:selectOneMenu panelStyle="width:450px" class="ui-g-7 selector_4"
+                                                         id="tipusSerieList"
+                                                         value="#{nuevaSerieController.tipusSerieId}">
+                                            <f:selectItem
+                                                    itemLabel="-- #{messages['selecciona']} #{messages['nuevaserie.tiposerie']} --"
+                                                    itemValue="#{null}" noSelectionOption="true"/>
+                                            <f:selectItems value="#{nuevaSerieController.listaTipusSerie}"
+                                                           var="tipusSerie"
+                                                           itemValue="#{tipusSerie.id}" itemLabel="#{tipusSerie.nom}"/>
+                                        </p:selectOneMenu>
+                                    </div>
+
+                                    <div class="ui-g-6 item_1" style="padding: 0 7px;!important;">
+                                        <label class="ui-g-5">#{messages['nuevaserie.catalogoserie']} *</label>
+                                        <p:selectOneMenu panelStyle="width:450px" class="ui-g-7 selector_4"
+                                                         id="catalegSerieList"
+                                                         value="#{nuevaSerieController.catalegSeriId}"
+                                                         required="true"
+                                                         requiredMessage="#{messages['nuevaserie.required.catalogoserie']}">
+                                            <f:selectItem
+                                                    itemLabel="-- #{messages['selecciona']} #{messages['nuevaserie.catalogoserie']} --"
+                                                    itemValue="#{null}" noSelectionOption="true"/>
+                                            <f:selectItems value="#{nuevaSerieController.listaCatalegSerie}"
+                                                           var="catalegSeri"
+                                                           itemValue="#{catalegSeri.id}"
+                                                           itemLabel="#{catalegSeri.nom}"/>
+                                        </p:selectOneMenu>
+                                    </div>
+
+                                    <div class="ui-g-6">
+                                        <label class="ui-g-5">#{messages['nuevaserie.nombrecastellano']}*</label>
+                                        <p:inputText class="ui-g-7" value="#{nuevaSerieController.nomCas}"
+                                                     required="true"
+                                                     validatorMessage="#{messages['nuevaserie.validate.nomcas']}"
+                                                     requiredMessage="#{messages['nuevaserie.require.nomcas']}"
+                                                     style="height: 100%!important;">
+                                            <f:validateLength minimum="0" maximum="1000"/>
+                                        </p:inputText>
+                                    </div>
+
+                                    <div class="ui-g-6">
+                                        <label class="ui-g-5">#{messages['nuevaserie.codiiecisa']}</label>
+                                        <p:inputText class="ui-g-7" value="#{nuevaSerieController.codiIecisa}"
+                                                     validatorMessage="#{messages['nuevaserie.validate.codiiecisa']}"
+                                                     style="height: 100%!important;">
+                                            <f:validateLength minimum="0" maximum="32"/>
+                                        </p:inputText>
+                                    </div>
+
+                                    <div class="ui-g-6">
+                                        <label class="ui-g-5">#{messages['nuevaserie.descripcio']} *</label>
+                                        <p:inputTextarea class="ui-g-7" id="desc"
+                                                         value="#{nuevaSerieController.descripcio}" required="true"
+                                                         requiredMessage="#{messages['nuevaserie.require.desc']}"
+                                                         autoResize="false"
+                                                         validatorMessage="#{messages['nuevaserie.validate.desc']}"
+                                                         style="height: 100%!important;">
+                                            <f:validateLength minimum="0" maximum="4000"/>
+                                        </p:inputTextarea>
+
+                                        <p:message for="desc"/>
+                                    </div>
+
+                                    <div class="ui-g-6">
+                                        <label class="ui-g-5">#{messages['nuevaserie.descripciocas']}</label>
+                                        <p:inputTextarea class="ui-g-7" value="#{nuevaSerieController.descripcioCas}"
+                                                         autoResize="false"
+                                                         validatorMessage="#{messages['nuevaserie.validate.desccas']}"
+                                                         style="height: 100%!important;">
+                                            <f:validateLength minimum="0" maximum="4000"/>
+                                        </p:inputTextarea>
+                                    </div>
+
+                                    <div class="ui-g-6">
+                                        <label class="ui-g-5">#{messages['nuevaserie.resummigracio']}</label>
+                                        <p:inputTextarea class="ui-g-7" value="#{nuevaSerieController.resumMigracio}"
+                                                         autoResize="false"
+                                                         validatorMessage="#{messages['nuevaserie.validate.resummigracio']}"
+                                                         style="height: 100%!important;">
+                                            <f:validateLength minimum="0" maximum="4000"/>
+                                        </p:inputTextarea>
+                                    </div>
+                                    <div class="ui-g-6">
+                                        <label class="ui-g-5">#{messages['nuevaserie.enviatSAT']}</label>
+                                        <p:triStateCheckbox value="#{nuevaSerieController.enviatSAT}"
+                                                            converter="TriStateBooleanConverter"/>
+                                    </div>
+
+
+                                    <div class="ui-g-6">
+                                        <label class="ui-g-5">#{messages['nuevaserie.dir3prom']}</label>
+                                        <p:selectOneMenu class="ui-g-7" id="dir3"
+                                                         value="#{nuevaSerieController.dir3Promotor}" label="Estats"
+                                                         panelStyle="width:450px"
+                                                         style="height: 100%!important;min-width: auto!important;"
+                                                         filter="true" filterMatchMode="contains">
+                                            <f:selectItem
+                                                    itemLabel="-- #{messages['selecciona']} #{messages['nuevaserie.dir3prom']} -- "
+                                                    itemValue="#{null}" noSelectionOption="true"/>
+                                            <f:selectItems value="#{nuevaSerieController.listaDir3}" var="n"
+                                                           itemValue="#{n.codi}" itemLabel="#{n.codi}-#{n.nom}"/>
+                                        </p:selectOneMenu>
+                                    </div>
+
+                                    <div class="ui-g-6">
+                                        <label class="ui-g-5">#{messages['nuevaserie.estat']} *</label>
+                                        <p:selectOneMenu class="ui-g-7" id="estado"
+                                                         value="#{nuevaSerieController.serieEstat}" label="Estats"
+                                                         panelStyle="width:450px" style="height: 100%!important;">
+                                            <f:selectItems value="#{funciones.listaEstats}" var="n" itemValue="#{n}"
+                                                           itemLabel="#{n}"/>
+                                        </p:selectOneMenu>
+                                    </div>
+
+
+                                </div>
+
+                            </p:tab>
+                            <p:tab id="prcRelacionats" title="#{messages['nuevaserie.procedimientosRelacionados']}" disabled="#{not empty nuevaSerieController.procedimentsComunsRelacionats.target or not empty nuevaSerieController.listaTDP}">
+                                <div class="ui-g">
+                                    <div class="ui-g-12 item_1">
+                                        <p:messages id="mensaje-estado-prcRel">
+                                            <p:autoUpdate/>
+                                        </p:messages>
+                                    </div>
+                                    <div class="ui-g-12">
+                                        <p:commandButton class="boton_modal" icon="pi pi-spinner"
+                                                         partialSubmit="true"
+                                                         update="listaProcediments"
+                                                         value="#{messages['actualizar']}"
+                                                         actionListener="#{nuevaSerieController.reloadProcediments(true)}"/>
+                                        <p:pickList class="ui-g-12 relacionarseries" id="listaProcediments"
+                                                    value="#{nuevaSerieController.procedimentsRelacionats}" var="prc"
+                                                    converter="procedimentsRelacionatsConverter"
+                                                    itemValue="#{prc}" itemLabel="#{prc.label}" showSourceFilter="true"
+                                                    showTargetFilter="true"
+                                                    filterMatchMode="contains" showCheckbox="true">
+                                            <p:column style="width:100%;">
+                                                <h:outputText value="#{prc.label}"/>
+                                            </p:column>
+                                        </p:pickList>
+                                    </div>
+                                </div>
+                            </p:tab>
+
+                            <p:tab id="prcComuns" title="#{messages['nuevaserie.procedimientosComunes']}" disabled="#{not empty nuevaSerieController.procedimentsRelacionats.target or not empty nuevaSerieController.listaTDP}">
+                                <div class="ui-g">
+                                    <div class="ui-g-12 item_1">
+                                        <p:messages id="mensaje-estado-prcComu">
+                                            <p:autoUpdate/>
+                                        </p:messages>
+                                    </div>
+                                    <div class="ui-g-12">
+                                        <p:commandButton class="boton_modal" icon="pi pi-spinner"
+                                                         partialSubmit="true"
+                                                         update="listaProcedimentsComuns"
+                                                         value="#{messages['actualizar']}"
+                                                         actionListener="#{nuevaSerieController.reloadProcedimentsComuns(true)}"/>
+                                        <p:pickList class="ui-g-12 relacionarseries" id="listaProcedimentsComuns"
+                                                    value="#{nuevaSerieController.procedimentsComunsRelacionats}" var="prcComu"
+                                                    converter="procedimentsRelacionatsConverter"
+                                                    itemValue="#{prcComu}" itemLabel="#{prcComu.label}" showSourceFilter="true"
+                                                    showTargetFilter="true"
+                                                    filterMatchMode="contains" showCheckbox="true">
+                                            <p:column style="width:100%;">
+                                                <h:outputText value="#{prcComu.label}"/>
+                                            </p:column>
+                                        </p:pickList>
+                                    </div>
+                                </div>
+                            </p:tab>
+
+                            <!-- ##################################### TIPUS DOCUMENTALS SÈRIES NO PROCEDIMENTALS  -->
+                            <p:tab title="#{messages['nuevaserie.tipusDocumentals']}" disabled="#{not empty nuevaSerieController.procedimentsRelacionats.target or not empty nuevaSerieController.procedimentsComunsRelacionats.target}">
+                                <div class="ui-g-12">
+                                    <label class="ui-g-2">#{messages['nuevaserie.organcoleg']}</label>
+                                    <p:selectOneMenu class="ui-g-7" id="collegiat"
+                                                     value="#{nuevaSerieController.organCollegiatId}"
+                                                     panelStyle="width:450px"
+                                                     style="height: 100%!important;min-width: auto!important;"
+                                                     filter="true" filterMatchMode="contains">
+                                        <f:selectItem
+                                                itemLabel="-- #{messages['selecciona']} #{messages['nuevaserie.organcoleg']} -- "
+                                                itemValue="#{null}" noSelectionOption="true"/>
+                                        <f:selectItems value="#{nuevaSerieController.listaOrganCollegiat}" var="n"
+                                                       itemValue="#{n.id}" itemLabel="#{n.codi}-#{n.nom}"/>
+                                    </p:selectOneMenu>
+                                </div>
+
+                                <div class="ui-g-12">
+                                    <div class="ui-g-12 item_1">
+                                        <label class="ui-g-2">#{messages['nuevaserie.tipusDocumental']}:</label>
+                                        <p:selectOneMenu id="selectTipoDocumental" value="#{nuevaSerieController.selectedTipoDocumental}" filter="true" filterMatchMode="contains">
+                                            <f:converter converterId="tiposDocumentalRelacionadoConverter"/>
+                                            <f:selectItem itemLabel="-- #{messages['selecciona']} #{messages['nuevaserie.selecttipusdocumental']} -- " itemValue="#{null}" noSelectionOption="true"/>
+                                            <f:selectItems value="#{nuevaSerieController.listatipoDocumental}"  var="n" itemLabel="#{n.nom}"  itemValue="#{n}"/>
+                                            <p:ajax event="valueChange" listener="#{nuevaSerieController.onTipoDocumentalSelectedListener}" update="selectTipoDocumental, listaTiposDocumentales" process="@this listaTiposDocumentales" />
+                                        </p:selectOneMenu>
+                                    </div>
+
+                                    <div class="ui-g-12 item_1">
+                                        <p:messages id="mensaje-estado-agr"  closable="true">
+                                            <p:autoUpdate />
+                                        </p:messages>
+                                    </div>
+                                    <p:accordionPanel class="ui-g-12 acordeonnormativas" id="listaTiposDocumentales" value="#{nuevaSerieController.listaTDP}" var="tdp" >
+                                        <p:tab id="tab" title="#{tdp.tipusDocumental.nom}">
+                                            <f:facet name="title">
+                                                <h:outputText class="accordion-title" value="#{tdp.tipusDocumental.nom}"/>
+                                                <h:panelGrid columnClasses="alignRightFullWidth, alignRight, alignRight" columns="3">
+
+                                                </h:panelGrid>
+                                                <p:commandButton class="botton_library" icon="pi pi-trash" onclick="event.stopPropagation();" partialSubmit="true" process="@this" update="listaTiposDocumentales" actionListener="#{nuevaSerieController.deleteTDP(tdp)}"/>
+                                            </f:facet>
+
+                                            <div class="ui-g-12 ">
+
+                                                <div class="ui-g-4" style="display: flex; align-items:center;">
+                                                    <label class="ui-g-4">#{messages['nuevoprocediment.Obligatori']}</label>
+                                                    <p:selectBooleanCheckbox style="margin: 0 10px;" id="obligatori" value="#{tdp.obligatori}"/>
+                                                </div>
+                                                <div class="ui-g-4" style="display: flex; align-items:center;">
+                                                    <label class="ui-g-4">#{messages['nuevoprocediment.Multiple']}</label>
+                                                    <p:selectBooleanCheckbox style="margin: 0 10px;" id="multiple" value="#{tdp.multiple}"/>
+                                                </div>
+                                            </div>
+                                        </p:tab>
+                                    </p:accordionPanel>
+
+                                </div>
+                            </p:tab>
+
+                            <!-- ##################################### RELACIO SERIES -->
+                            <p:tab title="#{messages['nuevaserie.seriesRelacionadas']}">
+                                <h:panelGroup id="tabTipusRelacio">
+                                    <div class="ui-g-12">
+
+                                        <div class="ui-g-12 item_1">
+                                            <label class="ui-g-2">#{messages['nuevaserie.tipusRelacio']}:</label>
+                                            <p:selectOneMenu id="selectTipusRelacio"
+                                                             value="#{nuevaSerieController.selectedTipusRelacio}"
+                                                             filter="true" filterMatchMode="contains"
+                                                             style="max-width:500px;">
+                                                <f:converter converterId="tipusRelacioSerieConverter"/>
+                                                <f:selectItem
+                                                        itemLabel="-- #{messages['selecciona']} #{messages['nuevaserie.tipusRelacio']} --"
+                                                        itemValue="#{nuevaSerieController.selectedTipusRelacio}"
+                                                        noSelectionOption="true"/>
+                                                <f:selectItems value="#{nuevaSerieController.listaTipusRelacio}"
+                                                               var="n" itemLabel="#{n.nom}" itemValue="#{n}"/>
+                                                <p:ajax event="valueChange"
+                                                        listener="#{nuevaSerieController.onTipusRelacioSelectedListener}"
+                                                        update="selectTipusRelacio, listadoRelacionesSeries"/>
+                                            </p:selectOneMenu>
+
+                                        </div>
+                                        <div class="ui-g-12 item_1">
+                                            <p:messages id="mensaje-estado-relser">
+                                                <p:autoUpdate/>
+                                            </p:messages>
+                                        </div>
+                                        <p:accordionPanel id="listadoRelacionesSeries" class="ui-g-12 acordeonnormativas"
+                                                          value="#{nuevaSerieController.listaRelacionSeries}" var="relitem"
+                                                          varStatus="estado">
+                                            <p:tab id="tab" title="#{relitem.tipusRelacio.nom}">
+                                                <f:facet name="title">
+                                                    <h:outputText class="accordion-title"
+                                                                  value="#{relitem.tipusRelacio.nom}"/>
+                                                    <h:panelGrid
+                                                            columnClasses="alignRightFullWidth, alignRight, alignRight"
+                                                            columns="3">
+                                                        <p:commandButton class="botton_library" icon="pi pi-trash"
+                                                                         onclick="event.stopPropagation();"
+                                                                         partialSubmit="true" process="@this"
+                                                                         update="listadoRelacionesSeries"
+                                                                         actionListener="#{nuevaSerieController.deleteRelacioSerie(relitem)}"/>
+                                                    </h:panelGrid>
+                                                </f:facet>
+
+                                                <p:pickList class="ui-g-12 relacionarseries" id="listaSeries"
+                                                            value="#{relitem.dualListSeries}" var="serie"
+                                                            converter="SerieDocumentalConverter"
+                                                            itemValue="#{serie}" itemLabel="#{serie.nomComplet}"
+                                                            showSourceFilter="true" showTargetFilter="true"
+                                                            filterMatchMode="contains" showCheckbox="true">
+                                                    <p:column style="width:100%;">
+                                                        <h:outputText value="#{serie.nomComplet}"/>
+                                                    </p:column>
+                                                </p:pickList>
+
+                                                <div class="ui-g-12" style="text-align: center;">
+                                                    <p:commandButton class="boton_modal botton_red button_aceptar"
+                                                                     partialSubmit="true" process="@this listaSeries"
+                                                                     update="@this" value="#{messages['aceptar']}"
+                                                                     icon="pi pi-check"
+                                                                     actionListener="#{nuevaSerieController.saveRelacioSerie(relitem)}"/>
+                                                </div>
+                                            </p:tab>
+                                        </p:accordionPanel>
+
+                                    </div>
+                                </h:panelGroup>
+                            </p:tab>
+                            <!-- ##################################### Fi RELACIO SERIES -->
+
+                            <p:tab title="#{messages['nuevaserie.seriesAregen']}">
+                                <div class="ui-g">
+                                    <div class="ui-g-12">
+                                        <!-- <label class="ui-g-12">Series Argen Relacionadas</label> -->
+                                        <p:pickList class="ui-g-12 relacionarseries" id="listaSerisArgen"
+                                                    value="#{nuevaSerieController.seriesArgenRelacionadas}"
+                                                    var="seriargen" converter="serieArgenConverter"
+                                                    itemValue="#{seriargen}" itemLabel="#{seriargen.nom}"
+                                                    showSourceFilter="true" showTargetFilter="true"
+                                                    filterMatchMode="contains" showCheckbox="true">
+                                            <p:column style="width:100%;">
+                                                <h:outputText value="#{seriargen.nom}"/>
+                                            </p:column>
+                                        </p:pickList>
+                                    </div>
+                                </div>
+                            </p:tab>
+                            <p:tab title="#{messages['nuevaserie.aplicaciones']}">
+                                <div class="ui-g">
+                                    <div class="ui-g-12">
+                                        <!-- <label class="ui-g-5">Aplicaciones</label> -->
+                                        <p:pickList class="ui-g-12 relacionarseries" id="listaApps"
+                                                    value="#{nuevaSerieController.aplicaciones}" var="app"
+                                                    converter="aplicacionesConverter"
+                                                    itemValue="#{app}" itemLabel="#{app.nom}" showSourceFilter="true"
+                                                    showTargetFilter="true"
+                                                    filterMatchMode="contains" showCheckbox="true"></p:pickList>
+                                    </div>
+                                </div>
+                            </p:tab>
+                            <p:tab title="#{messages['nuevaserie.acceso']}">
+                                <h:panelGroup id="tabNormativas">
+                                    <div class="ui-g-12">
+
+                                        <div class="ui-g-12 item_1">
+                                            <label class="ui-g-2">#{messages['nuevaserie.normativa']}:</label>
+                                            <p:selectOneMenu id="selectNormativa"
+                                                             value="#{nuevaSerieController.selectedNormativa}"
+                                                             filter="true" filterMatchMode="contains"
+                                                             style="max-width:500px;">
+                                                <f:converter converterId="serieNormativaAprobacionConverter"/>
+                                                <f:selectItem
+                                                        itemLabel="-- #{messages['selecciona']} #{messages['nuevaserie.normativa']} --"
+                                                        itemValue="#{nuevaSerieController.selectedNormativa}"
+                                                        noSelectionOption="true"/>
+                                                <f:selectItems value="#{nuevaSerieController.listaNormativaAprobacio}"
+                                                               var="n" itemLabel="#{n.nom}" itemValue="#{n}"/>
+                                                <p:ajax event="valueChange"
+                                                        listener="#{nuevaSerieController.onLimitacioSelectedListener}"
+                                                        update="selectNormativa, listadoRelaciones"/>
+                                            </p:selectOneMenu>
+
+                                        </div>
+                                        <div class="ui-g-12 item_1">
+                                            <p:messages id="mensaje-estado" closable="true">
+                                                <p:autoUpdate/>
+                                            </p:messages>
+                                        </div>
+                                        <p:accordionPanel id="listadoRelaciones" class="ui-g-12 acordeonnormativas"
+                                                          value="#{nuevaSerieController.listaRelacionLNS}" var="lnsitem"
+                                                          varStatus="estado">
+                                            <p:tab id="tab" title="#{lnsitem.normativa.nom}">
+                                                <f:facet name="title">
+                                                    <h:outputText class="accordion-title"
+                                                                  value="#{lnsitem.normativa.nom}"/>
+                                                    <h:panelGrid
+                                                            columnClasses="alignRightFullWidth, alignRight, alignRight"
+                                                            columns="3">
+                                                        <p:commandButton class="botton_library" icon="pi pi-trash"
+                                                                         onclick="event.stopPropagation();"
+                                                                         partialSubmit="true" process="@this"
+                                                                         update="listadoRelaciones"
+                                                                         actionListener="#{nuevaSerieController.deleteLNS(lnsitem)}"/>
+                                                    </h:panelGrid>
+                                                </f:facet>
+
+                                                <p:pickList class="ui-g-12 relacionarseries" id="listaCausas"
+                                                            value="#{lnsitem.dualListCausas}" var="causa"
+                                                            converter="causasRelacionadasConverter"
+                                                            itemValue="#{causa}" itemLabel="#{causa.nom}"
+                                                            showSourceFilter="true" showTargetFilter="true"
+                                                            filterMatchMode="contains" showCheckbox="true">
+                                                    <p:column style="width:100%;">
+                                                        <h:outputText value="#{causa.nom}"/>
+                                                    </p:column>
+                                                </p:pickList>
+
+                                                <div class="ui-g-12" style="text-align: center;">
+                                                    <p:commandButton class="boton_modal botton_red button_aceptar"
+                                                                     partialSubmit="true" process="@this listaCausas"
+                                                                     update="@this" value="#{messages['aceptar']}"
+                                                                     actionListener="#{nuevaSerieController.saveLNS(lnsitem)}"></p:commandButton>
+                                                </div>
+                                            </p:tab>
+                                        </p:accordionPanel>
+
+                                    </div>
+                                </h:panelGroup>
+                            </p:tab>
+                            <p:tab title="#{messages['nuevaserie.valors']}">
+                                <h:panelGroup id="tabValors">
+                                    <div class="ui-g-12">
+                                        <div class="ui-g-12">
+                                            <label class="ui-g-12 title_valores">#{messages['nuevaserie.valorsprimari']}</label>
+                                        </div>
+
+                                        <p:repeat value="#{nuevaSerieController.valoracio.achValorprimaris}"
+                                                  var="valor">
+                                            <div class="ui-g-12" style="padding:0px;">
+                                                <div class="ui-g-3">
+                                                    <label class="ui-g-8">#{valor.achTipusvalor.nom}</label>
+                                                    <p:selectBooleanCheckbox
+                                                            style="margin: 0 10px;displey:flex;aling-items:center;"
+                                                            id="recap" value="#{valor.selected}"/>
+                                                </div>
+                                                <div class="ui-g-8">
+                                                    <p:inputNumber class="ui-g-5 input_valores" id="plazo1"
+                                                                   value="#{valor.terminiVal}" decimalPlaces="0"
+                                                                   validatorMessage="#{messages['nuevodictamen.validate.termini']}">
+                                                        <f:validateLength minimum="0" maximum="5"/>
+                                                    </p:inputNumber>
+
+                                                    <p:selectOneMenu
+                                                            style="width: 50%!important; margin-left:10px!important;"
+                                                            class="ui-g-5" value="#{valor.terminiType}" label="plazos1"
+                                                            panelStyle="width:10px">
+                                                        <f:selectItems value="#{dictamenController.plazos1}" var="n"
+                                                                       itemLabel="#{n}" itemValue="#{n}"/>
+                                                    </p:selectOneMenu>
+                                                </div>
+                                            </div>
+                                        </p:repeat>
+
+
+                                        <div class="ui-g-12">
+                                            <label class="ui-g-12 title_valores">#{messages['nuevaserie.valorsecundari']}</label>
+                                            <p:selectOneMenu class="ui-g-12" id="valorSecundari"
+                                                             value="#{nuevaSerieController.valoracio.achValorsecundari}"
+                                                             style="margin-top:15px;">
+                                                <f:converter converterId="valorSecundariConverter"/>
+                                                <f:selectItem
+                                                        itemLabel="-- #{messages['nuevaserie.valorsecundari']} -- "
+                                                        itemValue="#{null}" noSelectionOption="true"/>
+                                                <f:selectItems value="#{nuevaSerieController.listaValoresSecundarios}"
+                                                               var="n" itemLabel="#{n.nom}" itemValue="#{n}"/>
+                                            </p:selectOneMenu>
+                                        </div>
+                                    </div>
+
+                                </h:panelGroup>
+                            </p:tab>
+                            <p:tab title="#{messages['nuevaserie.normativa']}">
+                                <h:panelGroup id="tabNormativasSerie">
+                                    <div class="ui-g-12">
+                                        <!--  <label class="ui-g-2">Normativas</label> -->
+                                        <p:pickList class="ui-g-12 relacionarseries" id="listaNormativas"
+                                                    value="#{nuevaSerieController.normativasSerie}" var="norm"
+                                                    converter="seriesNormativaConverter"
+                                                    itemValue="#{norm}" itemLabel="#{norm.nom}" showSourceFilter="true"
+                                                    showTargetFilter="true"
+                                                    filterMatchMode="contains" showCheckbox="true">
+                                            <p:column style="width:100%;">
+                                                <h:outputText value="#{norm.nom}"/>
+                                            </p:column>
+                                        </p:pickList>
+                                    </div>
+                                </h:panelGroup>
+                            </p:tab>
+                        </p:tabView>
+
+                        <div class="ui-g-12 button_new">
+                            <p:commandButton widgetVar="serieSaveButton" onclick="PF('serieSaveButton').disable()"
+                                             style="max-width: 300px;" action="#{nuevaSerieController.save}"
+                                             class="boton_modal button_red" value="#{messages['guardar']}"
+                                             update="panel1"
+                                             oncomplete="PF('serieSaveButton').enable();if (args &amp;&amp; !args.validationFailed) PF('serieModalDialog').hide()"/>
+                        </div>
+
+                    </h:form>
+                </div>
+
+
+            </div>
+            <!-- FIN DEL CONTENIDO -->
+        </p:scrollPanel>
+    </p:dialog>
+</ui:composition>

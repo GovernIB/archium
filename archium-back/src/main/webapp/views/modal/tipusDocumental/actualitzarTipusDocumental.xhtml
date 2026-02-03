@@ -1,0 +1,156 @@
+<ui:composition
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://java.sun.com/jsf/facelets">
+
+  <!-- Modal para editar Tipus Documental -->
+  <p:dialog id="editarTipusDocumentalModalDialogId"
+            header="Editar Tipus Documental"
+            showEffect="fade"
+            widgetVar="editarTipusDocumentalModalDialog"
+            modal="true"
+            resizable="true"
+            style="max-width:1000px; min-width:1000px;">
+      <div class="views_3">
+          <div class="content_4">
+              <h:form>
+                  <h2 class="title_first">#{messages['actualitzarTipusDocumental.titol']}</h2>
+                  <div class="separador_rojo"></div>
+                  <div class="ui-g form_new">
+                      <p:panel id="panelEdit">
+                          <p:messages id="messagesEdit" showSummary="false" showDetail="false" style="display:none;"/>
+
+                          <!-- Código (solo lectura) -->
+                          <div class="ui-g-12 item_1">
+                              <label class="ui-g-2">#{messages['actualitzarTipusDocumental.codi']}</label>
+                              <p:inputText id="CodiEdit"
+                                  value="#{tipusDocumentalController.codi}"
+                                  class="ui-g-4"
+                                  readonly="true"
+                                  disabled="true"
+                                  styleClass="input-readonly" />
+                          </div>
+                          
+                          <!-- Estado -->
+                          <div class="ui-g-12 item_1">
+                              <label class="ui-g-2">#{messages['actualitzarTipusDocumental.estat']}</label>
+                              <p:selectOneMenu id="EstatEdit"
+                                  value="#{tipusDocumentalController.estat}"
+                                  class="ui-g-10"
+                                  disabled="#{tipusDocumentalController.obsolet}">
+                                  <!-- Borrador solo activo si el tipo documental ya está en modo borrador -->
+                                  <f:selectItem itemLabel="#{messages['estat.esborrany']}" itemValue="ESBORRANY" 
+                                  	itemDisabled="#{tipusDocumentalController.estatOriginal != 'ESBORRANY'}" />
+                                  <!-- Activo solo si el tipo documental está en modo borrador o ya es activo -->
+                                  <f:selectItem itemLabel="#{messages['estat.actiu']}" itemValue="ACTIU" 
+                                  	itemDisabled="#{tipusDocumentalController.estatOriginal == 'OBSOLET'}" />
+                                  <!-- Obsoleto solo activo si el tipo documental ya está en modo obsoleto -->
+                                  <f:selectItem itemLabel="#{messages['estat.obsolet']}" itemValue="OBSOLET" 
+                                  	itemDisabled="#{tipusDocumentalController.estatOriginal != 'OBSOLET'}" />
+                              </p:selectOneMenu>
+                          </div>
+
+                          <!-- Nombre en catalán -->
+                          <div class="ui-g-12 item_1">
+                              <label class="ui-g-2">#{messages['actualitzarTipusDocumental.nomcatala']}</label>
+                              <p:inputText id="NomEdit"
+                                  value="#{tipusDocumentalController.nom}"
+                                  class="ui-g-10"
+                                  required="true"
+                                  readonly="#{tipusDocumentalController.obsolet}"
+                                  requiredMessage="El nom no pot estar buit"
+                                  validatorMessage="El nom ha de tenir com a màxim 1000 caràcters">
+                                  <f:validateLength minimum="0" maximum="1000" />
+                              </p:inputText>
+                          </div>
+
+                          <!-- Nombre en castellano -->
+                          <div class="ui-g-12 item_1">
+                              <label class="ui-g-2">#{messages['actualitzarTipusDocumental.nomcastella']}</label>
+                              <p:inputText id="NomCasEdit"
+                                  value="#{tipusDocumentalController.nomCas}"
+                                  class="ui-g-10"
+                                  required="false"
+                                  readonly="#{tipusDocumentalController.obsolet}"
+                                  validatorMessage="El nom en castellà ha de tenir com a màxim 1000 caràcters">
+                                  <f:validateLength minimum="0" maximum="1000" />
+                              </p:inputText>
+                          </div>
+
+                          <!-- Definición en catalán -->
+                          <div class="ui-g-12 item_1">
+                              <label class="ui-g-2">#{messages['actualitzarTipusDocumental.definicio']}</label>
+                              <p:inputTextarea id="DefinicioEdit"
+                                  value="#{tipusDocumentalController.definicio}"
+                                  class="ui-g-10"
+                                  autoResize="false"
+        						  style="height: 90px; overflow-y: auto;"
+                                  required="true"
+                                  readonly="#{tipusDocumentalController.obsolet}"
+                                  requiredMessage="La definició no pot estar buida"
+                                  validatorMessage="La definició ha de tenir com a màxim 4000 caràcters">
+                                  <f:validateLength minimum="0" maximum="4000" />
+                              </p:inputTextarea>
+                          </div>
+
+                          <!-- Definición en castellano -->
+                          <div class="ui-g-12 item_1">
+                              <label class="ui-g-2">#{messages['actualitzarTipusDocumental.definiciocas']}</label>
+                              <p:inputTextarea id="DefinicioCasEdit"
+                                  value="#{tipusDocumentalController.definicioCas}"
+                                  class="ui-g-10"
+                                  autoResize="false"
+        						  style="height: 90px; overflow-y: auto;"
+                                  required="false"
+                                  readonly="#{tipusDocumentalController.obsolet}"
+                                  validatorMessage="La definició en castellà ha de tenir com a màxim 4000 caràcters">
+                                  <f:validateLength minimum="0" maximum="4000" />
+                              </p:inputTextarea>
+                          </div>
+                          
+                          <!-- Observaciones -->
+                          <div class="ui-g-12 item_1">
+                              <label class="ui-g-2">#{messages['actualitzarTipusDocumental.observacions']}</label>
+                              <p:inputTextarea id="ObservacionsEdit"
+                                  value="#{tipusDocumentalController.observacions}"
+                                  class="ui-g-10"
+                                  autoResize="false"
+        						  style="height: 90px; overflow-y: auto;"
+                                  required="false"
+                                  readonly="#{tipusDocumentalController.obsolet}"
+                                  validatorMessage="L'observació ha de tenir com a màxim 4000 caràcters">
+                                  <f:validateLength minimum="0" maximum="4000" />
+                              </p:inputTextarea>
+                          </div>
+
+                          <!-- Botones -->
+                          <div class="ui-g-12 button_new" align="justify">
+                              <p:commandButton
+                                  widgetVar="tipusDocumentalEditButton"
+                                  onclick="PF('tipusDocumentalEditButton').disable()"
+                                  class="boton_modal button_red"
+					    		  process="@form"
+					    		  update="panelEdit :panel1:TipusDocumentals"
+                                  value="#{messages['guardar']}"
+                                  disabled="#{tipusDocumentalController.obsolet}"
+                                  action="#{tipusDocumentalController.editar}"
+                                  oncomplete="PF('tipusDocumentalEditButton').enable();
+						                    if (args &amp;&amp; !args.validationFailed) {
+						                        var hasErrors = document.querySelectorAll('.ui-message-error, .ui-messages-error').length > 0;
+						                        if (!hasErrors) {
+						                            PF('editarTipusDocumentalModalDialog').hide();
+						                            setTimeout(function() { 
+									                    PF('tipusDocumentalTable').clearFilters(); 
+									                }, 1500);
+						                        }
+						                    }" />
+                          </div>
+                      </p:panel>
+                  </div>
+              </h:form>
+          </div>
+      </div>
+  </p:dialog>
+</ui:composition>

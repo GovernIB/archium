@@ -1,0 +1,73 @@
+<ui:composition
+        xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:h="http://xmlns.jcp.org/jsf/html"
+        xmlns:f="http://java.sun.com/jsf/core"
+        xmlns:p="http://primefaces.org/ui"
+        xmlns:ui="http://java.sun.com/jsf/facelets"
+>
+
+    <!-- PREHEADER -->
+    <div class="pre-header">
+        <h:panelGrid columns="1" cellpadding="5">
+            <p:commandButton class="out_sesion" value="#{messages['template.cerrarsession.boton.titulo']}" type="button"
+                             onclick="PF('dlg1').show();"/>
+        </h:panelGrid>
+        <p:dialog class="content_modal" header="#{messages['template.cerrarsession.dialog.titulo']}" widgetVar="dlg1"
+                  modal="true" height="100">
+            <h:form>
+                <h:outputText class="text_modal" value="#{messages['template.cerrarsession.confirmacion']}"/>
+                <p:commandButton class="boton_modal" action="#{login.logOff}"
+                                 value="#{messages['template.cerrarsession.boton.titulo']}"></p:commandButton>
+            </h:form>
+        </p:dialog>
+    </div>
+
+    <!-- MENU PRINCIPAL -->
+    <div class="main_principal">
+        <h:graphicImage class="logo_vertical" library="img" name="logo_02.png"/>
+        <div class="box_items">
+
+
+            <h:outputLink value="#{request.contextPath}/views/quadre.xhtml">
+                <h:graphicImage id="quadreLink" class="logo_vertical" library="img" name="icono_quadres.png"/>
+            </h:outputLink>
+            <p:tooltip id="toolTipQuadre" for="quadreLink" value="#{messages['template.menu.quadre']}"
+                       position="right"/>
+
+            <h:outputLink value="#{request.contextPath}/views/funciones.xhtml">
+                <h:graphicImage id="jerarqLink" class="logo_vertical" library="img" name="icono_funciones.png"/>
+            </h:outputLink>
+            <p:tooltip id="toolTipJerar" for="jerarqLink" value="#{messages['template.menu.visor']}" position="right"/>
+
+
+            <h:outputLink value="#{request.contextPath}/views/procediment.xhtml">
+                <h:graphicImage id="procedLink" class="logo_vertical" library="img" name="icono_series.png"/>
+            </h:outputLink>
+            <p:tooltip id="toolTipProced" for="procedLink" value="#{messages['template.menu.procediments']}"
+                       position="right"/>
+
+
+            <h:outputLink value="#{request.contextPath}/views/tablasmaestras.xhtml">
+                <h:graphicImage id="maestrasLink" class="logo_vertical" library="img" name="icono_panel.png"/>
+            </h:outputLink>
+            <p:tooltip id="toolTipMaestras" for="maestrasLink" value="#{messages['template.menu.taulesmestres']}"
+                       position="right"/>                        
+                       
+                       
+            <h:outputLink value="#{request.contextPath}/views/tipusdocumentals.xhtml">
+		      <h:graphicImage id="tiposDocLink" class="logo_vertical" library="img" name="tipusDocumental.png"/>
+		  </h:outputLink>
+		  <p:tooltip id="toolTipTiposDoc" for="tiposDocLink" value="#{messages['template.menu.tipusdocumentals']}" position="right"/>
+            
+
+            <h:outputLink value="#{request.contextPath}/views/cercador.xhtml">
+                <h:graphicImage id="cercadorLink" class="logo_vertical" library="img" name="icono_cercador.png"/>
+            </h:outputLink>
+            <p:tooltip id="toolTipCercador" for="cercadorLink" value="#{messages['template.menu.cercador']}"
+                       position="right"/>
+
+        </div>
+    </div>
+    <!-- FIN MENU PRINCIPAL -->
+
+</ui:composition>

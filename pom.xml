@@ -1,0 +1,372 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>es.caib.archium</groupId>
+    <artifactId>archium</artifactId>
+    <version>1.0.6</version>
+    <packaging>pom</packaging>
+    <name>Archium</name>
+    <description>Archium Java EE 8 i JBOSS 7.2</description>
+    <!-- Refer?ncia al sistema de control de versions, ja sigui GIT, SVN, CVS... -->
+    <!-- permetr? al plugin buildnumber-maven-plugin agafar la revisi?/versi?    -->
+<!--     <scm> -->
+<!--         <connection>scm:git:https://github.com/GovernIB/archium.git</connection> -->
+<!--         <url>https://github.com/GovernIB/archium</url> -->
+<!--     </scm> -->
+	<scm>
+		<developerConnection>scm:svn:https://www.guadaltel.es/subversion/archium/Codigo/trunk/Archium
+		</developerConnection>
+	</scm>
+    <properties>
+        <!-- Propietats que afecten els plugins -->
+        <maven.compiler.release>11</maven.compiler.release>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <!-- No fer els tests per defecte. -->
+        <maven.test.skip>true</maven.test.skip>
+        <!-- Versions de les llibreries emprades dins els m?duls -->
+        <javaee-api.version>8.0.1</javaee-api.version>
+        <activation.version>1.1.1</activation.version>
+        <mp-openapi.version>1.0.1</mp-openapi.version>
+        <jaxb-api.version>2.3.1</jaxb-api.version>
+        <slf4j.version>1.7.30</slf4j.version>
+        <keycloak.version>6.0.1</keycloak.version>
+        <primefaces.version>8.0</primefaces.version>
+        <primefaces.theme.version>1.0.10</primefaces.theme.version>
+        <junit.version>4.13</junit.version>
+        <hibernate.version>5.3.15.Final</hibernate.version>
+        <resteasy.version>3.6.3.SP1</resteasy.version>
+        <jboss-logging.version>3.3.3.Final</jboss-logging.version>
+        <itext.version>7.2.5</itext.version>
+    </properties>
+    <dependencyManagement>
+        <dependencies>
+            <!-- Depend?ncies de JAVA EE 8 -->
+            <dependency>
+                <groupId>javax</groupId>
+                <artifactId>javaee-api</artifactId>
+                <version>${javaee-api.version}</version>
+            </dependency>
+            <!-- JAVA EE 8 du activation 1.1, per? la que empren altres depend?ncies (i la que du JBOSS) ?s 1.1.1 -->
+            <dependency>
+                <groupId>javax.activation</groupId>
+                <artifactId>activation</artifactId>
+                <version>${activation.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.microprofile.openapi</groupId>
+                <artifactId>microprofile-openapi-api</artifactId>
+                <version>${mp-openapi.version}</version>
+            </dependency>
+            <!-- A partir de Java 11 les llibreries JAXB ja no s'inclouen al JDK -->
+            <dependency>
+                <groupId>javax.xml.bind</groupId>
+                <artifactId>jaxb-api</artifactId>
+                <version>${jaxb-api.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+                <version>${slf4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.keycloak</groupId>
+                <artifactId>keycloak-core</artifactId>
+                <version>${keycloak.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.primefaces</groupId>
+                <artifactId>primefaces</artifactId>
+                <version>${primefaces.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.primefaces.themes</groupId>
+                <artifactId>bootstrap</artifactId>
+                <version>${primefaces.theme.version}</version>
+            </dependency>
+            <!-- Depend?ncies de test -->
+            <dependency>
+                <groupId>junit</groupId>
+                <artifactId>junit</artifactId>
+                <version>${junit.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <!-- fixar versi? de jboss-logging ja que Hibernate i RestEasy fan refer?ncia a varies versions -->
+            <dependency>
+                <groupId>org.jboss.logging</groupId>
+                <artifactId>jboss-logging</artifactId>
+                <version>${jboss-logging.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <!-- Depend?ncia per tests de persist?ncia - implementaci? de JPA -->
+            <dependency>
+                <groupId>org.hibernate</groupId>
+                <artifactId>hibernate-core</artifactId>
+                <version>${hibernate.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <!-- Depend?ncies per tests REST - implementaci? del Client JAX-RS -->
+            <dependency>
+                <groupId>org.jboss.resteasy</groupId>
+                <artifactId>resteasy-client</artifactId>
+                <version>${resteasy.version}</version>
+                <scope>test</scope>
+                <exclusions>
+                    <!-- JSON-API ja est? incl?s dins les apis JAVA EE 8 -->
+                    <exclusion>
+                        <groupId>javax.json</groupId>
+                        <artifactId>javax.json-api</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <!-- Depend?ncies per tests REST - suport est?ndar per JSONB -->
+            <dependency>
+                <groupId>org.jboss.resteasy</groupId>
+                <artifactId>resteasy-json-binding-provider</artifactId>
+                <version>${resteasy.version}</version>
+                <scope>test</scope>
+                <exclusions>
+                    <!-- JSON-API ja est? incl?s dins les apis JAVA EE 8 -->
+                    <exclusion>
+                        <groupId>javax.json</groupId>
+                        <artifactId>javax.json-api</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+    <build>
+        <pluginManagement>
+            <plugins>
+                <!-- Definici? dels plugins est?ndar de maven -->
+                <plugin>
+                    <artifactId>maven-clean-plugin</artifactId>
+                    <version>3.1.0</version>
+                </plugin>
+                <plugin>
+                    <artifactId>maven-install-plugin</artifactId>
+                    <version>3.0.0-M1</version>
+                </plugin>
+                <plugin>
+                    <artifactId>maven-resources-plugin</artifactId>
+                    <version>3.1.0</version>
+                </plugin>
+                <plugin>
+                    <artifactId>maven-dependency-plugin</artifactId>
+                    <version>3.1.1</version>
+                </plugin>
+                <plugin>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>3.8.1</version>
+                </plugin>
+                <plugin>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <version>3.0.0-M4</version>
+                </plugin>
+                <plugin>
+                    <artifactId>maven-failsafe-plugin</artifactId>
+                    <version>3.0.0-M4</version>
+                </plugin>
+                <plugin>
+                    <artifactId>maven-jar-plugin</artifactId>
+                    <version>3.2.0</version>
+                </plugin>
+                <plugin>
+                    <artifactId>maven-ejb-plugin</artifactId>
+                    <version>3.0.1</version>
+                </plugin>
+                <plugin>
+                    <artifactId>maven-war-plugin</artifactId>
+                    <version>3.2.3</version>
+                    <configuration>
+                        <useCache>true</useCache>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <artifactId>maven-ear-plugin</artifactId>
+                    <version>3.0.2</version>
+                </plugin>
+                <plugin>
+                    <artifactId>maven-deploy-plugin</artifactId>
+                    <version>3.0.0-M1</version>
+                </plugin>
+                <plugin>
+                    <artifactId>maven-site-plugin</artifactId>
+                    <version>3.8.2</version>
+                </plugin>
+                <!-- Altres plugins generals -->
+                <plugin>
+                    <groupId>com.googlecode.maven-download-plugin</groupId>
+                    <artifactId>download-maven-plugin</artifactId>
+                    <version>1.4.2</version>
+                </plugin>
+                <plugin>
+                    <groupId>com.google.code.maven-replacer-plugin</groupId>
+                    <artifactId>replacer</artifactId>
+                    <version>1.5.3</version>
+                </plugin>
+                <!-- Pluguin per generar informaci? OpenAPI de apis REST -->
+                <plugin>
+                    <groupId>org.apache.geronimo</groupId>
+                    <artifactId>geronimo-openapi-maven-plugin</artifactId>
+                    <version>1.0.12</version>
+                </plugin>
+                <!-- Plugin per generar la propietat ${buildNumber} amb la versio/revisio de GIT o SVN o CVS... -->
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>buildnumber-maven-plugin</artifactId>
+                    <version>1.4</version>
+                    <executions>
+                        <execution>
+                            <phase>validate</phase>
+                            <goals>
+                                <goal>create</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                    <configuration>
+                        <!-- Veure https://www.mojohaus.org/buildnumber-maven-plugin/usage.html -->
+                        <!-- si volem que falli si s'intenta compilar i hi ha canvis no pujats o hi ha canvis no davallats. -->
+                        <!-- S'hauria de crear un profile per quan es fa una release s'activin. -->
+                        <!-- Sin? val m?s que estiguin a false (per defecte): -->
+                        <!-- <doCheck>true</doCheck> -->
+                        <!--  <doUpdate>true</doUpdate> -->
+                        <getRevisionOnlyOnce>true</getRevisionOnlyOnce>
+                        <!-- Longitut m?xima de la revisi? -->
+                        <shortRevisionLength>8</shortRevisionLength>
+                    </configuration>
+                </plugin>
+                <!-- Plugin per permetre desplegar l'aplicaci? a un sevidor d'aplicacions local -->
+                <plugin>
+                    <groupId>org.codehaus.cargo</groupId>
+                    <artifactId>cargo-maven2-plugin</artifactId>
+                    <version>1.7.8</version>
+                    <configuration>
+                        <!-- Nom?s estar? activat als m?duls que volem que es despleguin, com l'EAR -->
+                        <skip>true</skip>
+                    </configuration>
+                </plugin>
+				<plugin>
+					<artifactId>maven-release-plugin</artifactId>
+					<version>2.5</version>
+					<configuration>
+						<preparationGoals>clean package</preparationGoals>
+						<autoVersionSubmodules>true</autoVersionSubmodules>
+						<tagNameFormat>ARCHIUM_V@{project.version}</tagNameFormat>
+						<tagBase>https://www.guadaltel.es/subversion/archium/Codigo/tags
+						</tagBase>
+					</configuration>
+				</plugin>
+				<plugin>
+					<!-- El uso de este plugin requiere Maven 3 -->
+					<groupId>com.spotify</groupId>
+					<artifactId>docker-maven-plugin</artifactId>
+					<version>0.2.11</version>
+					<configuration>
+						<dockerDirectory>${serverDockerDirectory}</dockerDirectory>
+						<resources>
+							<resource>
+								<targetPath>/</targetPath>
+								<directory>${project.basedir}/target</directory>
+								<includes>
+									<include>archium.ear</include>
+								</includes>
+							</resource>
+						</resources>
+					</configuration>
+				</plugin>
+            </plugins>
+        </pluginManagement>
+        <plugins>
+            <!-- Gesti? de versions de depend?ncies/plugins -->
+            <!-- Veure: https://www.mojohaus.org/versions-maven-plugin/ -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>versions-maven-plugin</artifactId>
+                <version>2.7</version>
+                <configuration>
+                    <allowAnyUpdates>false</allowAnyUpdates>
+                    <allowSnapshots>false</allowSnapshots>
+                    <allowMajorUpdates>false</allowMajorUpdates>
+                    <allowMinorUpdates>false</allowMinorUpdates>
+                    <allowIncrementalUpdates>true</allowIncrementalUpdates>
+                    <rulesUri>file:///${session.executionRootDirectory}/version-ruleset.xml</rulesUri>
+                </configuration>
+            </plugin>
+            <!-- Gesti? de requisits del build -->
+            <!-- Veure: https://maven.apache.org/enforcer/enforcer-rules/index.html -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-enforcer-plugin</artifactId>
+                <version>3.0.0-M3</version>
+                <configuration>
+                    <rules>
+                        <!-- Fixam m?nim Maven 3.6 i Java 11 -->
+                        <requireMavenVersion>
+                            <version>3.6.1</version>
+                        </requireMavenVersion>
+                        <requireJavaVersion>
+                            <version>11</version>
+                        </requireJavaVersion>
+                        <!-- Per detectar problemes de depend?ncies -->
+                        <banDuplicatePomDependencyVersions/>
+                        <dependencyConvergence/>
+                        <reactorModuleConvergence/>
+                    </rules>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>enforce</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+    <repositories>
+        <!-- Les llibreries de Primefaces no estan definides als repositoris centrals -->
+<!--         <repository> -->
+<!--             <id>prime-repo</id> -->
+<!--             <name>PrimeFaces Maven Repository</name> -->
+<!--             <url>https://repository.primefaces.org</url> -->
+<!--             <layout>default</layout> -->
+<!--         </repository> -->
+        <!-- Repositori del GovernIB amb llibreries compartides, plugins, clients d'altres eines... -->
+<!--         <repository> -->
+<!--             <id>github-governib-maven</id> -->
+<!--             <name>GitHub GovernIB Maven Repository</name> -->
+<!--             <url>https://governib.github.io/maven/maven/</url> -->
+<!--         </repository> -->
+    </repositories>
+    <modules>
+        <module>archium-commons</module>
+        <module>archium-persistence</module>
+        <module>archium-ejb</module>
+        <module>archium-back</module>
+        <module>archium-ear</module>
+        <module>archium-api-externa</module>
+        <module>archium-front</module>
+    </modules>
+	<profiles>
+		<!-- Perfiles de compilacion de servidores -->
+		<profile>
+			<id>desarrollo</id>
+			<properties>
+				<serverDockerDirectory>${project.parent.basedir}/src/main/docker/desarrollo
+				</serverDockerDirectory>
+			</properties>
+		</profile>
+	</profiles>
+	<distributionManagement>
+		<repository>
+			<id>guadaltel-releases</id>
+			<url>http://maven.guadaltel.es/nexus/content/repositories/guadaltel-releases
+			</url>
+		</repository>
+		<snapshotRepository>
+			<id>guadaltel-snapshots</id>
+			<url>http://maven.guadaltel.es/nexus/content/repositories/guadaltel-snapshots
+			</url>
+		</snapshotRepository>
+	</distributionManagement>
+</project>

@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence xmlns="http://xmlns.jcp.org/xml/ns/persistence"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence http://xmlns.jcp.org/xml/ns/persistence/persistence_2_2.xsd"
+             version="2.2">
+    <!--
+    Unitat de persistència de test que es pot utilitzar per realitzar proves o per generar els scripts de base de dades
+    -->
+    <persistence-unit name="archiumPUTest" transaction-type="RESOURCE_LOCAL">
+
+        <!-- Llista de classes persistents -->
+        <!--<class>es.caib.archium.persistence.UnitatOrganica</class>
+        <class>es.caib.archium.persistence.Procediment</class>-->
+        <class>es.caib.archium.persistence.model.Aplicacio</class>
+        <class>es.caib.archium.persistence.model.AplicacioSerie</class>
+        <class>es.caib.archium.persistence.model.Butlleti</class>
+        <class>es.caib.archium.persistence.model.Catalegsery</class>
+        <class>es.caib.archium.persistence.model.CategoriaNti</class>
+        <class>es.caib.archium.persistence.model.CausaLimitacio</class>
+        <class>es.caib.archium.persistence.model.ContacteProcediment</class>
+        <class>es.caib.archium.persistence.model.Dictamen</class>
+        <class>es.caib.archium.persistence.model.DictamenTipusdocumental</class>
+        <class>es.caib.archium.persistence.model.Ens</class>
+        <class>es.caib.archium.persistence.model.Familiaprocediment</class>
+        <class>es.caib.archium.persistence.model.Fasearxiu</class>
+        <class>es.caib.archium.persistence.model.Formainici</class>
+        <class>es.caib.archium.persistence.model.Funcio</class>
+        <class>es.caib.archium.persistence.model.LimitacioNormativaSerie</class>
+        <class>es.caib.archium.persistence.model.Lopd</class>
+        <class>es.caib.archium.persistence.model.Materia</class>
+        <class>es.caib.archium.persistence.model.Nivellelectronic</class>
+        <class>es.caib.archium.persistence.model.Normativa</class>
+        <class>es.caib.archium.persistence.model.NormativaSeriedocumental</class>
+        <class>es.caib.archium.persistence.model.Procediment</class>
+        <class>es.caib.archium.persistence.model.Quadreclassificacio</class>
+        <class>es.caib.archium.persistence.model.QuadreTipusDocumental</class>
+        <class>es.caib.archium.persistence.model.SerieArgen</class>
+        <class>es.caib.archium.persistence.model.Seriedocumental</class>
+        <class>es.caib.archium.persistence.model.Serierelacionada</class>
+        <class>es.caib.archium.persistence.model.Silenci</class>
+        <class>es.caib.archium.persistence.model.TipuAcces</class>
+        <class>es.caib.archium.persistence.model.Tipuscontacte</class>
+        <class>es.caib.archium.persistence.model.TipusDictamen</class>
+        <class>es.caib.archium.persistence.model.TipusDocumental</class>
+        <class>es.caib.archium.persistence.model.TipusdocumentProcediment</class>
+        <class>es.caib.archium.persistence.model.TipusNormativa</class>
+        <class>es.caib.archium.persistence.model.TipusNti</class>
+        <class>es.caib.archium.persistence.model.Tipuspublic</class>
+        <class>es.caib.archium.persistence.model.TipusSerie</class>
+        <class>es.caib.archium.persistence.model.TipusValor</class>
+        <class>es.caib.archium.persistence.model.Transferencia</class>
+        <class>es.caib.archium.persistence.model.Valoracio</class>
+        <class>es.caib.archium.persistence.model.Valorprimari</class>
+        <class>es.caib.archium.persistence.model.ValorSecundari</class>
+
+
+
+
+        <!-- Desactivar cache -->
+        <shared-cache-mode>NONE</shared-cache-mode>
+        <!-- Desactivar validació -->
+        <validation-mode>NONE</validation-mode>
+
+        <properties>
+            <!-- Per les propietats estandard veure punt 8.2.1.9 de l'especificació JPA -->
+
+            <!-- Configuració per generar els scripts de creació de la base de dades -->
+            <property name="javax.persistence.schema-generation.scripts.action" value="drop-and-create"/>
+            <property name="javax.persistence.schema-generation.scripts.create-target" value="target/create.sql"/>
+            <property name="javax.persistence.schema-generation.scripts.drop-target" value="target/drop.sql"/>
+
+            <!--
+            Propietats específiques de Hibernate
+            https://docs.jboss.org/hibernate/orm/5.3/userguide/html_single/Hibernate_User_Guide.html#configurations
+            -->
+            <property name="hibernate.show_sql" value="true"/>
+            <property name="hibernate.format_sql" value="true"/>
+            <property name="hibernate.hbm2ddl.delimiter" value=";"/>
+
+            <!--
+            Si no indicam una connexió de bdd (per la generació no cal), Hibernate necessita que indiquem
+            el dialecte que emprarà per la generació.
+            Postgresql:    org.hibernate.dialect.PostgreSQL95Dialect
+            Oracle:        org.hibernate.dialect.Oracle12cDialect
+            -->
+            <property name="hibernate.dialect" value="org.hibernate.dialect.Oracle12cDialect"/>
+
+        </properties>
+    </persistence-unit>
+</persistence>

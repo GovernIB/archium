@@ -1,0 +1,160 @@
+<ui:composition template="/WEB-INF/templates/layout.xhtml"
+ 	  xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://java.sun.com/jsf/facelets">
+
+	<ui:param name="title" value="#{messages['page.quadre.title']}" />
+	
+	<ui:define name="content">
+	<ui:include src="/views/modal/cuadro/nuevoQuadre.xhtml" />
+	<ui:include src="/views/modal/cuadro/updateQuadre.xhtml" />
+	
+	
+  	<!-- CONTENIDO -->
+
+  		<!-- BreadCrumbs -->  				
+  		<h2 class="title_first">#{messages['cuadro.titulo']}</h2>
+  		<div class="separador_rojo"></div>
+  		
+  		<p:panel rendered="#{quadreController.error==true}" id="panelButtons">
+       		 <p:staticMessage severity="error" summary="ERROR!" detail="#{messages['cuadro.init.error']}" />
+        </p:panel>
+  		
+  		<h:form id="panel1" rendered="#{quadreController.error==false}" class="table_action">
+  			<p:commandButton class="button_add" value="#{messages['cuadro.nuevoQuadro']}" 	icon="icono_add" resetValues="true"	action="#{quadreController.abrirModal}" oncomplete="PF('quadreModalDialog').show()" update="quadreModalDialogId"/>
+  			<p:growl>
+		        <p:autoUpdate />
+		    </p:growl>
+
+			<p:dataTable class="estilos-tabla" 
+				var="cuadro" 
+				id="Cuadros" 
+				value="#{quadreController.listaCuadros}" 
+				rows="10" 
+				emptyMessage="#{messages['datos.nohaydatos']}"
+				paginator="true" 
+				paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                currentPageReportTemplate="{startRecord}-{endRecord} of {totalRecords} records" >
+		 
+		        <p:column class="first-column" headerText="#{messages['cuadro.nombre']}" sortBy="#{cuadro.nom}"   style="width: 25%;"> 
+		        	<h:outputLink value="#{request.contextPath}/views/funciones.xhtml">
+						<h:outputText value="#{cuadro.nom}" />
+						<f:param  name="quadreId" value="#{cuadro.id}" />
+					</h:outputLink>
+		            
+		        </p:column>
+		 		
+		 		<p:column class="first-column" headerText="#{messages['cuadro.nombrecas']}" sortBy="#{cuadro.nomCas}" style="width: 25%;">
+					<h:outputLink value="#{request.contextPath}/views/funciones.xhtml">
+						<h:outputText value="#{cuadro.nomCas}" />
+						<f:param  name="quadreId" value="#{cuadro.id}" />
+					</h:outputLink>
+		        </p:column>
+		 		
+		        <p:column class="first-column" headerText="#{messages['cuadro.estado']}" sortBy="#{cuadro.estat}" style="width: 8%;">
+					<h:outputLink value="#{request.contextPath}/views/funciones.xhtml">
+					<h:outputText value="#{cuadro.estat}" />
+					<f:param  name="quadreId" value="#{cuadro.id}" />
+					</h:outputLink>
+		        </p:column>
+		        <p:column class="first-column" headerText="#{messages['cuadro.fechaini']}" sortBy="#{cuadro.inici}" style="width: 10%;">
+					<h:outputLink value="#{request.contextPath}/views/funciones.xhtml">
+					<h:outputText value="#{cuadro.inici}">
+						<f:convertDateTime pattern="dd-MM-yyyy HH:mm" />
+					</h:outputText>
+					<f:param  name="quadreId" value="#{cuadro.id}" />
+					</h:outputLink>
+		        </p:column>
+		        <p:column class="first-column" headerText="#{messages['cuadro.fechamodificacion']}" sortBy="#{cuadro.modificacio}" style="width: 10%;">
+		            <h:outputLink value="#{request.contextPath}/views/funciones.xhtml">
+		            <h:outputText value="#{cuadro.modificacio}">
+		            	<f:convertDateTime pattern="dd-MM-yyyy HH:mm" />
+		            </h:outputText>
+		            <f:param  name="quadreId" value="#{cuadro.id}" />
+					</h:outputLink>
+		        </p:column>
+		        <p:column class="first-column" headerText="#{messages['cuadro.fechafin']}" sortBy="#{cuadro.fi}" style="width: 10%;">
+		            <h:outputLink value="#{request.contextPath}/views/funciones.xhtml">
+		            <h:outputText value="#{cuadro.fi}">
+		            	<f:convertDateTime pattern="dd-MM-yyyy HH:mm" />
+		            </h:outputText>
+		            <f:param  name="quadreId" value="#{cuadro.id}" />
+					</h:outputLink>
+		        </p:column>
+		        <p:column class="first-column" headerText="#{messages['cuadro.version']}" sortBy="#{cuadro.versio}" filterBy="multiple2" style="width: 7%;">
+		        	<h:outputLink value="#{request.contextPath}/views/funciones.xhtml">
+		        	<h:outputText value="#{cuadro.versio}" />   
+		        	<f:param  name="quadreId" value="#{cuadro.id}" />
+					</h:outputLink>             	
+		        </p:column>
+
+		        <p:column class="first-column column_acciones" style="width: 5%;">
+		        	<div style="display:flex; justify-content:center">
+				        <p:commandButton update="quadreModalUpdateId" icon="ui-icon-pencil" resetValues="true" title="#{messages['actualizar']}" action="#{quadreController.abrirModalUpdate(cuadro)}" />  	
+						<p:commandButton 
+					        icon="pi pi-file-pdf"
+					        styleClass="export-icon-button export-pdf"
+					        title="#{messages['exportar.pdf']}"
+					        ajax="false"
+					        onclick="setQuadreId('#{cuadro.id}'); PF('selectIdiomaDialogPdf').show(); return false;"
+				        />		
+       				</div>
+				</p:column>		
+	    	</p:dataTable> 	 
+	    	 
+	    	<!-- Diálogo para seleccionar idioma de exportación PDF -->
+			<p:dialog id="selectIdiomaDialogPdf"
+			    header="#{messages['exportar.seleccionar.idioma']}"
+			    widgetVar="selectIdiomaDialogPdf"
+			    modal="true"
+			    resizable="false"	
+			    closable="true"
+			    style="width:400px;">
+			    
+			    <p:panel>
+			        <p style="text-align: center; margin-bottom: 20px;">
+			            #{messages['exportar.seleccionar.idioma.texto']}
+			        </p>
+			        
+			        <div style="display: flex; justify-content: center; gap: 15px;">
+			            <p:commandButton
+			                value="Català"
+			                styleClass="btn-modern-gray"
+			                onclick="exportarPdf('ca'); PF('selectIdiomaDialogPdf').hide(); return false;" />
+			            
+			            <p:commandButton
+			                value="Castellà"
+			                styleClass="btn-modern-gray"
+			                onclick="exportarPdf('es'); PF('selectIdiomaDialogPdf').hide(); return false;" />
+			        </div>
+			    </p:panel>
+			</p:dialog>  
+		</h:form>
+	    <hr/> 
+	    
+	    <script type="text/javascript">
+	    
+	    	let quadreIdParametro ;
+	    	
+	    	function setQuadreId(quadreIdRecibido) {
+	    		quadreIdParametro = quadreIdRecibido;
+	    	}
+	    	
+			function exportarPdf(idioma, quadreId = quadreIdParametro) {
+		        
+		        var url = '#{request.contextPath}/exportarQuadreClassificacioPdf?t=' + new Date().getTime();
+		        url += '&amp;idioma=' + idioma;
+		        
+		        if (quadreId) {
+		            url += '&amp;quadreId=' + encodeURIComponent(quadreId);
+		        }
+		               
+		        window.open(url, '_blank');
+		    }
+		</script>
+	
+  	</ui:define>
+  	
+ </ui:composition>

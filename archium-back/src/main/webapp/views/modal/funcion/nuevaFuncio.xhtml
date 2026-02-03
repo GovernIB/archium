@@ -1,0 +1,117 @@
+<ui:composition 
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+>
+
+<p:dialog id="dialog" header="Document Detail" showEffect="fade" widgetVar="documentDialog" modal="true" resizable="false" style="max-width:1000px; min-width:1000px;">
+  <!-- CONTENIDO -->
+  <div class="views_3">
+  	<div class="content_4 modfuncion">
+  		<h:form>
+  			<p:panel id="panel">
+		  		<ui:fragment rendered="#{funciones.funcionActualizar!=null}">
+		  			<h2 class="title_first">#{messages['nuevafuncion.modificaFuncion']}</h2>
+		  		</ui:fragment>
+		  		<ui:fragment rendered="#{funciones.funcionActualizar==null}">
+		  			<h2 class="title_first">#{messages['nuevafuncion.nuevaFuncion']}</h2>
+		  		</ui:fragment>
+		  		<div class="separador_rojo"></div>
+				<div class="ui-g form_new">
+				
+				    <div class="ui-g-4 item_1">
+				    	<label class="ui-g-3">#{messages['nuevafuncion.codi']}*</label>
+		    			<p:inputText class="ui-g-9" value="#{funciones.nuevoCodi}" required="true" 
+		    				validatorMessage="#{messages['nuevafuncion.validate.codi']}" 
+		    				requiredMessage="#{messages['nuevafuncion.require.codi']}">
+		    				<f:validateLength minimum="0" maximum="10" />
+		    			</p:inputText>
+				    </div>
+				    
+				    <div class="ui-g-4 item_1">
+				    	<label class="ui-g-3">#{messages['nuevafuncion.nom']}*</label>
+		    			<p:inputText class="ui-g-9" value="#{funciones.nuevoNom}" required="true" 
+		    				validatorMessage="#{messages['nuevafuncion.validate.nom']}" 
+		    				requiredMessage="#{messages['nuevafuncion.require.nom']}">
+		    				<f:validateLength minimum="0" maximum="200" />
+		    			</p:inputText>
+				    </div>
+				    
+				    <div class="ui-g-4 item_1">
+				    	<label class="ui-g-3">#{messages['nuevafuncion.nomcas']}*</label>
+		    			<p:inputText class="ui-g-9" value="#{funciones.nuevoNomCas}" required="true"
+		    				validatorMessage="#{messages['nuevafuncion.validate.nomcas']}"
+							requiredMessage="#{messages['nuevafuncion.require.nomcas']}">
+		    				<f:validateLength minimum="0" maximum="200" />
+		    			</p:inputText>
+				    </div>
+			    
+				    <div class="ui-g-4 item_1">
+				    	<label class="ui-g-5">#{messages['nuevafuncion.tiposerie']}</label>
+		    			<h:panelGrid columns="2" cellpadding="5">	            
+				            <p:selectOneMenu id="IdTipuSerie" value="#{funciones.nuevoTipusserie}" converter="FuncioTipusserieConverter" style="margin-left:-5px;">
+				                <f:selectItem itemLabel="-- #{messages['selecciona']} #{messages['nuevafuncion.tiposerie']} -- " itemValue="#{funciones.tipusserieSeleccionado.nom}" noSelectionOption="true" />
+				                <f:selectItems value="#{funciones.listaTipusserie}" var="n" itemLabel="#{n.nom}" itemValue="#{n}" />
+				                <f:converter converterId="FuncioTipusserieConverter"/>
+				            </p:selectOneMenu>
+				        </h:panelGrid>
+				    </div>
+				    
+				    <div class="ui-g-4 item_1">
+				    	<label class="ui-g-5">#{messages['nuevafuncion.funcionpadre']}</label>
+		    			<h:panelGrid columns="2" cellpadding="5">	            
+				        	<!-- <h:outputText value="#{funciones.funcionSeleccionada.nom}" rendered="#{funciones.funcionSeleccionada!=null}" /> -->
+   							<!-- <h:outputText value="Función padre" rendered="#{funciones.funcionSeleccionada==null}" /> -->
+   							 <p:selectOneMenu id="listaFuncn" 
+   							 	value="#{funciones.funcioPare}" 
+   							 	class="ui-g-7 selector_4"
+   							 	style="max-width:250px!important;"
+   							 	panelStyle="width:250px"
+   							 	required="false" 
+   							 	filter="true"
+   							 	filterMatchMode="contains">
+   							 	<p:ajax update="panel1" listener="#{funciones.changeFuncioPare}" />
+				                <f:selectItem itemLabel="-- #{messages['selecciona']} #{messages['nuevafuncion.funcionpadre']} --" itemValue="#{null}"/>
+				                <f:selectItems value="#{funciones.listaFunciones}" var="n" itemLabel="#{n.printTab().replace(' ', '&#160;')}#{n.codi} - #{n.nom}" itemValue="#{n}" />
+   					             <f:converter converterId="FuncioConverter"/>
+				            </p:selectOneMenu>
+				        </h:panelGrid>
+				    </div>
+			    
+				    <div class="ui-g-4 item_1">
+				    	<label class="ui-g-5">#{messages['nuevafuncion.cuadro']}</label>
+				    	<h:panelGrid columns="2" cellpadding="5">	            
+				            <h:outputText value="#{funciones.cuadroSeleccionado.nom}" />
+				        </h:panelGrid>
+				    </div>
+				    
+				    <div class="ui-g-4 item_1">
+				    	<label class="ui-g-5">#{messages['nuevafuncion.estado']}*</label>
+				    	<h:panelGrid columns="2" cellpadding="5">
+		    			<p:selectOneMenu id="estado" value="#{funciones.nuevoEstat}" label="Estats" style="margin-left:-5px;">
+				            <f:selectItems value="#{funciones.listaEstats}"  var="n"  itemValue="#{n}" itemLabel="#{n}"/>
+				        </p:selectOneMenu>
+				        </h:panelGrid>
+				    </div>
+			    
+				    <div class="ui-g-4 item_1">
+				    	<label class="ui-g-3">#{messages['nuevafuncion.orden']}*</label>
+		    			<p:inputNumber decimalPlaces="0" class="ui-g-9" value="#{funciones.nuevoOrdre}" required="true" 
+		    				requiredMessage="#{messages['nuevafuncion.require.ordre']}" />
+				    </div>
+				    
+				    <div class="ui-g-12 button_new">
+				    	<!-- <p:button class="boton_modal" value="Guardar y crear" action="#{backingBean.save}"></p:button> -->
+				    	<p:commandButton widgetVar="funcSaveButton" onclick="PF('funcSaveButton').disable()" class="boton_modal button_red" update="panel1" value="#{messages['guardar']}" rendered="#{funciones.funcionActualizar==null}" actionListener="#{funciones.save}" oncomplete="PF('funcSaveButton').enable();if (args &amp;&amp; !args.validationFailed) PF('documentDialog').hide()"></p:commandButton>
+				    	<p:commandButton widgetVar="funcUpdateButton" onclick="PF('funcUpdateButton').disable()" class="boton_modal button_red" update="panel1" value="#{messages['actualizar']}" rendered="#{funciones.funcionActualizar!=null}" actionListener="#{funciones.update}" oncomplete="PF('funcUpdateButton').enable();if (args &amp;&amp; !args.validationFailed) PF('documentDialog').hide()"></p:commandButton>
+				    </div>
+				
+				</div>    
+			</p:panel>
+		</h:form>
+  	</div>
+  </div>
+</p:dialog>
+</ui:composition>

@@ -1,0 +1,90 @@
+<ui:composition template="/WEB-INF/templates/layout.xhtml"
+ 	  xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+>
+
+	<ui:param name="title" value="Taules valoració | Archium" />
+	
+	<ui:define name="content">
+  
+  		<!-- CONTENIDO -->
+
+  		<!-- BreadCrumbs -->
+  		<p:breadCrumb class="breadcrumbs_app">
+		    <p:menuitem value="Item 1" url="#" />
+		    <p:menuitem value="Item 2" url="#" />
+		    <p:menuitem value="Item 3" url="#" />
+		</p:breadCrumb>
+		
+  		<h2 class="title_first">Taules valoració (Tipues dictamen)</h2>
+  		<div class="separador_rojo"></div>
+  		<h:form>
+  			<p:commandButton class="button_add" value="Añadir nuevo" icon="icono_add" action="#{quadre.abrirModal}"></p:commandButton>
+  		</h:form>
+  		<h:form class="actions_views">
+		    <p:growl>
+		        <p:autoUpdate />
+		    </p:growl>
+		    <h:panelGrid columns="" cellpadding="">
+		 		<!-- Item 1 -->
+		        <h:outputLabel for="multiple" value="Codi funció" style="margin-left: 0px;"/>
+		        <p:selectCheckboxMenu id="multiple" value="#{quadre.selectedCities2}" label="Cities" multiple="true"
+		                              filter="true" filterMatchMode="startsWith" panelStyle="width:250px">
+		            <f:selectItems value="#{quadre.cities}" />
+		        </p:selectCheckboxMenu>
+		        <!-- Item 2 -->
+		        <h:outputLabel for="multiple" value="Nom quadre" />
+		        <p:selectCheckboxMenu id="multiple2" value="#{quadre.selectedCities2}" label="Cities" multiple="true"
+		                              filter="true" filterMatchMode="startsWith" panelStyle="width:250px">
+		            <f:selectItems value="#{quadre.cities}" />
+		        </p:selectCheckboxMenu>
+		        <!-- Button -->
+		 		<p:commandButton class="button_actions" value="Aplicar" update="" />
+		    </h:panelGrid>
+		</h:form>
+		
+	    <hr/>
+	    <!-- Tabla contenido -->
+	    <h:form class="table_action">
+		    <p:dataTable var="cuadro" value="#{quadre.listaCuadros}" rows="10"
+                 paginator="true"
+                 paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                 currentPageReportTemplate="{startRecord}-{endRecord} of {totalRecords} records">
+                 
+		        <p:column class="first-column" headerText="Tipues dictamen" sortBy="#{cuadro.codigoCuadro}" style="width: 20%;">
+		            <h:outputText value="#{cuadro.codigoCuadro}" />
+		        </p:column>
+		 
+		        <p:column class="first-column" headerText="Série documental" sortBy="#{cuadro.codigoFuncion}" style="width: 20%;">
+		            <h:outputText value="#{cuadro.codigoFuncion}" />
+		        </p:column>
+		 
+		        <p:column class="first-column" headerText="Nom sèrie" sortBy="#{cuadro.nombreFuncion}" style="width: 35%;">
+		            <h:outputText value="#{cuadro.nombreFuncion}" />
+		        </p:column>
+		 
+		        <p:column class="first-column" headerText="Codi funció" sortBy="#{cuadro.funcionPadre}" style="width: 20%;">
+		            <h:outputText value="#{cuadro.funcionPadre}" />
+		        </p:column>
+		        
+		        <p:column class="first-column column_acciones" style="width: 5%;">
+		        	<f:facet name="header">
+		        		<p:button icon="pi ui-icon-anadir-tabla">
+						    <f:param name="productId" value="30" />
+						</p:button>
+		        	</f:facet>
+			        <p:rowEditor />
+		        </p:column>
+		        
+		        
+	    	</p:dataTable> 	     
+		</h:form>
+		
+		<!-- FIN DEL CONTENIDO -->
+  
+  	</ui:define>
+  	
+ </ui:composition>

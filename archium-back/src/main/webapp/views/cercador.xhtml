@@ -1,0 +1,193 @@
+<ui:composition template="/WEB-INF/templates/layout.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:ui="http://java.sun.com/jsf/facelets">
+    <ui:param name="title" value="#{messages['page.cercador.title']}"/>
+
+    <ui:define name="content">
+
+        <!--<ui:include src="/views/modal/cercador/cercaDetallada.xhtml" />-->
+
+        <!-- CONTENIDO -->
+        <h2 class="title_first">#{cercadorController.messages['cercador.title']}</h2>
+        <div class="separador_rojo"></div>
+
+        <p:panel rendered="#{cercadorController.error==true}" id="panelButtons">
+            <p:staticMessage severity="error" summary="ERROR!" detail="#{messages['cercador.init.error']}"/>
+        </p:panel>
+
+        <h:form id="cercador" rendered="#{cercadorController.error==false}" class="table_action">
+            <p:growl>
+                <p:autoUpdate/>
+            </p:growl>
+
+
+            <p:selectOneMenu id="selectorCuadros" value="#{cercadorController.codiQdCSeleccionat}" style="width:20%"
+                             valueChangeListener="#{cercadorController.ChangeEvent}">
+                <f:selectItems value="#{cercadorController.llistaQdC}" var="n" itemLabel="#{n.nom}"
+                               itemValue="#{n.codi}"/>
+                <p:ajax process="selectorCuadros" event="valueChange" update="cercador"/>
+            </p:selectOneMenu>
+
+            <br/>
+
+
+            <p:importEnum type="es.caib.archium.commons.i18n.Idioma" var="idiomes"/>
+            <p:selectOneMenu id="selectorIdioma" value="#{cercadorController.idiomaSelected}"
+                             converter="IdiomaConverter">
+                <f:selectItem itemLabel="Català" itemValue="#{idiomes.CATALA}"/>
+                <f:selectItem itemLabel="Castellà" itemValue="#{idiomes.CASTELLA}"/>
+                <p:ajax process="selectorIdioma" event="valueChange" update="cercador"/>
+            </p:selectOneMenu>
+
+            <p:dataTable class="estilos-tabla table-procediment"
+                         rowStyleClass="#{serie.nivell eq 1 ? 'ambitFuncional' : 'funcio'}"
+                         id="Series"
+                         var="serie"
+                         value="#{cercadorController.qdc}"
+                         emptyMessage="#{messages['datos.nohaydatos']}"
+                         rows="20"
+                         selectionMode="single"
+                         selection="#{cercadorController.serieSelected}"
+                         rowKey="#{serie.id}"
+                         paginator="true"
+                         filteredValue="#{cercadorController.listaFilter}"
+                         widgetVar="series"
+                         paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                         currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} registres"
+                         rowsPerPageTemplate="10,50,{ShowAll|'Tots'}"
+                         globalFilterFunction="#{cercadorController.globalFilterFunction}">
+                <!-- Si volem que al clicar es doni informació detallada, cal descomentar la importació del modal, descomentar aquest fragment implementar onRowSelect... -->
+                <!-- <p:ajax event="rowSelect" listener="#{cercadorController.onRowSelect}"  resetValues="true" update="cercadorModalDialogId, :panel1:message-global"/>-->
+
+
+                <f:facet name="header">
+                    <p:outputPanel>
+                        <h:outputText value="#{messages['cercador.cercador']}"/>
+                        <p:inputText id="globalFilter" onkeyup="PF('series').filter()" style="width:400px"
+                                     placeholder="#{messages['cercador.cerqui']}"/>
+                        <p:tooltip for="globalFilter"
+                                   value="Per simplicitat, no discrimina entre majúscules i minúscules (ni accents)"
+                                   position="right"/>
+                    </p:outputPanel>
+                </f:facet>
+
+                <!--<p:column class="first-column" headerText="#{messages['cercador.header.funcio.codi']}"
+                          sortBy="#{serie.codiFuncio}" filterBy="#{serie.codiFuncio}" filterMatchMode="contains"
+                          style="width: 5%;">
+                    <h:outputText value="#{serie.codiFuncio}"/>
+                </p:column>-->
+                <p:column class="first-column" headerText="#{messages['cercador.header.funcio']}"
+                          sortBy="#{serie.funcioCompleta}" filterBy="#{serie.funcioCompleta}"
+                          filterFunction="#{cercadorController.filtreSenseAccents}"
+                          style="width: 8%;">
+                    <h:outputText value="#{serie.funcioCompleta}"/>
+                </p:column>
+                <p:column class="first-column" headerText="#{messages['cercador.header.serie.codi']}"
+                          sortBy="#{serie.codiSerie}" filterBy="#{serie.codiSerie}" filterMatchMode="contains"
+                          style="width: 5%;">
+                    <h:outputText value="#{serie.codiSerie}"/>
+                </p:column>
+                <p:column class="first-column" headerText="#{messages['cercador.header.serie.argen.codi']}"
+                          sortBy="#{serie.seriesArgen}" filterBy="#{serie.seriesArgen}" filterMatchMode="contains"
+                          style="width: 5%;">
+                    <h:outputText value="#{serie.seriesArgen}"/>
+                </p:column>
+                <p:column class="first-column" headerText="#{messages['cercador.header.serie.nom']}"
+                          sortBy="#{serie.nomSerie}" filterBy="#{serie.nomSerie}"
+                          filterFunction="#{cercadorController.filtreSenseAccents}"
+                          style="width: 15%;">
+                    <h:outputText value="#{serie.nomSerie}"/>
+                </p:column>
+                <p:column class="first-column tooltipadoPrc"
+                          headerText="#{messages['cercador.header.serie.procediments']}"
+                          sortBy="#{serie.procediments}" filterBy="#{serie.procediments}"
+                          filterFunction="#{cercadorController.filtreSenseAccents}"
+                          style="width: 15%;">
+                    <h:outputText value="#{serie.procediments}"/>
+                </p:column>
+                <p:column class="first-column" headerText="#{messages['cercador.header.serie.dictamen.acces']}"
+                          sortBy="#{serie.acces}" filterBy="#{serie.acces}" filterMatchMode="exact"
+                          style="width: 7%;">
+
+                    <f:facet name="filter">
+                        <p:selectOneMenu onchange="PF('series').filter()" styleClass="ui-custom-filter"
+                                         value="#{cercadorController.accesSelected}">
+                            <f:selectItem itemLabel="#{messages['cercador.header.serie.dictamen.acces.all']}"
+                                          itemValue="#{null}" noSelectionOption="true"/>
+                            <f:selectItems value="#{cercadorController.possiblesAccessos}"/>
+                        </p:selectOneMenu>
+                    </f:facet>
+                    <h:outputText value="#{serie.acces}"/>
+                </p:column>
+                <p:column class="first-column" headerText="#{messages['cercador.header.serie.dictamen.tipus']}"
+                          sortBy="#{serie.tipusDictamen}" filterBy="#{serie.tipusDictamen}" filterMatchMode="exact"
+                          style="width: 8%;">
+                    <f:facet name="filter">
+                        <p:selectOneMenu onchange="PF('series').filter()" styleClass="ui-custom-filter"
+                                         value="#{cercadorController.tipusDictamenSelected}">
+                            <f:selectItem itemLabel="#{messages['cercador.header.serie.dictamen.tipus.all']}"
+                                          itemValue="#{null}" noSelectionOption="true"/>
+                            <f:selectItems value="#{cercadorController.possiblesTipusDictamen}"/>
+                        </p:selectOneMenu>
+                    </f:facet>
+                    <h:outputText value="#{serie.tipusDictamen}"/>
+                </p:column>
+
+                <p:column class="first-column" headerText="#{messages['cercador.header.serie.aplicacions']}"
+                          sortBy="#{serie.aplicacions}" filterBy="#{serie.aplicacions}" filterMatchMode="contains"
+                          style="width: 6%;">
+                    <f:facet name="filter">
+                        <p:selectOneMenu onchange="PF('series').filter()" styleClass="ui-custom-filter"
+                                         value="#{cercadorController.appSelected}">
+                            <f:selectItem itemLabel="#{messages['cercador.header.serie.aplicacions.all']}"
+                                          itemValue="#{null}" noSelectionOption="true"/>
+                            <f:selectItems value="#{cercadorController.possiblesAplicacions}"/>
+                        </p:selectOneMenu>
+                    </f:facet>
+                    <h:outputText value="#{serie.aplicacions}"/>
+                </p:column>
+                <!-- PENDENT posar enllaç a la taula de valoració -->
+                <p:column class="first-column" headerText="#{messages['cercador.header.serie.enviatSAT']}"
+                          sortBy="#{serie.enviatSAT}"
+                          filterBy="#{serie.enviatSAT}" filterMatchMode="exact"
+                          style="width: 3%;">
+                    <f:facet name="filter">
+                        <p:selectOneMenu onchange="PF('series').filter()" styleClass="ui-custom-filter"
+                                         value="#{cercadorController.enviatSATSelected}"
+                                         style="width: 50;">
+                            <f:selectItem itemLabel="#{messages['cercador.enviament.qualsevol']}" itemValue="#{null}" noSelectionOption="true"/>
+                            <f:selectItem itemLabel="#{messages['cercador.enviament.null']}" itemValue="NS/NC"/>
+                            <f:selectItem itemLabel="#{messages['cercador.enviament.si']}" itemValue="Sí"/>
+                            <f:selectItem itemLabel="#{messages['cercador.enviament.no']}" itemValue="No"/>
+                        </p:selectOneMenu>
+                    </f:facet>
+
+                    <div style="text-align:center">
+                    <!-- Indicador de si ya está sincronizado en SAT -->
+                    <p:commandButton rendered="#{serie.codiSerie ne null and serie.enviatSAT eq 'Sí'}"
+                                     title="#{messages['funciones.enviatSAT']}" class="botton_library"
+                                     icon="circle-state green" disabled="true"/>
+                    <!-- Indicador de si no está sincronizado en SAT -->
+                    <p:commandButton rendered="#{serie.codiSerie ne null and serie.enviatSAT eq 'No'}"
+                                     title="#{messages['funciones.noEnviatSAT']}" class="botton_library"
+                                     icon="circle-state red" disabled="true"/>
+                    <!-- Indicador de si no se sabe si está sincronizado en SAT -->
+                    <p:commandButton rendered="#{serie.codiSerie ne null and serie.enviatSAT eq 'NS/NC'}"
+                                     title="#{messages['funciones.nullEnviatSAT']}" class="botton_library"
+                                     icon="circle-state gray" disabled="true"/>
+                    </div>
+                </p:column>
+            </p:dataTable>
+
+            <p:tooltip for="@(.tooltipadoPrc)" position="right">
+                <h:outputText value="+: Sèries amb procediment"/>
+                <br/>
+                <h:outputText value="-: Sèries sense procediments"/>
+            </p:tooltip>
+        </h:form>
+        <hr/>
+    </ui:define>
+</ui:composition>

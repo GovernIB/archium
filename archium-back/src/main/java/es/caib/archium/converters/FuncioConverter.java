@@ -1,58 +1,41 @@
 package es.caib.archium.converters;
 
+import es.caib.archium.objects.FuncioObject;
+import es.caib.archium.services.FuncioFrontService;
+
 import javax.faces.application.FacesMessage;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.ConverterException;
 import javax.faces.convert.FacesConverter;
+import javax.inject.Inject;
 
-import es.caib.archium.controllers.FuncionesController;
-import es.caib.archium.objects.FuncioObject;
-import es.caib.archium.objects.QuadreObject;
-import es.caib.archium.persistence.model.Funcio;
-import es.caib.archium.persistence.model.Quadreclassificacio;
+@FacesConverter(value="FuncioConverter", managed = true)
+public class FuncioConverter implements Converter<FuncioObject> {
 
-@FacesConverter("FuncioConverter")
-public class FuncioConverter implements Converter {
+    @Inject
+    private FuncioFrontService funcioFrontService;
 
     @Override
-    public Object getAsObject(FacesContext context, UIComponent component, String newValue) {
+    public FuncioObject getAsObject(FacesContext context, UIComponent component, String newValue) {
     	if ((null == newValue) || (newValue.trim().isEmpty())) {
             return null;
         }
-    	
         try {
             final Long funcioId = Long.valueOf(newValue);
-            
-            FuncionesController data = context.getApplication().evaluateExpressionGet(context, "#{funciones}", FuncionesController.class);
-            for(FuncioObject funcio : data.getListaFunciones())
-            {
-                if(funcio.getId().longValue()==funcioId.longValue()) {
-                	return funcio;
-                }
-            }
-			
-        } catch (final NumberFormatException ex) {
-            throw new ConverterException(ex);
+            return funcioFrontService.findById(funcioId);
         } catch(final Exception e) {
-        	throw new ConverterException(e);
+            throw new ConverterException(new FacesMessage(String.format("Cannot convert %s to FuncioObject", newValue)), e);
         }
-
-    	return null;
     }
 
     @Override
-    public String getAsString(FacesContext context, UIComponent component, Object object) {
+    public String getAsString(FacesContext context, UIComponent component, FuncioObject funcio) {
 
-    	if (object == null) {
+    	if (funcio == null) {
             return "";
         }
-        if (object instanceof FuncioObject) {
-        	FuncioObject funcio = (FuncioObject) object;
-            return String.valueOf(funcio.getId());
-        } else {
-            throw new ConverterException(new FacesMessage(object + " is not a valid funcio"));
-        }
+        return String.valueOf(funcio.getId());
     }
 }

@@ -11,7 +11,6 @@ public class TauleMestreObject {
 	
 	public TauleMestreObject() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 	public TauleMestreObject(String nom, String codi, String descripcio) {
 		super();

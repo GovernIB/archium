@@ -1,7 +1,8 @@
 package es.caib.archium.persistence.model;
 
+import javax.persistence.Column;
+import javax.persistence.Embeddable;
 import java.io.Serializable;
-import javax.persistence.*;
 
 /**
  * The primary key class for the ACH_VALORPRIMARI database table.
@@ -53,5 +54,14 @@ public class ValorprimariPK implements Serializable {
 		hash = hash * prime + ((int) (this.tipusvalorId ^ (this.tipusvalorId >>> 32)));
 		
 		return hash;
+	}
+
+	@Override
+	public String toString() {
+		return "ValorPrimariPK [valoracioId=" +
+				valoracioId +
+				", tipusValorId=" +
+				tipusvalorId +
+				"]";
 	}
 }

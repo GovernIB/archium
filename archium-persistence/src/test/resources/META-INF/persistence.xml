@@ -6,11 +6,55 @@
     <!--
     Unitat de persistència de test que es pot utilitzar per realitzar proves o per generar els scripts de base de dades
     -->
-    <persistence-unit name="testPU" transaction-type="RESOURCE_LOCAL">
+    <persistence-unit name="archiumPUTest" transaction-type="RESOURCE_LOCAL">
 
         <!-- Llista de classes persistents -->
-        <class>es.caib.archium.persistence.UnitatOrganica</class>
-        <class>es.caib.archium.persistence.Procediment</class>
+        <!--<class>es.caib.archium.persistence.UnitatOrganica</class>
+        <class>es.caib.archium.persistence.Procediment</class>-->
+        <class>es.caib.archium.persistence.model.Aplicacio</class>
+        <class>es.caib.archium.persistence.model.AplicacioSerie</class>
+        <class>es.caib.archium.persistence.model.Butlleti</class>
+        <class>es.caib.archium.persistence.model.Catalegsery</class>
+        <class>es.caib.archium.persistence.model.CategoriaNti</class>
+        <class>es.caib.archium.persistence.model.CausaLimitacio</class>
+        <class>es.caib.archium.persistence.model.ContacteProcediment</class>
+        <class>es.caib.archium.persistence.model.Dictamen</class>
+        <class>es.caib.archium.persistence.model.DictamenTipusdocumental</class>
+        <class>es.caib.archium.persistence.model.Ens</class>
+        <class>es.caib.archium.persistence.model.Familiaprocediment</class>
+        <class>es.caib.archium.persistence.model.Fasearxiu</class>
+        <class>es.caib.archium.persistence.model.Formainici</class>
+        <class>es.caib.archium.persistence.model.Funcio</class>
+        <class>es.caib.archium.persistence.model.LimitacioNormativaSerie</class>
+        <class>es.caib.archium.persistence.model.Lopd</class>
+        <class>es.caib.archium.persistence.model.Materia</class>
+        <class>es.caib.archium.persistence.model.Nivellelectronic</class>
+        <class>es.caib.archium.persistence.model.Normativa</class>
+        <class>es.caib.archium.persistence.model.NormativaSeriedocumental</class>
+        <class>es.caib.archium.persistence.model.Procediment</class>
+        <class>es.caib.archium.persistence.model.Quadreclassificacio</class>
+        <class>es.caib.archium.persistence.model.QuadreTipusDocumental</class>
+        <class>es.caib.archium.persistence.model.SerieArgen</class>
+        <class>es.caib.archium.persistence.model.Seriedocumental</class>
+        <class>es.caib.archium.persistence.model.Serierelacionada</class>
+        <class>es.caib.archium.persistence.model.Silenci</class>
+        <class>es.caib.archium.persistence.model.TipuAcces</class>
+        <class>es.caib.archium.persistence.model.Tipuscontacte</class>
+        <class>es.caib.archium.persistence.model.TipusDictamen</class>
+        <class>es.caib.archium.persistence.model.TipusDocumental</class>
+        <class>es.caib.archium.persistence.model.TipusdocumentProcediment</class>
+        <class>es.caib.archium.persistence.model.TipusNormativa</class>
+        <class>es.caib.archium.persistence.model.TipusNti</class>
+        <class>es.caib.archium.persistence.model.Tipuspublic</class>
+        <class>es.caib.archium.persistence.model.TipusSerie</class>
+        <class>es.caib.archium.persistence.model.TipusValor</class>
+        <class>es.caib.archium.persistence.model.Transferencia</class>
+        <class>es.caib.archium.persistence.model.Valoracio</class>
+        <class>es.caib.archium.persistence.model.Valorprimari</class>
+        <class>es.caib.archium.persistence.model.ValorSecundari</class>
+
+
+
 
         <!-- Desactivar cache -->
         <shared-cache-mode>NONE</shared-cache-mode>

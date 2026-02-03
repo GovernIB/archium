@@ -1,29 +1,21 @@
 package es.caib.archium.converters;
 
-import java.util.List;
+import es.caib.archium.objects.NormativaAprobacioObject;
+import org.primefaces.component.picklist.PickList;
+import org.primefaces.model.DualListModel;
 
-import javax.faces.application.FacesMessage;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.ConverterException;
 import javax.faces.convert.FacesConverter;
-
-import org.primefaces.component.picklist.PickList;
-import org.primefaces.model.DualListModel;
-
-import es.caib.archium.controllers.DictamenController;
-import es.caib.archium.objects.AplicacionObject;
-import es.caib.archium.objects.DictamenObject;
-import es.caib.archium.objects.NormativaAprobacioObject;
-import es.caib.archium.objects.NormativaObject;
+import java.util.List;
 
 @FacesConverter("seriesNormativaConverter")
 public class SeriesNormativaConverter implements Converter<NormativaAprobacioObject> {
 
 	@Override
 	public NormativaAprobacioObject getAsObject(FacesContext context, UIComponent component, String value) {
-		// TODO Auto-generated method stub
 		return getObjectFromUIPickListComponent(component, value);
 	}
 
@@ -49,9 +41,7 @@ public class SeriesNormativaConverter implements Converter<NormativaAprobacioObj
 			}
 
 			return resource;
-		} catch (ClassCastException cce) {
-			throw new ConverterException();
-		} catch (NumberFormatException nfe) {
+		} catch (ClassCastException | NumberFormatException cce) {
 			throw new ConverterException();
 		}
 	}

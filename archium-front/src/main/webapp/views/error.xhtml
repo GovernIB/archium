@@ -1,0 +1,22 @@
+<ui:composition template="/WEB-INF/templates/layout.xhtml"
+ 	  xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+>
+
+	<ui:param name="title" value="Error | Archium" />
+	
+	<ui:define name="content">
+
+  		<div class="mensaje_aviso">
+  			<div class="img_error"></div>
+  			<h2>#{messages['errors.desconocido.title']}</h2>
+  			<h3>#{messages['errors.desconocido.subtitle']}</h3>
+  			<p>#{messages['errors.desconocido.desc']}</p>
+  		</div>
+
+	</ui:define>
+ 
+</ui:composition>

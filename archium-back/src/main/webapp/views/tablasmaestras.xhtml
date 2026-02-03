@@ -9,57 +9,124 @@
 	<ui:param name="title" value="#{messages['page.tmaestras.title']}" />
 	
 	<ui:define name="content">
+		<ui:include src="/views/modal/tablaMaestra/nuevoRegistro.xhtml" />
   
   		<!-- CONTENIDO -->  	
 		
   		<h2 class="title_first">#{messages['tablasmaestras.titulo']}</h2>
-  		<div class="separador_rojo"></div>
+  		<div class="separador_rojo" />
   		
   			<p:panel rendered="#{tablasMaestras.error==true}" id="panelButtons">
 	       		 <p:staticMessage severity="error" summary="ERROR!" detail="#{messages['tablasmaestras.init.error']}" />
 	        </p:panel>
   		
 	  		<h:form id="taula" rendered="#{tablasMaestras.error==false}" class="table_action">
-			    <p:growl>
+			    <p:growl showDetail="true" life="40000">
 			        <p:autoUpdate />
 			    </p:growl>
 			    		    
 			    
 			    <h:panelGrid columns="" cellpadding="">
-			 		<!-- Item 1 -->
-			        <h:outputLabel for="multiple" value="#{messages['tablasmaestras.seleccionar']}" style="margin-left: 0px;"/>
-			        <p:selectOneMenu id="taulesMestres" value="#{tablasMaestras.tabla}" label="tabla" panelStyle="width:250px" 
-			                              valueChangeListener="#{tablasMaestras.ChangeEvent}">
-			             <f:selectItem itemLabel="#{messages['tablasmaestras.seleccion']}" itemValue=" " noSelectionOption="true" />
-			            <f:selectItems value="#{tablasMaestras.listaTabla}" />
-			            <p:ajax process="taulesMestres" partialSubmit="true" event="valueChange" update="taula"/>
-			        </p:selectOneMenu>
-			        		       		       		 
+			 		<!-- Selector de tablas maestras -->
+					<h:outputLabel for="taulesMestres" value="#{messages['tablasmaestras.seleccionar']}" style="margin-left: 0px;"/>
+					<p:selectOneMenu id="taulesMestres" value="#{tablasMaestras.tablaSelected}" label="tabla" panelStyle="width:250px"
+									 valueChangeListener="#{tablasMaestras.ChangeEvent}">
+						<f:selectItem itemLabel="#{messages['tablasmaestras.seleccion']}" itemValue="" noSelectionOption="false" />
+						<f:selectItems value="#{tablasMaestras.listaTabla.entrySet()}" var="entry"
+									   itemValue="#{entry.key}" itemLabel="#{entry.value}" />
+						<p:ajax process="taulesMestres" partialSubmit="true" event="valueChange" update="taula"/>
+					</p:selectOneMenu>
+
+					<p:commandButton class="button_add" resetValues="true" rendered="#{tablasMaestras.taulaSelected}" value="#{messages['tablasmaestras.nuevo']}" icon="icono_add" action="#{tablasMaestras.abrirModal}" oncomplete="PF('taulaMestraModalDialog').show()" update="taulaMestraModalDialogId"/>
 			    </h:panelGrid>
 				<hr/>
-			
-			    <!-- Tabla contenido -->
-			    
-			    
-			
-				<p:dataTable class="estilos-tabla" 
-					var="taule" 
-					value="#{tablasMaestras.tablaMaestra}" 
-					emptyMessage="#{messages['datos.nohaydatos']}"
-					rows="10" 
-					paginator="true"
-	                paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
-	                currentPageReportTemplate="{startRecord}-{endRecord} of {totalRecords} records"  >
-	                
-				     <f:facet name="header">
-	            		<h:outputText id="selectedItemText" value="#{tablasMaestras.tabla}"/>
-	        		</f:facet>
-				    <p:column class="first-column" headerText="#{messages['tablasmaestras.nombre']}" sortBy="#{taule.nom}" style="width: 100%;">
-                		<h:outputText value="#{taule.nom}" />
-			        </p:column>			 
+
+
+
+				<!-- Tabla contenido -->
+				<p:dataTable id="dades" class="estilos-tabla" var="obj" value="#{tablasMaestras.data}" rows="10" paginator="true"
+							 paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+							 currentPageReportTemplate="{startRecord}-{endRecord} of {totalRecords} records"
+							 emptyMessage="#{messages['datos.nohaydatos']}"
+							 widgetVar="tablita"
+							 rowKey="#{obj['id']}">
+					<f:facet name="header">
+							<h:outputText id="selectedItemText" value="#{tablasMaestras.listaTabla.get(tablasMaestras.tablaSelected)}"/>
+							<hr />
+							<h:outputText value="#{messages['procediment.cercador']}" />
+							<p:inputText id="globalFilter" onkeyup="PF('tablita').filter()" style="width:400px" placeholder="#{messages['procediment.cerqui']}"/>
+					</f:facet>
+					<p:columns value="#{tablasMaestras.columns}"
+							   var="column" headerText="#{column.header}"
+							   sortBy="#{obj[column.property]}" filterBy="#{obj[column.property]}" filterMatchMode="contains">
+
+						<p:selectBooleanCheckbox value="#{obj[column.property]}"
+												 disabled="true" rendered="#{column.type == 'java.lang.Boolean'}"/>
+						<h:outputText value="#{obj[column.property]}" rendered="#{column.type != 'java.lang.Boolean' and column.type != 'java.util.Date'}" />
+
+						<h:outputText value="#{obj[column.property]}" rendered="#{column.type == 'java.util.Date'}">
+							<f:convertDateTime pattern="dd-MM-yyyy" />
+						</h:outputText>
+					</p:columns>
+					
+					<p:column class="first-column column_acciones" 
+							  headerText="#{messages['funciones.acciones']}" 
+							  style="width: 5%;"
+							  rendered="#{tablasMaestras.taulaSelected}">
+					
+						<p:commandButton
+				            icon="pi pi-pencil"
+				            styleClass="btn-action"
+				            title="#{messages['actualizar']}"
+				            action="#{tablasMaestras.prepararEdicion}"
+				            update="taulaMestraModalDialogId"
+				            process="@this"
+				            oncomplete="PF('taulaMestraModalDialog').show()"> 
+				         
+				         	<f:setPropertyActionListener value="#{obj}" target="#{tablasMaestras.model}" />
+  						    <f:setPropertyActionListener value="#{obj}" target="#{tablasMaestras.registroSelected}" />
+				         
+				         </p:commandButton>
+					
+				        <p:commandButton
+				            icon="pi pi-trash"
+				            styleClass="btn-action"
+				            title="#{messages['eliminar']}"
+				            action="#{tablasMaestras.prepararEliminacion(obj['id'])}"
+				            update=":taula:confirmEliminacioDialog"
+				            oncomplete="PF('confirmEliminacioDialog').show()">
+			        </p:commandButton>
+    				</p:column>
 				</p:dataTable>
-			    <!--  	    	tablas aqui		-->
-				<!-- FIN DEL CONTENIDO -->
+				
+				<p:dialog id="confirmEliminacioDialog"
+				    header="#{messages['tablasmaestras.eliminar.titulo']}"
+				    widgetVar="confirmEliminacioDialog"
+				    modal="true"
+				    resizable="false"
+				    closable="true"
+				    style="width:500px;">
+				    
+				    <p:panel>
+				        <p style="text-align: center;">
+				            #{messages['tablasmaestras.eliminar.confirmacio']}
+				        </p>
+				        
+				        <div style="display: flex; justify-content: center; gap: 15px;">
+				            <p:commandButton
+				                value="#{messages['eliminar']}"
+				                styleClass="btn-modern-red"
+				                update="taula"
+				                action="#{tablasMaestras.eliminar}"
+				                oncomplete= "PF('confirmEliminacioDialog').hide(); 
+					            			setTimeout(function() { 
+							                    PF('tablita').clearFilters(); 
+							                }, 1500);">
+				            </p:commandButton>          
+				        </div>
+				    </p:panel>
+				</p:dialog>
+				
 			</h:form>					
   	</ui:define>
   	

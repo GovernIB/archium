@@ -37,12 +37,12 @@ public class DictamenTipusdocumental implements Serializable {
 	//bi-directional many-to-one association to Tipusdictamen
 	@ManyToOne
 	@JoinColumn(name="TIPUSDICTAMEN_ID")
-	private Tipusdictamen achTipusdictamen;
+	private TipusDictamen achTipusdictamen;
 
 	//bi-directional many-to-one association to Tipusdocumental
 	@ManyToOne
 	@JoinColumn(name="TIPUSDOCUMENTAL_ID"  ,insertable=false,updatable=false)
-	private Tipusdocumental achTipusdocumental;
+	private TipusDocumental achTipusdocumental;
 
 	public DictamenTipusdocumental() {
 	}
@@ -95,19 +95,19 @@ public class DictamenTipusdocumental implements Serializable {
 		this.achDictamen = achDictamen;
 	}
 
-	public Tipusdictamen getAchTipusdictamen() {
+	public TipusDictamen getAchTipusdictamen() {
 		return this.achTipusdictamen;
 	}
 
-	public void setAchTipusdictamen(Tipusdictamen achTipusdictamen) {
+	public void setAchTipusdictamen(TipusDictamen achTipusdictamen) {
 		this.achTipusdictamen = achTipusdictamen;
 	}
 
-	public Tipusdocumental getAchTipusdocumental() {
+	public TipusDocumental getAchTipusdocumental() {
 		return this.achTipusdocumental;
 	}
 
-	public void setAchTipusdocumental(Tipusdocumental achTipusdocumental) {
+	public void setAchTipusdocumental(TipusDocumental achTipusdocumental) {
 		this.achTipusdocumental = achTipusdocumental;
 	}
 

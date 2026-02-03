@@ -1,33 +1,8 @@
 package es.caib.archium.services;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.transaction.Transactional;
-
 import es.caib.archium.commons.i18n.I18NException;
 import es.caib.archium.commons.query.OrderBy;
 import es.caib.archium.commons.query.OrderType;
-import es.caib.archium.ejb.AplicacioEJB;
-import es.caib.archium.ejb.FamiliaProcedimentEJB;
-import es.caib.archium.ejb.FormaIniciEJB;
-import es.caib.archium.ejb.MateriaEJB;
-import es.caib.archium.ejb.NivellElectronicEJB;
-import es.caib.archium.ejb.NormativaEJB;
-import es.caib.archium.ejb.ProcedimientoEJB;
-import es.caib.archium.ejb.SerieDocumentalEJB;
-import es.caib.archium.ejb.SilenciEJB;
-import es.caib.archium.ejb.TipusDocumentProcedimentEJB;
-import es.caib.archium.ejb.TipusDocumentalEJB;
-import es.caib.archium.ejb.TipusPublicEJB;
 import es.caib.archium.ejb.objects.Dir3;
 import es.caib.archium.ejb.service.AplicacioService;
 import es.caib.archium.ejb.service.Dir3Service;
@@ -46,8 +21,6 @@ import es.caib.archium.objects.AplicacioObject;
 import es.caib.archium.objects.Dir3Object;
 import es.caib.archium.objects.FamiliaprocedimentObject;
 import es.caib.archium.objects.FormainiciObject;
-import es.caib.archium.objects.FuncioObject;
-import es.caib.archium.objects.LimitacioNormativaSerieObject;
 import es.caib.archium.objects.MateriaObject;
 import es.caib.archium.objects.NivellelectronicObject;
 import es.caib.archium.objects.NormativaObject;
@@ -60,18 +33,24 @@ import es.caib.archium.objects.tipusPublicObject;
 import es.caib.archium.persistence.model.Aplicacio;
 import es.caib.archium.persistence.model.Familiaprocediment;
 import es.caib.archium.persistence.model.Formainici;
-import es.caib.archium.persistence.model.Funcio;
-import es.caib.archium.persistence.model.LimitacioNormativaSerie;
 import es.caib.archium.persistence.model.Materia;
 import es.caib.archium.persistence.model.Nivellelectronic;
 import es.caib.archium.persistence.model.Normativa;
 import es.caib.archium.persistence.model.Procediment;
 import es.caib.archium.persistence.model.Seriedocumental;
-import es.caib.archium.persistence.model.Serierelacionada;
 import es.caib.archium.persistence.model.Silenci;
+import es.caib.archium.persistence.model.TipusDocumental;
 import es.caib.archium.persistence.model.TipusdocumentProcediment;
-import es.caib.archium.persistence.model.Tipusdocumental;
 import es.caib.archium.persistence.model.Tipuspublic;
+
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.transaction.Transactional;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 @Named("ProcedimentServices")
 @ApplicationScoped
@@ -146,28 +125,49 @@ public class ProcedimentFrontService {
 		} catch(Exception e) {
 			throw new I18NException("excepcion.general.Exception", this.getClass().getSimpleName(), "findAllProcedimiento");
 		}
-			
+	}
+
+	@Transactional
+	public ProcedimentObject findProcedimentById(Long procedimentId) throws I18NException{
+
+		try {
+			return new ProcedimentObject(procedimentEJB.findById(procedimentId));
+		} catch(NullPointerException e) {
+			throw new I18NException("excepcion.general.NullPointerException", this.getClass().getSimpleName(), "findProcedimentById");
+		} catch(Exception e) {
+			throw new I18NException("excepcion.general.Exception", this.getClass().getSimpleName(), "findProcedimentById");
+		}
 	}
 	
 	@Transactional
-	public List<FamiliaprocedimentObject> findAllFamiliaprocediment() throws I18NException{	
-		
+	public List<FamiliaprocedimentObject> findAllFamiliaprocediment() throws I18NException{
+
 		try {
 			List<FamiliaprocedimentObject> lista = new ArrayList< >();
 			List<Familiaprocediment> res= familiaProcedimentEJB.findAll();
-			
+
 			for(Familiaprocediment  i : res)
-			{				
+			{
 				lista.add(new FamiliaprocedimentObject(i));
-			}		
+			}
 			return lista;
 		} catch(NullPointerException e) {
 			throw new I18NException("excepcion.general.NullPointerException", this.getClass().getSimpleName(), "findAllFamiliaprocediment");
 		} catch(Exception e) {
 			throw new I18NException("excepcion.general.Exception", this.getClass().getSimpleName(), "findAllFamiliaprocediment");
 		}
-		
-		
+	}
+
+	@Transactional
+	public FamiliaprocedimentObject findFamiliaprocedimentById(Long familiaId) throws I18NException{
+
+		try {
+			return new FamiliaprocedimentObject(familiaProcedimentEJB.findById(familiaId));
+		} catch(NullPointerException e) {
+			throw new I18NException("excepcion.general.NullPointerException", this.getClass().getSimpleName(), "findFamiliaprocedimentById");
+		} catch(Exception e) {
+			throw new I18NException("excepcion.general.Exception", this.getClass().getSimpleName(), "findFamiliaprocedimentById");
+		}
 	}
 	
 	@Transactional
@@ -188,8 +188,17 @@ public class ProcedimentFrontService {
 		} catch(Exception e) {
 			throw new I18NException("excepcion.general.Exception", this.getClass().getSimpleName(), "findAllFormainici");
 		}
-		
-		
+	}
+
+	@Transactional
+	public FormainiciObject findFormaIniciById(Long formaIniciId) throws I18NException {
+		try {
+			return new FormainiciObject(formainiciEJB.findById(formaIniciId));
+		} catch(NullPointerException e) {
+			throw new I18NException("excepcion.general.NullPointerException", this.getClass().getSimpleName(), "findFormaIniciById");
+		} catch(Exception e) {
+			throw new I18NException("excepcion.general.Exception", this.getClass().getSimpleName(), "findFormaIniciById");
+		}
 	}
 
 	@Transactional
@@ -210,8 +219,18 @@ public class ProcedimentFrontService {
 		} catch(Exception e) {
 			throw new I18NException("excepcion.general.Exception", this.getClass().getSimpleName(), "findAllSilenci");
 		}
-		
-		
+	}
+
+	@Transactional
+	public SilenciObject findSilenciById(Long silenciId) throws I18NException{
+
+		try {
+			return new SilenciObject(silenciEJB.findById(silenciId));
+		} catch(NullPointerException e) {
+			throw new I18NException("excepcion.general.NullPointerException", this.getClass().getSimpleName(), "findSilenciById");
+		} catch(Exception e) {
+			throw new I18NException("excepcion.general.Exception", this.getClass().getSimpleName(), "findSilenciById");
+		}
 	}
 	
 	@Transactional
@@ -232,8 +251,17 @@ public class ProcedimentFrontService {
 		} catch(Exception e) {
 			throw new I18NException("excepcion.general.Exception", this.getClass().getSimpleName(), "findAllNivellelectronic");
 		}
-		
-		
+	}
+
+	@Transactional
+	public NivellelectronicObject findNivellElectronicById(Long nivellId) throws I18NException{
+		try {
+			return new NivellelectronicObject(nivellelectronicEJB.findById(nivellId));
+		} catch(NullPointerException e) {
+			throw new I18NException("excepcion.general.NullPointerException", this.getClass().getSimpleName(), "findNivellElectronicById");
+		} catch(Exception e) {
+			throw new I18NException("excepcion.general.Exception", this.getClass().getSimpleName(), "findNivellElectronicById");
+		}
 	}
 	
 	@Transactional
@@ -258,7 +286,9 @@ public class ProcedimentFrontService {
 		
 		
 	}
-	
+
+
+
 	@Transactional
 	public List<AplicacioObject> findAllAplicacio() throws I18NException{	
 		
@@ -277,8 +307,22 @@ public class ProcedimentFrontService {
 		} catch(Exception e) {
 			throw new I18NException("excepcion.general.Exception", this.getClass().getSimpleName(), "findAllAplicacio");
 		}
+	}
 
-		
+	@Transactional
+	public AplicacioObject findAplicacioById(Long aplicacioId) throws I18NException{
+
+		AplicacioObject aplicacioObject = null;
+		try {
+			Aplicacio res= aplicacioEJB.findById(aplicacioId);
+			aplicacioObject = new AplicacioObject(res);
+		} catch(NullPointerException e) {
+			throw new I18NException("excepcion.general.NullPointerException", this.getClass().getSimpleName(), "findAplicacioById");
+		} catch(Exception e) {
+			throw new I18NException("excepcion.general.Exception", this.getClass().getSimpleName(), "findAplicacioById");
+		}
+		return aplicacioObject;
+
 	}
 		
 	@Transactional
@@ -350,9 +394,9 @@ public class ProcedimentFrontService {
 
 		try {
 			List<TipuDocumentalObject> 	lista 	= new ArrayList< >();
-			List<Tipusdocumental> 			res		= tipusDocumentaEJB.findAll();
+			List<TipusDocumental> 			res		= tipusDocumentaEJB.findAll();
 			
-			for(Tipusdocumental  i : res)
+			for(TipusDocumental i : res)
 			{				
 				lista.add(new TipuDocumentalObject(i));
 			}	
@@ -362,9 +406,20 @@ public class ProcedimentFrontService {
 		} catch(Exception e) {
 			throw new I18NException("excepcion.general.Exception", this.getClass().getSimpleName(), "findAllTipoDocumental");
 		}
-
 	}
-	
+
+	@Transactional
+	public TipuDocumentalObject findTipusDocumentalById(Long tipusDocumentalId) throws I18NException{
+
+		try {
+			return new TipuDocumentalObject(tipusDocumentaEJB.findById(tipusDocumentalId));
+		} catch(NullPointerException e) {
+			throw new I18NException("excepcion.general.NullPointerException", this.getClass().getSimpleName(), "findTipusDocumentalById");
+		} catch(Exception e) {
+			throw new I18NException("excepcion.general.Exception", this.getClass().getSimpleName(), "findTipusDocumentalById");
+		}
+	}
+
 	@Transactional
 	public List<tipusPublicObject> findAllTipusPublic() throws I18NException{	
 		
@@ -434,8 +489,8 @@ public class ProcedimentFrontService {
 			db.setDestinataris(i.getDestinataris());
 			db.setObservacions(i.getObservacions());
 			db.setUri(i.getUri());
-
-			if (i.getFamiliaprocediment()!= null) {		
+			// #6345 Simplificació
+			/*if (i.getFamiliaprocediment()!= null) {
 				db.setAchFamiliaprocediment(familia(i.getFamiliaprocediment().getId()));
 			}
 			if (i.getFormainici()!= null){
@@ -446,15 +501,13 @@ public class ProcedimentFrontService {
 			}
 			if (i.getNivellelectronic()!= null) {
 				db.setAchNivellelectronic(nivel(i.getNivellelectronic().getId()));
-			}
+			}*/
 			if (i.getSeriedocumental()!= null) {
 				db.setAchSeriedocumental(serie(i.getSeriedocumental().getSerieId()));
 			}
-			if (i.getAplicacio()!= null) {
-				db.setAchAplicacio(aplicacion(i.getAplicacio().getId()));
-			}			
+
 			db.setCodirolsac(i.getCodirolsac());
-			db.setTermini(i.getTermine());
+			/*db.setTermini(i.getTermine());
 			db.setTermininotif(i.getTermininotif());
 			if(i.getFiViaAdministrativa()!=null)
 				db.setFiviaadministrativa(i.getFiViaAdministrativa()?new BigDecimal(1):new BigDecimal(0));
@@ -464,9 +517,9 @@ public class ProcedimentFrontService {
 			db.setDir3Instructor(i.getDir3Instructor());
 			db.setPublicacio(i.getPublicacio());
 			db.setCaducitat(i.getCaducitat());
-			db.setGestor(i.getGestor());
+			db.setGestor(i.getGestor());*/
 			db.setModificacio(new Date());
-			List<Materia> listb1 = new ArrayList<>();
+			/*List<Materia> listb1 = new ArrayList<>();
 			for (MateriaObject var : lista1) {
 				Materia b = materiaEJB.getReference(var.getId());
 				listb1.add(b);
@@ -477,7 +530,7 @@ public class ProcedimentFrontService {
 				Tipuspublic b = tipusPublicEJB.getReference(var.getId());
 				listb2.add(b);
 			}
-			db.setAchTipuspublics(listb2);
+			db.setAchTipuspublics(listb2);*/
 			List<Normativa> listb3 = new ArrayList<>();
 			for (NormativaObject var : lista3) {
 				Normativa b = normativaEJB.getReference(var.getId());
@@ -531,9 +584,6 @@ public class ProcedimentFrontService {
 			if (i.getSeriedocumental()!= null) {
 				db.setAchSeriedocumental(serie(i.getSeriedocumental().getSerieId()));
 			}
-			if (i.getAplicacio()!= null) {
-				db.setAchAplicacio(aplicacion(i.getAplicacio().getId()));
-			}			
 			db.setCodirolsac(i.getCodirolsac());
 			db.setTermini(i.getTermine());
 			db.setTermininotif(i.getTermininotif());
@@ -592,7 +642,7 @@ public class ProcedimentFrontService {
 		try {
 			List<TipuDocumentalObject> list = new ArrayList<>();
 			for (TipuDocumentalProcedimentObject var:lista ) {
-				Tipusdocumental 		bd 		= this.tipusDocumentaEJB.getReference(var.getTipusDocumental().getId());
+				TipusDocumental bd 		= this.tipusDocumentaEJB.getReference(var.getTipusDocumental().getId());
 				TipuDocumentalObject 	objeto 	= new TipuDocumentalObject(bd);
 				list.add(objeto);
 			}

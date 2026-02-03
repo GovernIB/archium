@@ -1,0 +1,58 @@
+<?xml version="1.0"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://java.sun.com/xml/ns/javaee"
+         xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_4_0.xsd"
+         version="4.0">
+
+    <servlet>
+        <servlet-name>Faces Servlet</servlet-name>
+        <servlet-class>javax.faces.webapp.FacesServlet</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>Faces Servlet</servlet-name>
+        <url-pattern>*.xhtml</url-pattern>
+    </servlet-mapping>
+
+
+    <!-- Generació del quadre de classificació en PDF -->
+    <servlet>
+        <servlet-name>QuadreClassificacioPdf</servlet-name>
+        <servlet-class>es.caib.archium.front.controllers.QuadreClassificacioPdf</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>QuadreClassificacioPdf</servlet-name>
+        <url-pattern>/qdc.pdf</url-pattern>
+    </servlet-mapping>
+
+    <!-- Generació del quadre de tipus documentals en PDF -->
+    <servlet>
+        <servlet-name>QuadreTipusDocumentalsPdf</servlet-name>
+        <servlet-class>es.caib.archium.front.controllers.QuadreTipusPdf</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>QuadreTipusDocumentalsPdf</servlet-name>
+        <url-pattern>/qtd.pdf</url-pattern>
+    </servlet-mapping>
+
+    <error-page>
+        <error-code>404</error-code>
+        <location>/views/error404.xhtml</location>
+    </error-page>
+    <error-page>
+        <error-code>500</error-code>
+        <location>/views/error500.xhtml</location>
+    </error-page>
+    <error-page>
+        <exception-type>javax.faces.application.ViewExpiredException</exception-type>
+        <location>/views/errorExpired.xhtml</location>
+    </error-page>
+    <error-page>
+        <exception-type>java.lang.Exception</exception-type>
+        <location>/views/error.xhtml</location>
+    </error-page>
+
+    <welcome-file-list>
+        <welcome-file>/views/cercador.xhtml</welcome-file>
+    </welcome-file-list>
+</web-app>

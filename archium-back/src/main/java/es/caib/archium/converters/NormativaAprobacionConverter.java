@@ -1,45 +1,41 @@
 package es.caib.archium.converters;
 
+import es.caib.archium.objects.NormativaAprobacioObject;
+import es.caib.archium.services.DictamenFrontService;
+
 import javax.faces.application.FacesMessage;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.ConverterException;
 import javax.faces.convert.FacesConverter;
+import javax.inject.Inject;
 
-import es.caib.archium.controllers.DictamenController;
-import es.caib.archium.objects.DictamenObject;
-import es.caib.archium.objects.NormativaAprobacioObject;
+@FacesConverter(value="NormativaConverter", managed = true)
+public class NormativaAprobacionConverter implements Converter<NormativaAprobacioObject> {
 
-@FacesConverter("NormativaConverter")
-public class NormativaAprobacionConverter implements Converter {
+    @Inject
+    private DictamenFrontService dictamenFrontService;
 
     @Override
-    public Object getAsObject(FacesContext context, UIComponent component, String newValue) {
-	    if(newValue == null)
-	    return null;
-	    
-	    final Long id = Long.valueOf(newValue);
-	    DictamenController data = context.getApplication().evaluateExpressionGet(context, "#{dictamenController}", DictamenController.class);
-	    for(NormativaAprobacioObject compLovDtgrid : data.getListaNormativaAprovacio())
-	    {
-	    	if(compLovDtgrid.getId().equals(id))
-		    	return compLovDtgrid;
-	    }
-	    	throw new ConverterException(new FacesMessage(String.format("Cannot convert %s to DictamenObject", newValue)));
+    public NormativaAprobacioObject getAsObject(FacesContext context, UIComponent component, String newValue) {
+        if (newValue == null) {
+            return null;
+        }
+
+        try {
+            final Long id = Long.valueOf(newValue);
+            return dictamenFrontService.findNormativaAprovacioById(id);
+        } catch (Exception e) {
+            throw new ConverterException(new FacesMessage(String.format("Cannot convert %s to DictamenObject", newValue)), e);
+        }
     }
 
     @Override
-    public String getAsString(FacesContext context, UIComponent component, Object object) {
-    	if (object == null) {
+    public String getAsString(FacesContext context, UIComponent component, NormativaAprobacioObject normativa) {
+        if (normativa == null) {
             return "";
         }
-        if (object instanceof NormativaAprobacioObject) {
-        	NormativaAprobacioObject quadre= (NormativaAprobacioObject) object;
-            Long name = quadre.getId();
-            return name.toString();
-        } else {
-            throw new ConverterException(new FacesMessage(object + " is not a valid normativa aprobacio"));
-        }
+        return normativa.getId().toString();
     }
 }

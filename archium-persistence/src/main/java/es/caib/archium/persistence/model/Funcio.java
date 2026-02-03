@@ -47,7 +47,7 @@ public class Funcio implements Serializable {
 	private Funcio achFuncio;
 
 	//bi-directional many-to-one association to Funcio
-	@OneToMany(mappedBy="achFuncio", 
+	@OneToMany(mappedBy="achFuncio",
 			cascade = CascadeType.REMOVE)
 	private List<Funcio> achFuncios;
 
@@ -59,7 +59,7 @@ public class Funcio implements Serializable {
 	//bi-directional many-to-one association to Tipusserie
 	@ManyToOne
 	@JoinColumn(name="TIPUSSERIE_ID")
-	private Tipusserie achTipusserie;
+	private TipusSerie achTipusserie;
 
 	//bi-directional many-to-one association to Seriedocumental
 	@OneToMany(mappedBy="achFuncio", 
@@ -179,11 +179,11 @@ public class Funcio implements Serializable {
 		this.achQuadreclassificacio = achQuadreclassificacio;
 	}
 
-	public Tipusserie getAchTipusserie() {
+	public TipusSerie getAchTipusserie() {
 		return this.achTipusserie;
 	}
 
-	public void setAchTipusserie(Tipusserie achTipusserie) {
+	public void setAchTipusserie(TipusSerie achTipusserie) {
 		this.achTipusserie = achTipusserie;
 	}
 

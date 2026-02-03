@@ -1,5 +1,7 @@
 package es.caib.archium.objects;
 
+import es.caib.archium.persistence.model.SerieArgen;
+
 import java.util.Objects;
 
 public class SerieArgenObject {
@@ -13,6 +15,15 @@ public class SerieArgenObject {
 		this.codi = codi;
 		this.nom = nom;
 	}
+
+	public SerieArgenObject (SerieArgen serieArgen) {
+		if (serieArgen != null) {
+			this.id = serieArgen.getId();
+			this.codi = serieArgen.getCodi();
+			this.nom = serieArgen.getNom();
+		}
+	}
+
 	public Long getId() {
 		return id;
 	}

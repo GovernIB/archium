@@ -1,11 +1,11 @@
 package es.caib.archium.objects;
 
-import java.util.Objects;
-
 import es.caib.archium.persistence.model.Catalegsery;
 import es.caib.archium.persistence.model.Funcio;
 import es.caib.archium.persistence.model.Seriedocumental;
-import es.caib.archium.persistence.model.Tipusserie;
+import es.caib.archium.persistence.model.TipusSerie;
+
+import java.util.Objects;
 
 public class SerieDocumentalObject {
 	private Long serieId;
@@ -13,11 +13,14 @@ public class SerieDocumentalObject {
 	private String nom;
 	private String nomCas;
 	private Long catalegSeriId;
-	//private Long funcioId;
+
 	private FuncioObject funcio;
 	private String descripcio;
 	private String descripcioCas;
 	private String resumMigracio;
+
+	private Boolean enviatSAT;
+
 	private String dir3Promotor;
 	private String estat;
 	private Long tipusSerieId;
@@ -26,23 +29,6 @@ public class SerieDocumentalObject {
 	public SerieDocumentalObject() {
 	}
 
-	public SerieDocumentalObject(String codi, String nom, String nomCas, Long catalegSeriId, FuncioObject funcio,
-			String descripcio, String descripcioCas, String resumMigracio, String dir3Promotor, Long tipusSerieId,
-			String codiIecisa, String estat) {
-		this.codi = codi;
-		this.nom = nom;
-		this.nomCas = nomCas;
-		this.catalegSeriId = catalegSeriId;
-		this.funcio = funcio;
-		this.descripcio = descripcio;
-		this.descripcioCas = descripcioCas;
-		this.resumMigracio = resumMigracio;
-		this.dir3Promotor = dir3Promotor;
-		this.tipusSerieId = tipusSerieId;
-		this.codiIecisa = codiIecisa;
-		this.estat = estat;
-	}
-	
 	public SerieDocumentalObject(Seriedocumental dbSerie) {
 		
 		if(dbSerie!=null) {
@@ -54,6 +40,7 @@ public class SerieDocumentalObject {
 			this.descripcio = dbSerie.getDescripcio();
 			this.descripcioCas = dbSerie.getDescripciocas();
 			this.resumMigracio = dbSerie.getResummigracio();
+			this.enviatSAT = dbSerie.getEnviatSAT();
 			this.dir3Promotor = dbSerie.getDir3Promotor();
 			if(dbSerie.getAchTipusserie()!=null) {
 				this.tipusSerieId = dbSerie.getAchTipusserie().getId();
@@ -168,8 +155,20 @@ public class SerieDocumentalObject {
 	public void setEstat(String estat) {
 		this.estat = estat;
 	}
-	
-	public Seriedocumental toDbObject(Tipusserie ts, Catalegsery cs, Funcio f) {
+
+	public Boolean getEnviatSAT() {
+		return enviatSAT;
+	}
+
+	public void setEnviatSAT(Boolean enviatSAT) {
+		this.enviatSAT = enviatSAT;
+	}
+
+	public String getNomComplet() {
+		return codi + " - " + nom;
+	}
+
+	public Seriedocumental toDbObject(TipusSerie ts, Catalegsery cs, Funcio f) {
 		Seriedocumental db = new Seriedocumental();
 		db.setId(serieId);
 		db.setCodi(codi);
@@ -179,6 +178,7 @@ public class SerieDocumentalObject {
 		db.setDescripcio(descripcio);
 		db.setDescripciocas(descripcioCas);
 		db.setResummigracio(resumMigracio);
+		db.setEnviatSAT(enviatSAT);
 		db.setDir3Promotor(dir3Promotor);
 		db.setCodiiecisa(codiIecisa);
 		db.setNom(nom);
@@ -208,35 +208,35 @@ public class SerieDocumentalObject {
 
 	@Override
 	public String toString() {
-		StringBuilder builder = new StringBuilder();
-		builder.append("SerieDocumentalObject [serieId=");
-		builder.append(serieId);
-		builder.append(", codi=");
-		builder.append(codi);
-		builder.append(", nom=");
-		builder.append(nom);
-		builder.append(", nomCas=");
-		builder.append(nomCas);
-		builder.append(", catalegSeriId=");
-		builder.append(catalegSeriId);
-		builder.append(", funcio=");
-		builder.append(funcio);
-		builder.append(", descripcio=");
-		builder.append(descripcio);
-		builder.append(", descripcioCas=");
-		builder.append(descripcioCas);
-		builder.append(", resumMigracio=");
-		builder.append(resumMigracio);
-		builder.append(", dir3Promotor=");
-		builder.append(dir3Promotor);
-		builder.append(", estat=");
-		builder.append(estat);
-		builder.append(", tipusSerieId=");
-		builder.append(tipusSerieId);
-		builder.append(", codiIecisa=");
-		builder.append(codiIecisa);
-		builder.append("]");
-		return builder.toString();
+		return "SerieDocumentalObject [serieId=" +
+				serieId +
+				", codi=" +
+				codi +
+				", nom=" +
+				nom +
+				", nomCas=" +
+				nomCas +
+				", catalegSeriId=" +
+				catalegSeriId +
+				", funcio=" +
+				funcio +
+				", descripcio=" +
+				descripcio +
+				", descripcioCas=" +
+				descripcioCas +
+				", resumMigracio=" +
+				resumMigracio +
+				", enviatSAT=" +
+				enviatSAT +
+				", dir3Promotor=" +
+				dir3Promotor +
+				", estat=" +
+				estat +
+				", tipusSerieId=" +
+				tipusSerieId +
+				", codiIecisa=" +
+				codiIecisa +
+				"]";
 	}
 
 }

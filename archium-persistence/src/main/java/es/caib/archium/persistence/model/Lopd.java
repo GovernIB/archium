@@ -2,6 +2,7 @@ package es.caib.archium.persistence.model;
 
 import java.io.Serializable;
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 
@@ -11,6 +12,7 @@ import java.util.List;
  */
 @Entity
 @Table(name="ACH_LOPD")
+@TaulaMestra(excludedFields = {"id", "achDictamens"})
 @NamedQuery(name="Lopd.findAll", query="SELECT l FROM Lopd l")
 public class Lopd implements Serializable {
 	private static final long serialVersionUID = 1L;
@@ -20,12 +22,16 @@ public class Lopd implements Serializable {
 	@GeneratedValue(strategy=GenerationType.SEQUENCE, generator="ACH_LOPD_ID_GENERATOR")
 	private Long id;
 
+	@NotNull
 	private String descripcio;
 
+	@NotNull
 	private String descripciocas;
 
+	@NotNull
 	private String nom;
 
+	@NotNull
 	private String nomcas;
 
 	//bi-directional many-to-one association to Dictamen
@@ -43,6 +49,7 @@ public class Lopd implements Serializable {
 		this.id = id;
 	}
 
+	@OrdreVisual(ordre = 300)
 	public String getDescripcio() {
 		return this.descripcio;
 	}
@@ -51,6 +58,7 @@ public class Lopd implements Serializable {
 		this.descripcio = descripcio;
 	}
 
+	@OrdreVisual(ordre = 400)
 	public String getDescripciocas() {
 		return this.descripciocas;
 	}
@@ -59,6 +67,7 @@ public class Lopd implements Serializable {
 		this.descripciocas = descripciocas;
 	}
 
+	@OrdreVisual(ordre = 100)
 	public String getNom() {
 		return this.nom;
 	}
@@ -67,6 +76,7 @@ public class Lopd implements Serializable {
 		this.nom = nom;
 	}
 
+	@OrdreVisual(ordre = 200)
 	public String getNomcas() {
 		return this.nomcas;
 	}

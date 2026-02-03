@@ -120,4 +120,8 @@ public interface DAO<E extends Serializable, PK> {
      * @return L'entitat en forma de referència.
      */
     E getReference(@NotNull PK id);
+
+	boolean tieneRelaciones(PK id);
+	
+	String getDetalleRelaciones();
 }

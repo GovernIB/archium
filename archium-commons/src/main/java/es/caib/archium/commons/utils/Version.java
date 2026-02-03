@@ -12,7 +12,7 @@ import java.util.ResourceBundle;
  * @author areus
  * @author anadal
  */
-@Named
+@Named("version")
 @ApplicationScoped
 public class Version {
 
@@ -69,5 +69,10 @@ public class Version {
      */
     public String getProjectName() {
         return this.projectName;
+    }
+
+    @Override
+    public String toString() {
+        return "ARCHIUM " + version + " (" + buildTime + " UTC)";
     }
 }

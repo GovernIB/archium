@@ -1,0 +1,302 @@
+<ui:composition template="/WEB-INF/templates/layout.xhtml"
+ 	  xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://java.sun.com/jsf/facelets">
+
+	<ui:param name="title" value="#{messages['page.tipusdocumentals.detall.title']}" />
+	
+	<f:metadata>
+		<f:viewParam name="codi" value="#{tipusDocumentalDetallController.codi}"/>
+		<f:viewAction action="#{tipusDocumentalDetallController.carregarDetalls}"/>
+	</f:metadata>
+
+	<ui:define name="content">
+	
+	    <!-- Modal para actualizar tipo documental -->
+	    <ui:include src="/views/modal/tipusDocumental/actualitzarTipusDocumentalDetall.xhtml" />
+    
+        <!-- Título -->
+        <h2 class="title_first">#{messages['tipusdocumentals.detall.titulo']}</h2>
+        <div class="separador_rojo"></div>    
+        
+        <h:form id="detallForm" class="table_action">
+
+            <!-- Mensajes de feedback de FacesContext -->
+            <p:growl id="growl" showDetail="true" showSummary="false" life="3000">
+                <p:autoUpdate />
+            </p:growl>
+        
+            <!-- contenedor para botones -->
+            <div class="botonera-wrapper">
+
+                <!-- EDITAR -->
+                <p:commandButton
+                    value="#{messages['actualizar']}"
+                    icon="pi pi-pencil"
+                    class="button_add"
+                    action="#{tipusDocumentalController.intentarEditar(tipusDocumentalDetallController.codi)}"
+                    oncomplete="handleEdicioResponse(args)"
+                    update="editarTipusDocumentalModalDialogId advertenciaEditarDialog" />
+
+                <!-- ELIMINAR -->
+                <p:commandButton
+                    class="button_add"
+                    value="#{messages['eliminar']}"
+                    icon="pi pi-trash"
+                    action="#{tipusDocumentalController.intentarEliminar(tipusDocumentalDetallController.codi)}"
+                    update="confirmEliminacioAmbRelacionsDialog confirmEliminacioSenseRelacionsDialog confirmEliminacioObsoletDialog advertenciaEliminarDialog"
+                    oncomplete="handleEliminacioResponse(args);" />
+
+                <!-- VOLVER -->
+                <p:commandButton
+                    class="button_add"
+                    value="#{messages['tornar']}"
+                    action="tipusdocumentals?faces-redirect=true"
+                    icon="pi pi-arrow-left" />
+
+            </div>
+
+            <div class="views_3">
+                <div class="content_4">                
+                    <div class="ui-g form_new">
+                        <p:panel id="panelDetail">
+                            <ui:repeat value="#{tipusDocumentalDetallController.tipusDocumentalLlista}" var="tipusDocumental">
+                            	
+                            	<!-- Código -->
+								<div class="ui-g-12 item_1">
+								    <label class="ui-g-2 field-label">#{messages['tipusdocumental.codi']}:</label>
+								    <div class="ui-g-10">
+								        <h:outputText value="#{tipusDocumental.codi}"
+								                      styleClass="field-value-red" />
+								    </div>
+								</div>
+								
+								<!-- Estado -->
+								<div class="ui-g-12 item_1">
+								    <label class="ui-g-2 field-label">#{messages['tipusdocumental.estat']}:</label>
+								    <div class="ui-g-10">
+								        <h:outputText value="#{tipusDocumental.estat}"
+								                      styleClass="field-value-red" />
+								    </div>
+								</div>
+								
+								<!-- Nombre (Catalán) -->
+								<div class="ui-g-12 item_1">
+								    <label class="ui-g-2 field-label">#{messages['tipusdocumental.nom']}:</label>
+								    <div class="ui-g-10">
+								        <div class="detail-box">
+								            <h:outputText value="#{tipusDocumental.nom}"
+								                          styleClass="field-value-area" />
+								        </div>
+								    </div>
+								</div>
+								
+								<!-- Nombre (Castellano) -->
+								<div class="ui-g-12 item_1">
+								    <label class="ui-g-2 field-label">#{messages['tipusdocumental.nomCas']}:</label>
+								    <div class="ui-g-10">
+								        <div class="detail-box">
+								            <h:outputText value="#{tipusDocumental.nomcas}"
+								                          styleClass="field-value-area" />
+								        </div>
+								    </div>
+								</div>
+								
+								<!-- Definición (Catalán) -->
+								<div class="ui-g-12 item_1">
+								    <label class="ui-g-2 field-label">#{messages['tipusdocumental.definicio']}:</label>
+								    <div class="ui-g-10">
+								        <div class="detail-box-big">
+								            <h:outputText value="#{tipusDocumental.definicio}"
+								                          styleClass="field-value-area" />
+								        </div>
+								    </div>
+								</div>
+								
+								<!-- Definición (Castellano) -->
+								<div class="ui-g-12 item_1">
+								    <label class="ui-g-2 field-label">#{messages['tipusdocumental.definicioCas']}:</label>
+								    <div class="ui-g-10">
+								        <div class="detail-box-big">
+								            <h:outputText value="#{tipusDocumental.definiciocas}"
+								                          styleClass="field-value-area" />
+								        </div>
+								    </div>
+								</div>
+								
+								<!-- Observaciones -->
+								<div class="ui-g-12 item_1">
+								    <label class="ui-g-2 field-label">#{messages['tipusdocumental.observacions']}:</label>
+								    <div class="ui-g-10">
+								        <div class="detail-box-big-warn">
+								            <h:outputText value="#{tipusDocumental.observacions}"
+								                          styleClass="field-value-area" />
+								        </div>
+								    </div>
+								</div>
+                                
+                            </ui:repeat>
+                        </p:panel>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Diálogo de advertencia cuando el tipo documental es obsoleto -->
+            <p:dialog id="advertenciaEditarDialog" 
+                widgetVar="advertenciaEditarDialog" 
+                modal="true" 
+                resizable="false"
+                styleClass="dialog-header-black">
+                <h3 style="text-align: center;">
+                    #{messages['accio.nopermesa']}
+                </h3>
+                <p style="text-align: center;">
+                    #{messages['tipusdocumental.error.noeditable.obsolet']}
+                </p>
+            </p:dialog>
+            
+            <!-- Diálogo de advertencia de que un tipo documental obsoleto con relaciones no puede ser eliminado -->
+            <p:dialog id="advertenciaEliminarDialog"  
+                widgetVar="advertenciaEliminarDialog" 
+                modal="true" 
+                resizable="false">
+                <h3 style="text-align: center;">
+                    #{messages['accio.nopermesa']}
+                </h3>
+                <p style="text-align: center;">
+                    #{messages['tipusdocumental.error.noeliminable.obsolet.relacions']}
+                </p>
+            </p:dialog>
+            
+            <!-- Diálogo para eliminar cuando el tipo documental está relacionado -->
+            <p:dialog id="confirmEliminacioAmbRelacionsDialog"
+                header="Eliminar Tipus Documental"
+                widgetVar="confirmEliminacioAmbRelacionsDialog"
+                modal="true"
+                resizable="false"
+                closable="true"
+                style="width:500px;">
+                
+                <p:panel>
+                    <p style="text-align: center;">
+                        El tipus documental <strong>#{tipusDocumentalController.codiAEliminar} serà marcat com a obsolet i deixarà de ser editable</strong>. Vols confirmar-ho?
+                    </p>
+                
+                    <div style="display: flex; justify-content: center; gap: 15px;">
+                        <p:commandButton
+                            value="Confirmar"
+                            styleClass="btn-modern-red"
+                            update="detallForm:panelDetail detallForm:growl"
+                            action="#{tipusDocumentalController.eliminatLogic}"
+                            disabled="#{tipusDocumentalController.estat eq 'OBSOLET'}"
+                            oncomplete="PF('confirmEliminacioAmbRelacionsDialog').hide();
+                                        #{tipusDocumentalDetallController.carregarDetalls()};">
+                        </p:commandButton>
+                    </div>
+                </p:panel>
+            
+            </p:dialog>
+            
+            <!-- Diálogo para eliminar cuando el tipo documental no está relacionado -->
+            <p:dialog id="confirmEliminacioSenseRelacionsDialog"
+                header="Tipus d'eliminació"
+                widgetVar="confirmEliminacioSenseRelacionsDialog"
+                modal="true"
+                resizable="false"
+                closable="true"
+                style="width:500px;">
+                
+                <p:panel>
+                    <p style="text-align: center;">
+                        Com vols eliminar el tipus documental <strong>#{tipusDocumentalController.codiAEliminar}</strong>?
+                    </p>
+                
+                    <div style="display: flex; justify-content: center; gap: 15px;">
+                        <p:commandButton
+                            value="Esborrar permanentment"
+                            styleClass="btn-modern-red"
+                            action="#{tipusDocumentalController.eliminatFisic}"
+                            oncomplete="if (!args.validationFailed) { window.location.href='#{request.contextPath}/views/tipusdocumentals.xhtml'; }">
+                        </p:commandButton>
+                
+                        <p:commandButton
+                            value="Marcar com a obsolet"
+                            styleClass="btn-modern-red"
+                            update="detallForm:panelDetail detallForm:growl"
+                            action="#{tipusDocumentalController.eliminatLogic}"
+                            disabled="#{tipusDocumentalController.estat eq 'OBSOLET'}"
+                            oncomplete="PF('confirmEliminacioSenseRelacionsDialog').hide();
+                                        #{tipusDocumentalDetallController.carregarDetalls()};">
+                        </p:commandButton>
+                    </div>
+                </p:panel>
+            
+            </p:dialog>
+            
+            <!-- Diálogo para eliminar cuando el tipo documental es obsoleto y no tiene relaciones -->
+            <p:dialog id="confirmEliminacioObsoletDialog"
+                header="Eliminar Tipus Documental Obsolet"
+                widgetVar="confirmEliminacioObsoletDialog"
+                modal="true"
+                resizable="false"
+                closable="true"
+                style="width:500px;">
+                
+                <p:panel>
+                    <p style="text-align: center;">
+                        El tipus documental <strong>#{tipusDocumentalController.codiAEliminar}</strong> serà permanentment esborrat. Vols confirmar-ho?
+                    </p>
+                
+                    <div style="display: flex; justify-content: center; gap: 15px;">
+                        <p:commandButton
+                            value="Confirmar"
+                            styleClass="btn-modern-red"
+                            action="#{tipusDocumentalController.eliminatFisic}"
+                            oncomplete="if (!args.validationFailed) { window.location.href='#{request.contextPath}/views/tipusdocumentals.xhtml'; }">
+                        </p:commandButton>
+                    </div>
+                </p:panel>
+                
+            </p:dialog>
+
+        </h:form>
+        
+        <hr />
+        
+        <!-- JavaScript para manejar las respuestas -->
+        <script type="text/javascript">
+            function handleEdicioResponse(args) {
+                if (args.esObsolet) {
+                    PF('advertenciaEditarDialog').show();
+                } else {
+                    PF('editarTipusDocumentalModalDialog').show();
+                }
+            }
+            
+            function handleEliminacioResponse(args) {
+                if (args.obsoletAmbRelacions) {
+                    PF('advertenciaEliminarDialog').show();
+                } else {
+                    handleEliminacioDialog(args); 
+                }
+            }
+
+            function handleEliminacioDialog(args) {
+                if (args.teRelacions) {
+                    // Caso 1: Tiene relaciones -> Solo puede marcar como obsoleto
+                    PF('confirmEliminacioAmbRelacionsDialog').show();
+                } else if (args.esObsolet) {
+                    // Caso 2: Ya es obsoleto y no tiene relaciones -> Solo eliminación física
+                    PF('confirmEliminacioObsoletDialog').show();
+                } else {
+                    // Caso 3: NO tiene relaciones y no es obsoleto -> Ambas opciones
+                    PF('confirmEliminacioSenseRelacionsDialog').show();
+                }
+            }
+        </script>
+    
+    </ui:define>
+
+ </ui:composition>

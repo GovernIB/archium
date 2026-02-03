@@ -1,0 +1,145 @@
+<ui:composition
+        xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:h="http://xmlns.jcp.org/jsf/html"
+        xmlns:f="http://java.sun.com/jsf/core"
+        xmlns:p="http://primefaces.org/ui"
+        xmlns:ui="http://java.sun.com/jsf/facelets"
+        xmlns:pe="http://primefaces.org/ui/extensions">
+
+    <!-- SCRIPT -->
+    <script type="text/javascript">
+	    PrimeFaces.locales['es'] = {
+	        closeText: 'Cerrar',
+	        prevText: 'Anterior',
+	        nextText: 'Siguiente',
+	        monthNames: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
+	        monthNamesShort: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'],
+	        dayNames: ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'],
+	        dayNamesShort: ['Dom', 'Lun', 'Mar', 'Mie', 'Jue', 'Vie', 'Sab'],
+	        dayNamesMin: ['D', 'L', 'M', 'X', 'J', 'V', 'S'],
+	        weekHeader: 'Semana',
+	        firstDay: 1,
+	        isRTL: false,
+	        showMonthAfterYear: false,
+	        yearSuffix: '',
+	        timeOnlyTitle: 'Sólo hora',
+	        timeText: 'Tiempo',
+	        hourText: 'Hora',
+	        minuteText: 'Minuto',
+	        secondText: 'Segundo',
+	        currentText: 'Fecha actual',
+	        ampm: false,
+	        month: 'Mes',
+	        week: 'Semana',
+	        day: 'Día',
+	        allDayText: 'Todo el día'
+	    };
+	    PrimeFaces.locales ['de'] = {
+	        closeText: 'Schließen',
+	        prevText: 'Zurück',
+	        nextText: 'Weiter',
+	        monthNames: ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember' ],
+	        monthNamesShort: ['Jan', 'Feb', 'Mär', 'Apr', 'Mai', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dez' ],
+	        dayNames: ['Sonntag', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag'],
+	        dayNamesShort: ['Son', 'Mon', 'Die', 'Mit', 'Don', 'Fre', 'Sam'],
+	        dayNamesMin: ['S', 'M', 'D', 'M ', 'D', 'F ', 'S'],
+	        weekHeader: 'Woche',
+	        firstDay: 1,
+	        isRTL: false,
+	        showMonthAfterYear: false,
+	        yearSuffix:'',
+	        timeOnlyTitle: 'Nur Zeit',
+	        timeText: 'Zeit',
+	        hourText: 'Stunde',
+	        minuteText: 'Minute',
+	        secondText: 'Sekunde',
+	        currentText: 'Aktuelles Datum',
+	        ampm: false,
+	        month: 'Monat',
+	        week: 'Woche',
+	        day: 'Tag',
+	        allDayText: 'Ganzer Tag'
+	    };
+	</script>
+
+    <script type="text/javascript">
+	    /*<![CDATA[*/
+	    function dateTemplateFunc(date) {
+	        return '<span style="background-color:' + ((date.day < 21 && date.day > 10) ? '#81C784' : 'inherit') + ';border-radius:50%;padding: .25em;width: 1.75em; height:1.75em; display:block;">' + date.day + '</span>';
+	    }
+	    /*]]>*/
+	</script>
+    <!-- CONTENIDO -->
+    <p:dialog id="taulaMestraModalDialogId" header="#{messages['tablasmaestras.nuevo.header']}" showEffect="fade"
+              widgetVar="taulaMestraModalDialog" modal="true" resizable="true"
+              style="min-width:1000px;">
+        <div class="views_3">
+            <div class="content_4">
+                <h:form>
+                    <h2 class="title_first">
+                        #{tablasMaestras.registroSelected != null ? messages['tablasmaestras.modifica.header'] : messages['tablasmaestras.nuevo.header']}
+                    </h2>
+                    <div class="separador_rojo"></div>
+                    <div class="ui-g form_new">
+                        <p:panel id="panel">
+                            <p:messages id="messages"/>
+
+                            <pe:dynaForm id="dynaForm" value="#{tablasMaestras.formModel}" var="data" rendered="#{tablasMaestras.formModel != null}">
+                                <pe:dynaFormControl type="string" for="txt">
+                                    <p:inputText
+                                            id="txt"
+                                            value="#{tablasMaestras.model[data.property]}"
+                                            required="#{data.required}"/>
+                                </pe:dynaFormControl>
+                                <pe:dynaFormControl type="textarea" for="longtxt">
+                                    <p:inputTextarea
+                                            id="longtxt"
+                                            value="#{tablasMaestras.model[data.property]}"
+                                            required="#{data.required}"
+                                            autoResize="true"/>
+                                </pe:dynaFormControl>
+                                <pe:dynaFormControl type="boolean" for="boolean">
+                                    <p:selectBooleanCheckbox
+                                            id="boolean"
+                                            value="#{tablasMaestras.model[data.property]}"
+                                            required="#{data.required}"/>
+                                </pe:dynaFormControl>
+                                <pe:dynaFormControl type="manytoone" for="manytoone">
+                                    <h:selectOneMenu id="manytoone" value="#{tablasMaestras.model[data.property]}" required="#{data.required}" converter="#{data.converter}" panelStyle="">
+                                        <f:selectItem itemLabel="-- #{messages['selecciona']} -- " itemValue="#{null}"/>
+                                        <f:selectItems value="#{data.values}" var="n"
+                                                       itemLabel="#{n}" itemValue="#{n}" />
+                                    </h:selectOneMenu>
+                                </pe:dynaFormControl>
+                                <pe:dynaFormControl type="date" for="date">
+                                    <p:datePicker style="width: 100%;margin-left: 20px;" id="date" value="#{tablasMaestras.model[data.property]}"
+                                                  required="#{data.required}" locale="es" appendTo="@(body)"
+                                                  pattern="yyyy-MM-dd" validatorMessage="#{messages['validate.formatoFecha']}"/>
+                                </pe:dynaFormControl>
+                                <pe:dynaFormControl type="integer" for="integer">
+                                    <p:inputText
+                                            id="integer"
+                                            value="#{tablasMaestras.model[data.property]}"
+                                            required="#{data.required}"
+                                            converter="javax.faces.Integer"/>
+                                </pe:dynaFormControl>
+                            </pe:dynaForm>
+
+                            <!-- process="@form"-->
+                            <p:commandButton class="boton_modal button_red" update="taula"
+                                             value="#{messages['guardar']}" action="#{tablasMaestras.saveUpdate}"
+                                             oncomplete="if (args &amp;&amp; !args.validationFailed) { 
+						                                 PF('taulaMestraModalDialog').hide(); 
+						                                 setTimeout(function() { 
+						                                     PF('tablita').clearFilters(); 
+						                                 }, 1500); 
+						                             }"
+                                             style="margin-rigth: 0px;"/>
+                        </p:panel>
+                    </div>
+                </h:form>
+            </div>
+        </div>
+    </p:dialog>
+    <!-- FIN DEL CONTENIDO -->
+</ui:composition>

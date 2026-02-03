@@ -1,10 +1,8 @@
 package es.caib.archium.objects;
 
-import java.util.Objects;
-
 import es.caib.archium.persistence.model.Aplicacio;
-import es.caib.archium.persistence.model.Catalegsery;
-import es.caib.archium.persistence.model.Tipusdictamen;
+
+import java.util.Objects;
 
 public class AplicacionObject {
 	
@@ -68,13 +66,11 @@ public class AplicacionObject {
 	
 	@Override
 	public String toString() {
-		StringBuilder builder = new StringBuilder();
-		builder.append("AplicacionBean [id=");
-		builder.append(id);
-		builder.append(", nom=");
-		builder.append(nom);
-		builder.append("]");
-		return builder.toString();
+		return "AplicacionBean [id=" +
+				id +
+				", nom=" +
+				nom +
+				"]";
 	}
 	
 	

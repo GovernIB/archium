@@ -1,15 +1,5 @@
 package es.caib.archium.services;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.transaction.Transactional;
-
 import es.caib.archium.commons.i18n.I18NException;
 import es.caib.archium.ejb.service.DictamenService;
 import es.caib.archium.ejb.service.EnsService;
@@ -17,7 +7,7 @@ import es.caib.archium.ejb.service.LopdService;
 import es.caib.archium.ejb.service.NormativaService;
 import es.caib.archium.ejb.service.SerieService;
 import es.caib.archium.ejb.service.TipuAccesService;
-import es.caib.archium.ejb.service.TipuDictamenService;
+import es.caib.archium.ejb.service.TipusDictamenService;
 import es.caib.archium.objects.DictamenObject;
 import es.caib.archium.objects.EnsObject;
 import es.caib.archium.objects.LopdObject;
@@ -30,8 +20,17 @@ import es.caib.archium.persistence.model.Ens;
 import es.caib.archium.persistence.model.Lopd;
 import es.caib.archium.persistence.model.Normativa;
 import es.caib.archium.persistence.model.Seriedocumental;
-import es.caib.archium.persistence.model.Tipusacce;
-import es.caib.archium.persistence.model.Tipusdictamen;
+import es.caib.archium.persistence.model.TipuAcces;
+import es.caib.archium.persistence.model.TipusDictamen;
+
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.transaction.Transactional;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
 
 @Named
 @ApplicationScoped
@@ -40,7 +39,7 @@ public class DictamenFrontService {
 	@Inject
 	DictamenService dictamenEJB;
 	@Inject
-	TipuDictamenService tipuDictamenEJB;
+    TipusDictamenService tipuDictamenEJB;
 	@Inject
 	SerieService serieEJB;
 	@Inject
@@ -110,7 +109,8 @@ public class DictamenFrontService {
 			throw new I18NException("excepcion.general.Exception", this.getClass().getSimpleName(), "findAll");
 		}
 	}
-	
+
+	@Transactional
 	public List<SerieDocumentalObject> findAllDocumental() throws I18NException{	
 		
 		try {
@@ -132,15 +132,16 @@ public class DictamenFrontService {
 		
 		
 	}
-	
+
+	@Transactional
 	public List<TipuDictamenObject> findAllTipuDictamen() throws I18NException{	
 		
 		try {
 			List<TipuDictamenObject> listaTipuDictamen = new ArrayList<TipuDictamenObject>();
 			
-			List<Tipusdictamen> res= tipuDictamenEJB.findAll();
+			List<TipusDictamen> res= tipuDictamenEJB.findAll();
 			
-			for(Tipusdictamen i : res)
+			for(TipusDictamen i : res)
 			{				
 				listaTipuDictamen.add(new TipuDictamenObject(i));
 			}
@@ -151,18 +152,29 @@ public class DictamenFrontService {
 		} catch(Exception e) {
 			throw new I18NException("excepcion.general.Exception", this.getClass().getSimpleName(), "findAllTipuDictamen");
 		}
-		
-		
 	}
 
+	@Transactional
+	public TipuDictamenObject findTipusDictamenById(Long tipusDictamenId) throws I18NException{
+
+		try {
+			return new TipuDictamenObject(tipuDictamenEJB.findById(tipusDictamenId));
+		} catch(NullPointerException e) {
+			throw new I18NException("excepcion.general.NullPointerException", this.getClass().getSimpleName(), "findTipusDictamenById");
+		} catch(Exception e) {
+			throw new I18NException("excepcion.general.Exception", this.getClass().getSimpleName(), "findTipusDictamenById");
+		}
+	}
+
+	@Transactional
 	public List<TipuAccesObject> findAllTipuAcces() throws I18NException{	
 		
 		try {
 			List<TipuAccesObject> listaTipuAcces = new ArrayList<TipuAccesObject>();
 			
-			List<Tipusacce> res= tipuAccesEJB.findAll();
+			List<TipuAcces> res= tipuAccesEJB.findAll();
 			
-			for(Tipusacce i : res)
+			for(TipuAcces i : res)
 			{				
 				listaTipuAcces.add(new TipuAccesObject(i));
 			}
@@ -173,10 +185,33 @@ public class DictamenFrontService {
 		} catch(Exception e) {
 			throw new I18NException("excepcion.general.Exception", this.getClass().getSimpleName(), "findAllTipuAcces");
 		}
-		
-		
 	}
-	
+
+	@Transactional
+	public TipuAccesObject findTipusAccesById(Long tipusAccesId) throws I18NException{
+
+		try {
+			return new TipuAccesObject(tipuAccesEJB.findById(tipusAccesId));
+		} catch(NullPointerException e) {
+			throw new I18NException("excepcion.general.NullPointerException", this.getClass().getSimpleName(), "findTipusAccesById");
+		} catch(Exception e) {
+			throw new I18NException("excepcion.general.Exception", this.getClass().getSimpleName(), "findTipusAccesById");
+		}
+	}
+
+	@Transactional
+	public EnsObject findEnsById(Long idEns) throws I18NException {
+
+		try {
+			return new EnsObject(ensEJB.findById(idEns));
+		} catch (NullPointerException e) {
+			throw new I18NException("excepcion.general.NullPointerException", this.getClass().getSimpleName(), "findEnsById");
+		} catch (Exception e) {
+			throw new I18NException("excepcion.general.Exception", this.getClass().getSimpleName(), "findEnsById");
+		}
+	}
+
+	@Transactional
 	public List<EnsObject> findAllEns() throws I18NException{	
 		
 		try {
@@ -217,8 +252,17 @@ public class DictamenFrontService {
 		} catch(Exception e) {
 			throw new I18NException("excepcion.general.Exception", this.getClass().getSimpleName(), "findAllLopd");
 		}
-		
-		
+	}
+
+	public LopdObject findLopdById(Long lopdId) throws I18NException{
+
+		try {
+			return new LopdObject(lopdEJB.findById(lopdId));
+		} catch(NullPointerException e) {
+			throw new I18NException("excepcion.general.NullPointerException", this.getClass().getSimpleName(), "findLopdById");
+		} catch(Exception e) {
+			throw new I18NException("excepcion.general.Exception", this.getClass().getSimpleName(), "findLopdById");
+		}
 	}
 	
 	public List<NormativaAprobacioObject> findAllNormativaAprovacio() throws I18NException{	
@@ -239,7 +283,17 @@ public class DictamenFrontService {
 		} catch(Exception e) {
 			throw new I18NException("excepcion.general.Exception", this.getClass().getSimpleName(), "findAllNormativaAprovacio");
 		}
-		
+	}
+
+	public NormativaAprobacioObject findNormativaAprovacioById(Long normativaAprovacioId) throws I18NException{
+
+		try {
+			return new NormativaAprobacioObject(normativaEJB.findById(normativaAprovacioId));
+		} catch(NullPointerException e) {
+			throw new I18NException("excepcion.general.NullPointerException", this.getClass().getSimpleName(), "findNormativaAprovacioById");
+		} catch(Exception e) {
+			throw new I18NException("excepcion.general.Exception", this.getClass().getSimpleName(), "findNormativaAprovacioById");
+		}
 	}
 	
 	@Transactional

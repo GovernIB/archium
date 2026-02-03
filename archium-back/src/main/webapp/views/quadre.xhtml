@@ -10,6 +10,8 @@
 	<ui:define name="content">
 	<ui:include src="/views/modal/cuadro/nuevoQuadre.xhtml" />
 	<ui:include src="/views/modal/cuadro/updateQuadre.xhtml" />
+	
+	
   	<!-- CONTENIDO -->
 
   		<!-- BreadCrumbs -->  				
@@ -89,11 +91,70 @@
 		        </p:column>
 
 		        <p:column class="first-column column_acciones" style="width: 5%;">
-			        <p:commandButton update="quadreModalUpdateId" icon="ui-icon-pencil" resetValues="true" title="#{messages['actualizar']}" action="#{quadreController.abrirModalUpdate(cuadro)}" />  			
-		        </p:column>		
-	    	</p:dataTable> 	    
+		        	<div style="display:flex; justify-content:center">
+				        <p:commandButton update="quadreModalUpdateId" icon="ui-icon-pencil" resetValues="true" title="#{messages['actualizar']}" action="#{quadreController.abrirModalUpdate(cuadro)}" />  	
+						<p:commandButton 
+					        icon="pi pi-file-pdf"
+					        styleClass="export-icon-button export-pdf"
+					        title="#{messages['exportar.pdf']}"
+					        ajax="false"
+					        onclick="setQuadreId('#{cuadro.id}'); PF('selectIdiomaDialogPdf').show(); return false;"
+				        />		
+       				</div>
+				</p:column>		
+	    	</p:dataTable> 	 
+	    	 
+	    	<!-- Diálogo para seleccionar idioma de exportación PDF -->
+			<p:dialog id="selectIdiomaDialogPdf"
+			    header="#{messages['exportar.seleccionar.idioma']}"
+			    widgetVar="selectIdiomaDialogPdf"
+			    modal="true"
+			    resizable="false"	
+			    closable="true"
+			    style="width:400px;">
+			    
+			    <p:panel>
+			        <p style="text-align: center; margin-bottom: 20px;">
+			            #{messages['exportar.seleccionar.idioma.texto']}
+			        </p>
+			        
+			        <div style="display: flex; justify-content: center; gap: 15px;">
+			            <p:commandButton
+			                value="Català"
+			                styleClass="btn-modern-gray"
+			                onclick="exportarPdf('ca'); PF('selectIdiomaDialogPdf').hide(); return false;" />
+			            
+			            <p:commandButton
+			                value="Castellà"
+			                styleClass="btn-modern-gray"
+			                onclick="exportarPdf('es'); PF('selectIdiomaDialogPdf').hide(); return false;" />
+			        </div>
+			    </p:panel>
+			</p:dialog>  
 		</h:form>
 	    <hr/> 
+	    
+	    <script type="text/javascript">
+	    
+	    	let quadreIdParametro ;
+	    	
+	    	function setQuadreId(quadreIdRecibido) {
+	    		quadreIdParametro = quadreIdRecibido;
+	    	}
+	    	
+			function exportarPdf(idioma, quadreId = quadreIdParametro) {
+		        
+		        var url = '#{request.contextPath}/exportarQuadreClassificacioPdf?t=' + new Date().getTime();
+		        url += '&amp;idioma=' + idioma;
+		        
+		        if (quadreId) {
+		            url += '&amp;quadreId=' + encodeURIComponent(quadreId);
+		        }
+		               
+		        window.open(url, '_blank');
+		    }
+		</script>
+	
   	</ui:define>
   	
  </ui:composition>

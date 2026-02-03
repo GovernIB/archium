@@ -1,21 +1,13 @@
 package es.caib.archium.objects;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
-import javax.persistence.Column;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-
 import org.primefaces.model.DualListModel;
 
-import es.caib.archium.persistence.model.Causalimitacio;
 import es.caib.archium.persistence.model.LimitacioNormativaSerie;
 import es.caib.archium.persistence.model.LimitacioNormativaSeriePK;
-import es.caib.archium.persistence.model.Normativa;
-import es.caib.archium.persistence.model.Seriedocumental;
 
 public class LimitacioNormativaSerieObject {
 	
@@ -51,14 +43,6 @@ public class LimitacioNormativaSerieObject {
 	public void setDualListCausas(DualListModel<CausaLimitacioObject> dualListCausas) {
 		this.dualListCausas = dualListCausas;
 	}
-
-	/*public Integer getId() {
-		return id;
-	}
-
-	public void setId(Integer id) {
-		this.id = id;
-	}*/
 
 	public SerieDocumentalObject getSeriedocumental() {
 		return seriedocumental;

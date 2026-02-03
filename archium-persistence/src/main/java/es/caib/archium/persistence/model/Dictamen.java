@@ -1,7 +1,19 @@
 package es.caib.archium.persistence.model;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
+import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import java.io.Serializable;
-import javax.persistence.*;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
@@ -84,12 +96,12 @@ public class Dictamen implements Serializable {
 	//bi-directional many-to-one association to Tipusacce
 	@ManyToOne
 	@JoinColumn(name="TIPUSACCES_ID")
-	private Tipusacce achTipusacce;
+	private TipuAcces achTipusacce;
 
 	//bi-directional many-to-one association to Tipusdictamen
 	@ManyToOne
 	@JoinColumn(name="TIPUSDICTAMEN_ID")
-	private Tipusdictamen achTipusdictamen;
+	private TipusDictamen achTipusdictamen;
 
 	//bi-directional many-to-one association to DictamenTipusdocumental
 	@OneToMany(mappedBy="achDictamen")
@@ -206,19 +218,19 @@ public class Dictamen implements Serializable {
 		this.achSeriedocumental = achSeriedocumental;
 	}
 
-	public Tipusacce getAchTipusacce() {
+	public TipuAcces getAchTipusacce() {
 		return this.achTipusacce;
 	}
 
-	public void setAchTipusacce(Tipusacce achTipusacce) {
+	public void setAchTipusacce(TipuAcces achTipusacce) {
 		this.achTipusacce = achTipusacce;
 	}
 
-	public Tipusdictamen getAchTipusdictamen() {
+	public TipusDictamen getAchTipusdictamen() {
 		return this.achTipusdictamen;
 	}
 
-	public void setAchTipusdictamen(Tipusdictamen achTipusdictamen) {
+	public void setAchTipusdictamen(TipusDictamen achTipusdictamen) {
 		this.achTipusdictamen = achTipusdictamen;
 	}
 

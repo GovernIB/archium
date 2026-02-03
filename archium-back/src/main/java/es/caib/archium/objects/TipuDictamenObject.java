@@ -2,8 +2,7 @@ package es.caib.archium.objects;
 
 import java.util.Objects;
 
-import es.caib.archium.persistence.model.Tipusdictamen;
-import es.caib.archium.persistence.model.Tipusserie;
+import es.caib.archium.persistence.model.TipusDictamen;
 
 public class TipuDictamenObject {
 
@@ -15,7 +14,6 @@ public class TipuDictamenObject {
 	
 	public TipuDictamenObject() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 	public TipuDictamenObject(Long id, String nom, String nomCas, String codi) {
 		super();
@@ -25,7 +23,7 @@ public class TipuDictamenObject {
 		this.codi = codi;
 	}
 	
-	public TipuDictamenObject(Tipusdictamen dbTipusdictamen) {
+	public TipuDictamenObject(TipusDictamen dbTipusdictamen) {
 		if(dbTipusdictamen!=null) {
 			this.id = dbTipusdictamen.getId();
 			this.nom = dbTipusdictamen.getNom();
@@ -58,8 +56,8 @@ public class TipuDictamenObject {
 		this.codi = codi;
 	}
 	
-	public Tipusdictamen toDbObject() {
-		Tipusdictamen db = new Tipusdictamen();
+	public TipusDictamen toDbObject() {
+		TipusDictamen db = new TipusDictamen();
 		db.setId(id);
 		db.setNom(nom);
 		db.setNomcas(nomCas);

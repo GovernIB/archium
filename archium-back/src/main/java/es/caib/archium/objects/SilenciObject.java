@@ -9,7 +9,6 @@ public class SilenciObject {
 	private String 	nom;
 	public SilenciObject() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 	
 	public SilenciObject(Long id, String nom) {

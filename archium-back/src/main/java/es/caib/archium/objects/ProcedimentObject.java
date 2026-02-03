@@ -1,24 +1,15 @@
 package es.caib.archium.objects;
 
-import java.math.BigDecimal;
+import es.caib.archium.persistence.model.Materia;
+import es.caib.archium.persistence.model.Normativa;
+import es.caib.archium.persistence.model.Procediment;
+import es.caib.archium.persistence.model.TipusdocumentProcediment;
+import es.caib.archium.persistence.model.Tipuspublic;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
-
-import es.caib.archium.persistence.model.Aplicacio;
-import es.caib.archium.persistence.model.Familiaprocediment;
-import es.caib.archium.persistence.model.Formainici;
-import es.caib.archium.persistence.model.Materia;
-import es.caib.archium.persistence.model.Nivellelectronic;
-import es.caib.archium.persistence.model.Normativa;
-import es.caib.archium.persistence.model.Procediment;
-import es.caib.archium.persistence.model.Seriedocumental;
-import es.caib.archium.persistence.model.Silenci;
-import es.caib.archium.persistence.model.TipusdocumentProcediment;
-import es.caib.archium.persistence.model.Tipusdocumental;
-import es.caib.archium.persistence.model.Tipuspublic;
-import es.caib.archium.services.ProcedimentFrontService;
 
 public class ProcedimentObject {
 	private Long 			id;
@@ -206,9 +197,14 @@ public class ProcedimentObject {
 	public void setGestor(String gestor) {
 		this.gestor = gestor;
 	}
+
 	public ProcedimentObject() {
 		super();
-		// TODO Auto-generated constructor stub
+	}
+
+	public ProcedimentObject(Long idProcediment) {
+		super();
+		this.setId(idProcediment);
 	}
 	
 	public ProcedimentObject(String codisia, String nom, String objecte, String estat, String destinataris,
@@ -272,21 +268,17 @@ public class ProcedimentObject {
 		if(i.getAchSeriedocumental()!=null) {
 			this.seriedocumental = new SerieDocumentalObject(i.getAchSeriedocumental());
 		}
-		
-		if(i.getAchAplicacio()!=null) {
-			this.aplicacio 		= new AplicacioObject(i.getAchAplicacio());
-		}
-		
+
 		this.codirolsac 	= i.getCodirolsac();
 		this.termine 		= i.getTermini();
 		this.termininotif 	= i.getTermininotif();
 		if(i.getFiviaadministrativa()!=null) {
-			this.fiViaAdministrativa = (i.getFiviaadministrativa().signum() == 1 ? true : false);
+			this.fiViaAdministrativa = (i.getFiviaadministrativa().signum() == 1);
 		} else {
 			this.fiViaAdministrativa = null;
 		}
 		if(i.getTaxa()!=null) {
-			this.taxa = (i.getTaxa().signum() == 1 ? true : false);
+			this.taxa = (i.getTaxa().signum() == 1);
 		} else {
 			this.taxa = null;
 		}		
@@ -335,7 +327,6 @@ public class ProcedimentObject {
 	}
 	
 	public ProcedimentObject(ProcedimentObject i) {
-		// TODO Auto-generated constructor stub
 		this.id 			= i.getId();
 		this.codisia 		= i.getCodisia();
 		this.nom 			= i.getNom();
@@ -412,6 +403,11 @@ public class ProcedimentObject {
 		ProcedimentObject other = (ProcedimentObject) obj;
 		return Objects.equals(id, other.id);
 	}
+
+	public String getLabel() {
+		return codisia + " - " + nom;
+	}
+
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();

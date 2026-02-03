@@ -1,41 +1,6 @@
 package es.caib.archium.controllers;
 
-import java.io.InputStream;
-import java.io.Serializable;
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Optional;
-import java.util.ResourceBundle;
-
-import javax.annotation.PostConstruct;
-import javax.faces.application.FacesMessage;
-import javax.faces.component.UIViewRoot;
-import javax.faces.context.FacesContext;
-import javax.faces.event.AjaxBehaviorEvent;
-import javax.faces.event.ValueChangeEvent;
-import javax.faces.view.ViewScoped;
-import javax.inject.Inject;
-import javax.inject.Named;
-
-import org.primefaces.PrimeFaces;
-import org.primefaces.event.NodeCollapseEvent;
-import org.primefaces.event.NodeExpandEvent;
-import org.primefaces.event.NodeSelectEvent;
-import org.primefaces.event.NodeUnselectEvent;
-import org.primefaces.event.data.PageEvent;
-import org.primefaces.event.data.SortEvent;
-import org.primefaces.model.DefaultTreeNode;
-import org.primefaces.model.TreeNode;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import es.caib.archium.commons.i18n.I18NException;
-import es.caib.archium.commons.i18n.I18NTranslator;
 import es.caib.archium.ejb.interceptor.Logged;
 import es.caib.archium.objects.DictamenObject;
 import es.caib.archium.objects.Document;
@@ -50,6 +15,35 @@ import es.caib.archium.objects.TipusSerieObject;
 import es.caib.archium.services.FuncioFrontService;
 import es.caib.archium.services.QuadreFrontService;
 import es.caib.archium.utils.FrontExceptionTranslate;
+import org.primefaces.PrimeFaces;
+import org.primefaces.event.NodeCollapseEvent;
+import org.primefaces.event.NodeExpandEvent;
+import org.primefaces.event.NodeSelectEvent;
+import org.primefaces.event.NodeUnselectEvent;
+import org.primefaces.event.data.PageEvent;
+import org.primefaces.event.data.SortEvent;
+import org.primefaces.model.DefaultTreeNode;
+import org.primefaces.model.TreeNode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.annotation.PostConstruct;
+import javax.faces.application.FacesMessage;
+import javax.faces.context.FacesContext;
+import javax.faces.event.AjaxBehaviorEvent;
+import javax.faces.view.ViewScoped;
+import javax.inject.Inject;
+import javax.inject.Named;
+import java.io.Serializable;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Optional;
+import java.util.ResourceBundle;
 
 @Logged
 @Named("funciones")
@@ -107,7 +101,7 @@ public class FuncionesController implements Serializable{
     
     
 	@PostConstruct
-    public void init() throws ClassNotFoundException {   
+    public void init() {
 		
     	try {
     		listaEstats.add(messageBundle.getString("general.estats.esborrany")); 
@@ -122,14 +116,15 @@ public class FuncionesController implements Serializable{
     	    String quadreIdString = context.getExternalContext().getRequestParameterMap().get("quadreId");
     		
     	    locale = context.getViewRoot().getLocale();
-    	    
+
+			// Intenta agafar el quadre a partir de paràmetre de la URL...
     	    if(quadreIdString!=null) {
     	    	quadreId = Long.parseLong(quadreIdString);
     	    }
-    	    
+    	    // Si no arriba, agafa el per defecte
     		if(quadreId==null) {
-    			if(listaCuadrosClasificacion.size()>0) {
-    				quadreId = listaCuadrosClasificacion.get(0).getId();
+    			if(listaCuadrosClasificacion.size() > 0) {
+    				quadreId = this.servicesCuadroClasificacion.getQuadreClassificacioPerDefecte(listaCuadrosClasificacion);
     			}
     		}
     		
@@ -327,7 +322,7 @@ public class FuncionesController implements Serializable{
 						break;
 					case "SerieDocumentalObject":
 						SerieDocumentalObject s = (SerieDocumentalObject) updateObject;
-						Document<SerieDocumentalObject> sdoc = new Document<SerieDocumentalObject>(s.getSerieId(), s.getCodi(), s.getNom(), "Serie", s);
+						Document<SerieDocumentalObject> sdoc = new Document<SerieDocumentalObject>(s.getSerieId(), s.getCodi(), s.getNom(), "Serie", s.getEnviatSAT(), s);
 						((DefaultTreeNode) node).setData(sdoc);
 						break;
 					case "DictamenObject":

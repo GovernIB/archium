@@ -1,26 +1,19 @@
 package es.caib.archium.services;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import es.caib.archium.commons.i18n.I18NException;
+import es.caib.archium.ejb.service.QuadreClassificacioService;
+import es.caib.archium.objects.QuadreObject;
+import es.caib.archium.persistence.model.Quadreclassificacio;
 
 import javax.enterprise.context.ApplicationScoped;
-import javax.faces.application.FacesMessage;
-import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.transaction.Transactional;
-
-import es.caib.archium.commons.i18n.I18NException;
-import es.caib.archium.ejb.QuadreClassificacioEJB;
-import es.caib.archium.ejb.service.QuadreClassificacioService;
-import es.caib.archium.objects.FuncioObject;
-import es.caib.archium.objects.QuadreObject;
-import es.caib.archium.objects.TipuDocumentalObject;
-import es.caib.archium.objects.TipuDocumentalProcedimentObject;
-import es.caib.archium.persistence.model.Funcio;
-import es.caib.archium.persistence.model.Quadreclassificacio;
-import es.caib.archium.persistence.model.Tipusdocumental;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Named
 @ApplicationScoped
@@ -28,6 +21,29 @@ public class QuadreFrontService {
 	
 	@Inject
 	QuadreClassificacioService quadreEjb;
+
+	// ACH-006 Que per defecte s'obri el quadre de classificació per defecte
+	public Long getQuadreClassificacioPerDefecte(List<QuadreObject> quadresSeleccionats) {
+		Long idQuadreDefecte = quadreEjb.getQuadreClassificacioPerDefecte();
+		Long idQuadreSeleccionat = null;
+		boolean trobat = false;
+		if (quadresSeleccionats != null) {
+			int i = 0;
+			while (i < quadresSeleccionats.size() && !trobat) {
+				if (idQuadreDefecte.equals(quadresSeleccionats.get(i).getId())) {
+					trobat = true;
+				}
+				i++;
+			}
+
+			if (trobat) {
+				idQuadreSeleccionat = idQuadreDefecte;
+			} else {
+				idQuadreSeleccionat = quadresSeleccionats.get(0).getId();
+			}
+		}
+		return idQuadreSeleccionat;
+	}
 	
 	public Boolean checkNameUnique(Long id, String nombre) throws I18NException {
 		
@@ -63,7 +79,25 @@ public class QuadreFrontService {
 		} catch(Exception e) {
 			throw new I18NException("excepcion.general.Exception", this.getClass().getSimpleName(), "getQuadreById");
 		}
-		
+	}
+
+	public QuadreObject findQuadreByNom(String nomQuadre) throws I18NException {
+		try {
+			Map<String, Object> filtres = new HashMap<>();
+			filtres.put("nom", nomQuadre);
+			List<Quadreclassificacio> quadres = quadreEjb.findFiltered(filtres);
+
+			QuadreObject quadreObject = null;
+			if (quadres != null && quadres.size() > 0) {
+				quadreObject = new QuadreObject(quadres.get(0));
+			}
+			return quadreObject;
+		} catch(NullPointerException e) {
+			throw new I18NException("excepcion.general.NullPointerException", this.getClass().getSimpleName(), "findQuadreByNom");
+		} catch(Exception e) {
+			throw new I18NException("excepcion.general.Exception", this.getClass().getSimpleName(), "findQuadreByNom");
+		}
+
 	}
 	
 	public List<QuadreObject> findAll() throws I18NException{

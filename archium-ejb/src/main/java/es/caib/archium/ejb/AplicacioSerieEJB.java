@@ -1,11 +1,9 @@
 package es.caib.archium.ejb;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.annotation.security.DeclareRoles;
 import javax.annotation.security.RolesAllowed;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
@@ -35,5 +33,4 @@ public class AplicacioSerieEJB  extends AbstractDAO<AplicacioSerie,AplicacioSeri
 			throw new I18NException("aplicacioserie.getBySerie.id.null", this.getClass().getSimpleName(), "getBySerie");
 		}
 	}
-
 }

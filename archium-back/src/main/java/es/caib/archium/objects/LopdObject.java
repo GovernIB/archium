@@ -3,7 +3,6 @@ package es.caib.archium.objects;
 import java.util.Objects;
 
 import es.caib.archium.persistence.model.Lopd;
-import es.caib.archium.persistence.model.Tipusacce;
 
 public class LopdObject {
 

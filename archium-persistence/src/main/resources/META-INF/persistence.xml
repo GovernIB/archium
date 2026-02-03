@@ -15,11 +15,11 @@
       <class>es.caib.archium.persistence.model.AplicacioSerie</class>
       <class>es.caib.archium.persistence.model.AplicacioSeriePK</class>
       <class>es.caib.archium.persistence.model.Catalegsery</class>
-      <class>es.caib.archium.persistence.model.Categorianti</class>
-      <class>es.caib.archium.persistence.model.Causalimitacio</class>
+      <class>es.caib.archium.persistence.model.CategoriaNti</class>
+      <class>es.caib.archium.persistence.model.CausaLimitacio</class>
       <class>es.caib.archium.persistence.model.ContacteProcediment</class>
       <class>es.caib.archium.persistence.model.ContacteProcedimentPK</class>
-      <class>es.caib.archium.persistence.model.Dictamenm</class>
+      <class>es.caib.archium.persistence.model.Dictamen</class>
       <class>es.caib.archium.persistence.model.DictamenTipusdocumental</class>
       <class>es.caib.archium.persistence.model.DictamenTipusdocumentalPK</class>
       <class>es.caib.archium.persistence.model.Ens</class>
@@ -36,27 +36,30 @@
       <class>es.caib.archium.persistence.model.NormativaSeriedocumental</class>
       <class>es.caib.archium.persistence.model.NormativaSeriedocumentalPK</class>
       <class>es.caib.archium.persistence.model.Procediment</class>
+      <class>es.caib.archium.persistence.model.ProcedimentSerie</class>
+      <class>es.caib.archium.persistence.model.ProcedimentSeriePK</class>
       <class>es.caib.archium.persistence.model.Quadreclassificacio</class>
-      <class>es.caib.archium.persistence.model.Quadretipusdocumental</class>
-      <class>es.caib.archium.persistence.model.Serieargen</class>
+      <class>es.caib.archium.persistence.model.QuadreTipusDocumental</class>
+      <class>es.caib.archium.persistence.model.SerieArgen</class>
       <class>es.caib.archium.persistence.model.Seriedocumental</class>
       <class>es.caib.archium.persistence.model.Serierelacionada</class>
       <class>es.caib.archium.persistence.model.Silenci</class>
-      <class>es.caib.archium.persistence.model.Tipusacce</class>
+      <class>es.caib.archium.persistence.model.TipuAcces</class>
       <class>es.caib.archium.persistence.model.Tipuscontacte</class>
-      <class>es.caib.archium.persistence.model.Tipusdictamen</class>
-      <class>es.caib.archium.persistence.model.Tipusdocumental</class>
+      <class>es.caib.archium.persistence.model.TipusDictamen</class>
+      <class>es.caib.archium.persistence.model.TipusDocumental</class>
       <class>es.caib.archium.persistence.model.TipusdocumentProcediment</class>
       <class>es.caib.archium.persistence.model.TipusdocumentProcedimentPK</class>
-      <class>es.caib.archium.persistence.model.Tipusnti</class>
+      <class>es.caib.archium.persistence.model.TipusNti</class>
       <class>es.caib.archium.persistence.model.Tipuspublic</class>
-      <class>es.caib.archium.persistence.model.Tipusserie</class>
-      <class>es.caib.archium.persistence.model.Tipusvalor</class>
+      <class>es.caib.archium.persistence.model.TipusRelacioSerie</class>
+      <class>es.caib.archium.persistence.model.TipusSerie</class>
+      <class>es.caib.archium.persistence.model.TipusValor</class>
       <class>es.caib.archium.persistence.model.Transferencia</class>
       <class>es.caib.archium.persistence.model.Valoracio</class>
       <class>es.caib.archium.persistence.model.Valorprimari</class>
       <class>es.caib.archium.persistence.model.ValorprimariPK</class> 
-      <class>es.caib.archium.persistence.model.Valorsecundari</class>
+      <class>es.caib.archium.persistence.model.ValorSecundari</class>
       <properties>
          <!-- Properties for Hibernate -->
          <!--

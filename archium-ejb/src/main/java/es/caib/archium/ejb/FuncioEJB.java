@@ -1,6 +1,7 @@
 package es.caib.archium.ejb;
 
 import es.caib.archium.commons.i18n.I18NException;
+import es.caib.archium.commons.i18n.Idioma;
 import es.caib.archium.commons.query.OrderBy;
 import es.caib.archium.commons.query.OrderType;
 import es.caib.archium.ejb.service.FuncioService;
@@ -8,16 +9,15 @@ import es.caib.archium.ejb.service.QuadreClassificacioService;
 import es.caib.archium.ejb.service.TipusSerieService;
 import es.caib.archium.persistence.dao.AbstractDAO;
 import es.caib.archium.persistence.model.Funcio;
-import es.caib.archium.persistence.model.Quadreclassificacio;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import javax.annotation.security.PermitAll;
 import javax.annotation.security.RolesAllowed;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Stateless
 @RolesAllowed({"ACH_GESTOR"})
@@ -73,6 +73,21 @@ public class FuncioEJB extends AbstractDAO<Funcio, Long> implements FuncioServic
 		}
 	}
 
+	@PermitAll
+	public List<String> llistaAmbitsFuncionals(Idioma idioma) throws I18NException {
+		OrderBy order = new OrderBy("nom" + (Idioma.CASTELLA.equals(idioma) ? "cas" : ""), OrderType.ASC);
+		Map<String, Object> filtres = new HashMap<>();
+		filtres.put("achFuncio", null);
+
+		List<Funcio> funcions = this.findFiltered(filtres, order);
+		List<String> possiblesAmbitsFuncionals = new ArrayList<>();
+		if (funcions != null) {
+			for (Funcio fun : funcions) {
+				possiblesAmbitsFuncionals.add(Idioma.CASTELLA.equals(idioma) ? fun.getNomcas() : fun.getNom());
+			}
+		}
+		return possiblesAmbitsFuncionals;
+	}
 	
 	
 }

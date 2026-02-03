@@ -1,14 +1,5 @@
 package es.caib.archium.ejb;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.annotation.security.DeclareRoles;
-import javax.annotation.security.RolesAllowed;
-import javax.ejb.Stateless;
-import javax.inject.Inject;
-
 import es.caib.archium.commons.i18n.I18NException;
 import es.caib.archium.commons.query.OrderBy;
 import es.caib.archium.commons.query.OrderType;
@@ -18,6 +9,14 @@ import es.caib.archium.ejb.service.SerieService;
 import es.caib.archium.persistence.dao.AbstractDAO;
 import es.caib.archium.persistence.model.Dictamen;
 import es.caib.archium.persistence.model.Seriedocumental;
+
+import javax.annotation.security.PermitAll;
+import javax.annotation.security.RolesAllowed;
+import javax.ejb.Stateless;
+import javax.inject.Inject;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Stateless
 @RolesAllowed({"ACH_GESTOR"})
@@ -63,5 +62,35 @@ public class SerieEJB extends AbstractDAO<Seriedocumental, Long> implements Seri
 		}
 	}
 
+	@Override
+	@PermitAll
+	public Seriedocumental findByCodi(String codiSerie) throws I18NException {
+		Seriedocumental  serie = null;
+		if(codiSerie!=null) {
+			Map<String, Object> filtersS = new HashMap<String, Object>();
+			filtersS.put("codi", codiSerie);
+			List<Seriedocumental> resultats = this.findFiltered(filtersS);
+			if (resultats != null && resultats.size() == 1) {
+				serie = resultats.get(0);
+			}
+		} else {
+			throw new I18NException("serie.findByCodi.id.null", this.getClass().getSimpleName(), "findByCodi");
+		}
+		return serie;
+	}
 	
+	@Override
+    public boolean tieneRelaciones(Long id) {
+		
+		Long comptarA = entityManager.createQuery("SELECT COUNT(s) FROM Serierelacionada s WHERE s.achSerieargen.id = :id", Long.class)
+				.setParameter("id",id)
+				.getSingleResult();	
+		
+		Long comptarB = entityManager.createQuery("SELECT COUNT(s) FROM Seriedocumental s JOIN s.achSerieargens p WHERE p.id = :id",Long.class)
+				.setParameter("id",id)
+				.getSingleResult();
+		
+		return (comptarA + comptarB) > 0;
+	}
+
 }

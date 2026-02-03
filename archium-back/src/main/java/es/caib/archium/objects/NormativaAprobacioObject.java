@@ -1,11 +1,10 @@
 package es.caib.archium.objects;
 
 
+import es.caib.archium.persistence.model.Normativa;
+
 import java.util.Date;
 import java.util.Objects;
-
-import es.caib.archium.persistence.model.Normativa;
-import es.caib.archium.persistence.model.Tipusacce;
 
 public class NormativaAprobacioObject {
 
@@ -26,7 +25,6 @@ public class NormativaAprobacioObject {
 	
 	public NormativaAprobacioObject() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 	public NormativaAprobacioObject(Long id, String codi, String nom, String nomCas, String uri, String urieli,
 			String urieliconsolidada, Date vigor, String estat, Date derogacio, Long descripcio,
@@ -58,7 +56,6 @@ public class NormativaAprobacioObject {
 			this.vigor = dbNormativa.getVigor();
 			this.estat = dbNormativa.getEstat();
 			this.derogacio = dbNormativa.getDerogacio();
-			//this.descripcio = dbNormativa.get;
 			
 			if(dbNormativa.getAchNormativa()!=null) {
 				NormativaAprobacioObject n = new NormativaAprobacioObject();

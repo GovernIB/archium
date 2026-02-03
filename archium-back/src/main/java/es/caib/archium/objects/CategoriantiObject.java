@@ -2,7 +2,7 @@ package es.caib.archium.objects;
 
 import java.util.Objects;
 
-import es.caib.archium.persistence.model.Categorianti;
+import es.caib.archium.persistence.model.CategoriaNti;
 
 public class CategoriantiObject {
 	
@@ -13,7 +13,6 @@ public class CategoriantiObject {
 	
 	public CategoriantiObject() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 
 
@@ -25,7 +24,7 @@ public class CategoriantiObject {
 	}
 
 
-	public CategoriantiObject(Categorianti bd) {
+	public CategoriantiObject(CategoriaNti bd) {
 		this.id		= bd.getId();
 		this.nom  	= bd.getNom();
 		this.nomCas = bd.getNomcas();

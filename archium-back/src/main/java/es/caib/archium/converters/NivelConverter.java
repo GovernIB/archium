@@ -1,54 +1,42 @@
 package es.caib.archium.converters;
 
+import es.caib.archium.objects.NivellelectronicObject;
+import es.caib.archium.services.ProcedimentFrontService;
+
 import javax.faces.application.FacesMessage;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.ConverterException;
 import javax.faces.convert.FacesConverter;
+import javax.inject.Inject;
 
-import es.caib.archium.controllers.ProcedimentController;
-import es.caib.archium.objects.NivellelectronicObject;
+@FacesConverter(value = "NivelConverter", managed = true)
+public class NivelConverter implements Converter<NivellelectronicObject> {
 
-@FacesConverter("NivelConverter")
-public class NivelConverter implements Converter {
+    @Inject
+    private ProcedimentFrontService procedimentFrontService;
 
     @Override
-    public Object getAsObject(FacesContext context, UIComponent component, String newValue) {
-    	if ((null == newValue) || (newValue.trim().isEmpty())) {
+    public NivellelectronicObject getAsObject(FacesContext context, UIComponent component, String newValue) {
+        if ((null == newValue) || (newValue.trim().isEmpty())) {
             return null;
         }
-    	
-        try {
-            final Long funcioId = Long.valueOf(newValue);
-            ProcedimentController data = context.getApplication().evaluateExpressionGet(context, "#{procedimentController}", ProcedimentController.class);
-            for(NivellelectronicObject funcio : data.getListaNivellelectronic())
-            {
-                if(funcio.getId().equals(funcioId)) {
-                	return funcio;
-                }
-            }
-			
-        } catch (final NumberFormatException ex) {
-            throw new ConverterException(ex);
-        } catch(final Exception e) {
-        	throw new ConverterException(e);
-        }
 
-    	return null;
+        try {
+            final Long nivellId = Long.valueOf(newValue);
+            return procedimentFrontService.findNivellElectronicById(nivellId);
+        } catch (final Exception e) {
+            throw new ConverterException(new FacesMessage(String.format("Cannot convert %s to NivellelectronicObject", newValue)), e);
+        }
     }
 
     @Override
-    public String getAsString(FacesContext context, UIComponent component, Object object) {
+    public String getAsString(FacesContext context, UIComponent component, NivellelectronicObject nivell) {
 
-    	if (object == null) {
+        if (nivell == null) {
             return "";
         }
-        if (object instanceof NivellelectronicObject) {
-        	NivellelectronicObject funcio = (NivellelectronicObject) object;
-            return String.valueOf(funcio.getId());
-        } else {
-            throw new ConverterException(new FacesMessage(object + " is not a valid Aplicacio"));
-        }
+        return String.valueOf(nivell.getId());
     }
 }

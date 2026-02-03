@@ -7,10 +7,6 @@ import javax.enterprise.context.RequestScoped;
 
 import javax.inject.Named;
 
-//import es.caib.archium.objects.CuadroClasificacion;
-//import es.caib.archium.services.Login;
-
-
 @Named
 @RequestScoped
 public class LoginService {

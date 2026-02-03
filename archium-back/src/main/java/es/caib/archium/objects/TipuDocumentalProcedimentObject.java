@@ -1,10 +1,10 @@
 package es.caib.archium.objects;
 
-import java.math.BigDecimal;
-import java.util.Objects;
-
 import es.caib.archium.persistence.model.TipusdocumentProcediment;
 import es.caib.archium.persistence.model.TipusdocumentProcedimentPK;
+
+import java.math.BigDecimal;
+import java.util.Objects;
 
 public class TipuDocumentalProcedimentObject {
 
@@ -12,21 +12,17 @@ public class TipuDocumentalProcedimentObject {
 	private ProcedimentObject 		procediment;
 	private TipuDocumentalObject	tipusDocumental;
 	private Boolean 				obligatori;
-	private Boolean 				recapitulatiu;
 	private Boolean					multiple;
 	
 	public TipuDocumentalProcedimentObject() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 
-	public TipuDocumentalProcedimentObject(ProcedimentObject procediment, TipuDocumentalObject tipusDocumentalt, Boolean obligatori,
-			Boolean recapitulatiu, Boolean multiple) {
+	public TipuDocumentalProcedimentObject(ProcedimentObject procediment, TipuDocumentalObject tipusDocumentalt, Boolean obligatori, Boolean multiple) {
 		super();
 		this.procediment = procediment;
 		this.tipusDocumental = tipusDocumentalt;
 		this.obligatori = obligatori;
-		this.recapitulatiu = recapitulatiu;
 		this.multiple = multiple;
 	}
 	
@@ -43,7 +39,6 @@ public class TipuDocumentalProcedimentObject {
 		this.tipusDocumental = td;
 		
 		this.obligatori = (i.getObligatori().intValue()==1 ? true : false);
-		this.recapitulatiu = (i.getRecapitulatiu().intValue()==1 ? true : false);
 		this.multiple = (i.getMultiple().intValue()==1 ? true : false);
 	}
 
@@ -60,7 +55,6 @@ public class TipuDocumentalProcedimentObject {
 		
 		db.setId(pk);
 		db.setObligatori((obligatori==true ? new BigDecimal(1) : new BigDecimal(0)));
-		db.setRecapitulatiu((recapitulatiu==true ? new BigDecimal(1) : new BigDecimal(0)));
 		db.setMultiple((multiple==true ? new BigDecimal(1) : new BigDecimal(0)));
 
 		return db;
@@ -98,15 +92,6 @@ public class TipuDocumentalProcedimentObject {
 		this.obligatori = obligatori;
 	}
 
-	public Boolean getRecapitulatiu() {
-		return recapitulatiu;
-	}
-
-	public void setRecapitulatiu(Boolean recapitulatiu) {
-		this.recapitulatiu = recapitulatiu;
-	}
-
-
 	public Boolean getMultiple() {
 		return multiple;
 	}
@@ -120,12 +105,12 @@ public class TipuDocumentalProcedimentObject {
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
 		TipuDocumentalProcedimentObject that = (TipuDocumentalProcedimentObject) o;
-		return Objects.equals(id, that.id) && Objects.equals(procediment, that.procediment) && Objects.equals(tipusDocumental, that.tipusDocumental) && Objects.equals(obligatori, that.obligatori) && Objects.equals(recapitulatiu, that.recapitulatiu) && Objects.equals(multiple, that.multiple);
+		return Objects.equals(id, that.id) && Objects.equals(procediment, that.procediment) && Objects.equals(tipusDocumental, that.tipusDocumental) && Objects.equals(obligatori, that.obligatori) && Objects.equals(multiple, that.multiple);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(id, procediment, tipusDocumental, obligatori, recapitulatiu, multiple);
+		return Objects.hash(id, procediment, tipusDocumental, obligatori, multiple);
 	}
 
 	@Override
@@ -135,7 +120,6 @@ public class TipuDocumentalProcedimentObject {
 				", procediment=" + procediment +
 				", tipusDocumental=" + tipusDocumental +
 				", obligatori=" + obligatori +
-				", recapitulatiu=" + recapitulatiu +
 				", multiple=" + multiple +
 				'}';
 	}

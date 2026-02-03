@@ -1,7 +1,13 @@
 package es.caib.archium.persistence.model;
 
+import javax.persistence.EmbeddedId;
+import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.MapsId;
+import javax.persistence.NamedQuery;
+import javax.persistence.Table;
 import java.io.Serializable;
-import javax.persistence.*;
 
 
 /**
@@ -23,7 +29,7 @@ public class Valorprimari implements Serializable {
 	@ManyToOne
 	@MapsId("tipusvalorId")
 	@JoinColumn(name="TIPUSVALOR_ID"  ,insertable=false,updatable=false)
-	private Tipusvalor achTipusvalor;
+	private TipusValor achTipusvalor;
 
 	//bi-directional many-to-one association to Valoracio
 	@ManyToOne
@@ -50,11 +56,11 @@ public class Valorprimari implements Serializable {
 		this.termini = termini;
 	}
 
-	public Tipusvalor getAchTipusvalor() {
+	public TipusValor getAchTipusvalor() {
 		return this.achTipusvalor;
 	}
 
-	public void setAchTipusvalor(Tipusvalor achTipusvalor) {
+	public void setAchTipusvalor(TipusValor achTipusvalor) {
 		this.achTipusvalor = achTipusvalor;
 	}
 

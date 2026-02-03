@@ -1,30 +1,6 @@
 package es.caib.archium.services;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.enterprise.context.ApplicationScoped;
-import javax.faces.application.FacesMessage;
-import javax.faces.context.FacesContext;
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.transaction.Transactional;
-
-import org.primefaces.model.DefaultTreeNode;
-import org.primefaces.model.TreeNode;
-
 import es.caib.archium.commons.i18n.I18NException;
-import es.caib.archium.commons.query.OrderBy;
-import es.caib.archium.commons.query.OrderType;
-import es.caib.archium.ejb.DictamenEJB;
-import es.caib.archium.ejb.FuncioEJB;
-import es.caib.archium.ejb.QuadreClassificacioEJB;
-import es.caib.archium.ejb.SerieEJB;
-import es.caib.archium.ejb.TipuDictamenEJB;
-import es.caib.archium.ejb.TipusSerieEJB;
 import es.caib.archium.ejb.service.DictamenService;
 import es.caib.archium.ejb.service.FuncioService;
 import es.caib.archium.ejb.service.QuadreClassificacioService;
@@ -38,9 +14,18 @@ import es.caib.archium.objects.SerieDocumentalObject;
 import es.caib.archium.objects.TipusSerieObject;
 import es.caib.archium.persistence.model.Dictamen;
 import es.caib.archium.persistence.model.Funcio;
-import es.caib.archium.persistence.model.Quadreclassificacio;
 import es.caib.archium.persistence.model.Seriedocumental;
-import es.caib.archium.persistence.model.Tipusserie;
+import es.caib.archium.persistence.model.TipusSerie;
+import org.primefaces.model.DefaultTreeNode;
+import org.primefaces.model.TreeNode;
+
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.transaction.Transactional;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 @Named
 @ApplicationScoped
@@ -117,7 +102,7 @@ public class FuncioFrontService {
 				if (resS!=null) {
 					for(Seriedocumental s : resS)
 					{				
-						TreeNode serieNode = new DefaultTreeNode(new Document<SerieDocumentalObject>(s.getId(), s.getCodi(), s.getNom(), "Serie", new SerieDocumentalObject(s)), node);
+						TreeNode serieNode = new DefaultTreeNode(new Document<SerieDocumentalObject>(s.getId(), s.getCodi(), s.getNom(), "Serie", s.getEnviatSAT(), new SerieDocumentalObject(s)), node);
 						List<Dictamen> resD = this.getDictamenBySerie(s);
 						
 						if (resD.size()>0) {
@@ -287,13 +272,14 @@ public class FuncioFrontService {
 		}
 		
 	}
-	
+
+
 	public List<TipusSerieObject> findAllTipusSerie() throws I18NException{
 		
 		try {
-			List<TipusSerieObject> listaTipusserie = new ArrayList<TipusSerieObject>();
-			List<Tipusserie> res= tipusSerieEJB.findAll();		
-			for(Tipusserie ts : res)
+			List<TipusSerieObject> listaTipusserie = new ArrayList<>();
+			List<TipusSerie> res= tipusSerieEJB.findAll();
+			for(TipusSerie ts : res)
 			{				
 				listaTipusserie.add(new TipusSerieObject(ts));
 			}
@@ -303,7 +289,18 @@ public class FuncioFrontService {
 		} catch(Exception e) {
 			throw new I18NException("excepcion.general.Exception", this.getClass().getSimpleName(), "findAllTipusSerie");
 		}
-		
+	}
+
+	public TipusSerieObject findTipusSerieById(Long tipusSerieId) throws I18NException{
+
+		try {
+			return new TipusSerieObject(tipusSerieEJB.findById(tipusSerieId));
+
+		} catch(NullPointerException e) {
+			throw new I18NException("excepcion.general.NullPointerException", this.getClass().getSimpleName(), "findAllTipusSerie");
+		} catch(Exception e) {
+			throw new I18NException("excepcion.general.Exception", this.getClass().getSimpleName(), "findAllTipusSerie");
+		}
 	}
 	
 	@Transactional

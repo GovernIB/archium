@@ -4,15 +4,15 @@ import es.caib.archium.commons.i18n.I18NArgumentString;
 import es.caib.archium.commons.i18n.I18NException;
 import es.caib.archium.commons.query.OrderBy;
 import es.caib.archium.commons.query.OrderType;
-import es.caib.archium.commons.utils.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.security.PermitAll;
-import javax.annotation.security.RolesAllowed;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.PersistenceContext;
+import javax.persistence.PersistenceException;
+import javax.persistence.Table;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -96,10 +96,24 @@ public abstract class AbstractDAO<E extends Serializable, PK> implements DAO<E, 
         try {
             E entity = getReference(id);
             entityManager.remove(entity);
+            entityManager.flush();
         } catch (EntityNotFoundException e) {
-            //entity.error.notexists=L´objecte de tipus {0} amb identificador {1} no existeix a la base de dades
             throw new I18NException("entity.error.notexists", entityClass.getName(), String.valueOf(id));
+        } catch (PersistenceException e) {
+            throw e;
         }
+    }
+   
+    @Override
+    public boolean tieneRelaciones(PK id) {
+        return false;  // Implementación por defecto
+    }
+    
+    protected String detalleRelaciones;
+
+    @Override
+    public String getDetalleRelaciones() {
+        return detalleRelaciones != null ? detalleRelaciones : "altres entitats";
     }
 
     @Override

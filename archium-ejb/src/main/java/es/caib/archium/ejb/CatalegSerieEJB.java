@@ -1,6 +1,5 @@
 package es.caib.archium.ejb;
 
-import javax.annotation.security.DeclareRoles;
 import javax.annotation.security.RolesAllowed;
 import javax.ejb.Stateless;
 

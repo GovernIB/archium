@@ -1,7 +1,15 @@
 package es.caib.archium.persistence.model;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
-import javax.persistence.*;
 import java.util.List;
 
 
@@ -11,6 +19,7 @@ import java.util.List;
  */
 @Entity
 @Table(name="ACH_ENS")
+@TaulaMestra(excludedFields = {"id", "achDictamens"})
 @NamedQuery(name="Ens.findAll", query="SELECT e FROM Ens e")
 public class Ens implements Serializable {
 	private static final long serialVersionUID = 1L;
@@ -20,12 +29,16 @@ public class Ens implements Serializable {
 	@GeneratedValue(strategy=GenerationType.SEQUENCE, generator="ACH_ENS_ID_GENERATOR")
 	private Long id;
 
+	@NotNull
 	private String descripcio;
 
+	@NotNull
 	private String descripciocas;
 
+	@NotNull
 	private String nom;
 
+	@NotNull
 	private String nomcas;
 
 	//bi-directional many-to-one association to Dictamen
@@ -43,6 +56,7 @@ public class Ens implements Serializable {
 		this.id = id;
 	}
 
+	@OrdreVisual(ordre = 300)
 	public String getDescripcio() {
 		return this.descripcio;
 	}
@@ -51,6 +65,7 @@ public class Ens implements Serializable {
 		this.descripcio = descripcio;
 	}
 
+	@OrdreVisual(ordre = 400)
 	public String getDescripciocas() {
 		return this.descripciocas;
 	}
@@ -59,6 +74,7 @@ public class Ens implements Serializable {
 		this.descripciocas = descripciocas;
 	}
 
+	@OrdreVisual(ordre = 100)
 	public String getNom() {
 		return this.nom;
 	}
@@ -67,6 +83,7 @@ public class Ens implements Serializable {
 		this.nom = nom;
 	}
 
+	@OrdreVisual(ordre = 200)
 	public String getNomcas() {
 		return this.nomcas;
 	}

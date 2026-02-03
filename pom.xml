@@ -3,16 +3,20 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>es.caib.archium</groupId>
     <artifactId>archium</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.6</version>
     <packaging>pom</packaging>
     <name>Archium</name>
     <description>Archium Java EE 8 i JBOSS 7.2</description>
     <!-- Refer?ncia al sistema de control de versions, ja sigui GIT, SVN, CVS... -->
     <!-- permetr? al plugin buildnumber-maven-plugin agafar la revisi?/versi?    -->
-    <scm>
-        <connection>scm:git:https://github.com/GovernIB/archium.git</connection>
-        <url>https://github.com/GovernIB/archium</url>
-    </scm>
+<!--     <scm> -->
+<!--         <connection>scm:git:https://github.com/GovernIB/archium.git</connection> -->
+<!--         <url>https://github.com/GovernIB/archium</url> -->
+<!--     </scm> -->
+	<scm>
+		<developerConnection>scm:svn:https://www.guadaltel.es/subversion/archium/Codigo/trunk/Archium
+		</developerConnection>
+	</scm>
     <properties>
         <!-- Propietats que afecten els plugins -->
         <maven.compiler.release>11</maven.compiler.release>
@@ -26,12 +30,13 @@
         <jaxb-api.version>2.3.1</jaxb-api.version>
         <slf4j.version>1.7.30</slf4j.version>
         <keycloak.version>6.0.1</keycloak.version>
-        <primefaces.version>7.0</primefaces.version>
+        <primefaces.version>8.0</primefaces.version>
         <primefaces.theme.version>1.0.10</primefaces.theme.version>
         <junit.version>4.13</junit.version>
         <hibernate.version>5.3.15.Final</hibernate.version>
         <resteasy.version>3.6.3.SP1</resteasy.version>
         <jboss-logging.version>3.3.3.Final</jboss-logging.version>
+        <itext.version>7.2.5</itext.version>
     </properties>
     <dependencyManagement>
         <dependencies>
@@ -240,6 +245,35 @@
                         <skip>true</skip>
                     </configuration>
                 </plugin>
+				<plugin>
+					<artifactId>maven-release-plugin</artifactId>
+					<version>2.5</version>
+					<configuration>
+						<preparationGoals>clean package</preparationGoals>
+						<autoVersionSubmodules>true</autoVersionSubmodules>
+						<tagNameFormat>ARCHIUM_V@{project.version}</tagNameFormat>
+						<tagBase>https://www.guadaltel.es/subversion/archium/Codigo/tags
+						</tagBase>
+					</configuration>
+				</plugin>
+				<plugin>
+					<!-- El uso de este plugin requiere Maven 3 -->
+					<groupId>com.spotify</groupId>
+					<artifactId>docker-maven-plugin</artifactId>
+					<version>0.2.11</version>
+					<configuration>
+						<dockerDirectory>${serverDockerDirectory}</dockerDirectory>
+						<resources>
+							<resource>
+								<targetPath>/</targetPath>
+								<directory>${project.basedir}/target</directory>
+								<includes>
+									<include>archium.ear</include>
+								</includes>
+							</resource>
+						</resources>
+					</configuration>
+				</plugin>
             </plugins>
         </pluginManagement>
         <plugins>
@@ -291,18 +325,18 @@
     </build>
     <repositories>
         <!-- Les llibreries de Primefaces no estan definides als repositoris centrals -->
-        <repository>
-            <id>prime-repo</id>
-            <name>PrimeFaces Maven Repository</name>
-            <url>http://repository.primefaces.org</url>
-            <layout>default</layout>
-        </repository>
+<!--         <repository> -->
+<!--             <id>prime-repo</id> -->
+<!--             <name>PrimeFaces Maven Repository</name> -->
+<!--             <url>https://repository.primefaces.org</url> -->
+<!--             <layout>default</layout> -->
+<!--         </repository> -->
         <!-- Repositori del GovernIB amb llibreries compartides, plugins, clients d'altres eines... -->
-        <repository>
-            <id>github-governib-maven</id>
-            <name>GitHub GovernIB Maven Repository</name>
-            <url>https://governib.github.io/maven/maven/</url>
-        </repository>
+<!--         <repository> -->
+<!--             <id>github-governib-maven</id> -->
+<!--             <name>GitHub GovernIB Maven Repository</name> -->
+<!--             <url>https://governib.github.io/maven/maven/</url> -->
+<!--         </repository> -->
     </repositories>
     <modules>
         <module>archium-commons</module>
@@ -310,5 +344,29 @@
         <module>archium-ejb</module>
         <module>archium-back</module>
         <module>archium-ear</module>
+        <module>archium-api-externa</module>
+        <module>archium-front</module>
     </modules>
+	<profiles>
+		<!-- Perfiles de compilacion de servidores -->
+		<profile>
+			<id>desarrollo</id>
+			<properties>
+				<serverDockerDirectory>${project.parent.basedir}/src/main/docker/desarrollo
+				</serverDockerDirectory>
+			</properties>
+		</profile>
+	</profiles>
+	<distributionManagement>
+		<repository>
+			<id>guadaltel-releases</id>
+			<url>http://maven.guadaltel.es/nexus/content/repositories/guadaltel-releases
+			</url>
+		</repository>
+		<snapshotRepository>
+			<id>guadaltel-snapshots</id>
+			<url>http://maven.guadaltel.es/nexus/content/repositories/guadaltel-snapshots
+			</url>
+		</snapshotRepository>
+	</distributionManagement>
 </project>

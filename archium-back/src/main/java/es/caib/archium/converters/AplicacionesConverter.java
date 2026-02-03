@@ -1,24 +1,23 @@
 package es.caib.archium.converters;
 
-import java.util.List;
+import es.caib.archium.objects.AplicacionObject;
+import org.primefaces.component.picklist.PickList;
+import org.primefaces.model.DualListModel;
 
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.ConverterException;
 import javax.faces.convert.FacesConverter;
+import java.util.List;
 
-import org.primefaces.component.picklist.PickList;
-import org.primefaces.model.DualListModel;
-
-import es.caib.archium.objects.AplicacionObject;;
+;
 
 @FacesConverter("aplicacionesConverter")
 public class AplicacionesConverter implements Converter<AplicacionObject>{
 
 	@Override
 	public AplicacionObject getAsObject(FacesContext context, UIComponent component, String value) {
-		// TODO Auto-generated method stub
 		return getObjectFromUIPickListComponent(component, value);
 	}
 
@@ -45,9 +44,7 @@ public class AplicacionesConverter implements Converter<AplicacionObject>{
 			}
 
 			return resource;
-		} catch (ClassCastException cce) {
-			throw new ConverterException();
-		} catch (NumberFormatException nfe) {
+		} catch (ClassCastException | NumberFormatException cce) {
 			throw new ConverterException();
 		}
 	}

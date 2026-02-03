@@ -1,22 +1,17 @@
 package es.caib.archium.ejb;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.annotation.security.DeclareRoles;
-import javax.annotation.security.RolesAllowed;
-import javax.ejb.Stateless;
-import javax.inject.Inject;
-
 import es.caib.archium.commons.i18n.I18NException;
 import es.caib.archium.ejb.service.SerieDocumentalService;
 import es.caib.archium.ejb.service.SerieRelacionadaService;
 import es.caib.archium.persistence.dao.AbstractDAO;
-import es.caib.archium.persistence.model.Serieargen;
-import es.caib.archium.persistence.model.Seriedocumental;
 import es.caib.archium.persistence.model.Serierelacionada;
+
+import javax.annotation.security.RolesAllowed;
+import javax.ejb.Stateless;
+import javax.inject.Inject;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Stateless
 @RolesAllowed({"ACH_GESTOR"})
@@ -56,8 +51,7 @@ public class SerieRelacionadaEJB extends AbstractDAO<Serierelacionada, Long> imp
 		
 		if(serieId!=null) {
 			Map<String,Object> filters = new HashMap<>();
-			filters.put("achSeriedocumental1", serieService.getReference(serieId) );
-			//filters.put("achSeriedocumental2",null);
+			filters.put("achSeriedocumental1", serieService.getReference(serieId));
 			filters.put("achSerieargen",null);
 			return this.findFiltered(filters);
 		} else {

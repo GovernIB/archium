@@ -4,7 +4,7 @@ import java.util.Date;
 import java.util.Objects;
 
 import es.caib.archium.persistence.model.Quadreclassificacio;
-import es.caib.archium.persistence.model.Quadretipusdocumental;
+import es.caib.archium.persistence.model.QuadreTipusDocumental;
 
 public class QuadreDocumentalObject {
 
@@ -22,7 +22,6 @@ public class QuadreDocumentalObject {
 	
 	public QuadreDocumentalObject() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 
 	public QuadreDocumentalObject(Long id, String nom, String nomCas, String estat, Date inici, Date modificacio, String versio,
@@ -38,7 +37,7 @@ public class QuadreDocumentalObject {
 		this.fi = fi;
 	}
 	
-	public QuadreDocumentalObject(Quadretipusdocumental dbQuadre) {
+	public QuadreDocumentalObject(QuadreTipusDocumental dbQuadre) {
 		if(dbQuadre!=null) {
 			this.id = dbQuadre.getId();
 			this.nom = dbQuadre.getNom();
@@ -117,6 +116,19 @@ public class QuadreDocumentalObject {
 	
 	public Quadreclassificacio toDbObject() {
 		Quadreclassificacio db = new Quadreclassificacio();
+		db.setId(id);
+		db.setNom(nom);
+		db.setNomcas(nomCas);
+		db.setEstat(estat);
+		db.setInici(inici);
+		db.setModificacio(modificacio);
+		db.setFi(fi);
+		db.setVersio(versio);
+		return db;
+	}
+	
+	public QuadreTipusDocumental toQuadreTipusDocumentalDbObject() {
+		QuadreTipusDocumental db = new QuadreTipusDocumental();
 		db.setId(id);
 		db.setNom(nom);
 		db.setNomcas(nomCas);

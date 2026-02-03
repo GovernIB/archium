@@ -2,8 +2,7 @@ package es.caib.archium.objects;
 
 import java.util.Objects;
 
-import es.caib.archium.persistence.model.Categorianti;
-import es.caib.archium.persistence.model.Tipusnti;
+import es.caib.archium.persistence.model.TipusNti;
 
 public class TipusntiObject {
 	
@@ -15,7 +14,6 @@ public class TipusntiObject {
 	
 	public TipusntiObject() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 
 	public TipusntiObject(Long id, String codi, String nom, String nomCas, CategoriantiObject categorianti) {
@@ -27,7 +25,7 @@ public class TipusntiObject {
 		this.categorianti = categorianti;
 	}
 
-	public TipusntiObject(Tipusnti i) {
+	public TipusntiObject(TipusNti i) {
 		this.id				=i.getId();
 		this.codi			= i.getCodi();
 		this.nom			= i.getNom();

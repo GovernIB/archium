@@ -68,6 +68,13 @@
         		<p:ajax event="expand" listener="#{funciones.onExpandTree}" update="tabla :info" />
         		<p:ajax event="sort" listener="#{funciones.onSortTree}" update="tabla :info" />
         		<p:ajax event="page" listener="#{funciones.onPageTree}" update="tabla :info" />
+
+				<f:facet name="header">
+					<p:outputPanel>
+						<h:outputText value="#{messages['funciones.cercador']}" />
+						<p:inputText id="globalFilter" onkeyup="PF('treeTable').filter()" style="width:400px" placeholder="#{messages['funciones.cerqui']}"/>
+					</p:outputPanel>
+				</f:facet>
         		
 		        <p:column headerText="#{messages['funciones.codi']}" style="width:200px;" filterBy="#{document.codi}" sortBy="#{document.codi}" filterMatchMode="contains">
 		            <h:outputText value="#{document.codi}" />
@@ -75,15 +82,7 @@
 		        <p:column headerText="#{messages['funciones.nom']}" filterBy="#{document.nom}" sortBy="#{document.nom}" filterMatchMode="contains">
 		            <h:outputText value="#{document.nom}" />
 		        </p:column>
-		        <p:column headerText="#{messages['funciones.tipu']}" style="width:160px;text-align:center;"  sortBy="#{document.type}" >
-			        <!-- <f:facet name="filter">
-		                <p:selectOneMenu onchange="PF('treeTable').filter()" styleClass="custom-filter">
-		                    <f:selectItem itemLabel="Select One" itemValue="#{null}" noSelectionOption="true" />
-		                    <f:selectItem itemLabel="Funcio" itemValue="Funcio" />
-		                    <f:selectItem itemLabel="Serie" itemValue="Serie" />
-		                    <f:selectItem itemLabel="Dictamen" itemValue="Dictamen" />
-		                </p:selectOneMenu>
-		            </f:facet> -->
+		        <p:column headerText="#{messages['funciones.tipu']}" style="width:160px;text-align:center;"  sortBy="#{document.type}">
 		            <h:outputText rendered="#{document.type=='Funcio'}" value="#{messages['funciones.tree.type.funcio']}" />
 		            <h:outputText rendered="#{document.type=='Serie'}" value="#{messages['funciones.tree.type.serie']}" />
 		            <h:outputText rendered="#{document.type=='Dictamen'}" value="#{messages['funciones.tree.type.dictamen']}" />
@@ -92,7 +91,7 @@
 		            <p:commandButton class="botton_library" rendered="#{document.type=='Funcio'}" icon="pi pi-pencil" resetValues="true" title="#{messages['funciones.modificafuncion']}" update="dialog" action="#{funciones.setFuncioActualizar(document)}" ></p:commandButton>
 		            <p:commandButton class="botton_library" rendered="#{document.type=='Funcio'}" icon="pi pi-plus-circle" resetValues="true" title="#{messages['funciones.nuevafuncion']}" update="dialog" action="#{funciones.setFuncioSeleccionada(document)}" oncomplete="PF('documentDialog').show()"></p:commandButton>
 		            <p:commandButton class="botton_library" rendered="#{document.type=='Funcio'}" icon="pi pi-file" resetValues="true" title="#{messages['funciones.nuevaserie']}" update="serieModalDialogId" action="#{nuevaSerieController.loadFromFunction(document)}" oncomplete="PF('serieModalDialog').show()"></p:commandButton>
-		            <p:commandButton class="botton_library" rendered="#{document.type=='Funcio'}" icon="pi pi-trash" title="#{messages['funciones.eliminarfuncio']}" update="panel1" action="#{funciones.deleteFuncio(document)}" oncomplete="">
+		            <p:commandButton class="botton_library" rendered="#{document.type=='Funcio'}" icon="pi pi-trash" title="#{messages['funciones.eliminarfuncion']}" update="panel1" action="#{funciones.deleteFuncio(document)}" oncomplete="">
 		            	<p:confirm header="#{messages['confirmacion']}" message="#{messages['funciones.eliminar.alert']}" icon="pi pi-exclamation-triangle" />
 		            </p:commandButton>
 		            <p:commandButton class="botton_library" rendered="#{document.type=='Serie'}" icon="pi pi-pencil" resetValues="true" title="#{messages['funciones.modificaserie']}" update="serieModalDialogId" action="#{nuevaSerieController.updateSerie(document)}" ></p:commandButton>
@@ -101,9 +100,20 @@
 		            	<p:confirm header="#{messages['confirmacion']}" message="#{messages['nuevaserie.eliminar.alert']}" icon="pi pi-exclamation-triangle" />
 		            </p:commandButton>
 		            <p:commandButton class="botton_library" rendered="#{document.type=='Dictamen'}" icon="pi pi-pencil" resetValues="true" title="#{messages['funciones.modificadictamen']}" update="dictamenModalDialogId" action="#{dictamenController.updateDictament(document)}" ></p:commandButton>
+					<p:commandButton class="botton_library" rendered="#{document.type=='Dictamen'}" icon="pi pi-download" resetValues="true" ajax="false" title="#{messages['funciones.taulavaloracio']}" onclick="PrimeFaces.monitorDownload(start, stop);">
+						<p:fileDownload value="#{dictamenController.getTaulaValoracio(document)}"/>
+					</p:commandButton>
 		        	<p:commandButton class="botton_library" rendered="#{document.type=='Dictamen'}" icon="pi pi-trash" title="#{messages['funciones.eliminardictamen']}" update="panel1" action="#{dictamenController.deleteDictamen(document)}" oncomplete="">
 		            	<p:confirm header="#{messages['confirmacion']}" message="#{messages['dictamen.eliminar.alert']}" icon="pi pi-exclamation-triangle" />
 		            </p:commandButton>
+
+
+					<!-- Indicador de si ya está sincronizado en SAT -->
+					<p:commandButton rendered="#{document.type eq 'Serie' and document.enviatSAT eq true}" title="#{messages['funciones.enviatSAT']}" class="botton_library" icon="circle-state green" disabled="true"/>
+					<!-- Indicador de si no está sincronizado en SAT -->
+					<p:commandButton rendered="#{document.type eq 'Serie' and document.enviatSAT eq false}" title="#{messages['funciones.noEnviatSAT']}" class="botton_library" icon="circle-state red" disabled="true"/>
+					<!-- Indicador de si no se sabe si está sincronizado en SAT -->
+					<p:commandButton rendered="#{document.type eq 'Serie' and document.enviatSAT eq null}" title="#{messages['funciones.nullEnviatSAT']}" class="botton_library" icon="circle-state gray" disabled="true"/>
 		        </p:column>
 		    </p:treeTable>
             

@@ -1,7 +1,22 @@
 package es.caib.archium.persistence.model;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
+import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.io.Serializable;
-import javax.persistence.*;
 import java.util.Date;
 import java.util.List;
 
@@ -12,6 +27,7 @@ import java.util.List;
  */
 @Entity
 @Table(name="ACH_NORMATIVA")
+@TaulaMestra(excludedFields = {"id", "achDictamens1", "achDictamens2", "achLimitacioNormativaSeries", "achNormativa", "achNormativas", "achNormativaSeriedocumentals", "achProcediments", "achTipusdocumentals"})
 @NamedQuery(name="Normativa.findAll", query="SELECT n FROM Normativa n")
 public class Normativa implements Serializable {
 	private static final long serialVersionUID = 1L;
@@ -26,12 +42,18 @@ public class Normativa implements Serializable {
 	@Temporal(TemporalType.DATE)
 	private Date derogacio;
 
+	@NotNull
 	private String estat;
 
+	@NotNull
+	@Size(max=2000)
 	private String nom;
 
+	@NotNull
+	@Size(max=2000)
 	private String nomcas;
 
+	@NotNull
 	private String uri;
 
 	private String urieli;
@@ -81,7 +103,16 @@ public class Normativa implements Serializable {
 
 	//bi-directional many-to-many association to Tipusdocumental
 	@ManyToMany(mappedBy="achNormativas")
-	private List<Tipusdocumental> achTipusdocumentals;
+	private List<TipusDocumental> achTipusdocumentals;
+
+	@ManyToOne
+	@JoinColumn(name="BUTLLETI_ID")
+	private Butlleti butlleti;
+
+	@NotNull
+	@ManyToOne
+	@JoinColumn(name="TIPUSNORMATIVA_ID")
+	private TipusNormativa tipusNormativa;
 
 	public Normativa() {
 	}
@@ -94,6 +125,7 @@ public class Normativa implements Serializable {
 		this.id = id;
 	}
 
+	@OrdreVisual(ordre = 300)
 	public String getCodi() {
 		return this.codi;
 	}
@@ -110,6 +142,7 @@ public class Normativa implements Serializable {
 		this.derogacio = derogacio;
 	}
 
+	@OrdreVisual(ordre = 600)
 	public String getEstat() {
 		return this.estat;
 	}
@@ -118,6 +151,7 @@ public class Normativa implements Serializable {
 		this.estat = estat;
 	}
 
+	@OrdreVisual(ordre = 400)
 	public String getNom() {
 		return this.nom;
 	}
@@ -126,6 +160,7 @@ public class Normativa implements Serializable {
 		this.nom = nom;
 	}
 
+	@OrdreVisual(ordre = 500)
 	public String getNomcas() {
 		return this.nomcas;
 	}
@@ -134,6 +169,7 @@ public class Normativa implements Serializable {
 		this.nomcas = nomcas;
 	}
 
+	@OrdreVisual(ordre = 700)
 	public String getUri() {
 		return this.uri;
 	}
@@ -142,6 +178,7 @@ public class Normativa implements Serializable {
 		this.uri = uri;
 	}
 
+	@OrdreVisual(ordre = 800)
 	public String getUrieli() {
 		return this.urieli;
 	}
@@ -150,6 +187,7 @@ public class Normativa implements Serializable {
 		this.urieli = urieli;
 	}
 
+	@OrdreVisual(ordre = 900)
 	public String getUrieliconsolidada() {
 		return this.urieliconsolidada;
 	}
@@ -158,6 +196,7 @@ public class Normativa implements Serializable {
 		this.urieliconsolidada = urieliconsolidada;
 	}
 
+	@OrdreVisual(ordre = 1000)
 	public Date getVigor() {
 		return this.vigor;
 	}
@@ -278,12 +317,29 @@ public class Normativa implements Serializable {
 		this.achProcediments = achProcediments;
 	}
 
-	public List<Tipusdocumental> getAchTipusdocumentals() {
+	public List<TipusDocumental> getAchTipusdocumentals() {
 		return this.achTipusdocumentals;
 	}
 
-	public void setAchTipusdocumentals(List<Tipusdocumental> achTipusdocumentals) {
+	public void setAchTipusdocumentals(List<TipusDocumental> achTipusdocumentals) {
 		this.achTipusdocumentals = achTipusdocumentals;
 	}
 
+	@OrdreVisual(ordre = 100)
+	public Butlleti getButlleti() {
+		return butlleti;
+	}
+
+	public void setButlleti(Butlleti butlleti) {
+		this.butlleti = butlleti;
+	}
+
+	@OrdreVisual(ordre = 200)
+	public TipusNormativa getTipusNormativa() {
+		return tipusNormativa;
+	}
+
+	public void setTipusNormativa(TipusNormativa tipusNormativa) {
+		this.tipusNormativa = tipusNormativa;
+	}
 }

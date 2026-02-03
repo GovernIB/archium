@@ -3,12 +3,10 @@ package es.caib.archium.ejb.service;
 import javax.ejb.Local;
 
 import es.caib.archium.persistence.dao.DAO;
-import es.caib.archium.persistence.model.Dictamen;
-import es.caib.archium.persistence.model.Lopd;
-import es.caib.archium.persistence.model.Tipusnormativa;
+import es.caib.archium.persistence.model.TipusNormativa;
 
 @Local
-public interface TipusNormativaService extends DAO<Tipusnormativa, Long> {
+public interface TipusNormativaService extends DAO<TipusNormativa, Long> {
 
 }
 

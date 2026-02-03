@@ -1,17 +1,17 @@
 package es.caib.archium.objects;
 
-import java.math.BigDecimal;
-import java.util.Date;
-import java.util.Objects;
-import java.util.ResourceBundle;
-
 import es.caib.archium.persistence.model.Dictamen;
 import es.caib.archium.persistence.model.Ens;
 import es.caib.archium.persistence.model.Lopd;
 import es.caib.archium.persistence.model.Normativa;
 import es.caib.archium.persistence.model.Seriedocumental;
-import es.caib.archium.persistence.model.Tipusacce;
-import es.caib.archium.persistence.model.Tipusdictamen;
+import es.caib.archium.persistence.model.TipuAcces;
+import es.caib.archium.persistence.model.TipusDictamen;
+
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.Objects;
+import java.util.ResourceBundle;
 
 public class DictamenObject {
 	private Long 	id;
@@ -39,7 +39,6 @@ public class DictamenObject {
 	
 	public DictamenObject() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 	public DictamenObject(Long id, SerieDocumentalObject serieDocumental, TipuDictamenObject tipusdictamen,
 			NormativaAprobacioObject normativaAprovacio, TipuAccesObject tipusAcces, EnsObject ens, LopdObject lopd,
@@ -223,7 +222,7 @@ public class DictamenObject {
 		return "";
 	}
 	
-	public Dictamen toDbObject(Tipusdictamen td, Ens e, Lopd l, Normativa n, Seriedocumental s, Tipusacce t){
+	public Dictamen toDbObject(TipusDictamen td, Ens e, Lopd l, Normativa n, Seriedocumental s, TipuAcces t){
 	
 		Dictamen db = new Dictamen();
 		if (id != null) {

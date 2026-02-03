@@ -1,22 +1,15 @@
 package es.caib.archium.converters;
 
-import java.util.List;
+import es.caib.archium.objects.CausaLimitacioObject;
+import org.primefaces.component.picklist.PickList;
+import org.primefaces.model.DualListModel;
 
-import javax.faces.application.FacesMessage;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.ConverterException;
 import javax.faces.convert.FacesConverter;
-
-import org.primefaces.component.picklist.PickList;
-import org.primefaces.model.DualListModel;
-
-import es.caib.archium.controllers.DictamenController;
-import es.caib.archium.objects.CausaLimitacioObject;
-import es.caib.archium.objects.DictamenObject;
-import es.caib.archium.objects.SerieArgenObject;
-import es.caib.archium.objects.SerieDocumentalObject;
+import java.util.List;
 
 @FacesConverter("causasRelacionadasConverter")
 public class CausasRelacionadasConverter implements Converter<CausaLimitacioObject> {
@@ -49,10 +42,8 @@ public class CausasRelacionadasConverter implements Converter<CausaLimitacioObje
 			}
 
 			return resource;
-		} catch (ClassCastException cce) {
-			throw new ConverterException();
-		} catch (NumberFormatException nfe) {
-			throw new ConverterException();
+		} catch (ClassCastException | NumberFormatException cce) {
+			throw new ConverterException(cce);
 		}
 	}
 

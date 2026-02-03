@@ -1,59 +1,42 @@
 package es.caib.archium.converters;
 
+import es.caib.archium.objects.FormainiciObject;
+import es.caib.archium.services.ProcedimentFrontService;
+
 import javax.faces.application.FacesMessage;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.ConverterException;
 import javax.faces.convert.FacesConverter;
+import javax.inject.Inject;
 
-import es.caib.archium.controllers.FuncionesController;
-import es.caib.archium.controllers.ProcedimentController;
-import es.caib.archium.objects.FormainiciObject;
-import es.caib.archium.objects.FuncioObject;
-import es.caib.archium.objects.QuadreObject;
-import es.caib.archium.persistence.model.Funcio;
-import es.caib.archium.persistence.model.Quadreclassificacio;
+@FacesConverter(value="FormaIniciConverter", managed = true)
+public class FormaIniciConverter implements Converter<FormainiciObject> {
 
-@FacesConverter("FormaIniciConverter")
-public class FormaIniciConverter implements Converter {
+    @Inject
+    private ProcedimentFrontService procedimentFrontService;
 
     @Override
-    public Object getAsObject(FacesContext context, UIComponent component, String newValue) {
-    	if ((null == newValue) || (newValue.trim().isEmpty())) {
+    public FormainiciObject getAsObject(FacesContext context, UIComponent component, String newValue) {
+        if ((null == newValue) || (newValue.trim().isEmpty())) {
             return null;
         }
-    	
-        try {
-            final Long funcioId = Long.valueOf(newValue);
-            ProcedimentController data = context.getApplication().evaluateExpressionGet(context, "#{procedimentController}", ProcedimentController.class);
-            for(FormainiciObject funcio : data.getListaFormainici())
-            {
-                if(funcio.getId().equals(funcioId)) {
-                	return funcio;
-                }
-            }
-			
-        } catch (final NumberFormatException ex) {
-            throw new ConverterException(ex);
-        } catch(final Exception e) {
-        	throw new ConverterException(e);
-        }
 
-    	return null;
+        try {
+            final Long formaInici = Long.valueOf(newValue);
+            return procedimentFrontService.findFormaIniciById(formaInici);
+        } catch (final Exception e) {
+            throw new ConverterException(new FacesMessage(String.format("Cannot convert %s to FormainiciObject", newValue)), e);
+        }
     }
 
     @Override
-    public String getAsString(FacesContext context, UIComponent component, Object object) {
+    public String getAsString(FacesContext context, UIComponent component, FormainiciObject formaInici) {
 
-    	if (object == null) {
+        if (formaInici == null) {
             return "";
         }
-        if (object instanceof FormainiciObject) {
-        	FormainiciObject funcio = (FormainiciObject) object;
-            return String.valueOf(funcio.getId());
-        } else {
-            throw new ConverterException(new FacesMessage(object + " is not a valid funcio"));
-        }
+        return String.valueOf(formaInici.getId());
     }
 }

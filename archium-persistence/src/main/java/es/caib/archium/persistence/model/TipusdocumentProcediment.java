@@ -1,7 +1,13 @@
 package es.caib.archium.persistence.model;
 
+import javax.persistence.EmbeddedId;
+import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.MapsId;
+import javax.persistence.NamedQuery;
+import javax.persistence.Table;
 import java.io.Serializable;
-import javax.persistence.*;
 import java.math.BigDecimal;
 
 
@@ -20,8 +26,6 @@ public class TipusdocumentProcediment implements Serializable {
 
 	private BigDecimal obligatori;
 
-	private BigDecimal recapitulatiu;
-
 	private BigDecimal multiple;
 
 	//bi-directional many-to-one association to Procediment
@@ -34,7 +38,7 @@ public class TipusdocumentProcediment implements Serializable {
 	@ManyToOne
 	@MapsId("tipusdocumentalId")
 	@JoinColumn(name="TIPUSDOCUMENTAL_ID"  ,insertable=false,updatable=false)
-	private Tipusdocumental achTipusdocumental;
+	private TipusDocumental achTipusdocumental;
 
 	public TipusdocumentProcediment() {
 	}
@@ -55,14 +59,6 @@ public class TipusdocumentProcediment implements Serializable {
 		this.obligatori = obligatori;
 	}
 
-	public BigDecimal getRecapitulatiu() {
-		return this.recapitulatiu;
-	}
-
-	public void setRecapitulatiu(BigDecimal recapitulatiu) {
-		this.recapitulatiu = recapitulatiu;
-	}
-
 	public Procediment getAchProcediment() {
 		return this.achProcediment;
 	}
@@ -71,11 +67,11 @@ public class TipusdocumentProcediment implements Serializable {
 		this.achProcediment = achProcediment;
 	}
 
-	public Tipusdocumental getAchTipusdocumental() {
+	public TipusDocumental getAchTipusdocumental() {
 		return this.achTipusdocumental;
 	}
 
-	public void setAchTipusdocumental(Tipusdocumental achTipusdocumental) {
+	public void setAchTipusdocumental(TipusDocumental achTipusdocumental) {
 		this.achTipusdocumental = achTipusdocumental;
 	}
 

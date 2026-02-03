@@ -1,44 +1,42 @@
 package es.caib.archium.converters;
 
+import es.caib.archium.commons.i18n.I18NException;
+import es.caib.archium.objects.QuadreObject;
+import es.caib.archium.services.QuadreFrontService;
+
 import javax.faces.application.FacesMessage;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.ConverterException;
 import javax.faces.convert.FacesConverter;
+import javax.inject.Inject;
 
-import es.caib.archium.controllers.QuadreController;
-import es.caib.archium.objects.QuadreObject;
+@FacesConverter(value = "QuadreclassificacioConverter", managed = true)
+public class QuadreclassificacioConverter implements Converter<QuadreObject> {
 
-@FacesConverter("QuadreclassificacioConverter")
-public class QuadreclassificacioConverter implements Converter {
+    @Inject
+    private QuadreFrontService quadreFrontService;
 
     @Override
-    public Object getAsObject(FacesContext context, UIComponent component, String newValue) {
-	    if(newValue == null)
-	    return null;
-	    QuadreController data = context.getApplication().evaluateExpressionGet(context, "#{quadreController}", QuadreController.class);
-	    for(QuadreObject compLovDtgrid : data.getListaCuadros())
-	    {
-		    if(compLovDtgrid.getNom().equals(newValue))
-		    return compLovDtgrid;
-	    }
-	    	throw new ConverterException(new FacesMessage(String.format("Cannot convert %s to QuadreObject", newValue)));
+    public QuadreObject getAsObject(FacesContext context, UIComponent component, String newValue) {
+        if (newValue == null) {
+            return null;
+        }
 
+        try {
+            return quadreFrontService.findQuadreByNom(newValue);
+        } catch (I18NException e) {
+            throw new ConverterException(new FacesMessage(String.format("Cannot convert %s to QuadreObject", newValue)));
+        }
     }
 
     @Override
-    public String getAsString(FacesContext context, UIComponent component, Object object) {
-    	if (object == null) {
+    public String getAsString(FacesContext context, UIComponent component, QuadreObject quadre) {
+        if (quadre == null) {
             return "";
         }
-        if (object instanceof QuadreObject) {
-        	QuadreObject quadre= (QuadreObject) object;
-            String name = quadre.getNom();
-            return name;
-        } else {
-            throw new ConverterException(new FacesMessage(object + " is not a valid quadre"));
-        }
+        return quadre.getNom();
     }
-    
+
 }

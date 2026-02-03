@@ -1,58 +1,42 @@
 package es.caib.archium.converters;
 
+import es.caib.archium.objects.TipusSerieObject;
+import es.caib.archium.services.FuncioFrontService;
+
 import javax.faces.application.FacesMessage;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.ConverterException;
 import javax.faces.convert.FacesConverter;
+import javax.inject.Inject;
 
-import es.caib.archium.controllers.FuncionesController;
-import es.caib.archium.objects.TipusSerieObject;
-import es.caib.archium.persistence.model.Funcio;
-import es.caib.archium.persistence.model.Quadreclassificacio;
-import es.caib.archium.persistence.model.Tipusserie;
+@FacesConverter(value = "FuncioTipusserieConverter", managed = true)
+public class FuncioTipusserieConverter implements Converter<TipusSerieObject> {
 
-@FacesConverter("FuncioTipusserieConverter")
-public class FuncioTipusserieConverter implements Converter {
+    @Inject
+    private FuncioFrontService funcioFrontService;
 
     @Override
-    public Object getAsObject(FacesContext context, UIComponent component, String newValue) {
-    	if ((null == newValue) || (newValue.trim().isEmpty())) {
+    public TipusSerieObject getAsObject(FacesContext context, UIComponent component, String newValue) {
+        if ((null == newValue) || (newValue.trim().isEmpty())) {
             return null;
         }
-    	
+
         try {
             final Long tipusSerieId = Long.valueOf(newValue);
-            
-            FuncionesController data = context.getApplication().evaluateExpressionGet(context, "#{funciones}", FuncionesController.class);
-            for(TipusSerieObject tipusserie : data.getListaTipusserie())
-            {
-                if(tipusserie.getId().equals(tipusSerieId)) {
-                	return tipusserie;
-                }
-            }
-			
-        } catch (final NumberFormatException ex) {
-            throw new ConverterException(ex);
-        } catch(final Exception e) {
-        	throw new ConverterException(e);
+            return funcioFrontService.findTipusSerieById(tipusSerieId);
+        } catch (final Exception e) {
+            throw new ConverterException(new FacesMessage(String.format("Cannot convert %s to TipusSerieObject", newValue)), e);
         }
-
-    	return null;
     }
 
     @Override
-    public String getAsString(FacesContext context, UIComponent component, Object object) {
+    public String getAsString(FacesContext context, UIComponent component, TipusSerieObject tipusSerie) {
 
-    	if (object == null) {
+        if (tipusSerie == null) {
             return "";
         }
-        if (object instanceof TipusSerieObject) {
-        	TipusSerieObject tipusserie= (TipusSerieObject) object;
-            return String.valueOf(tipusserie.getId());
-        } else {
-            throw new ConverterException(new FacesMessage(object + " is not a valid tipu serie"));
-        }
+        return String.valueOf(tipusSerie.getId());
     }
 }

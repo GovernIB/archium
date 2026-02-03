@@ -19,7 +19,6 @@ public class AplicacioObject {
 	
 	public AplicacioObject() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 
 	public AplicacioObject(Long id, String nom, String estat, String perfil, String uriDev, String uriPro, Date inici,

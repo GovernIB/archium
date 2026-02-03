@@ -1,38 +1,10 @@
 package es.caib.archium.controllers;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
-import java.util.ResourceBundle;
-
-import javax.annotation.PostConstruct;
-import javax.faces.application.FacesMessage;
-import javax.faces.context.FacesContext;
-import javax.faces.event.AjaxBehaviorEvent;
-import javax.faces.view.ViewScoped;
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.transaction.Transactional;
-
-import es.caib.archium.commons.utils.Constants;
-import org.primefaces.PrimeFaces;
-import org.primefaces.event.SelectEvent;
-import org.primefaces.model.DualListModel;
-import org.primefaces.model.TreeNode;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import es.caib.archium.commons.i18n.I18NException;
 import es.caib.archium.objects.AplicacioObject;
 import es.caib.archium.objects.Dir3Object;
-import es.caib.archium.objects.Document;
 import es.caib.archium.objects.FamiliaprocedimentObject;
 import es.caib.archium.objects.FormainiciObject;
-import es.caib.archium.objects.FuncioObject;
-import es.caib.archium.objects.LimitacioNormativaSerieObject;
 import es.caib.archium.objects.MateriaObject;
 import es.caib.archium.objects.NivellelectronicObject;
 import es.caib.archium.objects.NormativaObject;
@@ -42,10 +14,29 @@ import es.caib.archium.objects.SilenciObject;
 import es.caib.archium.objects.TipuDocumentalObject;
 import es.caib.archium.objects.TipuDocumentalProcedimentObject;
 import es.caib.archium.objects.tipusPublicObject;
-import es.caib.archium.persistence.model.LimitacioNormativaSerie;
-import es.caib.archium.persistence.model.Procediment;
 import es.caib.archium.services.ProcedimentFrontService;
 import es.caib.archium.utils.FrontExceptionTranslate;
+import org.primefaces.PrimeFaces;
+import org.primefaces.event.SelectEvent;
+import org.primefaces.model.DualListModel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.annotation.PostConstruct;
+import javax.faces.application.FacesMessage;
+import javax.faces.context.FacesContext;
+import javax.faces.event.AjaxBehaviorEvent;
+import javax.faces.view.ViewScoped;
+import javax.inject.Inject;
+import javax.inject.Named;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
+import java.util.Objects;
+import java.util.ResourceBundle;
 
 @Named("procedimentController")
 @ViewScoped
@@ -504,9 +495,9 @@ public class ProcedimentController implements Serializable {
 		boolean duplicado = false;
 		Iterator<TipuDocumentalProcedimentObject> it = listaTDP.iterator();
 		
-		while(it.hasNext() && duplicado==false) {
+		while(it.hasNext() && !duplicado) {
 			TipuDocumentalProcedimentObject item = it.next();
-			if(selectedTipoDocumental.getId()==item.getTipusDocumental().getId()) {
+			if(Objects.equals(selectedTipoDocumental.getId(), item.getTipusDocumental().getId())) {
 				duplicado=true;
 			}
 		}
@@ -974,7 +965,23 @@ public class ProcedimentController implements Serializable {
 	public void setLocale(Locale locale) {
 		this.locale = locale;
 	}
-	
-	
 
+
+
+	public boolean filterBySerie(Object value, Object filter, Locale locale) {
+		String filterText = (filter == null) ? null : filter.toString().trim();
+
+		// En cas de ser filterText null o ser equals a "" s'ha intentat agafar el de la cerca general, però sense resultats
+		// Per tant, el filtre "sen..." per obtenir els procediments sense sèrie no funciona des del cercador general
+
+		if (filterText == null || filterText.equals("")) {
+			return true;
+		}
+		// Permetre cercar per l'etiqueta "Sense sèrie"
+		if (filterText.toLowerCase().startsWith("se")) {
+			return value == null;
+		} else {
+			return value != null && ((String)value).toLowerCase().contains(filterText.toLowerCase());
+		}
+	}
 }

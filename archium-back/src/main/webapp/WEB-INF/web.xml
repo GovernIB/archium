@@ -13,7 +13,7 @@
     <servlet-name>Faces Servlet</servlet-name>
     <url-pattern>*.xhtml</url-pattern>
   </servlet-mapping>
- 	<security-constraint>
+    <security-constraint>
         <web-resource-collection>
             <web-resource-name>platform</web-resource-name>
             <url-pattern>*.xhtml</url-pattern>
@@ -25,6 +25,17 @@
             <transport-guarantee>CONFIDENTIAL</transport-guarantee>
         </user-data-constraint>
     </security-constraint>
+    
+    <security-constraint>
+	    <web-resource-collection>
+	        <web-resource-name>servlets</web-resource-name>
+	        <url-pattern>/exportarTipusDocumentalsPdf</url-pattern>
+	        <url-pattern>/exportarTipusDocumentalsCsv</url-pattern>
+	    </web-resource-collection>
+	    <auth-constraint>
+	        <role-name>ACH_GESTOR</role-name>
+	    </auth-constraint>
+	</security-constraint>
     
     <security-constraint>
    		<web-resource-collection>
@@ -39,6 +50,10 @@
         <realm-name>ARCHIUM</realm-name>
     </login-config>
 
+    <error-page>
+        <exception-type>javax.faces.application.ViewExpiredException</exception-type>
+        <location>/views/errorExpired.xhtml</location>
+    </error-page>
 	<error-page>
 	    <error-code>403</error-code>
 	    <location>/views/error403.xhtml</location>
@@ -52,10 +67,6 @@
 	    <location>/views/error500.xhtml</location>
 	</error-page>
 	<error-page>
-        <exception-type>javax.faces.application.ViewExpiredException</exception-type>
-        <location>/views/errorExpired.xhtml</location>
-    </error-page>
-	<error-page>
         <exception-type>java.lang.Exception</exception-type>
         <location>/views/error.xhtml</location>
     </error-page>
@@ -67,4 +78,13 @@
     <security-role>
         <role-name>ACH_GESTOR</role-name>
     </security-role>
+
+    <session-config>
+        <session-timeout>30</session-timeout>
+    </session-config>
+
+    <context-param>
+        <param-name>javax.faces.DATETIMECONVERTER_DEFAULT_TIMEZONE_IS_SYSTEM_TIMEZONE</param-name>
+        <param-value>true</param-value>
+    </context-param>
 </web-app>

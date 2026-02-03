@@ -1,9 +1,5 @@
 package es.caib.archium.jsf;
 
-import java.io.IOException;
-import java.util.Iterator;
-import java.util.Map;
-
 import javax.el.ELException;
 import javax.faces.FacesException;
 import javax.faces.application.Application;
@@ -18,6 +14,9 @@ import javax.faces.context.FacesContext;
 import javax.faces.event.ExceptionQueuedEvent;
 import javax.faces.view.ViewDeclarationLanguage;
 import javax.servlet.RequestDispatcher;
+import java.io.IOException;
+import java.util.Iterator;
+import java.util.Map;
 
 public class AjaxExceptionHandler extends ExceptionHandlerWrapper {
 	public AjaxExceptionHandler(ExceptionHandler wrapped) {
@@ -64,7 +63,10 @@ public class AjaxExceptionHandler extends ExceptionHandlerWrapper {
 			context.getPartialViewContext().setRenderAll(true);
 			viewDeclarationLanguage.renderView(context, viewRoot);
 
-			context.responseComplete();
+			// context.responseComplete();
+
+			// Prova segons https://stackoverflow.com/questions/11203195/session-timeout-and-viewexpiredexception-handling-on-jsf-primefaces-ajax-request
+			context.renderResponse();
 		} catch (IOException e) {
 			throw new FacesException(e);
 		} finally {

@@ -1,55 +1,45 @@
 package es.caib.archium.converters;
 
+import es.caib.archium.objects.SilenciObject;
+import es.caib.archium.services.ProcedimentFrontService;
+
 import javax.faces.application.FacesMessage;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.ConverterException;
 import javax.faces.convert.FacesConverter;
-import es.caib.archium.controllers.ProcedimentController;
-import es.caib.archium.objects.FormainiciObject;
-import es.caib.archium.objects.SilenciObject;
+import javax.inject.Inject;
 
-@FacesConverter("SilenciConverter")
-public class SilenciConverter implements Converter {
+@FacesConverter(value="SilenciConverter", managed = true)
+public class SilenciConverter implements Converter<SilenciObject> {
+
+    @Inject
+    private ProcedimentFrontService procedimentFrontService;
 
     @Override
-    public Object getAsObject(FacesContext context, UIComponent component, String newValue) {
-    	if ((null == newValue) || (newValue.trim().isEmpty())) {
+    public SilenciObject getAsObject(FacesContext context, UIComponent component, String newValue) {
+        if ((null == newValue) || (newValue.trim().isEmpty())) {
             return null;
         }
-    	
+
         try {
-            final Long funcioId = Long.valueOf(newValue);
-            ProcedimentController data = context.getApplication().evaluateExpressionGet(context, "#{procedimentController}", ProcedimentController.class);
-            for(SilenciObject funcio : data.getListaSilenci())
-            {
-                if(funcio.getId().equals(funcioId)) {
-                	return funcio;
-                }
-            }
-			
-        } catch (final NumberFormatException ex) {
-            // Throw again
-            throw new ConverterException(ex);
-        } catch(final Exception e) {
-        	throw new ConverterException(e);
+            final Long silenciId = Long.valueOf(newValue);
+            procedimentFrontService.findSilenciById(silenciId);
+        } catch (final Exception e) {
+            throw new ConverterException(new FacesMessage(String.format("Cannot convert %s to SilenciObject", newValue)), e);
         }
 
-    	return null;
+        return null;
     }
 
     @Override
-    public String getAsString(FacesContext context, UIComponent component, Object object) {
+    public String getAsString(FacesContext context, UIComponent component, SilenciObject silenci) {
 
-    	if (object == null) {
+        if (silenci == null) {
             return "";
         }
-        if (object instanceof SilenciObject) {
-        	SilenciObject funcio = (SilenciObject) object;
-            return String.valueOf(funcio.getId());
-        } else {
-            throw new ConverterException(new FacesMessage(object + " is not a valid silenci"));
-        }
+
+        return String.valueOf(silenci.getId());
     }
 }

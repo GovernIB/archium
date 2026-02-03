@@ -29,24 +29,39 @@
 				value="#{procedimentController.listaProcediment}" 
 				emptyMessage="#{messages['datos.nohaydatos']}"
 				rows="10" 
-				selectionMode="single"  
+				selectionMode="single"
 				selection="#{procedimentController.procedimientoSelected}" 
 				rowKey="#{cuadro.id}"
                 paginator="true"  
                 filteredValue="#{procedimentController.listaFilter}" 
                 widgetVar="cuadros"
-                paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
-                currentPageReportTemplate="{startRecord}-{endRecord} of {totalRecords} records">
+                paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+				currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} procediments"
+				rowsPerPageTemplate="10,50,{ShowAll|'Tots'}">
                 
-                <p:ajax event="rowSelect" listener="#{procedimentController.onRowSelect}"  resetValues="true" update="procedimentModalDialogId, :panel1:message-global"/>        		 
+                <p:ajax event="rowSelect" listener="#{procedimentController.onRowSelect}"  resetValues="true" update="procedimentModalDialogId, :panel1:message-global"/>
+
+				<f:facet name="header">
+					<p:outputPanel>
+						<h:outputText value="#{messages['procediment.cercador']}" />
+						<p:inputText id="globalFilter" onkeyup="PF('cuadros').filter()" style="width:400px" placeholder="#{messages['procediment.cerqui']}"/>
+					</p:outputPanel>
+				</f:facet>
+
+				<!-- ACH-005 -->
+				<p:column class="first-column" headerText="#{messages['procediment.codisia']}" sortBy="#{cuadro.codisia}"  filterBy="#{cuadro.codisia}" filterMatchMode="contains" style="width: 10%;">
+					<h:outputText value="#{cuadro.codisia}" />
+				</p:column>
 		        <p:column class="first-column" headerText="#{messages['procediment.nom']}" sortBy="#{cuadro.nom}"  filterBy="#{cuadro.nom}" filterMatchMode="contains" style="width: 30%;"> 
 		        	<h:outputText value="#{cuadro.nom}" />
 		        </p:column>
-		 
-		        <p:column class="first-column" headerText="#{messages['procediment.familia']}" sortBy="#{cuadro.familiaprocediment.nom}" filterBy="#{cuadro.familiaprocediment.nom}" filterMatchMode="contains"  style="width: 30%;">
-		            <h:outputText value="#{cuadro.familiaprocediment.nom}" />
-		        </p:column>
-		        <p:column class="first-column" headerText="#{messages['procediment.fechaModificacion']}" sortBy="#{cuadro.modificacio}" filterBy="#{cuadro.modificacio}" filterMatchMode="contains" sortOrder="false" style="width: 30%;" >
+				<p:column class="first-column" headerText="#{messages['procediment.objecte']}" sortBy="#{cuadro.objecte}" filterBy="#{cuadro.objecte}" filterMatchMode="contains"  style="width: 40%;">
+					<h:outputText value="#{cuadro.objecte}" />
+				</p:column>
+				<p:column class="first-column" headerText="#{messages['procediment.serie']}" sortBy="#{cuadro.seriedocumental.codi}"  filterBy="#{cuadro.seriedocumental.codi}" filterFunction="#{procedimentController.filterBySerie}" style="width: 10%;">
+					<h:outputText value="#{cuadro.seriedocumental ne null ? cuadro.seriedocumental.codi : messages['procediment.senseSerie']}" />
+				</p:column>
+		        <p:column class="first-column" headerText="#{messages['procediment.fechaModificacion']}" sortBy="#{cuadro.modificacio}" filterBy="#{cuadro.modificacio}" filterMatchMode="contains" sortOrder="false" style="width: 10%;" >
 		            <h:outputText value="#{cuadro.modificacio}">
 		            	<f:convertDateTime pattern="dd-MM-yyyy HH:mm" />
 		            </h:outputText>

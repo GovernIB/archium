@@ -4,7 +4,7 @@
     <parent>
         <groupId>es.caib.archium</groupId>
         <artifactId>archium</artifactId>
-        <version>1.0.0</version>
+        <version>1.0.6</version>
     </parent>
 
     <artifactId>archium-commons</artifactId>
@@ -31,10 +31,19 @@
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
         </dependency>
+
+        <!-- Utilitats per generar PDFs -->
+        <dependency>
+            <groupId>com.itextpdf</groupId>
+            <artifactId>itext7-core</artifactId>
+            <version>${itext.version}</version>
+            <type>pom</type>
+        </dependency>
     </dependencies>
 
     <build>
-        <finalName>${project.artifactId}-${project.version}</finalName>
+        <!--<finalName>${project.artifactId}-${project.version}</finalName>-->
+        <finalName>${project.artifactId}</finalName>
         <resources>
             <!-- Activam filtre per fer substitucions al fitxer Version.properties -->
             <resource>

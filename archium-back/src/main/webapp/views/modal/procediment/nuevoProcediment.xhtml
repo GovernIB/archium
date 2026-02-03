@@ -122,14 +122,15 @@
 								    </div>
 								    
 								  </div>
-								  
-								  <div class="ui-g-12">
+
+								 <!-- #6345 Simplificació-->
+								  <!--<div class="ui-g-12">
 								  
 								    <div class="ui-g-6 item_1">
 								    	<label class="ui-g-4">#{messages['nuevoprocediment.FormaInici']}</label>		    			
 							        	<p:selectOneMenu class="ui-g-8" id="formainici" value="#{procedimentController.formainici}" label="FormaInici" converter="FormaIniciConverter"
 								                              panelStyle="">
-								            <f:selectItem itemLabel="-- #{messages['selecciona']} #{messages['nuevoprocediment.FormaInici']} -- " itemValue="#{null}" noSelectionOption="true"/>
+								            <f:selectItem itemLabel="- #{messages['selecciona']} #{messages['nuevoprocediment.FormaInici']} - " itemValue="#{null}" noSelectionOption="true"/>
 								            <f:selectItems value="#{procedimentController.listaFormainici}"  var="n" itemLabel="#{n.nom}"  itemValue="#{n}"/>
 								        </p:selectOneMenu>
 								    </div>
@@ -138,7 +139,7 @@
 								    	<label class="ui-g-4">#{messages['nuevoprocediment.Silenci']}</label>		    			
 							        	<p:selectOneMenu class="ui-g-8" id="silenci" value="#{procedimentController.silenci}" label="silenci" converter="SilenciConverter"
 								                              panelStyle="">
-								            <f:selectItem itemLabel="-- #{messages['selecciona']} #{messages['nuevoprocediment.Silenci']} -- " itemValue="#{null}" noSelectionOption="true"/>
+								            <f:selectItem itemLabel="- #{messages['selecciona']} #{messages['nuevoprocediment.Silenci']} - " itemValue="#{null}" noSelectionOption="true"/>
 								            <f:selectItems value="#{procedimentController.listaSilenci}"  var="n" itemLabel="#{n.nom}"  itemValue="#{n}"/>
 								        </p:selectOneMenu>
 								    </div>
@@ -160,37 +161,37 @@
 						    			<p:selectOneMenu class="ui-g-8" id="dir3instructor" value="#{procedimentController.dir3Instructor}" label="#{messages['nuevoprocediment.Dir3Instructor']}" 
 								                              panelStyle="width:450px" style="min-width: auto!important;" 
 								                              filter="true" filterMatchMode="contains">
-								            <f:selectItem itemLabel="-- #{messages['selecciona']} #{messages['nuevoprocediment.Dir3Instructor']} -- " itemValue="#{null}" noSelectionOption="true"/>
+								            <f:selectItem itemLabel="- #{messages['selecciona']} #{messages['nuevoprocediment.Dir3Instructor']} - " itemValue="#{null}" noSelectionOption="true"/>
 								            <f:selectItems value="#{procedimentController.listaDir3}"  var="n"  itemValue="#{n.codi}" itemLabel="#{n.codi}-#{n.nom}"/>
 								        </p:selectOneMenu>
 								    </div>
 								    
-							   	</div>
+							   	</div>-->
 							   	
 							   	<div class="ui-g-12">
 								    
-								    <div class="ui-g-6 item_1">
+								    <!--<div class="ui-g-6 item_1">
 								    	<label class="ui-g-4">#{messages['nuevoprocediment.Dir3Resolvent']}</label>
 								    	<p:selectOneMenu class="ui-g-8" id="dir3resolvent" value="#{procedimentController.dir3Resolvent}" label="#{messages['nuevoprocediment.Dir3Resolvent']}" 
 								                              panelStyle="width:450px" style="min-width: auto!important;"
 								                              filter="true" filterMatchMode="contains">
-								            <f:selectItem itemLabel="-- #{messages['selecciona']} #{messages['nuevoprocediment.Dir3Resolvent']} -- " itemValue="#{null}" noSelectionOption="true"/>
+								            <f:selectItem itemLabel="- #{messages['selecciona']} #{messages['nuevoprocediment.Dir3Resolvent']} - " itemValue="#{null}" noSelectionOption="true"/>
 								            <f:selectItems value="#{procedimentController.listaDir3}"  var="n"  itemValue="#{n.codi}" itemLabel="#{n.codi}-#{n.nom}"/>
 								        </p:selectOneMenu>				    			
-								    </div>  
+								    </div> -->
 								    
 								    <div class="ui-g-6 item_1">
 								    	<label class="ui-g-4">#{messages['nuevoprocediment.SerieDocumental']}</label>		    			
 							        	<p:selectOneMenu class="ui-g-8" id="seriedocumental" value="#{procedimentController.seriedocumental}" label="SerieDocumental" converter="SerieDocumentalConverter" 
 							        					 panelStyle="" filter="true" filterMatchMode="contains">
 							        		<f:selectItem itemLabel="-- #{messages['selecciona']} #{messages['nuevoprocediment.SerieDocumental']} -- " itemValue="#{null}" noSelectionOption="true"/>
-								            <f:selectItems value="#{procedimentController.listaSerieDocumental}"  var="n" itemLabel="#{n.nom}"  itemValue="#{n}"/>
+								            <f:selectItems value="#{procedimentController.listaSerieDocumental}"  var="n" itemLabel="#{n.nomComplet}"  itemValue="#{n}"/>
 								        </p:selectOneMenu>
 								    </div>
 								    
 							    </div>
 							    
-							    <div class="ui-g-12">
+							    <!--<div class="ui-g-12">
 								    
 								    <div class="ui-g-6 item_1 item_3">
 								    	<label class="ui-g-4">#{messages['nuevoprocediment.Termini']}</label>
@@ -237,7 +238,7 @@
 						    			</p:inputText>						    
 								    </div>
 								    
-							    </div>
+							    </div>-->
 							    
 							    <div class="ui-g-12">
 							    
@@ -248,29 +249,28 @@
 								        </p:selectOneMenu>					    		
 								   </div>
 
-								    <div class="ui-g-6 item_1">
+								    <!--<div class="ui-g-6 item_1">
 								    	<label class="ui-g-4">#{messages['nuevoprocediment.Caducitat']}</label>
 						    			<p:datePicker style="width: 100%;margin-left: 20px;" id="inici" value="#{procedimentController.caducitat}" locale="es" appendTo="@(body)" class="ui-g-8" 
 						    			pattern="yyyy-MM-dd" validatorMessage="#{messages['validate.formatoFecha']}"></p:datePicker>
-								    </div>	
+								    </div>-->
 								    
 							    </div>
 							    
 							    <div class="ui-g-12">
 							        
-								    <div class="ui-g-6 item_1">
+								    <!--<div class="ui-g-6 item_1">
 								    	<label class="ui-g-4">#{messages['nuevoprocediment.Publicacio']}</label>
 						    			<p:datePicker style="width: 100%;margin-left: 20px;" id="publicacio" value="#{procedimentController.publicacio}" locale="es" appendTo="@(body)" class="ui-g-8" 
 						    			pattern="yyyy-MM-dd" validatorMessage="#{messages['validate.formatoFecha']}"></p:datePicker>
-								    </div>				
+								    </div>-->
 								    
-								    <div class="ui-g-5 item_1">
 								    	<label class="ui-g-4">#{messages['nuevoprocediment.Observacions']}</label>
 						    			<p:inputTextarea style="border:1px solid #333!important; width:100%; margin-left: 30px;" id="observacion" value="#{procedimentController.observacions}" class="ui-g-8"
 						    				validatorMessage="#{messages['nuevoprocediment.validate.observacions']}"  autoResize="false">
 						    				<f:validateLength minimum="0" maximum="4000" />
 						    			</p:inputTextarea >				    			
-								    </div>
+
 							    </div> 
 						    </p:tab>
 						    <p:tab title="#{messages['nuevoprocediment.Normatives']}">
@@ -285,33 +285,28 @@
 										</p:pickList>
 								    </div>
 						    </p:tab>
-						    <p:tab title="#{messages['nuevoprocediment.PublicObjectiu']}">
+						    <!--<p:tab title="#{messages['nuevoprocediment.PublicObjectiu']}">
 						    	<div class="ui-g-12">
-							    	<!-- <label class="ui-g-2">Public Objectiu</label>-->
-									<p:pickList class="ui-g-12 relacionarseries"  id="ListaPublic" value="#{procedimentController.tipusPublicRelacionada}" var="publi"  converter="tipusPublicConverter" 
+									<p:pickList class="ui-g-12 relacionarseries"  id="ListaPublic" value="#{procedimentController.tipusPublicRelacionada}" var="publi"  converter="tipusPublicConverter"
 												itemValue="#{publi}" itemLabel="#{publi.nom}" showSourceFilter="true" showTargetFilter="true" filterMatchMode="contains" showCheckbox="true">
 										    <p:column style="width:100%;">
 					            				<h:outputText value="#{publi.nom}" />
 					        				</p:column>
 									</p:pickList>
 							    </div>
-						    </p:tab>
-						    <p:tab title="#{messages['nuevoprocediment.Materies']}">
+						    </p:tab>-->
+						    <!--<p:tab title="#{messages['nuevoprocediment.Materies']}">
 						    	<div class="ui-g-12">
-							    	<!-- <label class="ui-g-2">Materias</label>-->
-									<p:pickList class="ui-g-12 relacionarseries" id="listaMaterias" value="#{procedimentController.materiaRelacionada}" var="mate"  converter="materiaRelacionadaConverter" 
+									<p:pickList class="ui-g-12 relacionarseries" id="listaMaterias" value="#{procedimentController.materiaRelacionada}" var="mate"  converter="materiaRelacionadaConverter"
 												itemValue="#{mate}" itemLabel="#{mate.nom}" showSourceFilter="true" showTargetFilter="true" filterMatchMode="contains" showCheckbox="true">
 										    <p:column style="width:100%;">
 					            				<h:outputText value="#{mate.nom}" />
 					        				</p:column>
 									</p:pickList>
 							    </div>
-						    </p:tab>
+						    </p:tab>-->
 						    <p:tab title="#{messages['nuevoprocediment.Tipusdocumentals']}">
 						    	<div class="ui-g-12 ">
-							   
-							    	
-									
 									<div class="ui-g-12 item_1">
 					    				<label class="ui-g-2">#{messages['nuevoprocediment.Tipusdocumental']}:</label>
 					    				<p:selectOneMenu id="selectTipoDocumental" value="#{procedimentController.selectedTipoDocumental}" filter="true" filterMatchMode="contains">
@@ -344,10 +339,6 @@
 									    			<p:selectBooleanCheckbox style="margin: 0 10px;" id="obligatori" value="#{tdp.obligatori}"/>				    			
 												</div>
 											    <div class="ui-g-4" style="display: flex; align-items:center;">
-											    	<label class="ui-g-4">#{messages['nuevoprocediment.Recapitulatiu']}</label>
-									    			<p:selectBooleanCheckbox style="margin: 0 10px;" id="recap" value="#{tdp.recapitulatiu}"/>				    			
-											    </div>	
-											    <div class="ui-g-4" style="display: flex; align-items:center;">
 											    	<label class="ui-g-4">#{messages['nuevoprocediment.Multiple']}</label>
 									    			<p:selectBooleanCheckbox style="margin: 0 10px;" id="multiple" value="#{tdp.multiple}"/>
 											    </div>
@@ -357,7 +348,7 @@
 									
 							    </div>
 						    </p:tab>
-						    <p:tab title="#{messages['nuevoprocediment.Relacions']}">
+						    <!--<p:tab title="#{messages['nuevoprocediment.Relacions']}">
 				    			<div class="ui-g-12">
 					    	
 								    <div class="ui-g-6 item_1" style="display: flex; align-items:center;">
@@ -383,7 +374,7 @@
 									<div class="ui-g-6 item_1">
 								    	<label class="ui-g-4">#{messages['nuevoprocediment.Familiaprocediment']}</label>		    			
 							        	<p:selectOneMenu id="familiaprocediment" value="#{procedimentController.familiaprocediment}" label="familia" converter="FamiliaConverter">
-							        		<f:selectItem itemLabel="-- #{messages['selecciona']} #{messages['nuevoprocediment.Familiaprocediment']} -- " itemValue="#{null}" noSelectionOption="true"/>
+							        		<f:selectItem itemLabel="- #{messages['selecciona']} #{messages['nuevoprocediment.Familiaprocediment']} - " itemValue="#{null}" noSelectionOption="true"/>
 								            <f:selectItems value="#{procedimentController.listaFamiliaprocediment}"  var="n" itemLabel="#{n.nom}"  itemValue="#{n}"/>
 								        </p:selectOneMenu>
 								    </div>
@@ -392,7 +383,7 @@
 								    	<label class="ui-g-4">#{messages['nuevoprocediment.Aplicacio']}</label>		    			
 							        	<p:selectOneMenu id="aplicacio" value="#{procedimentController.aplicacio}" label="Serie" converter="AplicacioConverter"
 								                              panelStyle="width:450px" filter="true" filterMatchMode="contains">
-								            <f:selectItem itemLabel="-- #{messages['selecciona']} #{messages['nuevoprocediment.Aplicacio']} -- " itemValue="#{null}" noSelectionOption="true"/>
+								            <f:selectItem itemLabel="- #{messages['selecciona']} #{messages['nuevoprocediment.Aplicacio']} - " itemValue="#{null}" noSelectionOption="true"/>
 								            <f:selectItems value="#{procedimentController.listaAplicacio}"  var="n" itemLabel="#{n.nom}"  itemValue="#{n}"/>
 								        </p:selectOneMenu>
 								    </div>
@@ -404,12 +395,12 @@
 							    	<div class="ui-g-6 item_1">
 								    	<label class="ui-g-4">#{messages['nuevoprocediment.NivelElectronic']}</label>		    			
 							        	<p:selectOneMenu id="nivelelectronic" value="#{procedimentController.nivellelectronic}" label="nivel" converter="NivelConverter">
-							        		<f:selectItem itemLabel="-- #{messages['selecciona']} #{messages['nuevoprocediment.NivelElectronic']} -- " itemValue="#{null}" noSelectionOption="true"/>
+							        		<f:selectItem itemLabel="- #{messages['selecciona']} #{messages['nuevoprocediment.NivelElectronic']} - " itemValue="#{null}" noSelectionOption="true"/>
 								            <f:selectItems value="#{procedimentController.listaNivellelectronic}"  var="n" itemLabel="#{n.nom}"  itemValue="#{n}"/>
 								        </p:selectOneMenu>
 								    </div>							    
 								</div>		
-							</p:tab>	    	
+							</p:tab>-->
 				    	</p:tabView>
 
 					    <div class="ui-g-12 button_new" align="justify">

@@ -3,9 +3,9 @@ package es.caib.archium.ejb.service;
 import javax.ejb.Local;
 
 import es.caib.archium.persistence.dao.DAO;
-import es.caib.archium.persistence.model.Valorsecundari;
+import es.caib.archium.persistence.model.ValorSecundari;
 
 @Local
-public interface ValorSecundariService extends DAO<Valorsecundari, Long> {
+public interface ValorSecundariService extends DAO<ValorSecundari, Long> {
 
 }

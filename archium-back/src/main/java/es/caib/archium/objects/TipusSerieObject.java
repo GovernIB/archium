@@ -2,7 +2,7 @@ package es.caib.archium.objects;
 
 import java.util.Objects;
 
-import es.caib.archium.persistence.model.Tipusserie;
+import es.caib.archium.persistence.model.TipusSerie;
 
 public class TipusSerieObject {
 
@@ -17,7 +17,7 @@ public class TipusSerieObject {
 		this.nomCas = nomCas;
 	}
 	
-	public TipusSerieObject (Tipusserie dbTipusserie) {
+	public TipusSerieObject (TipusSerie dbTipusserie) {
 		if(dbTipusserie!=null) {
 			this.id = dbTipusserie.getId();
 			this.nom = dbTipusserie.getNom();
@@ -44,8 +44,8 @@ public class TipusSerieObject {
 		this.nomCas = nomCas;
 	}
 	
-	public Tipusserie toDbObject() {
-		Tipusserie db = new Tipusserie();
+	public TipusSerie toDbObject() {
+		TipusSerie db = new TipusSerie();
 		db.setId(id);
 		db.setNom(nom);
 		db.setNomcas(nomCas);

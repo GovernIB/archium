@@ -1,7 +1,16 @@
 package es.caib.archium.persistence.model;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.NamedQuery;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
 import java.io.Serializable;
-import javax.persistence.*;
+import java.util.Objects;
 
 
 /**
@@ -22,7 +31,7 @@ public class Serierelacionada implements Serializable {
 	//bi-directional many-to-one association to Serieargen
 	@ManyToOne
 	@JoinColumn(name="SERIEARGEN_RELACIONADA")
-	private Serieargen achSerieargen;
+	private SerieArgen achSerieargen;
 
 	//bi-directional many-to-one association to Seriedocumental
 	@ManyToOne
@@ -33,6 +42,10 @@ public class Serierelacionada implements Serializable {
 	@ManyToOne
 	@JoinColumn(name="SERIE_RELACIONADA")
 	private Seriedocumental achSeriedocumental2;
+
+	@ManyToOne
+	@JoinColumn(name="TIPUSRELACIO_ID")
+	private TipusRelacioSerie tipusRelacioSerie;
 
 	public Serierelacionada() {
 	}
@@ -45,11 +58,11 @@ public class Serierelacionada implements Serializable {
 		this.id = id;
 	}
 
-	public Serieargen getAchSerieargen() {
+	public SerieArgen getAchSerieargen() {
 		return this.achSerieargen;
 	}
 
-	public void setAchSerieargen(Serieargen achSerieargen) {
+	public void setAchSerieargen(SerieArgen achSerieargen) {
 		this.achSerieargen = achSerieargen;
 	}
 
@@ -68,5 +81,25 @@ public class Serierelacionada implements Serializable {
 	public void setAchSeriedocumental2(Seriedocumental achSeriedocumental2) {
 		this.achSeriedocumental2 = achSeriedocumental2;
 	}
-	
+
+	public TipusRelacioSerie getTipusRelacioSerie() {
+		return tipusRelacioSerie;
+	}
+
+	public void setTipusRelacioSerie(TipusRelacioSerie tipusRelacioSerie) {
+		this.tipusRelacioSerie = tipusRelacioSerie;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		Serierelacionada that = (Serierelacionada) o;
+		return Objects.equals(achSerieargen, that.achSerieargen) && achSeriedocumental1.equals(that.achSeriedocumental1) && Objects.equals(achSeriedocumental2, that.achSeriedocumental2) && tipusRelacioSerie.equals(that.tipusRelacioSerie);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(achSerieargen, achSeriedocumental1, achSeriedocumental2, tipusRelacioSerie);
+	}
 }

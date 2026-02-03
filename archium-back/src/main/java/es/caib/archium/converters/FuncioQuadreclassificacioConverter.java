@@ -1,5 +1,8 @@
 package es.caib.archium.converters;
 
+import es.caib.archium.objects.QuadreObject;
+import es.caib.archium.services.QuadreFrontService;
+
 import javax.faces.application.FacesMessage;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
@@ -8,52 +11,33 @@ import javax.faces.convert.ConverterException;
 import javax.faces.convert.FacesConverter;
 import javax.inject.Inject;
 
-import es.caib.archium.controllers.FuncionesController;
-import es.caib.archium.ejb.service.QuadreClassificacioService;
-import es.caib.archium.objects.QuadreObject;
-import es.caib.archium.persistence.model.Quadreclassificacio;
+@FacesConverter(value = "FuncioQuadreclassificacioConverter", managed = true)
+public class FuncioQuadreclassificacioConverter implements Converter<QuadreObject> {
 
-@FacesConverter("FuncioQuadreclassificacioConverter")
-public class FuncioQuadreclassificacioConverter implements Converter {
-	
+    @Inject
+    private QuadreFrontService quadreFrontService;
+
     @Override
-    public Object getAsObject(FacesContext context, UIComponent component, String newValue) {
-    	if ((null == newValue) || (newValue.trim().isEmpty())) {
+    public QuadreObject getAsObject(FacesContext context, UIComponent component, String newValue) {
+        if ((null == newValue) || (newValue.trim().isEmpty())) {
             return null;
         }
-    	
+
         try {
             final Long quadreId = Long.valueOf(newValue);
-            
-            FuncionesController data = context.getApplication().evaluateExpressionGet(context, "#{funciones}", FuncionesController.class);
-            for(QuadreObject quadre : data.getListaCuadrosClasificacion())
-            {
-                if(quadre.getId().equals(quadreId)) {
-                	return quadre;
-                }
-            }
-			
-        } catch (final NumberFormatException ex) {
-            throw new ConverterException(ex);
-        } catch(final Exception e) {
-        	throw new ConverterException(e);
+            return quadreFrontService.getQuadreById(quadreId);
+        } catch (final Exception e) {
+            throw new ConverterException(new FacesMessage(String.format("Cannot convert %s to QuadreObject", newValue)), e);
         }
-
-    	return null;
     }
 
     @Override
-    public String getAsString(FacesContext context, UIComponent component, Object object) {
+    public String getAsString(FacesContext context, UIComponent component, QuadreObject quadre) {
 
-    	if (object == null) {
+        if (quadre == null) {
             return "";
         }
-        if (object instanceof QuadreObject) {
-        	QuadreObject quadre= (QuadreObject) object;
-            String name = quadre.getNom();
-            return String.valueOf(quadre.getId());
-        } else {
-            throw new ConverterException(new FacesMessage(object + " is not a valid quadre"));
-        }
+
+        return String.valueOf(quadre.getId());
     }
 }

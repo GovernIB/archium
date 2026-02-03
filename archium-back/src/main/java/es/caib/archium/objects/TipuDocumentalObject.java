@@ -1,9 +1,9 @@
 package es.caib.archium.objects;
 
+import es.caib.archium.persistence.model.TipusDocumental;
+
 import java.util.Date;
 import java.util.Objects;
-
-import es.caib.archium.persistence.model.Tipusdocumental;
 
 public class TipuDocumentalObject {
 
@@ -15,6 +15,7 @@ public class TipuDocumentalObject {
 	private TipusntiObject 	tipusnti;
 	private String 			definicio;
 	private String 			definicioCas;
+	private String 			observacions;
 	private Date 			inici;
 	private Date 			modificacion;
 	private String 			estat;
@@ -24,18 +25,18 @@ public class TipuDocumentalObject {
 
 	public TipuDocumentalObject() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 
-	public TipuDocumentalObject(Tipusdocumental i) {
+	public TipuDocumentalObject(TipusDocumental i) {
 		this.id							= i.getId();
 		this.codi						= i.getCodi();
 		this.nom						= i.getNom();
 		this.nomCas						= i.getNomcas();
-		this.quadreTipusDocumental		= new QuadreDocumentalObject(i.getAchQuadretipusdocumental());
-		this.tipusnti					= new TipusntiObject(i.getAchTipusnti());
+		this.quadreTipusDocumental		= new QuadreDocumentalObject(i.getQuadreTipusDocumental());
+		this.tipusnti					= new TipusntiObject(i.getTipusNti());
 	  	this.definicio					= i.getDefinicio();
-		this.definicioCas				= i.getDefiniciocas() ;
+		this.definicioCas				= i.getDefiniciocas();
+		//this.observacions				= i.getObservacions();
 		this.inici						= i.getInici();
 		this.modificacion				= i.getModificacio();
 		this.estat						= i.getEstat();
@@ -106,6 +107,14 @@ public class TipuDocumentalObject {
 		this.definicioCas = definicioCas;
 	}
 
+	public String getObservacions() {
+		return observacions;
+	}
+
+	public void setObservacions(String observacions) {
+		this.observacions = observacions;
+	}
+
 	public Date getInici() {
 		return inici;
 	}
@@ -155,6 +164,35 @@ public class TipuDocumentalObject {
 		return Objects.equals(id, other.id);
 	}
 
+	/**
+	 * Convierte este DTO a entidad
+	 * @return Entidad TipusDocumental
+	 */
+	public TipusDocumental toDbObject() {
+		TipusDocumental entity = new TipusDocumental();
+		entity.setId(this.id);
+		entity.setCodi(this.codi);
+		entity.setNom(this.nom);
+		entity.setNomcas(this.nomCas);
+		entity.setDefinicio(this.definicio);
+		entity.setDefiniciocas(this.definicioCas);
+		//entity.setObservacions(this.observacions);
+		entity.setEstat(this.estat);
+		entity.setInici(this.inici);
+		entity.setModificacio(this.modificacion);
+		entity.setFi(this.fi);
+
+		// Relaciones
+		if (this.quadreTipusDocumental != null) {
+			entity.setQuadreTipusDocumental(this.quadreTipusDocumental.toQuadreTipusDocumentalDbObject());
+		}
+		if (this.tipusnti != null) {
+			//entity.setTipusNti(this.tipusnti.toDbObject());
+		}
+
+		return entity;
+	}
+
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
@@ -174,6 +212,8 @@ public class TipuDocumentalObject {
 		builder.append(definicio);
 		builder.append(", definicioCas=");
 		builder.append(definicioCas);
+		builder.append(", observacions=");
+		builder.append(observacions);
 		builder.append(", inici=");
 		builder.append(inici);
 		builder.append(", modificacion=");
@@ -186,6 +226,6 @@ public class TipuDocumentalObject {
 		return builder.toString();
 	}
 
-	
+
 
 }

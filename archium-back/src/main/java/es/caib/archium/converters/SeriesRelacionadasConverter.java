@@ -1,17 +1,15 @@
 package es.caib.archium.converters;
 
-import java.util.List;
+import es.caib.archium.objects.SerieDocumentalObject;
+import org.primefaces.component.picklist.PickList;
+import org.primefaces.model.DualListModel;
 
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.ConverterException;
 import javax.faces.convert.FacesConverter;
-
-import org.primefaces.component.picklist.PickList;
-import org.primefaces.model.DualListModel;
-
-import es.caib.archium.objects.SerieDocumentalObject;
+import java.util.List;
 
 @FacesConverter("seriesRelacionadasConverter")
 public class SeriesRelacionadasConverter implements Converter<SerieDocumentalObject>{
@@ -43,9 +41,7 @@ public class SeriesRelacionadasConverter implements Converter<SerieDocumentalObj
 				resource = getObjectFromList(dualList.getTarget(), Long.valueOf(value));
 			}
 			return resource;
-		} catch (ClassCastException cce) {
-			throw new ConverterException();
-		} catch (NumberFormatException nfe) {
+		} catch (ClassCastException | NumberFormatException cce) {
 			throw new ConverterException();
 		}
 	}

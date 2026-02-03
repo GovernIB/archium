@@ -4,7 +4,7 @@
     <parent>
         <groupId>es.caib.archium</groupId>
         <artifactId>archium</artifactId>
-        <version>1.0.0</version>
+        <version>1.0.6</version>
     </parent>
 
     <artifactId>archium-ear</artifactId>
@@ -21,25 +21,48 @@
         <!-- Mòduls que van dins l'application.xml -->
         <dependency>
             <groupId>es.caib.archium</groupId>
-            <artifactId>archium-ejb</artifactId>
-            <version>1.0.0</version>
+            <artifactId>archium-commons</artifactId>
+            <version>${project.version}</version>
             <type>ejb</type>
         </dependency>
-        <!-- FRONT START -->
+
+        <dependency>
+            <groupId>es.caib.archium</groupId>
+            <artifactId>archium-ejb</artifactId>
+            <version>${project.version}</version>
+            <type>ejb</type>
+        </dependency>
+        <!-- BACK START -->
         <dependency>
             <groupId>es.caib.archium</groupId>
             <artifactId>archium-back</artifactId>
-            <version>1.0.0</version>
+            <version>${project.version}</version>
+            <type>war</type>
+        </dependency>
+        <!-- BACK END -->
+        <!-- FRONT START -->
+        <dependency>
+            <groupId>es.caib.archium</groupId>
+            <artifactId>archium-front</artifactId>
+            <version>${project.version}</version>
             <type>war</type>
         </dependency>
         <!-- FRONT END -->
+        <!-- API REST START -->
+        <dependency>
+            <groupId>es.caib.archium</groupId>
+            <artifactId>archium-api-externa</artifactId>
+            <version>${project.version}</version>
+            <type>war</type>
+        </dependency>
+        <!-- API REST END -->
         
         
         <!-- Mòduls que van dins el lib/ -->
         <dependency>
             <groupId>es.caib.archium</groupId>
             <artifactId>archium-persistence</artifactId>
-            <version>1.0.0</version>
+            <version>${project.version}</version>
         </dependency>
         <!--
         Tenir en compte a l'hora de incloure dependències només si és imprescindible i no està ja dins
@@ -66,7 +89,7 @@
                     <defaultLibBundleDir>lib</defaultLibBundleDir>
                     <includeLibInApplicationXml>false</includeLibInApplicationXml>
                     <!--suppress UnresolvedMavenProperty --><!-- Nom mòduls d'acord amb punt 4.2 de l'Estàndard CAIB -->
-                    <outputFileNameMapping>@{artifactId}@-@{version}@.@{extension}@</outputFileNameMapping>
+                    <outputFileNameMapping>@{artifactId}@.@{extension}@</outputFileNameMapping>
                     <version>8</version>
                     <archive>
                         <manifestEntries>
@@ -80,13 +103,31 @@
                             <groupId>es.caib.archium</groupId>
                             <artifactId>archium-ejb</artifactId>
                         </ejbModule>
-                        <!-- FRONT START -->
+                        <ejbModule>
+                            <groupId>es.caib.archium</groupId>
+                            <artifactId>archium-commons</artifactId>
+                        </ejbModule>
+                        <!-- BACK START -->
                         <webModule>
                             <groupId>es.caib.archium</groupId>
                             <artifactId>archium-back</artifactId>
                             <contextRoot>/archiumback</contextRoot>
                         </webModule>
-                        <!-- FRONT END -->
+                        <!-- BACK END -->
+                        <!-- BACK START -->
+                        <webModule>
+                            <groupId>es.caib.archium</groupId>
+                            <artifactId>archium-front</artifactId>
+                            <contextRoot>/archiumfront</contextRoot>
+                        </webModule>
+                        <!-- BACK END -->
+                        <!-- API REST START -->
+                        <webModule>
+                            <groupId>es.caib.archium</groupId>
+                            <artifactId>archium-api-externa</artifactId>
+                            <contextRoot>/archiumapi/externa</contextRoot>
+                        </webModule>
+                        <!-- API REST END -->
                         
                     </modules>
                 </configuration>

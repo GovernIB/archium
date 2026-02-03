@@ -1,8 +1,23 @@
 package es.caib.archium.persistence.model;
 
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
+import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
+import javax.persistence.PreRemove;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
 import java.io.Serializable;
-import javax.persistence.*;
 import java.util.List;
+import java.util.Set;
 
 
 /**
@@ -39,6 +54,10 @@ public class Seriedocumental implements Serializable {
 	
 	private String estat;
 
+	// Indica si la sèrie documental s'ha transferit al Sistema de Apoyo a la Tramitació
+	@Column(name="ENVIATSAT")
+	private Boolean enviatSAT;
+
 	//bi-directional many-to-one association to AplicacioSerie
 	@OneToMany(mappedBy="achSeriedocumental",
 			cascade = CascadeType.ALL,
@@ -66,6 +85,12 @@ public class Seriedocumental implements Serializable {
 	@OneToMany(mappedBy="achSeriedocumental")
 	private List<Procediment> achProcediments;
 
+	//bi-directional many-to-one association to ProcedimentSerie
+	@OneToMany(mappedBy="achSerieDocumental",
+			cascade = CascadeType.ALL,
+			orphanRemoval = true)
+	private List<ProcedimentSerie> achProcedimentsComuns;
+
 	//bi-directional many-to-one association to Catalegsery
 	@ManyToOne
 	@JoinColumn(name="CATALEGSERIES_ID")
@@ -87,24 +112,24 @@ public class Seriedocumental implements Serializable {
 			@JoinColumn(name="SERIEARGEN_ID")
 			}
 		)
-	private List<Serieargen> achSerieargens;
+	private List<SerieArgen> achSerieargens;
 
 	//bi-directional many-to-one association to Tipusserie
 	@ManyToOne
 	@JoinColumn(name="TIPUSSERIE_ID")
-	private Tipusserie achTipusserie;
+	private TipusSerie achTipusserie;
 
 	//bi-directional many-to-one association to Serierelacionada
 	@OneToMany(mappedBy="achSeriedocumental1",
 			cascade = CascadeType.ALL,
 	        orphanRemoval = true)
-	private List<Serierelacionada> achSerierelacionadas1;
+	private Set<Serierelacionada> achSerierelacionadas1;
 
 	//bi-directional many-to-one association to Serierelacionada
 	@OneToMany(mappedBy="achSeriedocumental2",
 			cascade = CascadeType.ALL,
 	        orphanRemoval = true)
-	private List<Serierelacionada> achSerierelacionadas2;
+	private Set<Serierelacionada> achSerierelacionadas2;
 
 	//bi-directional many-to-one association to Transferencia
 	@OneToMany(mappedBy="achSeriedocumental")
@@ -115,6 +140,16 @@ public class Seriedocumental implements Serializable {
 			cascade = CascadeType.ALL,
 	        orphanRemoval = true)
 	private List<Valoracio> achValoracios;
+
+	//bi-directional many-to-one association to TipusdocumentSerie
+	@OneToMany(mappedBy="achSeriedocumental",
+			cascade = CascadeType.ALL,
+			orphanRemoval = true)
+	private Set<TipusdocumentSerie> achTipusdocumentSeries;
+
+	@ManyToOne
+	@JoinColumn(name="ORGANCOLLEGIAT_ID")
+	private OrganCollegiat achOrganCollegiat;
 
 	public Seriedocumental() {
 	}
@@ -286,6 +321,20 @@ public class Seriedocumental implements Serializable {
 		return achNormativaSeriedocumental;
 	}
 
+	public ProcedimentSerie addAchProcedimentComu(ProcedimentSerie achProcedimentSerie) {
+		getAchProcedimentsComuns().add(achProcedimentSerie);
+		achProcedimentSerie.setAchSerieDocumental(this);
+
+		return achProcedimentSerie;
+	}
+
+	public ProcedimentSerie removeAchProcedimentComu(ProcedimentSerie achProcedimentSerie) {
+		getAchProcedimentsComuns().remove(achProcedimentSerie);
+		achProcedimentSerie.setAchSerieDocumental(null);
+
+		return achProcedimentSerie;
+	}
+
 	public List<Procediment> getAchProcediments() {
 		return this.achProcediments;
 	}
@@ -324,27 +373,35 @@ public class Seriedocumental implements Serializable {
 		this.achFuncio = achFuncio;
 	}
 
-	public List<Serieargen> getAchSerieargens() {
+	public List<SerieArgen> getAchSerieargens() {
 		return this.achSerieargens;
 	}
 
-	public void setAchSerieargens(List<Serieargen> achSerieargens) {
+	public void setAchSerieargens(List<SerieArgen> achSerieargens) {
 		this.achSerieargens = achSerieargens;
 	}
 
-	public Tipusserie getAchTipusserie() {
+	public List<ProcedimentSerie> getAchProcedimentsComuns() {
+		return achProcedimentsComuns;
+	}
+
+	public void setAchProcedimentsComuns(List<ProcedimentSerie> achProcedimentsComuns) {
+		this.achProcedimentsComuns = achProcedimentsComuns;
+	}
+
+	public TipusSerie getAchTipusserie() {
 		return this.achTipusserie;
 	}
 
-	public void setAchTipusserie(Tipusserie achTipusserie) {
+	public void setAchTipusserie(TipusSerie achTipusserie) {
 		this.achTipusserie = achTipusserie;
 	}
 
-	public List<Serierelacionada> getAchSerierelacionadas1() {
+	public Set<Serierelacionada> getAchSerierelacionadas1() {
 		return this.achSerierelacionadas1;
 	}
 
-	public void setAchSerierelacionadas1(List<Serierelacionada> achSerierelacionadas1) {
+	public void setAchSerierelacionadas1(Set<Serierelacionada> achSerierelacionadas1) {
 		this.achSerierelacionadas1 = achSerierelacionadas1;
 	}
 
@@ -362,11 +419,11 @@ public class Seriedocumental implements Serializable {
 		return achSerierelacionadas1;
 	}
 
-	public List<Serierelacionada> getAchSerierelacionadas2() {
+	public Set<Serierelacionada> getAchSerierelacionadas2() {
 		return this.achSerierelacionadas2;
 	}
 
-	public void setAchSerierelacionadas2(List<Serierelacionada> achSerierelacionadas2) {
+	public void setAchSerierelacionadas2(Set<Serierelacionada> achSerierelacionadas2) {
 		this.achSerierelacionadas2 = achSerierelacionadas2;
 	}
 
@@ -435,7 +492,54 @@ public class Seriedocumental implements Serializable {
 	public void setEstat(String estat) {
 		this.estat = estat;
 	}
-	
-	
+
+	public Boolean getEnviatSAT() {
+		return enviatSAT;
+	}
+
+	public void setEnviatSAT(Boolean enviatSAT) {
+		this.enviatSAT = enviatSAT;
+	}
+
+	public Set<TipusdocumentSerie> getAchTipusdocumentSeries() {
+		return achTipusdocumentSeries;
+	}
+
+	public void setAchTipusdocumentSeries(Set<TipusdocumentSerie> achTipusdocumentSeries) {
+		this.achTipusdocumentSeries = achTipusdocumentSeries;
+	}
+
+	public TipusdocumentSerie addAchTipusdocumentSerie(TipusdocumentSerie achTipusdocumentSerie) {
+		getAchTipusdocumentSeries().add(achTipusdocumentSerie);
+		achTipusdocumentSerie.setAchSeriedocumental(this);
+
+		return achTipusdocumentSerie;
+	}
+
+	public TipusdocumentSerie removeAchTipusdocumentSerie(TipusdocumentSerie achTipusdocumentSerie) {
+		getAchTipusdocumentSeries().remove(achTipusdocumentSerie);
+		achTipusdocumentSerie.setAchSeriedocumental(null);
+
+		return achTipusdocumentSerie;
+	}
+
+	public OrganCollegiat getAchOrganCollegiat() {
+		return achOrganCollegiat;
+	}
+
+	public void setAchOrganCollegiat(OrganCollegiat achOrganCollegiat) {
+		this.achOrganCollegiat = achOrganCollegiat;
+	}
+
+	@Override
+	public String toString() {
+		return "Seriedocumental [id=" +
+				id +
+				", codi=" +
+				codi +
+				", nom=" +
+				nom +
+				"]";
+	}
 
 }

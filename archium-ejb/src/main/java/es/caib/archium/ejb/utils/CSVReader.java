@@ -2,7 +2,6 @@ package es.caib.archium.ejb.utils;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -20,7 +19,7 @@ public class CSVReader {
 
 		try {
 			InputStream input = CSVReader.class.getResourceAsStream(filePath);
-			br = new BufferedReader(new InputStreamReader(input, StandardCharsets.ISO_8859_1));
+			br = new BufferedReader(new InputStreamReader(input, StandardCharsets.UTF_8));
 		    while ((line = br.readLine()) != null) {                
 		        String[] lineData = line.split(separator);
 		        data.add(lineData);

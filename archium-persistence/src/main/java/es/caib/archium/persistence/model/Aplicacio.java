@@ -1,7 +1,17 @@
 package es.caib.archium.persistence.model;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
-import javax.persistence.*;
 import java.util.Date;
 import java.util.List;
 
@@ -12,6 +22,7 @@ import java.util.List;
  */
 @Entity
 @Table(name="ACH_APLICACIO")
+@TaulaMestra(excludedFields = {"id", "achAplicacioSeries","achProcediments"})
 @NamedQuery(name="Aplicacio.findAll", query="SELECT a FROM Aplicacio a")
 public class Aplicacio implements Serializable {
 	private static final long serialVersionUID = 1L;
@@ -21,29 +32,28 @@ public class Aplicacio implements Serializable {
 	@GeneratedValue(strategy=GenerationType.SEQUENCE, generator="ACH_APLICACIO_ID_GENERATOR")
 	private Long id;
 
+	@NotNull
+	private String nom;
+
+	@NotNull
 	private String estat;
+
+	@Temporal(TemporalType.DATE)
+	@NotNull
+	private Date inici;
 
 	@Temporal(TemporalType.DATE)
 	private Date fi;
 
-	@Temporal(TemporalType.DATE)
-	private Date inici;
-
-	private String nom;
-
+	@NotNull
 	private String perfil;
 
 	private String uridev;
-
 	private String uripro;
 
 	//bi-directional many-to-one association to AplicacioSerie
 	@OneToMany(mappedBy="achAplicacio")
 	private List<AplicacioSerie> achAplicacioSeries;
-
-	//bi-directional many-to-one association to Procediment
-	@OneToMany(mappedBy="achAplicacio")
-	private List<Procediment> achProcediments;
 
 	public Aplicacio() {
 	}
@@ -56,30 +66,7 @@ public class Aplicacio implements Serializable {
 		this.id = id;
 	}
 
-	public String getEstat() {
-		return this.estat;
-	}
-
-	public void setEstat(String estat) {
-		this.estat = estat;
-	}
-
-	public Date getFi() {
-		return this.fi;
-	}
-
-	public void setFi(Date fi) {
-		this.fi = fi;
-	}
-
-	public Date getInici() {
-		return this.inici;
-	}
-
-	public void setInici(Date inici) {
-		this.inici = inici;
-	}
-
+	@OrdreVisual(ordre = 0)
 	public String getNom() {
 		return this.nom;
 	}
@@ -88,6 +75,34 @@ public class Aplicacio implements Serializable {
 		this.nom = nom;
 	}
 
+	@OrdreVisual(ordre = 1)
+	public String getEstat() {
+		return this.estat;
+	}
+
+	public void setEstat(String estat) {
+		this.estat = estat;
+	}
+
+	@OrdreVisual(ordre = 3)
+	public Date getInici() {
+		return this.inici;
+	}
+
+	public void setInici(Date inici) {
+		this.inici = inici;
+	}
+
+	public Date getFi() {
+		return this.fi;
+	}
+
+	@OrdreVisual(ordre = 4)
+	public void setFi(Date fi) {
+		this.fi = fi;
+	}
+
+	@OrdreVisual(ordre = 2)
 	public String getPerfil() {
 		return this.perfil;
 	}
@@ -96,6 +111,7 @@ public class Aplicacio implements Serializable {
 		this.perfil = perfil;
 	}
 
+	@OrdreVisual(ordre = 5)
 	public String getUridev() {
 		return this.uridev;
 	}
@@ -104,6 +120,7 @@ public class Aplicacio implements Serializable {
 		this.uridev = uridev;
 	}
 
+	@OrdreVisual(ordre = 6)
 	public String getUripro() {
 		return this.uripro;
 	}
@@ -134,26 +151,5 @@ public class Aplicacio implements Serializable {
 		return achAplicacioSery;
 	}
 
-	public List<Procediment> getAchProcediments() {
-		return this.achProcediments;
-	}
-
-	public void setAchProcediments(List<Procediment> achProcediments) {
-		this.achProcediments = achProcediments;
-	}
-
-	public Procediment addAchProcediment(Procediment achProcediment) {
-		getAchProcediments().add(achProcediment);
-		achProcediment.setAchAplicacio(this);
-
-		return achProcediment;
-	}
-
-	public Procediment removeAchProcediment(Procediment achProcediment) {
-		getAchProcediments().remove(achProcediment);
-		achProcediment.setAchAplicacio(null);
-
-		return achProcediment;
-	}
-
+	// TODO OJO! Ninguna entidad contiene equal y hascode...puede suponer un problema a la hora de insertar registros que tengan referencias. También a la hora de búsquedas e inserción en colecciones...
 }

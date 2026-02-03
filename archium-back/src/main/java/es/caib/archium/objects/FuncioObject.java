@@ -6,7 +6,7 @@ import java.util.Objects;
 
 import es.caib.archium.persistence.model.Funcio;
 import es.caib.archium.persistence.model.Quadreclassificacio;
-import es.caib.archium.persistence.model.Tipusserie;
+import es.caib.archium.persistence.model.TipusSerie;
 
 public class FuncioObject {
 
@@ -191,7 +191,7 @@ public class FuncioObject {
 		this.numTabs = numTabs;
 	}
 
-	public Funcio toDbObject(Quadreclassificacio q, Funcio f, Tipusserie ts){
+	public Funcio toDbObject(Quadreclassificacio q, Funcio f, TipusSerie ts){
 		Funcio db = new Funcio();
 		db.setId(id);
 		db.setCodi(codi);

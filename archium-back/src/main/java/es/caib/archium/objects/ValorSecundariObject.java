@@ -2,10 +2,7 @@ package es.caib.archium.objects;
 
 import java.util.Objects;
 
-import es.caib.archium.persistence.model.Tipusacce;
-import es.caib.archium.persistence.model.Tipusdictamen;
-import es.caib.archium.persistence.model.Tipusvalor;
-import es.caib.archium.persistence.model.Valorsecundari;
+import es.caib.archium.persistence.model.ValorSecundari;
 
 public class ValorSecundariObject {
 
@@ -17,7 +14,6 @@ public class ValorSecundariObject {
 	
 	public ValorSecundariObject() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 	
 	
@@ -33,7 +29,7 @@ public class ValorSecundariObject {
 
 
 
-	public ValorSecundariObject (Valorsecundari dbValorsecundari) {
+	public ValorSecundariObject (ValorSecundari dbValorsecundari) {
 		if(dbValorsecundari!=null) {
 			this.id = dbValorsecundari.getId();
 			this.nom = dbValorsecundari.getNom();
@@ -105,8 +101,8 @@ public class ValorSecundariObject {
 
 
 
-	public Valorsecundari toDbObject() {
-		Valorsecundari db = new Valorsecundari();
+	public ValorSecundari toDbObject() {
+		ValorSecundari db = new ValorSecundari();
 		db.setId(id);
 		db.setNom(nom);
 		db.setNomcas(nomCas);

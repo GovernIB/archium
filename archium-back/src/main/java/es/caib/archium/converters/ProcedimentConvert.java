@@ -1,44 +1,41 @@
 package es.caib.archium.converters;
 
+import es.caib.archium.objects.ProcedimentObject;
+import es.caib.archium.services.ProcedimentFrontService;
+
 import javax.faces.application.FacesMessage;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.ConverterException;
 import javax.faces.convert.FacesConverter;
+import javax.inject.Inject;
 
-import es.caib.archium.controllers.ProcedimentController;
-import es.caib.archium.objects.ProcedimentObject;
+@FacesConverter(value = "ProcedimentConvert", managed = true)
+public class ProcedimentConvert implements Converter<ProcedimentObject> {
 
-@FacesConverter("ProcedimentConvert")
-public class ProcedimentConvert implements Converter {
-
-    @Override
-    public Object getAsObject(FacesContext context, UIComponent component, String newValue) {
-	    if(newValue == null)
-	    	return null;
-	    
-	    final Long id = Long.valueOf(newValue);
-	    ProcedimentController data = context.getApplication().evaluateExpressionGet(context, "#{procedimentController}", ProcedimentController.class);
-	    for(ProcedimentObject compLovDtgrid : data.getListaProcediment())
-	    {
-	    	if(compLovDtgrid.getId().equals(id))
-	    		return compLovDtgrid;
-	    }
-	    	throw new ConverterException(new FacesMessage(String.format("Cannot convert %s to ProcedimentObject", newValue)));
-	    }
+    @Inject
+    private ProcedimentFrontService procedimentFrontService;
 
     @Override
-    public String getAsString(FacesContext context, UIComponent component, Object object) {
-    	if (object == null) {
+    public ProcedimentObject getAsObject(FacesContext context, UIComponent component, String newValue) {
+        if (newValue == null) {
+            return null;
+        }
+
+        try {
+            final Long id = Long.valueOf(newValue);
+            return procedimentFrontService.findProcedimentById(id);
+        } catch (Exception e) {
+            throw new ConverterException(new FacesMessage(String.format("Cannot convert %s to ProcedimentObject", newValue)), e);
+        }
+    }
+
+    @Override
+    public String getAsString(FacesContext context, UIComponent component, ProcedimentObject procediment) {
+        if (procediment == null) {
             return "";
         }
-        if (object instanceof ProcedimentObject) {
-        	ProcedimentObject quadre= (ProcedimentObject) object;
-            Long name = quadre.getId();
-            return name.toString();
-        } else {
-            throw new ConverterException(new FacesMessage(object + " is not a valid Procediments"));
-        }
+        return procediment.getId().toString();
     }
 }

@@ -11,16 +11,22 @@ public class Document<T> implements Serializable, Comparable<Document<T>> {
     private String nom;
      
     private String type;
-    
+
+	private Boolean enviatSAT;
 
     private T object;
- 
-    public Document(long id, String codi, String nom, String type, T object) {
+
+	public Document(long id, String codi, String nom, String type, T object) {
+		this(id, codi, nom, type, null, object);
+	}
+
+    public Document(long id, String codi, String nom, String type, Boolean enviatSAT, T object) {
 		super();
 		this.id = id;
 		this.codi = codi;
 		this.nom = nom;
 		this.type = type;
+		this.enviatSAT = enviatSAT;
 		this.object = object;
 	}
 
@@ -67,6 +73,14 @@ public class Document<T> implements Serializable, Comparable<Document<T>> {
 
 	public void setObject(T object) {
 		this.object = object;
+	}
+
+	public Boolean getEnviatSAT() {
+		return enviatSAT;
+	}
+
+	public void setEnviatSAT(Boolean enviatSAT) {
+		this.enviatSAT = enviatSAT;
 	}
 
 	@Override

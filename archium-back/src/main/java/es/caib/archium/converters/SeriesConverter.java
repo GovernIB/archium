@@ -1,57 +1,42 @@
 package es.caib.archium.converters;
 
+import es.caib.archium.objects.SerieDocumentalObject;
+import es.caib.archium.services.SerieFrontService;
+
 import javax.faces.application.FacesMessage;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.ConverterException;
 import javax.faces.convert.FacesConverter;
+import javax.inject.Inject;
 
-import es.caib.archium.controllers.DictamenController;
-import es.caib.archium.objects.DictamenObject;
-import es.caib.archium.objects.SerieDocumentalObject;
+@FacesConverter(value="SeriesConverter", managed = true)
+public class SeriesConverter implements Converter<SerieDocumentalObject> {
 
-@FacesConverter("SeriesConverter")
-public class SeriesConverter implements Converter {
+	@Inject
+	private SerieFrontService serieFrontService;
 
     @Override
-    public Object getAsObject(FacesContext context, UIComponent component, String newValue) {
+    public SerieDocumentalObject getAsObject(FacesContext context, UIComponent component, String newValue) {
     	if ((null == newValue) || (newValue.trim().isEmpty())) {
             return null;
         }
-    	
-    	final Long id = Long.valueOf(newValue);
-    	
-    	try {    		
-    		DictamenController data = context.getApplication().evaluateExpressionGet(context, "#{dictamenController}", DictamenController.class);
-		    for(SerieDocumentalObject compLovDtgrid : data.getListaDocumental())
-		    {
-			    if(compLovDtgrid.getSerieId().equals(id))
-			    	return compLovDtgrid;
-		    }
-		    	throw new ConverterException(new FacesMessage(String.format("Cannot convert %s to SeriesObject", newValue)));
-    	
-	    } catch (final NumberFormatException ex) {
-	        // Throw again
-	        throw new ConverterException(ex);
-	    } catch(final Exception e) {
-	    	throw new ConverterException(e);
-	    }
+
+		try {
+			final Long id = Long.valueOf(newValue);
+			return serieFrontService.findById(id);
+		} catch (Exception e) {
+			throw new ConverterException(new FacesMessage(String.format("Cannot convert %s to SeriesObject", newValue)), e);
+		}
     }
 
     @Override
-    public String getAsString(FacesContext context, UIComponent component, Object object) {
-    	if (object == null) {
+    public String getAsString(FacesContext context, UIComponent component, SerieDocumentalObject serie) {
+    	if (serie == null) {
             return "";
         }
 
-        if (object instanceof SerieDocumentalObject) {
-        	SerieDocumentalObject quadre= (SerieDocumentalObject) object;
-            Long name = quadre.getSerieId();
-        	//Long name = quadre.getId();
-            return name.toString();
-        } else {
-            throw new ConverterException(new FacesMessage(object + " is not a valid serie documental"));
-        }
+        return serie.getSerieId().toString();
     }
 }

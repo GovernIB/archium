@@ -1,55 +1,46 @@
 package es.caib.archium.converters;
 
+import es.caib.archium.objects.SerieDocumentalObject;
+import es.caib.archium.services.SerieFrontService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javax.faces.application.FacesMessage;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.ConverterException;
 import javax.faces.convert.FacesConverter;
+import javax.inject.Inject;
 
-import es.caib.archium.controllers.ProcedimentController;
-import es.caib.archium.objects.NivellelectronicObject;
-import es.caib.archium.objects.SerieDocumentalObject;
+@FacesConverter(value="SerieDocumentalConverter", managed = true)
+public class SerieDocumentalConverter implements Converter<SerieDocumentalObject> {
 
-@FacesConverter("SerieDocumentalConverter")
-public class SerieDocumentalConverter implements Converter {
+    protected final Logger log = LoggerFactory.getLogger(this.getClass());
+
+    @Inject
+    private SerieFrontService serieFrontService;
 
     @Override
-    public Object getAsObject(FacesContext context, UIComponent component, String newValue) {
-    	if ((null == newValue) || (newValue.trim().isEmpty())) {
+    public SerieDocumentalObject getAsObject(FacesContext context, UIComponent component, String newValue) {
+        if ((null == newValue) || (newValue.trim().isEmpty())) {
             return null;
         }
-    	
-        try {
-            final Long funcioId = Long.valueOf(newValue);
-            ProcedimentController data = context.getApplication().evaluateExpressionGet(context, "#{procedimentController}", ProcedimentController.class);
-            for(SerieDocumentalObject funcio : data.getListaSerieDocumental())
-            {
-                if(funcio.getSerieId().equals(funcioId)) {
-                	return funcio;
-                }
-            }
-			
-        } catch (final NumberFormatException ex) {
-            throw new ConverterException(ex);
-        } catch(final Exception e) {
-        	throw new ConverterException(e);
-        }
 
-    	return null;
+        try {
+            final Long serieId = Long.valueOf(newValue);
+            return serieFrontService.findById(serieId);
+        } catch (final Exception ex) {
+            throw new ConverterException(new FacesMessage(String.format("Cannot convert %s to QuadreObject", newValue)), ex);
+        }
     }
 
     @Override
-    public String getAsString(FacesContext context, UIComponent component, Object object) {
+    public String getAsString(FacesContext context, UIComponent component, SerieDocumentalObject object) {
 
-    	if (object == null) {
+        if (object == null) {
             return "";
         }
-        if (object instanceof SerieDocumentalObject) {
-        	SerieDocumentalObject funcio = (SerieDocumentalObject) object;
-            return String.valueOf(funcio.getSerieId());
-        } else {
-            throw new ConverterException(new FacesMessage(object + " is not a valid Serie Documental"));
-        }
+        return String.valueOf(object.getSerieId());
     }
 }

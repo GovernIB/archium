@@ -28,7 +28,7 @@ public class LimitacioNormativaSerie implements Serializable {
 	@ManyToOne
 	@MapsId("causalimitacioId")
 	@JoinColumn(name="CAUSALIMITACIO_ID",insertable=false,updatable=false)
-	private Causalimitacio achCausalimitacio;
+	private CausaLimitacio achCausalimitacio;
 
 	//bi-directional many-to-one association to Normativa
 	@ManyToOne
@@ -69,11 +69,11 @@ public class LimitacioNormativaSerie implements Serializable {
 		this.inici = inici;
 	}
 
-	public Causalimitacio getAchCausalimitacio() {
+	public CausaLimitacio getAchCausalimitacio() {
 		return this.achCausalimitacio;
 	}
 
-	public void setAchCausalimitacio(Causalimitacio achCausalimitacio) {
+	public void setAchCausalimitacio(CausaLimitacio achCausalimitacio) {
 		this.achCausalimitacio = achCausalimitacio;
 	}
 

@@ -2,8 +2,7 @@ package es.caib.archium.objects;
 
 import java.util.Objects;
 
-import es.caib.archium.persistence.model.Causalimitacio;
-import es.caib.archium.persistence.model.Normativa;
+import es.caib.archium.persistence.model.CausaLimitacio;
 
 public class CausaLimitacioObject {
 	private Long id;
@@ -21,10 +20,9 @@ public class CausaLimitacioObject {
 
 	public CausaLimitacioObject() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 	
-	public CausaLimitacioObject(Causalimitacio dbCausaLimitacio) {
+	public CausaLimitacioObject(CausaLimitacio dbCausaLimitacio) {
 		if(dbCausaLimitacio!=null) {
 			this.id = dbCausaLimitacio.getId();
 			this.codi = dbCausaLimitacio.getCodi();
@@ -65,8 +63,8 @@ public class CausaLimitacioObject {
 		this.nomcas = nomcas;
 	}
 	
-	public Causalimitacio toDbObject() {
-		Causalimitacio db = new Causalimitacio();
+	public CausaLimitacio toDbObject() {
+		CausaLimitacio db = new CausaLimitacio();
 		db.setId(id);
 		db.setCodi(codi);
 		db.setNom(nom);

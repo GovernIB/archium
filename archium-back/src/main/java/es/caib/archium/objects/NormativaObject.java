@@ -1,9 +1,9 @@
 package es.caib.archium.objects;
 
+import es.caib.archium.persistence.model.Normativa;
+
 import java.util.Date;
 import java.util.Objects;
-
-import es.caib.archium.persistence.model.Normativa;
 
 public class NormativaObject {
 	private Long 	id;
@@ -24,7 +24,6 @@ public class NormativaObject {
 	
 	public NormativaObject() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 	public NormativaObject(Long id, String codi, String nom, String nomCas, String uri, String urieli,
 			String urieliconsolidada, Date vigor, String estat, Date derogacio, Long descripcio,

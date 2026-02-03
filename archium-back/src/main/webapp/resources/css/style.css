@@ -231,6 +231,7 @@ button.botton_library span:hover{
 	font-weight: 400;
 	box-shadow: none;
 }
+
 .main_principal{
 	position: fixed;
     top: 0;
@@ -396,16 +397,32 @@ th.first-column.buscador{
     top: 5px;
     opacity: 1;
 }
+
+
+.ui-picklist-button-add-all {
+	visibility: hidden !important;
+}
+
+.ui-icon-download{
+	/*background: url(../resources/img/baseline_create_black_18dp.png)!important;*/
+    background-size: contain!important;
+    background-position: center;
+    background-repeat: no-repeat;
+    width: 20px;
+    height: 20px;
+    top: 5px;
+    opacity: 1;
+}
+
 .ui-widget .ui-icon.pi.ui-icon-anadir-tabla:hover,
-.ui-icon-pencil:hover{
+.ui-icon-pencil:hover,
+.ui-icon-download:hover{
 	opacity: 0.6;
 }
 .ui-icon-closethick{
 	background-image: url(../resources/img/baseline_close_black_18dp.png)!important;
 	background-size: contain;
 	background-position: center;
-	width: 25px;
-    height: 25px;
     filter: invert(1);
 }
 .button_add{
@@ -460,7 +477,6 @@ th.first-column.buscador{
 }
 .table_action th,
 .table_action td{
-	background: #fff!important;
 	border-color: #eee!important;
 }
 .table_action th:hover,
@@ -628,7 +644,7 @@ th.first-column.buscador{
     box-shadow: 0px 0px 5px rgba(0,0,0,0.2);
     border-radius: 0;
     margin-top: 10px;
-    min-width: 300px!important;
+    min-width: 200px!important;
 }
 .ui-selectonemenu-panel .ui-selectonemenu-list-item label{
 	font-size: 14px;
@@ -992,6 +1008,7 @@ a{
 	width: 33.33%;
 }
 .imc-peu-govern p,
+.imc-peu-govern span,
 .imc-peu-xarxes p{
 	font-size: 13px;
 	font-weight: 400;
@@ -1141,4 +1158,354 @@ a{
 .content_4 .ui-dialog-titlebar.ui-widget-header.ui-corner-top {
     border: none;
 }
+
+.ambitFuncional{
+   font-size: 14px!important;
+   color: #cc0033!important;
+}
+
+.funcio{
+}
+
+.circle-state{
+		width: 10px;
+		height: 10px;
+		background: #ccc;
+		border-radius: 100%;
+		top: 0 !important;
+        margin-top: 6px !important;
+        margin-left: 4px !important;
+        left: 0 !important;
+        background-image: none !important;
+	}
+	.red{
+		background: red;
+	}
+	.green{
+		background: green;
+	}
+	.gray{
+    		background: DarkGray;
+    	}
+    	
+.text-truncate {
 	
+	display: -webkit-box;
+  	-webkit-box-orient: vertical;
+  	-webkit-line-clamp: 3;
+ 	overflow: hidden;
+  	line-height: 1.5em;
+	
+}
+
+.detail-box {
+	
+	width: 100%;
+	height:25px; 
+	overflow-y:auto; 
+	padding:8px; 
+	background-color:  #f2f2f2; 
+	border:1px solid #ddd; 
+	border-radius:4px; 
+	word-wrap: break-word;
+	
+}
+
+.detail-box-big {
+	
+	width: 100%;
+	max-height:150px; 
+	min-height:50px; 
+	overflow-y:auto; 
+	padding:8px; 
+	background-color: #f2f2f2; 
+	border:1px solid #ddd; 
+	border-radius:4px; 
+	word-break:break-all; 
+	overflow-wrap:break-word;
+	
+}
+
+.detail-box-big-warn {
+	
+	width: 100%;
+	max-height:150px; 
+	min-height:50px; 
+	overflow-y:auto; 
+	padding:8px; 
+	background-color:#fffbf0; 
+	border:1px solid #ffd54f; 
+	border-radius:4px; 
+	word-break:break-all; 
+	overflow-wrap:break-word;
+	
+}
+
+.field-label {
+	
+	font-weight: bold;
+	margin-right: 8px;
+	
+}
+
+.field-value-red {
+	
+	font-weight: bold;
+	color:#d32f2f; 
+	font-size:0.8em;
+	
+}
+
+.field-value-area {
+	
+	display: block;
+	font-size:0.8em;
+	
+}
+
+/* Estilos cogidos del shocase de primefaces para animar los botones mientras envían información */
+html body .custom.ui-button.ui-button-text-only .ui-icon-loading {
+    opacity: 0;
+}
+html body .custom.ui-button.ui-button-text-only .ui-icon-loading:before {
+    content: "\e94a";
+}
+html body .custom.ui-button, html body .custom.ui-button * {
+    transition-property: all;
+    transition-duration: .2s;
+}
+html body .custom.ui-button.ui-state-loading {
+    opacity: 1;
+    background: #888;
+    border-color: #888;
+}
+html body .custom.ui-button.ui-state-loading.ui-button-text-only .ui-button-text {
+    opacity: 1;
+    padding-left: 2rem;
+}
+html body .custom.ui-button.ui-state-loading.ui-button-text-only .ui-icon-loading {
+    opacity: 1;
+    left: 0;
+    margin-left: 0.5rem;
+}
+
+.export-icon-button.ui-button {
+    border: none !important;
+    border-radius: 8px !important;
+    transition: all 0.3s ease !important;
+    overflow: visible !important;
+}
+
+.export-icon-button.ui-button .ui-button-text {
+    display: none !important;
+}
+
+.export-icon-button.ui-button:hover {
+    background: rgba(0, 0, 0, 0.05) !important;
+    transform: translateY(-2px);
+}
+
+.export-icon-button.ui-button:focus {
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+.export-icon-button .ui-button-icon,
+.export-icon-button .pi {
+    font-size: 3rem !important;   
+    line-height: 1 !important;
+    width: auto !important;
+    height: auto !important;
+    overflow: visible !important;
+    margin: 0 !important;
+    position: static !important;
+    display: inline-block !important;
+}
+
+.export-pdf .pi {
+    color: #dc3545 !important; /* rojo */
+}
+
+.export-csv .pi {
+    color: #28a745 !important; /* verde */
+}
+
+.export-icon-button:hover .pi {
+    opacity: 0.8;
+}
+
+.export-icon-button.ui-button,
+.export-icon-button.ui-button:enabled:hover,
+.export-icon-button.ui-button:enabled:focus,
+.export-icon-button.ui-button:enabled:active {
+    background-color: transparent !important;
+    background-image: none !important;
+}	
+
+.export-icon-button.ui-button:enabled:hover {
+    background: rgba(0, 0, 0, 0.05) !important;
+}
+
+/* Botón Gris tamaño normal */
+.btn-modern-gray {
+    background: #f8f9fa !important;
+    border: 2px solid #dee2e6 !important;
+    color: #495057 !important;
+    font-size: 14px !important;
+    font-weight: 500 !important;
+    letter-spacing: 0.3px !important;
+    padding: 12px 24px !important;
+    border-radius: 8px !important;
+    text-transform: none !important;
+    transition: all 0.3s ease !important;
+    cursor: pointer !important;
+    min-height: 42px !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05) !important;
+}
+
+.btn-modern-gray:hover {
+    background: #e9ecef !important;
+    border-color: #adb5bd !important;
+    color: #212529 !important;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08) !important;
+    transform: translateY(-1px) !important;
+}
+
+.btn-modern-gray:active {
+    transform: translateY(0) !important;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
+}
+
+/* Botón Gris (versión pequeña para confirmaciones) */
+.btn-modern-gray-sm {
+    background: #f8f9fa !important;
+    border: 2px solid #dee2e6 !important;
+    color: #495057 !important;
+    font-size: 13px !important;
+    font-weight: 500 !important;
+    letter-spacing: 0.2px !important;
+    padding: 6px 14px !important;   
+    border-radius: 6px !important;     
+    text-transform: none !important;
+    transition: all 0.3s ease !important;
+    cursor: pointer !important;
+    min-height: 32px !important;      
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
+}
+
+.btn-modern-gray-sm:hover {
+    background: #e9ecef !important;
+    border-color: #adb5bd !important;
+    color: #212529 !important;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08) !important;
+    transform: translateY(-1px) !important;
+}
+
+.btn-modern-gray-sm:active {
+    transform: translateY(0) !important;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
+}
+
+/* Botón Rojo*/
+.btn-modern-red {
+    background: #dc3545 !important;
+    border: 2px solid #dc3545 !important;
+    color: #fff !important;
+    font-size: 14px !important;
+    font-weight: 500 !important;
+    letter-spacing: 0.3px !important;
+    padding: 12px 24px !important;
+    border-radius: 8px !important;
+    text-transform: none !important;
+    transition: all 0.3s ease !important;
+    cursor: pointer !important;
+    min-height: 42px !important;
+    box-shadow: 0 2px 6px rgba(220, 53, 69, 0.2) !important;
+}
+
+.btn-modern-red:hover {
+    background: #c82333 !important;
+    border-color: #c82333 !important;
+    box-shadow: 0 3px 8px rgba(220, 53, 69, 0.3) !important;
+    transform: translateY(-1px) !important;
+}
+
+.btn-modern-red:active {
+    transform: translateY(0) !important;
+    box-shadow: 0 2px 4px rgba(220, 53, 69, 0.2) !important;
+}
+
+/* Estado deshabilitado para botón rojo*/
+.btn-modern-red:disabled,
+.btn-modern-red.disabled {
+    background: #f8d7da !important;
+    border-color: #f5c6cb !important;
+    color: #975057 !important;
+    cursor: not-allowed !important;
+    opacity: 0.6 !important;
+    box-shadow: none !important;
+}
+
+.btn-modern-red:disabled:hover,
+.btn-modern-red.disabled:hover {
+    transform: none !important;
+    background: #f8d7da !important;
+    border-color: #f5c6cb !important;
+    box-shadow: none !important;
+}
+
+/* Botón con icono */
+.btn-modern-icon {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+}
+
+/* Contenedor para agrupar botones */
+.btn-group-modern {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+}
+
+/* estilo base para iconos de acciones */
+.btn-action .pi {
+  font-size: 1.3rem !important;
+  color: #4f4f4f !important;
+  transition: color .2s ease, transform .2s ease;
+}
+
+.btn-action:hover .pi {
+  color: #333 !important;
+  transform: translateY(-1px);
+}
+
+.btn-action .ui-button-icon,
+.btn-action .pi {
+  line-height: 1 !important;
+  overflow: visible !important;
+}
+/* contenedor: alineación horizontal y separación */
+.botonera-wrapper {
+  display: flex !important;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: flex-end; /* ⬅️ alinea los botones a la derecha */
+}
+
+
+/* override contundente sobre la clase button_add si ésta obliga a block/width/posicion */
+.button_add {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: auto !important;
+  position: static !important;
+  float: none !important;
+  margin: 0 !important;
+  padding-left: .8rem !important;
+  padding-right: .8rem !important;
+}

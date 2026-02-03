@@ -1,31 +1,30 @@
 <?xml version="1.0"?>
 <faces-config
-    xmlns="http://xmlns.jcp.org/xml/ns/javaee"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-facesconfig_2_3.xsd"
-    version="2.3">
-    
+        xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-facesconfig_2_3.xsd"
+        version="2.3">
+
     <application>
         <action-listener>org.primefaces.application.DialogActionListener</action-listener>
         <navigation-handler>org.primefaces.application.DialogNavigationHandler</navigation-handler>
         <view-handler>org.primefaces.application.DialogViewHandler</view-handler>
         <locale-config>
-            <default-locale>es_ES</default-locale>
+            <default-locale>ca_ES</default-locale>
+            <supported-locale>ca_ES</supported-locale>
             <supported-locale>es_ES</supported-locale>
         </locale-config>
         <resource-bundle>
-			<base-name>messages.messages</base-name>
-			<var>messages</var>
-	   </resource-bundle>
-	   
-	   
-	   
-     </application>
-     
-     <factory>
-		 <exception-handler-factory>
-		 es.caib.archium.jsf.AjaxExceptionHandler$Factory
-		 </exception-handler-factory>
-		</factory>
-     
+            <base-name>messages.messages</base-name>
+            <var>messages</var>
+        </resource-bundle>
+
+
+    </application>
+
+    <factory>
+        <exception-handler-factory>
+            es.caib.archium.jsf.AjaxExceptionHandler$Factory
+        </exception-handler-factory>
+    </factory>
 </faces-config>

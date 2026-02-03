@@ -3,7 +3,6 @@ package es.caib.archium.objects;
 import java.util.Objects;
 
 import es.caib.archium.persistence.model.Catalegsery;
-import es.caib.archium.persistence.model.Tipusdictamen;
 
 public class CatalegSeriesObject {
 

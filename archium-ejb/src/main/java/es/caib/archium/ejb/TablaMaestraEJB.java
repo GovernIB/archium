@@ -26,7 +26,7 @@ public class TablaMaestraEJB {
     private void init() {
         // Aquí es podrien llegir les opcions de configuració, i comprovar que tots els paràmetres necessaris hi són,
         // o fixar els valors per defecte pels que no hi siguin, programar timers no persistents, ...
-        LOG.info("Inici del mòdul EJB");
+        LOG.info("Inici del mòdul EJB de taules mestres");
     }
 
     /**
@@ -34,6 +34,6 @@ public class TablaMaestraEJB {
      */
     @PreDestroy
     private void destroy() {
-        LOG.info("Aturada del mòdul EJB");
+        LOG.info("Aturada del mòdul EJB de taules mestres");
     }
 }

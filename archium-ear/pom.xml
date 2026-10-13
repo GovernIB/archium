@@ -4,7 +4,7 @@
     <parent>
         <groupId>es.caib.archium</groupId>
         <artifactId>archium</artifactId>
-        <version>1.0.6</version>
+        <version>1.0.7</version>
     </parent>
 
     <artifactId>archium-ear</artifactId>

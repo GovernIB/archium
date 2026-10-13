@@ -1,4 +1,4 @@
-package es.caib.archium.ejb;//package es.caib.archium.ejb;
+//package es.caib.archium.ejb;
 //
 //import es.caib.archium.ejb.service.FirmaServidorService;
 //import org.fundaciobit.apisib.apifirmasimple.v1.ApiFirmaEnServidorSimple;

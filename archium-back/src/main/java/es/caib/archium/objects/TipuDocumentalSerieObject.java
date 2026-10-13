@@ -44,8 +44,8 @@ public class TipuDocumentalSerieObject {
 		}
 		
 		db.setId(pk);
-		db.setObligatori((obligatori ? new BigDecimal(1) : new BigDecimal(0)));
-		db.setMultiple((multiple ? new BigDecimal(1) : new BigDecimal(0)));
+		db.setObligatori(Boolean.TRUE.equals(obligatori) ? BigDecimal.ONE : BigDecimal.ZERO);
+	    db.setMultiple(Boolean.TRUE.equals(multiple) ? BigDecimal.ONE : BigDecimal.ZERO);
 
 		return db;
 	}

@@ -33,5 +33,7 @@ public interface DictamenService extends DAO<Dictamen, Long> {
 	 * @return
 	 */
 	public boolean isPublicable(Dictamen dictamen);
+
+	public List<Dictamen> findFiltrado(String searchText);
 }
 

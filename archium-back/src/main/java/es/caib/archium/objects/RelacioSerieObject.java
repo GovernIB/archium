@@ -16,6 +16,7 @@ public class RelacioSerieObject {
 	private TipusRelacioSerieObject tipusRelacio;
 
 	private DualListModel<SerieDocumentalObject> dualListSeries;
+	private DualListModel<Long> dualListSeriesIds;
 
 	public RelacioSerieObject() {
 		dualListSeries = new DualListModel<>();
@@ -90,4 +91,13 @@ public class RelacioSerieObject {
 		}
 		this.seriesRelacionades.add(serie);
 	}
+
+	public DualListModel<Long> getDualListSeriesIds() {
+		return dualListSeriesIds;
+	}
+
+	public void setDualListSeriesIds(DualListModel<Long> dualListSeriesIds) {
+		this.dualListSeriesIds = dualListSeriesIds;
+	}
+	
 }

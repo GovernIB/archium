@@ -1,6 +1,7 @@
 package es.caib.archium.ejb.service;
 
 import java.util.List;
+import java.util.Set;
 
 import javax.ejb.Local;
 
@@ -19,5 +20,7 @@ public interface FuncioService extends DAO<Funcio, Long> {
 	public List<Funcio> loadTree(Long quadreId, Long fromFuncioId) throws I18NException;
 
 	public List<String> llistaAmbitsFuncionals(Idioma idioma) throws I18NException;
+	
+	public List<Funcio> findFiltrado(String searchText, Set<Long> set) throws I18NException;
 	
 }

@@ -16,6 +16,8 @@ public interface SerieService extends DAO<Seriedocumental, Long> {
 	public List<Dictamen> getDictamenVigent(Long serieId) throws I18NException;
 
 	public Seriedocumental findByCodi(String codiSerie) throws  I18NException;
+
+	public List<Seriedocumental> findFiltrado(String searchText) throws  I18NException;
 	
 }
 

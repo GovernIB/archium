@@ -71,6 +71,7 @@ import java.nio.charset.StandardCharsets;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.AbstractMap;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -581,7 +582,7 @@ public class QuadreClassificacioEJB extends AbstractDAO<Quadreclassificacio, Lon
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 
         // Inicialitzam la taula de continguts
-        List<SimpleEntry<String, SimpleEntry<String, Integer>>> toc = new ArrayList<>();
+        List<AbstractMap.SimpleEntry<String, AbstractMap.SimpleEntry<String, Integer>>> toc = new ArrayList<>();
 
         try {
             PdfWriter pdfWriter = new PdfWriter(byteArrayOutputStream);
@@ -695,7 +696,7 @@ public class QuadreClassificacioEJB extends AbstractDAO<Quadreclassificacio, Lon
                                     break;
                             }
 
-                            SimpleEntry<String, Integer> titlePage = new SimpleEntry<>(titolTipusSerie, document.getNumberOfPages());
+                            AbstractMap.SimpleEntry<String, Integer> titlePage = new AbstractMap.SimpleEntry<>(titolTipusSerie, document.getNumberOfPages());
                             p
 
                                     .setKeepWithNext(true)
@@ -704,7 +705,7 @@ public class QuadreClassificacioEJB extends AbstractDAO<Quadreclassificacio, Lon
                                     // Add the current page number to the table of contents list
                                     .setNextRenderer(new UpdatePageRenderer(p, titlePage));
 
-                            toc.add(new SimpleEntry<>(titolTipusSerie, titlePage));
+                            toc.add(new AbstractMap.SimpleEntry<>(titolTipusSerie, titlePage));
 
                             lastTipusSerie = serie.getTipusSerie();
                         }
@@ -713,7 +714,7 @@ public class QuadreClassificacioEJB extends AbstractDAO<Quadreclassificacio, Lon
                         if (nouAmbitFuncional) {
                             String line = serie.getFuncioCompleta();
 
-                            SimpleEntry<String, Integer> titlePage = new SimpleEntry<>(line, document.getNumberOfPages());
+                            AbstractMap.SimpleEntry<String, Integer> titlePage = new AbstractMap.SimpleEntry<>(line, document.getNumberOfPages());
                             p
 
                                     .setKeepWithNext(true)
@@ -722,7 +723,7 @@ public class QuadreClassificacioEJB extends AbstractDAO<Quadreclassificacio, Lon
                                     // Add the current page number to the table of contents list
                                     .setNextRenderer(new UpdatePageRenderer(p, titlePage));
 
-                            toc.add(new SimpleEntry<>(serie.getFuncioCompleta(), titlePage));
+                            toc.add(new AbstractMap.SimpleEntry<>(serie.getFuncioCompleta(), titlePage));
                         }
                         taula.addCell(codiFuncio.add(pCodiFuncio.add(p)));
                         taula.addCell(nomFuncio.add(pNomFuncio.add(getFormatedParagraph(serie.getAmbitFuncional()))));
@@ -800,8 +801,8 @@ public class QuadreClassificacioEJB extends AbstractDAO<Quadreclassificacio, Lon
 
 
             for (int i = 0; i < toc.size(); i++) {
-                SimpleEntry<String, SimpleEntry<String, Integer>> entry = toc.get(i);
-                SimpleEntry<String, Integer> text = entry.getValue();
+                AbstractMap.SimpleEntry<String, AbstractMap.SimpleEntry<String, Integer>> entry = toc.get(i);
+                AbstractMap.SimpleEntry<String, Integer> text = entry.getValue();
 
                 if (0 == text.getValue()) { // Cas pels tipus de sèrie
                     p = new Paragraph()

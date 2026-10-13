@@ -9,6 +9,8 @@ import es.caib.archium.persistence.model.Seriedocumental;
 
 import javax.annotation.security.RolesAllowed;
 import javax.ejb.Stateless;
+import javax.persistence.TypedQuery;
+
 import java.util.List;
 
 @Stateless
@@ -83,4 +85,31 @@ public class SerieDocumentalEJB extends AbstractDAO<Seriedocumental, Long> imple
 		
 		return (comptarA + comptarB + comptarC + comptarD + comptarE + comptarF + comptarG + comptarH + comptarI + comptarJ + comptarK) > 0;
 	}
+    
+    
+    @Override
+    public Long getIdByCodi(String codi) {
+    	Long res = (Long) entityManager.createQuery("SELECT s.id FROM Seriedocumental s WHERE s.codi LIKE :codi").setParameter("codi", codi).getSingleResult();
+    	return res;
+    }
+    
+    @Override
+    public List<Seriedocumental> buscarPorTexto(String texto) {
+	    String filtro = "%" + texto.toLowerCase() + "%";
+
+	    String conAcentos = "áéíóúÁÉÍÓÚüÜàèìòùÀÈÌÒÙ";
+	    String sinAcentos = "aeiouAEIOUuUaeiouAEIOU";
+
+	    String jpql = "SELECT s FROM Seriedocumental s " +
+	            "WHERE LOWER(FUNCTION('TRANSLATE', s.codi, '" + conAcentos + "', '" + sinAcentos + "')) LIKE :filtro " +
+	            "OR LOWER(FUNCTION('TRANSLATE', s.nom, '" + conAcentos + "', '" + sinAcentos + "')) LIKE :filtro " +
+	            "ORDER BY s.nom ASC";
+
+
+	    TypedQuery<Seriedocumental> query = entityManager.createQuery(jpql, Seriedocumental.class);
+	    query.setParameter("filtro", filtro);
+
+	    return query.getResultList();
+	}
+    
 }

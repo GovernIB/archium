@@ -1,14 +1,12 @@
-# ![Logo](https://github.com/GovernIB/maven/raw/binaris/portafib/projectinfo_Attachments/icon.jpg) Archium (archium)
- *Archium de les Illes Balears*
+# Archium (archium)
+Aplicació institucional de gestió dels instruments tècnics de gestió documental del Govern de les Illes Balears.
 
 ***Versions***
-
-> - Versió Estable: <br/>
-> - Versió en Desenvolupament: __archium-1.0__ (branca [archium-1.0](../../tree/archium-1.0))
+> - Versió Estable: __master__ (branca [master](../../tree/master)) <br/>
+> - Versió en Desenvolupament: __archium-1.0.6-dev__ (branca [archium-1.0.6-dev](../../tree/archium-1.0.6-dev))
 
 
 ***Documentació***
-
 Nom | Descripció | Enllaç
 ------------ | ------------- | -------------
 (ESP) ANA005_Analisis Funcional Archium_20200415_v1.1.docx | Documento de Análisis y Diseño | [Document](./doc/ANA005_Analisis Funcional Archium_20200415_v1.1.docx)
@@ -17,6 +15,5 @@ Nom | Descripció | Enllaç
 
 
 ***Descripció***
-
-El alcance de ésta aplicación comprenderá desde la creación de formularios para facilitar el ingreso de datos respectivos a Cuadros de Clasificación, Funciones, Series Documentales y Procedimientos Identificados, hasta la gestión y mantenimiento de dichas tablas, haciendo posible la modificación, introducción de datos tanto de estas tablas como de las tablas maestras en la base de datos.
+Archium és una aplicació corporativa que permet gestionar els instruments tècnics de gestió documental del Govern de les Illes Balears, com ara el Quadre de Classificació Funcional, el Catàleg de Tipus Documentals, les Taules de valoració i el Calendari de Conservació.
 

@@ -1,16 +1,10 @@
 package es.caib.archium.ejb;
 
-import es.caib.archium.commons.i18n.I18NException;
-import es.caib.archium.commons.query.OrderBy;
-import es.caib.archium.ejb.service.TipusDocumentalService;
-import es.caib.archium.ejb.service.TipusNtiService;
-import es.caib.archium.persistence.dao.AbstractDAO;
-import es.caib.archium.persistence.model.TipusDocumental;
-import es.caib.archium.persistence.model.TipusNti;
-import es.caib.archium.persistence.model.validation.ValidacioBasica;
-import es.caib.archium.persistence.model.validation.ValidacioCompleta;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import javax.annotation.security.RolesAllowed;
 import javax.ejb.Stateless;
@@ -21,11 +15,19 @@ import javax.persistence.TypedQuery;
 import javax.transaction.Transactional;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import es.caib.archium.commons.i18n.I18NException;
+import es.caib.archium.commons.query.OrderBy;
+import es.caib.archium.ejb.service.TipusDocumentalService;
+import es.caib.archium.ejb.service.TipusNtiService;
+import es.caib.archium.persistence.dao.AbstractDAO;
+import es.caib.archium.persistence.model.TipusDocumental;
+import es.caib.archium.persistence.model.TipusNti;
+import es.caib.archium.persistence.model.validation.ValidacioBasica;
+import es.caib.archium.persistence.model.validation.ValidacioCompleta;
 
 
 @Stateless
@@ -48,7 +50,7 @@ public class TipusDocumentalEJB extends AbstractDAO<TipusDocumental, Long> imple
 	 * Crea o actualiza un TipusDocumental con las validaciones correspondientes
 	 * @param tipusDocumental Entidad a guardar
 	 * @param esNou true si es alta, false si es edición
-	 * @param prefix necesario si el usuario no introduce código en el alta del documento
+	 * @param prefijo necesario si el usuario no introduce código en el alta del documento
 	 * @param usuariActual nombre del usuario para trazabilidad
 	 * @return Entidad guardada
 	 * @throws I18NException si hay errores de validación o persistencia
@@ -75,7 +77,7 @@ public class TipusDocumentalEJB extends AbstractDAO<TipusDocumental, Long> imple
 	/**
 	 * Crea un TipusDocumental con las validaciones correspondientes
 	 * @param tipusDocumental Entidad a guardar
-	 * @param prefix necesario si el usuario no introduce código completo en el alta del documento
+	 * @param prefijo necesario si el usuario no introduce código completo en el alta del documento
 	 * @param usuariActual nombre del usuario para trazabilidad
 	 * @return Entidad guardada
 	 * @throws I18NException si hay errores de validación o persistencia
@@ -265,7 +267,7 @@ public class TipusDocumentalEJB extends AbstractDAO<TipusDocumental, Long> imple
 	
 	/**
 	 * Método que genera el código para un tipo documental a partir de un prefijo
-	 * @param prefix necesario para la generación
+	 * @param prefijo necesario para la generación
 	 * @return String con el código generado
 	 * @throws I18NException si hay errores de validación
 	 */
@@ -340,7 +342,7 @@ public class TipusDocumentalEJB extends AbstractDAO<TipusDocumental, Long> imple
 	
 	/**
 	 * Busca un TipusDocumental por código
-	 * @param codi del tipo documental que se quiere buscar
+	 * @param código del tipo documental que se quiere buscar
 	 * @return Entidad encontrada
 	 * @throws I18NException si hay errores
 	 */
@@ -363,7 +365,7 @@ public class TipusDocumentalEJB extends AbstractDAO<TipusDocumental, Long> imple
 	
 	/**
 	 * Comprueba que el cambio de estado al actualizar un tipo documental es válido
-	 * @param codi del tipo documental que se quiere buscar
+	 * @param código del tipo documental que se quiere buscar
 	 * @return true si el cambio es BORRADOR a ACTIVO
 	 * @return false si se intenta realizar cualquier otro cambio de estado
 	 */

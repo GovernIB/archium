@@ -9,7 +9,7 @@ WITH jerarquia_f AS (
         f.nomcas,
         LEVEL AS nivell,
         SYS_CONNECT_BY_PATH(f.ordre, '--> ') AS ruta
-    FROM archium.ach_funcio f
+    FROM ach_funcio f
     WHERE f.quadreclassificacio_id = :quadre
     START WITH f.funcio_pare IS NULL
     CONNECT BY PRIOR f.ID = f.funcio_pare
@@ -26,7 +26,7 @@ ancestros (ident, ancestro_id, tipusserie_id, lvl) AS (
         f.ID AS ancestro_id,
         f.tipusserie_id,
         1 AS lvl
-    FROM archium.ach_funcio f
+    FROM ach_funcio f
 
     UNION ALL
 
@@ -37,9 +37,9 @@ ancestros (ident, ancestro_id, tipusserie_id, lvl) AS (
         p.tipusserie_id,
         a.lvl + 1
     FROM ancestros a
-    JOIN archium.ach_funcio f
+    JOIN ach_funcio f
         ON f.ID = a.ancestro_id
-    JOIN archium.ach_funcio p
+    JOIN ach_funcio p
         ON p.ID = f.funcio_pare
 ),
 
@@ -61,10 +61,10 @@ SELECT
     fun.codi AS codi_funcio,
     fun.nom ||
         CASE WHEN fun.funcio_pare IS NULL THEN ' (' || fun.codi || ')' ELSE '' END
-        AS ambit_funcio,
+    AS ambit_funcio,
     fun.nomcas ||
         CASE WHEN fun.funcio_pare IS NULL THEN ' (' || fun.codi || ')' ELSE '' END
-        AS ambit_funcio_es,
+    AS ambit_funcio_es,
     ser.codi AS codi_serie,
     ser.nom AS nom_serie,
     ser.nomcas AS nom_serie_es,
@@ -77,9 +77,9 @@ FROM jerarquia_f fun
 LEFT JOIN tipusserie_final tf
        ON tf.ident = fun.ident AND tf.rn = 1
 
-LEFT JOIN archium.ach_tipusserie ts
+LEFT JOIN ach_tipusserie ts
        ON ts.id = tf.tipusserie_id
 
-LEFT JOIN archium.ach_seriedocumental ser
+LEFT JOIN ach_seriedocumental ser
        ON ser.funcio_id = fun.ident
       AND (LOWER(ser.estat) = :estatSerie OR :estatSerie IS NULL)

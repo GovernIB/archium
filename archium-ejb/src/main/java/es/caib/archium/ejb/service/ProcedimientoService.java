@@ -15,4 +15,7 @@ public interface ProcedimientoService extends DAO<Procediment, Long> {
     public List<Procediment> findProcedimentsSenseSerie() throws I18NException;
 
     public Procediment findProcedimentByCodiSia(String codiSia);
+    
+	public List<Procediment> buscarPorTexto(String texto);
+
 }

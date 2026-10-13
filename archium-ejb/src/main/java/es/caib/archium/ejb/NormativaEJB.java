@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.annotation.security.RolesAllowed;
 import javax.ejb.Stateless;
+import javax.persistence.TypedQuery;
 
 import es.caib.archium.ejb.service.NormativaService;
 import es.caib.archium.persistence.dao.AbstractDAO;
@@ -97,6 +98,24 @@ public class NormativaEJB extends AbstractDAO<Normativa, Long> implements Normat
 		}
 		
 		return (comptarA + comptarB + comptarC + comptarD + comptarE + comptarF + comptarG) > 0;
+	}
+	
+	@Override
+	public List<Normativa> buscarPorTexto(String texto) {
+	    String filtro = "%" + texto + "%";
+
+	    String conAcentos = "áéíóúÁÉÍÓÚüÜàèìòùÀÈÌÒÙ";
+	    String sinAcentos = "aeiouAEIOUuUaeiouAEIOU";
+
+	    String jpql = "SELECT n FROM Normativa n " +
+	            "WHERE LOWER(FUNCTION('TRANSLATE', n.codi, '" + conAcentos + "', '" + sinAcentos + "')) LIKE :filtro " +
+	            "OR LOWER(FUNCTION('TRANSLATE', n.nom, '" + conAcentos + "', '" + sinAcentos + "')) LIKE :filtro " +
+	            "ORDER BY n.nom ASC";
+
+	    TypedQuery<Normativa> query = entityManager.createQuery(jpql, Normativa.class);
+	    query.setParameter("filtro", filtro);
+
+	    return query.getResultList();
 	}
 	
 }

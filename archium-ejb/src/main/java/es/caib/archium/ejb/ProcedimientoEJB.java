@@ -1,19 +1,21 @@
 package es.caib.archium.ejb;
 
-import es.caib.archium.commons.i18n.I18NException;
-import es.caib.archium.ejb.service.ProcedimientoService;
-import es.caib.archium.ejb.service.SerieDocumentalService;
-import es.caib.archium.persistence.dao.AbstractDAO;
-import es.caib.archium.persistence.model.Procediment;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import javax.annotation.security.PermitAll;
 import javax.annotation.security.RolesAllowed;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.persistence.NoResultException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import javax.persistence.TypedQuery;
+
+import es.caib.archium.commons.i18n.I18NException;
+import es.caib.archium.ejb.service.ProcedimientoService;
+import es.caib.archium.ejb.service.SerieDocumentalService;
+import es.caib.archium.persistence.dao.AbstractDAO;
+import es.caib.archium.persistence.model.Procediment;
 
 @Stateless
 @RolesAllowed({"ACH_GESTOR"})
@@ -61,4 +63,22 @@ public class ProcedimientoEJB extends AbstractDAO<Procediment, Long> implements 
         }
         return prc;
     }
+    
+    @Override
+    public List<Procediment> buscarPorTexto(String texto) {
+	    String filtro = "%" + texto.toLowerCase() + "%";
+
+	    String conAcentos = "áéíóúÁÉÍÓÚüÜàèìòùÀÈÌÒÙ";
+	    String sinAcentos = "aeiouAEIOUuUaeiouAEIOU";
+
+	    String jpql = "SELECT p FROM Procediment p " +
+	            "WHERE LOWER(FUNCTION('TRANSLATE', p.codisia, '" + conAcentos + "', '" + sinAcentos + "')) LIKE :filtro " +
+	            "OR LOWER(FUNCTION('TRANSLATE', p.nom, '" + conAcentos + "', '" + sinAcentos + "')) LIKE :filtro " +
+	            "ORDER BY p.nom ASC";
+
+	    TypedQuery<Procediment> query = entityManager.createQuery(jpql, Procediment.class);
+	    query.setParameter("filtro", filtro);
+
+	    return query.getResultList();
+	}
 }

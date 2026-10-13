@@ -1,5 +1,15 @@
 package es.caib.archium.services;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.transaction.Transactional;
+
 import es.caib.archium.commons.i18n.I18NException;
 import es.caib.archium.commons.query.OrderBy;
 import es.caib.archium.commons.query.OrderType;
@@ -25,6 +35,7 @@ import es.caib.archium.objects.MateriaObject;
 import es.caib.archium.objects.NivellelectronicObject;
 import es.caib.archium.objects.NormativaObject;
 import es.caib.archium.objects.ProcedimentObject;
+import es.caib.archium.objects.ProcedimentVisorObject;
 import es.caib.archium.objects.SerieDocumentalObject;
 import es.caib.archium.objects.SilenciObject;
 import es.caib.archium.objects.TipuDocumentalObject;
@@ -42,15 +53,6 @@ import es.caib.archium.persistence.model.Silenci;
 import es.caib.archium.persistence.model.TipusDocumental;
 import es.caib.archium.persistence.model.TipusdocumentProcediment;
 import es.caib.archium.persistence.model.Tipuspublic;
-
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.transaction.Transactional;
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
 
 @Named("ProcedimentServices")
 @ApplicationScoped
@@ -136,6 +138,18 @@ public class ProcedimentFrontService {
 			throw new I18NException("excepcion.general.NullPointerException", this.getClass().getSimpleName(), "findProcedimentById");
 		} catch(Exception e) {
 			throw new I18NException("excepcion.general.Exception", this.getClass().getSimpleName(), "findProcedimentById");
+		}
+	}
+	
+	@Transactional
+	public ProcedimentVisorObject findProcedimentVisorById(Long procedimentId) throws I18NException{
+
+		try {
+			return new ProcedimentVisorObject(procedimentEJB.findById(procedimentId));
+		} catch(NullPointerException e) {
+			throw new I18NException("excepcion.general.NullPointerException", this.getClass().getSimpleName(), "findProcedimentVisorById");
+		} catch(Exception e) {
+			throw new I18NException("excepcion.general.Exception", this.getClass().getSimpleName(), "findProcedimentVisorById");
 		}
 	}
 	

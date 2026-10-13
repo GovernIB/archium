@@ -11,4 +11,6 @@ import java.util.List;
 @Local
 public interface AplicacioService extends DAO<Aplicacio, Long> {
     public List<String> llistaAplicacions() throws I18NException;
+
+	public List<Aplicacio> buscarPorTexto(String texto);
 }

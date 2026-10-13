@@ -3,6 +3,7 @@ package es.caib.archium.ejb;
 import javax.annotation.security.PermitAll;
 import javax.annotation.security.RolesAllowed;
 import javax.ejb.Stateless;
+import javax.persistence.TypedQuery;
 
 import es.caib.archium.commons.i18n.I18NException;
 import es.caib.archium.commons.query.OrderBy;
@@ -10,6 +11,7 @@ import es.caib.archium.commons.query.OrderType;
 import es.caib.archium.ejb.service.AplicacioService;
 import es.caib.archium.persistence.dao.AbstractDAO;
 import es.caib.archium.persistence.model.Aplicacio;
+import es.caib.archium.persistence.model.Normativa;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -59,5 +61,22 @@ public class AplicacioEJB extends AbstractDAO<Aplicacio, Long> implements Aplica
 		}
 		
 		return (comptarA) > 0;
+	}
+    
+    @Override
+	public List<Aplicacio> buscarPorTexto(String texto) {
+	    String filtro = "%" + texto.toLowerCase() + "%";
+
+	    String conAcentos = "áéíóúÁÉÍÓÚüÜàèìòùÀÈÌÒÙ";
+	    String sinAcentos = "aeiouAEIOUuUaeiouAEIOU";
+
+	    String jpql = "SELECT a FROM Aplicacio a " +
+	            "WHERE LOWER(FUNCTION('TRANSLATE', a.nom, '" + conAcentos + "', '" + sinAcentos + "')) LIKE :filtro " +
+	            "ORDER BY a.nom ASC";
+
+	    TypedQuery<Aplicacio> query = entityManager.createQuery(jpql, Aplicacio.class);
+	    query.setParameter("filtro", filtro);
+
+	    return query.getResultList();
 	}
 }

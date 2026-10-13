@@ -6,9 +6,11 @@ import java.util.List;
 
 import javax.annotation.security.RolesAllowed;
 import javax.ejb.Stateless;
+import javax.persistence.TypedQuery;
 
 import es.caib.archium.ejb.service.SerieArgenService;
 import es.caib.archium.persistence.dao.AbstractDAO;
+import es.caib.archium.persistence.model.Normativa;
 import es.caib.archium.persistence.model.SerieArgen;
 
 
@@ -53,6 +55,24 @@ public class SerieArgenEJB extends AbstractDAO<SerieArgen, Long> implements Seri
 		}
 		
 		return (comptarA + comptarB) > 0;
+	}
+	
+	@Override
+	public List<SerieArgen> buscarPorTexto(String texto) {
+	    String filtro = "%" + texto.toLowerCase() + "%";
+
+	    String conAcentos = "áéíóúÁÉÍÓÚüÜàèìòùÀÈÌÒÙ";
+	    String sinAcentos = "aeiouAEIOUuUaeiouAEIOU";
+
+	    String jpql = "SELECT s FROM SerieArgen s " +
+	            "WHERE LOWER(FUNCTION('TRANSLATE', s.codi, '" + conAcentos + "', '" + sinAcentos + "')) LIKE :filtro " +
+	            "OR LOWER(FUNCTION('TRANSLATE', s.nom, '" + conAcentos + "', '" + sinAcentos + "')) LIKE :filtro " +
+	            "ORDER BY s.nom ASC";
+
+	    TypedQuery<SerieArgen> query = entityManager.createQuery(jpql, SerieArgen.class);
+	    query.setParameter("filtro", filtro);
+
+	    return query.getResultList();
 	}
 	
 }

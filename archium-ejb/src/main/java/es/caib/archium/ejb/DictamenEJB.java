@@ -28,6 +28,7 @@ import es.caib.archium.ejb.service.TaulaValoracioService;
 import es.caib.archium.persistence.dao.AbstractDAO;
 import es.caib.archium.persistence.model.Dictamen;
 import es.caib.archium.persistence.model.Normativa;
+import es.caib.archium.persistence.model.Seriedocumental;
 
 /*import org.apache.commons.io.IOUtils;
 import org.fundaciobit.pluginsib.core.utils.MetadataConstants;*/
@@ -149,6 +150,24 @@ public class DictamenEJB extends AbstractDAO<Dictamen, Long> implements Dictamen
         }
         super.delete(id);
     }
+    
+    @Override
+	public List<Dictamen> findFiltrado(String searchText) {
+
+    	String filtro = "%" + searchText + "%";
+
+	    String conAcentos = "áéíóúÁÉÍÓÚüÜàèìòùÀÈÌÒÙ";
+	    String sinAcentos = "aeiouAEIOUuUaeiouAEIOU";
+
+	    String jpql = "SELECT d FROM Dictamen d " +
+	            "WHERE LOWER(FUNCTION('TRANSLATE', d.codi, '" + conAcentos + "', '" + sinAcentos + "')) LIKE :filtro "
+	            		+ "ORDER BY d.codi ASC";
+
+
+	    return entityManager.createQuery(jpql, Dictamen.class)
+	            .setParameter("filtro", "%" + searchText + "%")
+	            .getResultList();
+	}
 
 	/*
 	IArxiuPlugin pluginArxiu;

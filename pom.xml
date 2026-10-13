@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>es.caib.archium</groupId>
     <artifactId>archium</artifactId>
-    <version>1.0.6</version>
+    <version>1.0.7</version>
     <packaging>pom</packaging>
     <name>Archium</name>
     <description>Archium Java EE 8 i JBOSS 7.2</description>

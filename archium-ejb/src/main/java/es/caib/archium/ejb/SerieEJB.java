@@ -8,6 +8,7 @@ import es.caib.archium.ejb.service.FuncioService;
 import es.caib.archium.ejb.service.SerieService;
 import es.caib.archium.persistence.dao.AbstractDAO;
 import es.caib.archium.persistence.model.Dictamen;
+import es.caib.archium.persistence.model.Funcio;
 import es.caib.archium.persistence.model.Seriedocumental;
 
 import javax.annotation.security.PermitAll;
@@ -93,4 +94,21 @@ public class SerieEJB extends AbstractDAO<Seriedocumental, Long> implements Seri
 		return (comptarA + comptarB) > 0;
 	}
 
+	@Override
+	public List<Seriedocumental> findFiltrado(String searchText) {
+
+		String filtro = "%" + searchText + "%";
+
+	    String conAcentos = "áéíóúÁÉÍÓÚüÜàèìòùÀÈÌÒÙ";
+	    String sinAcentos = "aeiouAEIOUuUaeiouAEIOU";
+
+	    String jpql = "SELECT s FROM Seriedocumental s " +
+	            "WHERE LOWER(FUNCTION('TRANSLATE', s.codi, '" + conAcentos + "', '" + sinAcentos + "')) LIKE :filtro " +
+	            "OR LOWER(FUNCTION('TRANSLATE', s.nom, '" + conAcentos + "', '" + sinAcentos + "')) LIKE :filtro " +
+	            "ORDER BY s.achTipusserie.id ASC, s.codi ASC";
+	    
+	    return entityManager.createQuery(jpql, Seriedocumental.class)
+	            .setParameter("filtro", "%" + searchText + "%")
+	            .getResultList();
+	}
 }

@@ -1,0 +1,1189 @@
+<ui:composition template="/WEB-INF/templates/layout.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://java.sun.com/jsf/facelets">
+
+	<ui:param name="title" value="#{messages['funciones.nuevaserie']}" />
+	<ui:define name="content">
+
+		<!-- CONTENIDO -->
+
+		<f:metadata>
+			<f:viewAction action="#{nuevaSerieController.init}" />
+		</f:metadata>
+
+		<div class="botonera-wrapper">
+
+			<!-- VOLVER -->
+			<p:commandButton class="button_add" value="#{messages['tornar']}"
+				action="funciones?faces-redirect=true" icon="pi pi-arrow-left" />
+
+		</div>
+
+		<div class="views_3">
+			<div class="content_4 modfseries">
+				<h:form id="nuevaSerieForm2">
+					<p:growl id="growlGlobal" showDetail="true" sticky="false"
+						life="5000">
+						<p:autoUpdate />
+					</p:growl>
+
+					<ui:fragment rendered="#{nuevaSerieController.serieId!=null}">
+						<h2 class="title_first">#{messages['nuevaserie.modificaserie']}</h2>
+					</ui:fragment>
+					<ui:fragment rendered="#{nuevaSerieController.serieId==null}">
+						<h2 class="title_first">#{messages['nuevaserie.nuevaserie']}</h2>
+					</ui:fragment>
+					<div class="separador_rojo"></div>
+					<p:tabView id="tv" widgetVar="tvW" dynamic="true" cache="true">
+						<p:ajax event="tabChange"
+							listener="#{nuevaSerieController.onTabChange}" />
+
+						<p:tab id="dadesBasiques"
+							title="#{messages['nuevaserie.datosBasicos']}" class="datosbasic">
+
+							<div class="ui-g">
+
+								<div class="ui-g-12 item_1" style="margin-bottom: 10px;">
+									<label class="ui-g-2">#{messages['nuevaserie.nombreserie']}
+										*</label>
+									<p:inputText id="nom" class="ui-g-10"
+										value="#{nuevaSerieController.nom}" required="true"
+										validatorMessage="#{messages['nuevaserie.validate.nom']}"
+										requiredMessage="#{messages['nuevaserie.require.nom']}"
+										style="height: 100%!important;">
+										<f:validateLength minimum="0" maximum="1000" />
+									</p:inputText>
+									<!-- 									<p:message for="nom" /> -->
+								</div>
+
+								<div class="ui-g-6">
+									<label class="ui-g-5">#{messages['nuevaserie.codiserie']}
+										*</label>
+									<p:inputText id="codi" class="ui-g-7"
+										value="#{nuevaSerieController.codi}" required="true"
+										requiredMessage="#{messages['nuevaserie.require.codi']}"
+										validatorMessage="#{messages['nuevaserie.validate.codi']}"
+										style="height: 100%!important;">
+										<f:validateLength minimum="0" maximum="10" />
+									</p:inputText>
+									<!-- 									<p:message for="codi" /> -->
+								</div>
+								<div class="ui-g-6">
+									<label class="ui-g-5">#{messages['nuevaserie.codifuncion']}
+										*</label>
+									<p:selectOneMenu id="funcioList"
+										value="#{nuevaSerieController.funcioId}" required="true"
+										class="ui-g-7 selector_4" style="max-width:450px!important;"
+										panelStyle="width:450px"
+										requiredMessage="#{messages['nuevaserie.require.funcio']}"
+										filter="true" hideNoSelectionOption="true"
+										filterMatchMode="contains">
+
+										<!-- Placeholder -->
+										<f:selectItem
+											itemLabel="#{nuevaSerieController.serieFuncioLabel}" 
+											itemValue="#{nuevaSerieController.serieFuncio.id}" />
+
+										<!-- Opciones reales -->
+										<f:selectItems value="#{nuevaSerieController.listaFunciones}"
+											var="n"
+											itemLabel="#{n.printTab().replace(' ', '&#160;')}#{n.codi} - #{n.nom}"
+											itemValue="#{n.id}" />
+									</p:selectOneMenu>
+								</div>
+
+
+
+								<div class="ui-g-6 item_1" style="padding: 0 7px !important;">
+									<label class="ui-g-5">#{messages['nuevaserie.tiposerie']}</label>
+									<p:selectOneMenu panelStyle="width:450px"
+										class="ui-g-7 selector_4" id="tipusSerieList"
+										value="#{nuevaSerieController.tipusSerieId}">
+										<f:selectItem
+											itemLabel="-- #{messages['selecciona']} #{messages['nuevaserie.tiposerie']} --"
+											itemValue="#{null}" noSelectionOption="true" />
+										<f:selectItems
+											value="#{nuevaSerieController.listaTipusSerie}"
+											var="tipusSerie" itemValue="#{tipusSerie.id}"
+											itemLabel="#{tipusSerie.nom}" />
+									</p:selectOneMenu>
+								</div>
+
+								<div class="ui-g-6 item_1" style="padding: 0 7px;!important;">
+									<label class="ui-g-5">#{messages['nuevaserie.catalogoserie']}
+										*</label>
+									<p:selectOneMenu panelStyle="width:450px"
+										class="ui-g-7 selector_4" id="catalegSerieList"
+										value="#{nuevaSerieController.catalegSeriId}" required="true"
+										requiredMessage="#{messages['nuevaserie.required.catalogoserie']}">
+										<f:selectItem
+											itemLabel="-- #{messages['selecciona']} #{messages['nuevaserie.catalogoserie']} --"
+											itemValue="#{null}" noSelectionOption="true" />
+										<f:selectItems
+											value="#{nuevaSerieController.listaCatalegSerie}"
+											var="catalegSeri" itemValue="#{catalegSeri.id}"
+											itemLabel="#{catalegSeri.nom}" />
+									</p:selectOneMenu>
+								</div>
+
+                                <div class="ui-g-6">
+                                    <label class="ui-g-5">#{messages['nuevaserie.nombrecastellano']}*</label>
+                                    <p:inputText class="ui-g-7" value="#{nuevaSerieController.nomCas}"
+                                                 required="true"
+                                                 validatorMessage="#{messages['nuevaserie.validate.nomcas']}"
+                                                 requiredMessage="#{messages['nuevaserie.require.nomcas']}"
+                                                 style="height: 100%!important;">
+                                        <f:validateLength minimum="0" maximum="1000"/>
+                                    </p:inputText>
+                                </div>
+
+								<div class="ui-g-6">
+									<label class="ui-g-5">#{messages['nuevaserie.descripcio']}
+										*</label>
+									<p:inputTextarea class="ui-g-7" id="desc"
+										value="#{nuevaSerieController.descripcio}" required="true"
+										requiredMessage="#{messages['nuevaserie.require.desc']}"
+										autoResize="false"
+										validatorMessage="#{messages['nuevaserie.validate.desc']}"
+										style="height: 100%!important;">
+										<f:validateLength minimum="0" maximum="4000" />
+									</p:inputTextarea>
+
+									<!-- 									<p:message for="desc" /> -->
+								</div>
+
+								<div class="ui-g-6">
+									<label class="ui-g-5">#{messages['nuevaserie.descripciocas']}</label>
+									<p:inputTextarea class="ui-g-7"
+										value="#{nuevaSerieController.descripcioCas}"
+										autoResize="false"
+										validatorMessage="#{messages['nuevaserie.validate.desccas']}"
+										style="height: 100%!important;">
+										<f:validateLength minimum="0" maximum="4000" />
+									</p:inputTextarea>
+								</div>
+
+								<div class="ui-g-6">
+									<label class="ui-g-5">#{messages['nuevaserie.resummigracio']}</label>
+									<p:inputTextarea class="ui-g-7"
+										value="#{nuevaSerieController.resumMigracio}"
+										autoResize="false"
+										validatorMessage="#{messages['nuevaserie.validate.resummigracio']}"
+										style="height: 100%!important;">
+										<f:validateLength minimum="0" maximum="4000" />
+									</p:inputTextarea>
+								</div>
+								<div class="ui-g-6">
+									<label class="ui-g-5">#{messages['nuevaserie.enviatSAT']}</label>
+									<p:triStateCheckbox value="#{nuevaSerieController.enviatSAT}"
+										converter="TriStateBooleanConverter" />
+								</div>
+
+
+								<div class="ui-g-6">
+									<label class="ui-g-5">#{messages['nuevaserie.dir3prom']}</label>
+									<p:selectOneMenu class="ui-g-7" id="dir3"
+										value="#{nuevaSerieController.dir3Promotor}" label="Estats"
+										panelStyle="width:450px"
+										style="height: 100%!important;min-width: auto!important;"
+										filter="true" filterMatchMode="contains">
+										<f:selectItem
+											itemLabel="-- #{messages['selecciona']} #{messages['nuevaserie.dir3prom']} -- "
+											itemValue="#{null}" noSelectionOption="true" />
+										<f:selectItems value="#{nuevaSerieController.listaDir3}"
+											var="n" itemValue="#{n.codi}" itemLabel="#{n.codi}-#{n.nom}" />
+									</p:selectOneMenu>
+								</div>
+
+								<div class="ui-g-6">
+									<label class="ui-g-5">#{messages['nuevaserie.estat']} *</label>
+									<p:selectOneMenu class="ui-g-7" id="estado"
+										value="#{nuevaSerieController.serieEstat}" label="Estats"
+										panelStyle="width:450px" style="height: 100%!important;">
+										<f:selectItems value="#{funciones.listaEstats}" var="n"
+											itemValue="#{n}" itemLabel="#{n}" />
+									</p:selectOneMenu>
+								</div>
+
+
+							</div>
+
+						</p:tab>
+						<p:tab id="prcRelacionats"
+							title="#{messages['nuevaserie.procedimientosRelacionados']}"
+							disabled="#{not empty nuevaSerieController.procedimentsComunsRelacionats.target or not empty nuevaSerieController.listaTDP}">
+							<h:panelGroup id="tabPrcRelacionats">
+								<div class="ui-g-12 item_1">
+									<p:messages id="mensaje-estado-prcRelacionats">
+										<p:autoUpdate />
+									</p:messages>
+								</div>
+								<div class="ui-g-12">
+									<h:panelGroup id="contenedorPrcRelacionats"
+										styleClass="claseContenedorPrcRelacionats">
+
+										<div class="ui-g-12">
+
+											<div class="ui-inputgroup">
+
+												<p:autoComplete id="buscadorPrcRelacionats"
+													widgetVar="wvBuscadorPrcRelacionats"
+													value="#{nuevaSerieController.prcRelacionatsABuscar}"
+													completeMethod="#{nuevaSerieController.completarPrcRelacionats}"
+													var="norm" itemLabel="#{norm.nom}" itemValue="#{norm}"
+													converter="ProcedimentVisorConverter" forceSelection="true"
+													placeholder="Buscar per nom o codisia..."
+													style="width:100%" inputStyle="width:100%"
+													appendTo="@(body)" panelStyleClass="panel-integrado"
+													minQueryLength="3" queryDelay="1000" autoHighlight="false"
+													dropdown="false"
+													onkeypress="if (event.keyCode == 13) { ejecutarBusquedaPrcRelacionats(); return false; }">
+
+													<p:column headerText="Codisia">
+														<h:outputText value="#{norm.codisia}" />
+													</p:column>
+
+													<p:column headerText="Nom">
+														<h:outputText value="#{norm.nom}" />
+													</p:column>
+
+													<p:ajax event="itemSelect"
+														listener="#{nuevaSerieController.onItemSelectPrcRelacionats}"
+														update="contenedorPrcRelacionats" />
+												</p:autoComplete>
+
+												<p:commandButton icon="pi pi-search" type="button"
+													onclick="ejecutarBusquedaPrcRelacionats()"
+													styleClass="ui-button-warning" />
+
+											</div>
+
+										</div>
+
+										<div class="ui-g-12">
+											<p:dataTable id="tablaPrcRelacionatsSeleccionadas"
+												value="#{nuevaSerieController.prcRelacionatsSeleccionadas}"
+												var="sel"
+												emptyMessage="No hi ha procediments relacionats seleccionades"
+												style="margin-top:10px" scrollHeight="200">
+
+												<p:column headerText="Codisia" width="120">
+													<h:outputText value="#{sel.codisia}" />
+												</p:column>
+
+												<p:column headerText="Nom">
+													<h:outputText value="#{sel.nom}" />
+												</p:column>
+
+												<p:column width="40" style="text-align:center">
+													<p:commandLink
+														action="#{nuevaSerieController.eliminarSeleccionPrcRelacionats(sel)}"
+														update="@(.claseContenedorPrcRelacionats)" process="@this">
+														<i class="pi pi-trash" style="color: red"></i>
+													</p:commandLink>
+												</p:column>
+
+											</p:dataTable>
+										</div>
+
+									</h:panelGroup>
+								</div>
+							</h:panelGroup>
+						</p:tab>
+
+						<p:tab id="prcComuns"
+							title="#{messages['nuevaserie.procedimientosComunes']}"
+							disabled="#{not empty nuevaSerieController.procedimentsRelacionats.target or not empty nuevaSerieController.listaTDP}">
+							<h:panelGroup id="tabPrcComuns">
+								<div class="ui-g-12 item_1">
+									<p:messages id="mensaje-estado-prcComuns">
+										<p:autoUpdate />
+									</p:messages>
+								</div>
+								<div class="ui-g-12">
+									<h:panelGroup id="contenedorPrcComuns"
+										styleClass="claseContenedorPrcComuns">
+
+										<div class="ui-g-12">
+
+											<div class="ui-inputgroup">
+
+												<p:autoComplete id="buscadorPrcComuns"
+													widgetVar="wvBuscadorPrcComuns"
+													value="#{nuevaSerieController.prcComunsABuscar}"
+													completeMethod="#{nuevaSerieController.completarPrcComuns}"
+													var="norm" itemLabel="#{norm.nom}" itemValue="#{norm}"
+													converter="ProcedimentVisorConverter" forceSelection="true"
+													placeholder="Buscar per nom o codisia..."
+													style="width:100%" inputStyle="width:100%"
+													appendTo="@(body)" panelStyleClass="panel-integrado"
+													minQueryLength="3" queryDelay="1000" autoHighlight="false"
+													dropdown="false"
+													onkeypress="if (event.keyCode == 13) { ejecutarBusquedaPrcComuns(); return false; }">
+
+													<p:column headerText="Codisia">
+														<h:outputText value="#{norm.codisia}" />
+													</p:column>
+
+													<p:column headerText="Nom">
+														<h:outputText value="#{norm.nom}" />
+													</p:column>
+
+													<p:ajax event="itemSelect"
+														listener="#{nuevaSerieController.onItemSelectPrcComuns}"
+														update="contenedorPrcComuns" />
+												</p:autoComplete>
+
+												<p:commandButton icon="pi pi-search" type="button"
+													onclick="ejecutarBusquedaPrcComuns()"
+													styleClass="ui-button-warning" />
+
+											</div>
+
+										</div>
+
+										<div class="ui-g-12">
+											<p:dataTable id="tablaPrcComunsSeleccionadas"
+												value="#{nuevaSerieController.prcComunsSeleccionadas}"
+												var="sel"
+												emptyMessage="No hi ha procediments comuns seleccionades"
+												style="margin-top:10px" scrollHeight="200">
+
+												<p:column headerText="Codisia" width="120">
+													<h:outputText value="#{sel.codisia}" />
+												</p:column>
+
+												<p:column headerText="Nom">
+													<h:outputText value="#{sel.nom}" />
+												</p:column>
+
+												<p:column width="40" style="text-align:center">
+													<p:commandLink
+														action="#{nuevaSerieController.eliminarSeleccionPrcComuns(sel)}"
+														update="@(.claseContenedorPrcComuns)" process="@this">
+														<i class="pi pi-trash" style="color: red"></i>
+													</p:commandLink>
+												</p:column>
+
+											</p:dataTable>
+										</div>
+
+									</h:panelGroup>
+								</div>
+							</h:panelGroup>
+						</p:tab>
+
+						<!-- ##################################### TIPUS DOCUMENTALS SÈRIES NO PROCEDIMENTALS  -->
+						<p:tab id="Agrupacions"
+							title="#{messages['nuevaserie.tipusDocumentals']}"
+							disabled="#{not empty nuevaSerieController.procedimentsRelacionats.target or not empty nuevaSerieController.procedimentsComunsRelacionats.target}">
+							<h:panelGroup id="tabAgrupacions">
+							<div class="ui-g-12">
+							
+								<label class="ui-g-2">#{messages['nuevaserie.organcoleg']}</label>
+								<p:selectOneMenu class="ui-g-7" id="collegiat"
+									value="#{nuevaSerieController.organCollegiatId}"
+									panelStyle="width:450px"
+									style="height: 100%!important;min-width: auto!important;"
+									filter="true" filterMatchMode="contains">
+									<f:selectItem
+										itemLabel="-- #{messages['selecciona']} #{messages['nuevaserie.organcoleg']} -- "
+										itemValue="#{null}" noSelectionOption="true" />
+									<f:selectItems
+										value="#{nuevaSerieController.listaOrganCollegiat}" var="n"
+										itemValue="#{n.id}" itemLabel="#{n.codi}-#{n.nom}" />
+								</p:selectOneMenu>
+							</div>
+
+							<div class="ui-g-12">
+								<div class="ui-g-12 item_1">
+									<label class="ui-g-2">#{messages['nuevaserie.tipusDocumental']}:</label>
+									<p:selectOneMenu id="selectTipoDocumental"
+										value="#{nuevaSerieController.selectedTipoDocumental}"
+										filter="true" filterMatchMode="contains">
+										<f:converter converterId="tiposDocumentalRelacionadoConverter" />
+										<f:selectItem
+											itemLabel="-- #{messages['selecciona']} #{messages['nuevaserie.selecttipusdocumental']} -- "
+											itemValue="#{null}" noSelectionOption="true" />
+										<f:selectItems
+											value="#{nuevaSerieController.listatipoDocumental}" var="n"
+											itemLabel="#{n.nom}" itemValue="#{n}" />
+										<p:ajax event="valueChange"
+											listener="#{nuevaSerieController.onTipoDocumentalSelectedListener}"
+											update="selectTipoDocumental, listaTiposDocumentales"
+											process="@this listaTiposDocumentales" />
+									</p:selectOneMenu>
+								</div>
+
+								<div class="ui-g-12 item_1">
+									<p:messages id="mensaje-estado-agr" closable="true">
+										<p:autoUpdate />
+									</p:messages>
+								</div>
+								<p:accordionPanel class="ui-g-12 acordeonnormativas"
+									id="listaTiposDocumentales"
+									value="#{nuevaSerieController.listaTDP}" var="tdp">
+									<p:tab id="tab" title="#{tdp.tipusDocumental.nom}">
+										<f:facet name="title">
+											<h:outputText class="accordion-title"
+												value="#{tdp.tipusDocumental.nom}" />
+											<h:panelGrid
+												columnClasses="alignRightFullWidth, alignRight, alignRight"
+												columns="3">
+
+											</h:panelGrid>
+											<p:commandButton class="botton_library" icon="pi pi-trash"
+												onclick="event.stopPropagation();" partialSubmit="true"
+												process="@this" update="listaTiposDocumentales"
+												actionListener="#{nuevaSerieController.deleteTDP(tdp)}" />
+										</f:facet>
+
+										<div class="ui-g-12 ">
+
+											<div class="ui-g-4"
+												style="display: flex; align-items: center;">
+												<label class="ui-g-4">#{messages['nuevoprocediment.Obligatori']}</label>
+												<p:selectBooleanCheckbox style="margin: 0 10px;"
+													id="obligatori" value="#{tdp.obligatori}" />	
+											</div>
+											<div class="ui-g-4"
+												style="display: flex; align-items: center;">
+												<label class="ui-g-4">#{messages['nuevoprocediment.Multiple']}</label>
+												<p:selectBooleanCheckbox style="margin: 0 10px;"
+													id="multiple" value="#{tdp.multiple}" />	
+											</div>
+										</div>
+									</p:tab>
+								</p:accordionPanel>
+
+							</div>
+							</h:panelGroup>
+						</p:tab>
+
+						<!-- ##################################### RELACIO SERIES -->
+						<p:tab id="seriesRel"
+							title="#{messages['nuevaserie.seriesRelacionadas']}">
+							<h:panelGroup id="tabTipusRelacio">
+								<div class="ui-g-12">
+
+									<div class="ui-g-12 item_1">
+										<label class="ui-g-2">#{messages['nuevaserie.tipusRelacio']}:</label>
+										<p:selectOneMenu id="selectTipusRelacio"
+											value="#{nuevaSerieController.selectedTipusRelacio}"
+											filter="true" filterMatchMode="contains"
+											style="max-width:500px;">
+											<f:converter converterId="tipusRelacioSerieConverter" />
+											<f:selectItem
+												itemLabel="-- #{messages['selecciona']} #{messages['nuevaserie.tipusRelacio']} --"
+												itemValue="#{nuevaSerieController.selectedTipusRelacio}"
+												noSelectionOption="true" />
+											<f:selectItems
+												value="#{nuevaSerieController.listaTipusRelacioDisponibles}"
+												var="n" itemLabel="#{n.nom}" itemValue="#{n}" />
+											<p:ajax event="valueChange"
+												listener="#{nuevaSerieController.onTipusRelacioSelectedListener}"
+												update="selectTipusRelacio, listaRelacionesSeries" />
+										</p:selectOneMenu>
+
+									</div>
+									<div class="ui-g-12 item_1">
+										<p:messages id="mensaje-estado-relser">
+											<p:autoUpdate />
+										</p:messages>
+									</div>
+									<p:accordionPanel id="listaRelacionesSeries"
+										class="ui-g-12 acordeonnormativas"
+										value="#{nuevaSerieController.listaRelacionSeries}"
+										var="relitem" varStatus="estado">
+										<p:tab id="tab" title="#{relitem.tipusRelacio.nom}">
+											<f:facet name="title">
+												<h:outputText class="accordion-title"
+													value="#{relitem.tipusRelacio.nom}" />
+												<h:panelGrid
+													columnClasses="alignRightFullWidth, alignRight, alignRight"
+													columns="3">
+													<p:commandButton class="botton_library" icon="pi pi-trash"
+														onclick="event.stopPropagation();" partialSubmit="true"
+														process="@this" update="listaRelacionesSeries"
+														actionListener="#{nuevaSerieController.deleteRelacioSerie(relitem)}" />
+												</h:panelGrid>
+											</f:facet>
+
+											<h:panelGroup id="contenedorRelSeries" layout="block"
+												styleClass="claseContenedorRelSeries">
+
+												<div class="ui-g-12">
+
+													<div class="ui-inputgroup">
+
+														<p:autoComplete id="buscadorSeriesRel"
+															widgetVar="wvBuscadorSeriesRel_#{estado.index}"
+															value="#{nuevaSerieController.serieABuscar}"
+															completeMethod="#{nuevaSerieController.completarSeriesRel}"
+															var="s" itemLabel="#{s.nomComplet}" itemValue="#{s}"
+															converter="SerieDocumentalConverter"
+															forceSelection="true"
+															placeholder="Buscar per nom o codi..." style="width:100%"
+															inputStyle="width:100%" appendTo="@(body)"
+															panelStyleClass="panel-integrado" minQueryLength="3"
+															queryDelay="1000" autoHighlight="false" dropdown="false"
+															onkeypress="if (event.keyCode == 13) { ejecutarBusquedaSeriesRel(#{estado.index}); return false; }">
+
+															<p:column headerText="Codi">
+																<h:outputText value="#{s.codi}" />
+															</p:column>
+
+															<p:column headerText="Nom">
+																<h:outputText value="#{s.nom}" />
+															</p:column>
+
+															<p:ajax event="itemSelect"
+																listener="#{nuevaSerieController.onItemSelectSeriesRel(relitem)}"
+																update="contenedorRelSeries" />
+														</p:autoComplete>
+
+														<p:commandButton icon="pi pi-search" type="button"
+															onclick="ejecutarBusquedaSeriesRel(#{estado.index})"
+															styleClass="ui-button-warning" />
+
+													</div>
+
+												</div>
+
+												<div class="ui-g-12">
+													<p:dataTable id="tablaSeriesRelSeleccionadas"
+														value="#{relitem.seriesRelacionades}" var="sel"
+														emptyMessage="No hi ha sèries relacionades seleccionades"
+														style="margin-top:10px" scrollHeight="200">
+
+														<p:column headerText="Codi" width="120">
+															<h:outputText value="#{sel.codi}" />
+														</p:column>
+
+														<p:column headerText="Nom">
+															<h:outputText value="#{sel.nom}" />
+														</p:column>
+
+														<p:column width="40" style="text-align:center">
+															<p:commandLink
+																action="#{nuevaSerieController.eliminarSeleccionSeriesRel(relitem, sel)}"
+																update="@(.claseContenedorRelSeries)" process="@this">
+																<i class="pi pi-trash" style="color: red"></i>
+															</p:commandLink>
+														</p:column>
+
+													</p:dataTable>
+												</div>
+
+											</h:panelGroup>
+										</p:tab>
+									</p:accordionPanel>
+
+								</div>
+							</h:panelGroup>
+						</p:tab>
+						<!-- ##################################### Fi RELACIO SERIES -->
+
+						<p:tab id="argen" title="#{messages['nuevaserie.seriesAregen']}">
+							<h:panelGroup id="tabSeriesArgen">
+								<div class="ui-g-12">
+									<h:panelGroup id="contenedorSeriesArgen"
+										styleClass="claseContenedorSeriesArgen">
+
+										<div class="ui-g-12">
+
+											<div class="ui-inputgroup">
+
+												<p:autoComplete id="buscadorSeriesArgen"
+													widgetVar="wvBuscadorSeriesArgen"
+													value="#{nuevaSerieController.seriesArgenABuscar}"
+													completeMethod="#{nuevaSerieController.completarSeriesArgen}"
+													var="norm" itemLabel="#{norm.nom}" itemValue="#{norm}"
+													converter="serieArgenConverter" forceSelection="true"
+													placeholder="Buscar per nom o codi..." style="width:100%"
+													inputStyle="width:100%" appendTo="@(body)"
+													panelStyleClass="panel-integrado" minQueryLength="1"
+													queryDelay="1000" autoHighlight="false" dropdown="false"
+													onkeypress="if (event.keyCode == 13) { ejecutarBusquedaSeriesArgen(); return false; }">
+
+													<p:column headerText="Codi">
+														<h:outputText value="#{norm.codi}" />
+													</p:column>
+
+													<p:column headerText="Nom">
+														<h:outputText value="#{norm.nom}" />
+													</p:column>
+
+													<p:ajax event="itemSelect"
+														listener="#{nuevaSerieController.onItemSelectSeriesArgen}"
+														update="contenedorSeriesArgen" />
+												</p:autoComplete>
+
+												<p:commandButton icon="pi pi-search" type="button"
+													onclick="ejecutarBusquedaSeriesArgen()"
+													styleClass="ui-button-warning" />
+
+											</div>
+
+										</div>
+
+										<div class="ui-g-12">
+											<p:dataTable id="tablaSeriesArgenSeleccionadas"
+												value="#{nuevaSerieController.seriesArgenSeleccionadas}"
+												var="sel" emptyMessage="No hi ha series argen seleccionades"
+												style="margin-top:10px" scrollHeight="200">
+
+												<p:column headerText="Codi" width="120">
+													<h:outputText value="#{sel.codi}" />
+												</p:column>
+
+												<p:column headerText="Nom">
+													<h:outputText value="#{sel.nom}" />
+												</p:column>
+
+												<p:column width="40" style="text-align:center">
+													<p:commandLink
+														action="#{nuevaSerieController.eliminarSeleccionSeriesArgen(sel)}"
+														update="@(.claseContenedorSeriesArgen)" process="@this">
+														<i class="pi pi-trash" style="color: red"></i>
+													</p:commandLink>
+												</p:column>
+
+											</p:dataTable>
+										</div>
+
+									</h:panelGroup>
+								</div>
+							</h:panelGroup>
+						</p:tab>
+						<p:tab id="aplicacions"
+							title="#{messages['nuevaserie.aplicaciones']}">
+
+							<h:panelGroup id="tabAplicacionsSerie">
+								<div class="ui-g-12">
+
+									<h:panelGroup id="contenedorAplicacions"
+										styleClass="claseContenedorAplicacions">
+
+										<div class="ui-g-12">
+
+											<div class="ui-inputgroup">
+
+												<p:autoComplete id="buscadorAplicacions"
+													widgetVar="wvBuscadorAplicacions"
+													value="#{nuevaSerieController.aplicacionsABuscar}"
+													completeMethod="#{nuevaSerieController.completarAplicacions}"
+													var="norm" itemLabel="#{norm.nom}" itemValue="#{norm}"
+													converter="AplicacioConverter" forceSelection="true"
+													placeholder="Buscar per nom..." style="width:100%"
+													inputStyle="width:100%" appendTo="@(body)"
+													panelStyleClass="panel-integrado" minQueryLength="1"
+													queryDelay="1000" autoHighlight="false" dropdown="false"
+													onkeypress="if (event.keyCode == 13) { ejecutarBusquedaAplicacions(); return false; }">
+
+													<p:column headerText="Nom">
+														<h:outputText value="#{norm.nom}" />
+													</p:column>
+
+													<p:ajax event="itemSelect"
+														listener="#{nuevaSerieController.onItemSelectAplicacions}"
+														update="contenedorAplicacions" />
+												</p:autoComplete>
+
+												<p:commandButton icon="pi pi-search" type="button"
+													onclick="ejecutarBusquedaAplicacions()"
+													styleClass="ui-button-warning" />
+
+											</div>
+
+										</div>
+
+										<div class="ui-g-12">
+											<p:dataTable id="tablaAplicacionsSeleccionadas"
+												value="#{nuevaSerieController.aplicacionsSeleccionadas}"
+												var="sel" emptyMessage="No hi ha aplicacions seleccionades"
+												style="margin-top:10px" scrollHeight="200">
+
+												<p:column headerText="Nom">
+													<h:outputText value="#{sel.nom}" />
+												</p:column>
+
+												<p:column width="40" style="text-align:center">
+													<p:commandLink
+														action="#{nuevaSerieController.eliminarSeleccionAplicacions(sel)}"
+														update="@(.claseContenedorAplicacions)" process="@this">
+														<i class="pi pi-trash" style="color: red"></i>
+													</p:commandLink>
+												</p:column>
+
+											</p:dataTable>
+										</div>
+
+									</h:panelGroup>
+
+								</div>
+							</h:panelGroup>
+						</p:tab>
+						<p:tab id="acces" title="#{messages['nuevaserie.acceso']}">
+							<h:panelGroup id="tabNormativas">
+								<div class="ui-g-12">
+
+									<div class="ui-g-12 item_1">
+										<label class="ui-g-2">
+											#{messages['nuevaserie.normativa']}: </label>
+
+										<div class="ui-inputgroup" style="max-width: 500px;">
+
+											<p:autoComplete id="selectNormativa"
+												widgetVar="wvSelectNormativa"
+												value="#{nuevaSerieController.selectedNormativa}"
+												completeMethod="#{nuevaSerieController.completarNormativas}"
+												var="n" itemLabel="#{n.nom}" itemValue="#{n}"
+												converter="serieNormativaAprobacionConverter"
+												forceSelection="true" placeholder="Buscar per nom o codi..."
+												style="width:100%" inputStyle="width:100%"
+												appendTo="@(body)" panelStyleClass="panel-integrado"
+												minQueryLength="3" queryDelay="1000" autoHighlight="false"
+												dropdown="false"
+												onkeypress="if (event.keyCode == 13) { ejecutarBusquedaNormativa(); return false; }">
+
+												<p:column headerText="Codi">
+													<h:outputText value="#{n.codi}" />
+												</p:column>
+
+												<p:column headerText="Nom">
+													<h:outputText value="#{n.nom}" />
+												</p:column>
+
+												<!-- cuando selecciona una normativa -->
+												<p:ajax event="itemSelect"
+													listener="#{nuevaSerieController.onLimitacioSelectedListener}"
+													update="selectNormativa listadoRelaciones mensaje-estado" />
+
+											</p:autoComplete>
+
+											<p:commandButton icon="pi pi-search" type="button"
+												onclick="ejecutarBusquedaNormativa()"
+												styleClass="ui-button-warning" />
+
+										</div>
+									</div>
+
+									<div class="ui-g-12 item_1">
+										<p:messages id="mensaje-estado" closable="true">
+											<p:autoUpdate />
+										</p:messages>
+									</div>
+
+									<!-- accordionPanel tal y como lo tenías -->
+									<p:accordionPanel id="listadoRelaciones"
+										class="ui-g-12 acordeonnormativas"
+										value="#{nuevaSerieController.listaRelacionLNS}"
+										var="lnsitem" varStatus="estado">
+
+										<p:tab id="tab" title="#{lnsitem.normativa.nom}">
+											<h:panelGroup id="contenedorAccess" layout="block"
+												styleClass="claseContenedorAccess">
+												<p:autoComplete id="buscadorNormativas"
+													value="#{nuevaSerieController.causaABuscar}"
+													completeMethod="#{nuevaSerieController.completarCausas}"
+													var="norm" itemLabel="#{norm.nom}" itemValue="#{norm}"
+													converter="causaLimitacioConverter" forceSelection="true"
+													placeholder="Buscar per nom o codi..." style="width:100%"
+													minQueryLength="1" queryDelay="1000"
+													inputStyle="width:100%" appendTo="@(body)">
+
+													<p:column headerText="Codi">
+														<h:outputText value="#{norm.codi}" />
+													</p:column>
+													<p:column headerText="Nom">
+														<h:outputText value="#{norm.nom}" />
+													</p:column>
+
+													<p:ajax event="itemSelect"
+														listener="#{nuevaSerieController.onItemSelectAccess(lnsitem)}"
+														update="contenedorAccess" />
+												</p:autoComplete>
+
+												<div class="ui-g-12">
+													<p:dataTable id="tablaSeleccionadas"
+														value="#{lnsitem.listCausaLimitacio}" var="sel"
+														emptyMessage="No hi ha causes limitació seleccionades"
+														style="margin-top:10px" scrollHeight="200">
+
+														<p:column headerText="Codi" width="120">
+															<h:outputText value="#{sel.codi}" />
+														</p:column>
+
+														<p:column headerText="Nom">
+															<h:outputText value="#{sel.nom}" />
+														</p:column>
+
+														<p:column width="40" style="text-align:center">
+															<p:commandLink
+																action="#{nuevaSerieController.eliminarSeleccionAccess(lnsitem, sel)}"
+																update="@(.claseContenedorAccess)" process="@this">
+																<i class="pi pi-trash" style="color: red"></i>
+															</p:commandLink>
+														</p:column>
+													</p:dataTable>
+												</div>
+											</h:panelGroup>
+										</p:tab>
+									</p:accordionPanel>
+
+								</div>
+							</h:panelGroup>
+						</p:tab>
+						<p:tab id="valoracio" title="#{messages['nuevaserie.valors']}">
+							<h:panelGroup id="tabValors">
+								<div class="ui-g-12">
+								
+									<div class="ui-g-12">
+										<label class="ui-g-12 title_valores">#{messages['nuevaserie.valorsprimari']}</label>
+									</div>
+
+									<p:repeat
+										value="#{nuevaSerieController.valoracio.achValorprimaris}"
+										var="valor">
+										<div class="ui-g-12" style="padding: 0px;">
+											<div class="ui-g-3">
+												<label class="ui-g-8">#{valor.achTipusvalor.nom}</label>
+												<p:selectBooleanCheckbox
+													style="margin: 0 10px;displey:flex;aling-items:center;"
+													id="recap" value="#{valor.selected}" />
+											</div>
+											<div class="ui-g-8">
+												<p:inputNumber class="ui-g-5 input_valores" id="plazo1"
+													value="#{valor.terminiVal}" decimalPlaces="0"
+													validatorMessage="#{messages['nuevodictamen.validate.termini']}">
+													<f:validateLength minimum="0" maximum="5" />
+												</p:inputNumber>
+
+												<p:selectOneMenu
+													style="width: 50%!important; margin-left:10px!important;"
+													class="ui-g-5" value="#{valor.terminiType}" label="plazos1"
+													panelStyle="width:10px">
+													<f:selectItems value="#{dictamenController.plazos1}"
+														var="n" itemLabel="#{n}" itemValue="#{n}" />
+												</p:selectOneMenu>
+											</div>
+										</div>
+									</p:repeat>
+
+
+									<div class="ui-g-12">
+										<label class="ui-g-12 title_valores">#{messages['nuevaserie.valorsecundari']}</label>
+										<p:selectOneMenu class="ui-g-12" id="valorSecundari"
+											value="#{nuevaSerieController.valoracio.achValorsecundari}"
+											style="margin-top:15px;">
+											<f:converter converterId="valorSecundariConverter" />
+											<f:selectItem
+												itemLabel="-- #{messages['nuevaserie.valorsecundari']} -- "
+												itemValue="#{null}" noSelectionOption="true" />
+											<f:selectItems
+												value="#{nuevaSerieController.listaValoresSecundarios}"
+												var="n" itemLabel="#{n.nom}" itemValue="#{n}" />
+										</p:selectOneMenu>
+									</div>
+								</div>
+
+							</h:panelGroup>
+						</p:tab>
+						<p:tab id="normatives" title="#{messages['nuevaserie.normativa']}">
+							<h:panelGroup id="tabNormativasSerie">
+								<div class="ui-g-12">
+									<h:panelGroup id="contenedorNormativas"
+										styleClass="claseContenedorNormativas">
+										<div class="ui-g-12">
+											<p:messages id="msgs" closable="true" showDetail="true">
+												<p:autoUpdate />
+											</p:messages>
+
+											<div class="ui-inputgroup">
+												<p:autoComplete id="buscadorNormativas"
+													widgetVar="wvBuscadorNormativas"
+													value="#{nuevaSerieController.normativaABuscar}"
+													completeMethod="#{nuevaSerieController.completarNormativas}"
+													var="norm" itemLabel="#{norm.nom}" itemValue="#{norm}"
+													converter="seriesNormativaConverter" forceSelection="true"
+													placeholder="Buscar per nom o codi..." style="width:100%"
+													inputStyle="width:100%" appendTo="@(body)"
+													panelStyleClass="panel-integrado" minQueryLength="3"
+													queryDelay="1000" autoHighlight="false" dropdown="false"
+													onkeypress="if (event.keyCode == 13) { ejecutarBusquedaNormativa(); return false; }">
+													<p:column headerText="Codi">
+														<h:outputText value="#{norm.codi}" />
+													</p:column>
+													<p:column headerText="Nom">
+														<h:outputText value="#{norm.nom}" />
+													</p:column>
+
+													<p:ajax event="itemSelect"
+														listener="#{nuevaSerieController.onItemSelect}"
+														update="contenedorNormativas" />
+												</p:autoComplete>
+
+												<p:commandButton icon="pi pi-search" type="button"
+													onclick="ejecutarBusquedaNormativa()"
+													styleClass="ui-button-warning" />
+											</div>
+										</div>
+
+										<div class="ui-g-12">
+											<p:dataTable id="tablaSeleccionadas"
+												value="#{nuevaSerieController.normativasSeleccionadas}"
+												var="sel" emptyMessage="No hi ha normatives seleccionades"
+												style="margin-top:10px" scrollHeight="200">
+
+												<p:column headerText="Codi" width="120">
+													<h:outputText value="#{sel.codi}" />
+												</p:column>
+
+												<p:column headerText="Nom">
+													<h:outputText value="#{sel.nom}" />
+												</p:column>
+
+												<p:column width="40" style="text-align:center">
+													<p:commandLink
+														action="#{nuevaSerieController.eliminarSeleccion(sel)}"
+														update="@(.claseContenedorNormativas)" process="@this">
+														<i class="pi pi-trash" style="color: red"></i>
+													</p:commandLink>
+												</p:column>
+											</p:dataTable>
+										</div>
+									</h:panelGroup>
+								</div>
+							</h:panelGroup>
+						</p:tab>
+					</p:tabView>
+					<div class="ui-g-12 button_new">
+						<p:commandButton id="btnGuardarSerie" widgetVar="serieSaveButton"
+							value="#{messages['guardar']}"
+							action="#{nuevaSerieController.save}"
+							process="@form" class="boton_modal button_red"
+							onclick="PF('serieSaveButton').disable()"
+							oncomplete="PF('serieSaveButton').enable()" />
+					</div>
+				</h:form>
+			</div>
+
+
+		</div>
+		<!-- FIN DEL CONTENIDO -->
+
+		<style type="text/css">
+.ui-autocomplete input {
+	width: 98% !important;
+	padding: 8px 15px !important;
+	font-size: 14px !important;
+}
+
+.panel-integrado {
+	max-height: 400px !important;
+	overflow-y: auto !important;
+}
+
+.panel-integrado.ui-autocomplete-panel {
+	z-index: 100000 !important; /* ya lo tenías */
+	max-height: 400px !important;
+	overflow-y: auto !important;
+	width: 93% !important; /* ancho base */
+	min-width: 200px !important; /* nunca demasiado estrecho */
+	left: 51.5% !important; /* centrar horizontalmente */
+	transform: translateX(-50%) !important;
+}
+</style>
+
+		<script type="text/javascript">
+		
+		function ejecutarBusquedaNormativa() {
+
+		    var widget = PF('wvSelectNormativa');
+
+		    if (!widget) {
+		        console.warn('Widget wvSelectNormativa no encontrado');
+		        return;
+		    }
+
+		    var valor = widget.input ? widget.input.val() : '';
+
+		    if (valor &amp;&amp; valor.trim().length > 0) {
+
+		        var oldMin = widget.cfg.minQueryLength;
+
+		        try {
+		            widget.query = null;          // permite repetir búsqueda
+		            widget.cfg.minQueryLength = 0;
+		            widget.search(valor);
+		        } finally {
+		            widget.cfg.minQueryLength = oldMin;
+		        }
+		    }
+		}
+		
+		function ejecutarBusquedaNormativaAccess(index) {
+	        // Recupera el widget por índice (cada autoComplete en el accordion tiene su widgetVar único)
+	        var widgetVarName = 'wvBuscadorNormativas_' + index;
+	        var widget = PF(widgetVarName);
+
+	        if (!widget) {
+	            console.warn('AutoComplete widget no encontrado:', widgetVarName);
+	            return;
+	        }
+
+	        var valor = widget.input ? widget.input.val() : '';
+
+	        if (valor &amp;&amp; valor.trim().length > 0) {
+	            // Guardamos el cfg antiguo y forzamos la búsqueda temporalmente
+	            var oldMin = (widget.cfg &amp;&amp; typeof widget.cfg.minQueryLength !== 'undefined') ? widget.cfg.minQueryLength : null;
+	            try {
+	                // Forzamos que no considere la misma query anterior y permitimos ejecutar search
+	                widget.query = null;
+	                if (widget.cfg) widget.cfg.minQueryLength = 0;
+	                widget.search(valor);
+	            } finally {
+	                // Restauramos valor original para mantener comportamiento original del widget
+	                if (widget.cfg &amp;&amp; oldMin !== null) widget.cfg.minQueryLength = oldMin;
+	            }
+	        }
+	    }
+		
+		function ejecutarBusquedaAplicacions() {
+		    var widget = PF('wvBuscadorAplicacions');
+
+		    if (!widget) {
+		        console.warn('Widget wvBuscadorAplicacions no encontrado');
+		        return;
+		    }
+
+		    var valor = widget.input ? widget.input.val() : '';
+
+		    if (valor &amp;&amp; valor.trim().length > 0) {
+
+		        // Guardamos configuración actual
+		        var oldMin = widget.cfg.minQueryLength;
+
+		        try {
+		            // Forzamos búsqueda
+		            widget.query = null; // evita bloqueo por misma query
+		            widget.cfg.minQueryLength = 0;
+		            widget.search(valor);
+		        } finally {
+		            // Restauramos configuración original
+		            widget.cfg.minQueryLength = oldMin;
+		        }
+		    }
+		}
+		
+		function ejecutarBusquedaSeriesRel(index) {
+
+		    var widgetVarName = 'wvBuscadorSeriesRel_' + index;
+		    var widget = PF(widgetVarName);
+
+		    if (!widget) {
+		        console.warn('Widget no encontrado:', widgetVarName);
+		        return;
+		    }
+
+		    var valor = widget.input ? widget.input.val() : '';
+
+		    if (valor &amp;&amp; valor.trim().length > 0) {
+
+		        var oldMin = widget.cfg.minQueryLength;
+
+		        try {
+		            // Forzamos nueva búsqueda aunque sea la misma query
+		            widget.query = null;
+		            widget.cfg.minQueryLength = 0;
+		            widget.search(valor);
+		        } finally {
+		            widget.cfg.minQueryLength = oldMin;
+		        }
+		    }
+		}
+		
+		function ejecutarBusquedaPrcRelacionats() {
+
+		    var widget = PF('wvBuscadorPrcRelacionats');
+
+		    if (!widget) {
+		        console.warn('Widget wvBuscadorPrcRelacionats no encontrado');
+		        return;
+		    }
+
+		    var valor = widget.input ? widget.input.val() : '';
+
+		    if (valor &amp;&amp; valor.trim().length > 0) {
+
+		        var oldMin = widget.cfg.minQueryLength;
+
+		        try {
+		            // Forzamos búsqueda aunque sea la misma query
+		            widget.query = null;
+		            widget.cfg.minQueryLength = 0;
+		            widget.search(valor);
+		        } finally {
+		            widget.cfg.minQueryLength = oldMin;
+		        }
+		    }
+		}
+		
+		function ejecutarBusquedaPrcComuns() {
+
+		    var widget = PF('wvBuscadorPrcComuns');
+
+		    if (!widget) {
+		        console.warn('Widget wvBuscadorPrcComuns no encontrado');
+		        return;
+		    }
+
+		    var valor = widget.input ? widget.input.val() : '';
+
+		    if (valor &amp;&amp; valor.trim().length > 0) {
+
+		        var oldMin = widget.cfg.minQueryLength;
+
+		        try {
+		            // Forzamos búsqueda aunque sea misma query
+		            widget.query = null;
+		            widget.cfg.minQueryLength = 0;
+		            widget.search(valor);
+		        } finally {
+		            widget.cfg.minQueryLength = oldMin;
+		        }
+		    }
+		}
+		
+		function ejecutarBusquedaSeriesArgen() {
+
+		    var widget = PF('wvBuscadorSeriesArgen');
+
+		    if (!widget) {
+		        console.warn('Widget wvBuscadorSeriesArgen no encontrado');
+		        return;
+		    }
+
+		    var valor = widget.input ? widget.input.val() : '';
+
+		    if (valor &amp;&amp; valor.trim().length > 0) {
+
+		        var oldMin = widget.cfg.minQueryLength;
+
+		        try {
+		            widget.query = null;              // Permite repetir búsqueda
+		            widget.cfg.minQueryLength = 0;    // Forzamos ejecución
+		            widget.search(valor);
+		        } finally {
+		            widget.cfg.minQueryLength = oldMin;
+		        }
+		    }
+		}
+		</script>
+
+	</ui:define>
+</ui:composition>

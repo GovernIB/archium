@@ -171,7 +171,7 @@ public class QuadreTipusDocumentalEJB extends AbstractDAO<QuadreTipusDocumental,
             info.setCreator("Archium");
             info.setSubject(messages.getString("qtd.metadada.titol"));
 
-            document.addEventHandler(PdfDocumentEvent.END_PAGE, new HeaderFooterHandler(doc, messages, pdfUtils, now, formatter));
+            document.addEventHandler(PdfDocumentEvent.END_PAGE, new QuadreTipusDocumentalEJB.HeaderFooterHandler(doc, messages, pdfUtils, now, formatter));
 
 
             float[] pointColumnWidths = {0.7f, 0.7f, 0.7f, 0.7f, 5};

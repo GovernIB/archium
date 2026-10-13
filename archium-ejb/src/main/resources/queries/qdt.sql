@@ -7,7 +7,7 @@ SELECT    td.CODI CODI
      , td.DEFINICIO DEFINICIO
      , td.DEFINICIOCAS DEFINICIO_ES
   FROM ach_tipusdocumental td
-  JOIN archium.ach_tipusnti nti
+  JOIN ach_tipusnti nti
     ON nti.id = td.tipusnti_id
  WHERE LOWER(td.ESTAT) = :estatTd
    AND td.quadretipusdocumental_id = :codiQuadre

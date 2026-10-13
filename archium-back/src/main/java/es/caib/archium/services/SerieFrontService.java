@@ -1,5 +1,23 @@
 package es.caib.archium.services;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.transaction.Transactional;
+
+import org.primefaces.model.DualListModel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import es.caib.archium.commons.i18n.I18NException;
 import es.caib.archium.commons.query.OrderBy;
 import es.caib.archium.commons.query.OrderType;
@@ -26,7 +44,7 @@ import es.caib.archium.ejb.service.TipusSerieService;
 import es.caib.archium.ejb.service.TipusValorService;
 import es.caib.archium.ejb.service.ValorSecundariService;
 import es.caib.archium.ejb.service.ValoracioService;
-import es.caib.archium.objects.AplicacionObject;
+import es.caib.archium.objects.AplicacioObject;
 import es.caib.archium.objects.CatalegSeriesObject;
 import es.caib.archium.objects.CausaLimitacioObject;
 import es.caib.archium.objects.Dir3Object;
@@ -35,6 +53,7 @@ import es.caib.archium.objects.LimitacioNormativaSerieObject;
 import es.caib.archium.objects.NormativaAprobacioObject;
 import es.caib.archium.objects.OrganCollegiatObject;
 import es.caib.archium.objects.ProcedimentObject;
+import es.caib.archium.objects.ProcedimentVisorObject;
 import es.caib.archium.objects.RelacioSerieObject;
 import es.caib.archium.objects.SerieArgenObject;
 import es.caib.archium.objects.SerieDocumentalObject;
@@ -71,22 +90,6 @@ import es.caib.archium.persistence.model.TipusdocumentSerie;
 import es.caib.archium.persistence.model.ValorSecundari;
 import es.caib.archium.persistence.model.Valoracio;
 import es.caib.archium.persistence.model.Valorprimari;
-import org.primefaces.model.DualListModel;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.transaction.Transactional;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 @Named
 @ApplicationScoped
@@ -146,6 +149,7 @@ public class SerieFrontService {
 
     @Inject
     private ProcedimentSerieService procedimentSerieEJB;
+    
 
     public List<Dir3Object> getListaDir3() throws I18NException {
 
@@ -209,8 +213,25 @@ public class SerieFrontService {
         } catch (Exception e) {
             throw new I18NException("excepcion.general.Exception", this.getClass().getSimpleName(), "getListaTipusValor");
         }
+    }
+    
+    @Transactional
+    public List<ProcedimentVisorObject> getProcedimentsComunsVisorBySerie(Long idSerie) throws I18NException{
 
+        try {
+            List<ProcedimentVisorObject> llista = new ArrayList<>();
+            List<ProcedimentSerie> procedimentsComuns  = procedimentSerieEJB.getProcedimentComuns(idSerie);
 
+            for(ProcedimentSerie  prcComu : procedimentsComuns) {
+                ProcedimentVisorObject prc = new ProcedimentVisorObject(prcComu.getAchProcediment());
+                llista.add(prc);
+            }
+            return llista;
+        } catch(NullPointerException e) {
+            throw new I18NException("excepcion.general.NullPointerException", this.getClass().getSimpleName(), "getProcedimentsComunsVisorBySerie");
+        } catch(Exception e) {
+            throw new I18NException("excepcion.general.Exception", this.getClass().getSimpleName(), "getProcedimentsComunsVisorBySerie");
+        }
     }
 
     @Transactional
@@ -476,6 +497,7 @@ public class SerieFrontService {
                 NormativaAprobacioObject toInsert = new NormativaAprobacioObject();
                 toInsert.setId(s.getId());
                 toInsert.setNom(s.getNom());
+                toInsert.setCodi(s.getCodi());
                 res.add(toInsert);
             }
             return res;
@@ -524,6 +546,7 @@ public class SerieFrontService {
                 CausaLimitacioObject toInsert = new CausaLimitacioObject();
                 toInsert.setId(s.getId());
                 toInsert.setNom(s.getNom());
+                toInsert.setCodi(s.getCodi());
                 res.add(toInsert);
             }
             return res;
@@ -536,14 +559,14 @@ public class SerieFrontService {
 
     }
 
-    public List<AplicacionObject> getListaAplicaciones() throws I18NException {
+    public List<AplicacioObject> getListaAplicaciones() throws I18NException {
 
         try {
-            List<AplicacionObject> res = new ArrayList<>();
+            List<AplicacioObject> res = new ArrayList<>();
             List<Aplicacio> list = aplicacioService.findAll();
 
             for (Aplicacio s : list) {
-                AplicacionObject toInsert = new AplicacionObject();
+                AplicacioObject toInsert = new AplicacioObject();
                 toInsert.setId(s.getId());
                 toInsert.setNom(s.getNom());
                 res.add(toInsert);
@@ -581,6 +604,27 @@ public class SerieFrontService {
         }
     }
 
+    public List<ProcedimentVisorObject> getListaProcedimentsVisorBySerie(Long serieId) throws I18NException {
+
+        try {
+            List<ProcedimentVisorObject> res = new ArrayList<>();
+            List<Procediment> list = procedimientoService.findProcedimentsBySerie(serieId);
+
+            for (Procediment prc : list) {
+                ProcedimentVisorObject toInsert = new ProcedimentVisorObject();
+                toInsert.setId(prc.getId());
+                toInsert.setNom(prc.getNom());
+                toInsert.setCodisia(prc.getCodisia());
+                res.add(toInsert);
+            }
+            return res;
+        } catch (NullPointerException e) {
+            throw new I18NException("excepcion.general.NullPointerException", this.getClass().getSimpleName(), "getListaProcedimentsBySerie");
+        } catch (Exception e) {
+            throw new I18NException("excepcion.general.Exception", this.getClass().getSimpleName(), "getListaProcedimentsBySerie");
+        }
+    }
+    
     public List<ProcedimentObject> getListaProcedimentsBySerie(Long serieId) throws I18NException {
 
         try {
@@ -644,15 +688,15 @@ public class SerieFrontService {
 
     }
 
-    public List<AplicacionObject> getListaAplicacionesBySerie(Long serieId) throws I18NException {
+    public List<AplicacioObject> getListaAplicacionesBySerie(Long serieId) throws I18NException {
 
 
         try {
-            List<AplicacionObject> res = new ArrayList<>();
+            List<AplicacioObject> res = new ArrayList<>();
             List<AplicacioSerie> list = aplicacioSerieService.getBySerie(serieId);
 
             for (AplicacioSerie s : list) {
-                AplicacionObject toInsert = new AplicacionObject();
+                AplicacioObject toInsert = new AplicacioObject();
                 toInsert.setId(s.getAchAplicacio().getId());
                 toInsert.setNom(s.getAchAplicacio().getNom());
                 res.add(toInsert);
@@ -735,7 +779,7 @@ public class SerieFrontService {
     @Transactional
     public SerieDocumentalObject createNuevaSerie(String codi, String nom, String nomCas, Long catalegSeriId, Long idFuncio,
                                                   String descripcio, String descripcioCas, String resumMigracio, Boolean enviatSAT, String dir3Promotor, String estat, Long tipusSerieId,
-                                                  String codiIecisa, List<AplicacionObject> listaApps, List<ProcedimentObject> listaPrcs, List<ProcedimentObject> listaPrcsComuns, List<RelacioSerieObject> relacionsSeries, List<SerieArgenObject> argensList, List<LimitacioNormativaSerieObject> listaLNS
+                                                  String codiIecisa, List<AplicacioObject> listaApps, List<ProcedimentVisorObject> listaPrcs, List<ProcedimentVisorObject> listaPrcsComuns, List<RelacioSerieObject> relacionsSeries, List<SerieArgenObject> argensList, List<LimitacioNormativaSerieObject> listaLNS
             , List<NormativaAprobacioObject> normativasList, ValoracioObject valoracio
             , Long organCollegiatId, List<TipuDocumentalSerieObject> listaTDS) throws I18NException {
 
@@ -771,7 +815,7 @@ public class SerieFrontService {
 
             toPersist.setAchAplicacioSeries(new ArrayList<>());
 
-            for (AplicacionObject b : listaApps) {
+            for (AplicacioObject b : listaApps) {
                 AplicacioSerie aplicacioSeri = new AplicacioSerie();
                 AplicacioSeriePK pk = new AplicacioSeriePK();
                 pk.setAplicacioId(b.getId());
@@ -784,21 +828,45 @@ public class SerieFrontService {
 
             toPersist.setAchSerierelacionadas1(new HashSet<>());
             toPersist.setAchSerierelacionadas2(new HashSet<>());
+
             for (RelacioSerieObject relSer : relacionsSeries) {
                 TipusRelacioSerie tipusRelacio = tipusRelacioSerieEJB.getReference(relSer.getTipusRelacio().getId());
-                for (SerieDocumentalObject sd : relSer.getDualListSeries().getTarget()) {
-                    Serierelacionada rel = new Serierelacionada();
-                    rel.setTipusRelacioSerie(tipusRelacio);
-                    rel.setAchSeriedocumental2(serieService.getReference(relSer.getSeriedocumental().getSerieId()));
-                    toPersist.addAchSerierelacionadas1(rel);
+
+                if (relSer.getSeriesRelacionades() != null && !relSer.getSeriesRelacionades().isEmpty()) {
+                
+                    for (SerieDocumentalObject serieDoc : relSer.getSeriesRelacionades()) {
+                        if (serieDoc == null || serieDoc.getSerieId() == null) continue;
+                        
+                        Serierelacionada rel = new Serierelacionada();
+                        
+                        rel.setTipusRelacioSerie(tipusRelacio);
+                        
+                        rel.setAchSeriedocumental1(toPersist);
+                        
+                        rel.setAchSeriedocumental2(serieService.getReference(serieDoc.getSerieId()));
+                        
+                        toPersist.addAchSerierelacionadas1(rel);
+                    }
                 }
             }
 
+            
             for (SerieArgenObject argen : argensList) {
                 SerieArgen sargen = serieArgenService.getReference(argen.getId());
                 Serierelacionada rel = new Serierelacionada();
                 rel.setAchSerieargen(sargen);
+                rel.setTipusRelacioSerie(tipusRelacioSerieEJB.findByCodi("TEM"));
+                rel.setAchSeriedocumental1(toPersist);
                 toPersist.addAchSerierelacionadas1(rel);
+                log.debug("Series relacionades després d'afegir Argen: " + toPersist.getAchSerierelacionadas1().size());
+            }
+
+            Iterator<Serierelacionada> itarg = toPersist.getAchSerierelacionadas1().iterator();
+            while (itarg.hasNext()) {
+                Serierelacionada item = itarg.next();
+                if (item.getAchSerieargen() != null && !argensList.contains(new SerieArgenObject(item.getAchSerieargen()))) {
+                    itarg.remove();
+                }
             }
 
             toPersist.setAchNormativaSeriedocumentals(new ArrayList<>());
@@ -814,7 +882,7 @@ public class SerieFrontService {
 
             toPersist.setAchLimitacioNormativaSeries(new ArrayList<>());
             for (LimitacioNormativaSerieObject lns : listaLNS) {
-                for (CausaLimitacioObject cl : lns.getDualListCausas().getTarget()) {
+                for (CausaLimitacioObject cl : lns.getListCausaLimitacio()) {
                     LimitacioNormativaSerie lnsDB = lns.toDbObject();
                     lnsDB.setAchNormativa(normativaService.getReference(lnsDB.getId().getNormativaId()));
                     lnsDB.setAchCausalimitacio(causaLimitacioService.getReference(cl.getId()));
@@ -830,7 +898,7 @@ public class SerieFrontService {
                 v.setAchValorsecundari(valorSecundariEJB.getReference(valoracio.getAchValorsecundari().getId()));
                 v.setInici(new Date());
                 for (ValorPrimariObject vp : valoracio.getAchValorprimaris()) {
-                    if (vp.getSelected()) {
+                    if (Boolean.TRUE.equals(vp.getSelected())) {
                         Valorprimari valorPrimari = vp.toDbObject();
                         valorPrimari.setAchTipusvalor(tipusValorEJB.getReference(vp.getAchTipusvalor().getId()));
                         v.addAchValorprimari(valorPrimari);
@@ -839,20 +907,31 @@ public class SerieFrontService {
                 toPersist.addAchValoracio(v);
             }
 
-            // ACH-007
+            
+            toPersist.setAchTipusdocumentSeries(new HashSet<>());
+            for(TipuDocumentalSerieObject tdp : listaTDS) {
+            	if (tdp != null) {
+	                TipusdocumentSerie tdpDB = tdp.toDbObject();
+	                tdpDB.setAchTipusdocumental(tipusDocumentaEJB.getReference(tdp.getTipusDocumental().getId()));
+	                toPersist.addAchTipusdocumentSerie(tdpDB);
+            	}
+            }
+            Seriedocumental res = serieService.create(toPersist);
+            
+         // ACH-007
             if (listaPrcs != null) {
-                toPersist.setAchProcediments(new ArrayList<>());
-                for (ProcedimentObject prc : listaPrcs) {
+                res.setAchProcediments(new ArrayList<>());
+                for (ProcedimentVisorObject prc : listaPrcs) {
                     Procediment p = procedimientoService.getReference(prc.getId());
-                    toPersist.addAchProcediment(p);
+                    res.addAchProcediment(p);
                 }
             }
 
             // ACH-033
             if (listaPrcsComuns != null) {
-                toPersist.setAchProcedimentsComuns(new ArrayList<>());
+                res.setAchProcedimentsComuns(new ArrayList<>());
 
-                for (ProcedimentObject prc : listaPrcsComuns) {
+                for (ProcedimentVisorObject prc : listaPrcsComuns) {
                     ProcedimentSeriePK pk = new ProcedimentSeriePK();
                     pk.setProcedimentId(prc.getId());
 
@@ -860,17 +939,9 @@ public class SerieFrontService {
                     prcSerie.setId(pk);
                     prcSerie.setAchProcediment(procedimientoService.getReference(prc.getId()));
 
-                    toPersist.addAchProcedimentComu(prcSerie);
+                    res.addAchProcedimentComu(prcSerie);
                 }
             }
-
-            toPersist.setAchTipusdocumentSeries(new HashSet<>());
-            for(TipuDocumentalSerieObject tdp : listaTDS) {
-                TipusdocumentSerie tdpDB = tdp.toDbObject();
-                tdpDB.setAchTipusdocumental(tipusDocumentaEJB.getReference(tdp.getTipusDocumental().getId()));;
-                toPersist.addAchTipusdocumentSerie(tdpDB);
-            }
-            Seriedocumental res = serieService.create(toPersist);
 
 
             return new SerieDocumentalObject(res);
@@ -887,7 +958,7 @@ public class SerieFrontService {
     @Transactional
     public SerieDocumentalObject updateSerieDocumental(Long idSerie, String codi, String nom, String nomCas, Long catalegSeriId, Long funcioId,
                                                        String descripcio, String descripcioCas, String resumMigracio, Boolean enviatSAT, String dir3Promotor, String estat, Long tipusSerieId,
-                                                       String codiIecisa, List<AplicacionObject> listaApps, List<ProcedimentObject> listaPrcs, List<ProcedimentObject> listaPrcsComuns, List<RelacioSerieObject> seriesRelacionades, List<SerieArgenObject> argenRelateds, List<LimitacioNormativaSerieObject> listaLNS
+                                                       String codiIecisa, List<AplicacioObject> listaApps, List<ProcedimentVisorObject> listaPrcs, List<ProcedimentVisorObject> listaPrcsComuns, List<RelacioSerieObject> seriesRelacionades, List<SerieArgenObject> argenRelateds, List<LimitacioNormativaSerieObject> listaLNS
             , List<NormativaAprobacioObject> normativasList, ValoracioObject valoracio
     , Long organCollegiatId, List<TipuDocumentalSerieObject> listaTDS) throws I18NException {
 
@@ -920,7 +991,7 @@ public class SerieFrontService {
                 toPersist.setAchOrganCollegiat(null);
             }
 
-            for (AplicacionObject b : listaApps) {
+            for (AplicacioObject b : listaApps) {
                 AplicacioSerie existe = null;
                 Iterator<AplicacioSerie> it = toPersist.getAchAplicacioSeries().iterator();
 
@@ -945,12 +1016,12 @@ public class SerieFrontService {
                 }
 
             }
-            toPersist.getAchAplicacioSeries().removeIf(item -> !listaApps.contains(new AplicacionObject(item.getAchAplicacio())));
+            toPersist.getAchAplicacioSeries().removeIf(item -> !listaApps.contains(new AplicacioObject(item.getAchAplicacio())));
 
 
             // ACH-007 Manteniment dels procediments vinculats a la sèrie
             log.debug("Llista de procediments: " + listaPrcs.size());
-            for (ProcedimentObject prc : listaPrcs) {
+            for (ProcedimentVisorObject prc : listaPrcs) {
                 log.debug("Avaluant procediment " + prc + "...");
                 Procediment procedimentJaVinculat = null;
                 Iterator<Procediment> itPrc = toPersist.getAchProcediments().iterator();
@@ -974,7 +1045,7 @@ public class SerieFrontService {
             while (itPrcs.hasNext()) {
                 Procediment item = itPrcs.next();
                 log.debug("La llista de procediments que han actualitzat no conté el procediment que actualment està vinculat a la sèrie? id = " + item.getId());
-                if (!listaPrcs.contains(new ProcedimentObject(item.getId()))) {
+                if (!listaPrcs.contains(new ProcedimentVisorObject(item.getId()))) {
                     log.debug("No el conté, per tant l'eliminam!");
                     itPrcs.remove();
                     item.setAchSeriedocumental(null);
@@ -984,66 +1055,78 @@ public class SerieFrontService {
 
 
             /////// SÈRIES RELACIONADES
-            for (RelacioSerieObject serieRelacionadaForm : seriesRelacionades) {
-                log.debug("Analizando serieRelacionadaForm de tipo : " + serieRelacionadaForm.getTipusRelacio().getId());
-                log.debug("Analizando serieRelacionadaForm, series relacionadas : " + serieRelacionadaForm.getSeriesRelacionades().size());
-                log.debug("Analizando serieRelacionadaForm, series relacionadas <target> : " + serieRelacionadaForm.getDualListSeries().getTarget().size());
+            if (seriesRelacionades != null) {
+            	for (RelacioSerieObject serieRelacionadaForm : seriesRelacionades) {
+            	    log.debug("Analizando tipo: {}", serieRelacionadaForm.getSeriesRelacionades());
+            	    
+            	    // Ahora obtenemos los IDs directamente del Target del DualListModel<Long>
+            	    Set<SerieDocumentalObject> seriesDocumentales = serieRelacionadaForm.getSeriesRelacionades();
+            	    log.debug("Series en target (IDs): {}", seriesDocumentales.size());
 
-                for (SerieDocumentalObject serieDocumentalTarget : serieRelacionadaForm.getDualListSeries().getTarget()) {
-                    Serierelacionada existe = null;
-                    Iterator<Serierelacionada> itSerRel1 = toPersist.getAchSerierelacionadas1().iterator();
+            	    for (SerieDocumentalObject serieDocumental : seriesDocumentales) {
+            	        Serierelacionada existe = null;
+            	        Iterator<Serierelacionada> itSerRel1 = toPersist.getAchSerierelacionadas1().iterator();
 
-                    log.debug("La serie de BD (toPersist) tiene " + toPersist.getAchSerierelacionadas1().size() + "en serRel1");
-                    log.debug("La serie de BD (toPersist) tiene " + toPersist.getAchSerierelacionadas2().size() + "en serRel2");
+            	        while (itSerRel1.hasNext() && existe == null) {
+            	            Serierelacionada serieRelacionadaExistent = itSerRel1.next();
+            	            
+            	            // Comparamos TipusRelacio ID y el ID de la serie 2 (que es el target)
+            	            if (serieRelacionadaExistent.getTipusRelacioSerie().getId().equals(serieRelacionadaForm.getTipusRelacio().getId())
+            	                    && serieRelacionadaExistent.getAchSeriedocumental2() != null 
+            	                    && serieRelacionadaExistent.getAchSeriedocumental2().getId().equals(serieDocumental.getSerieId())) {
+            	                
+            	                log.debug("Ya existe la relación con la serie ID: {} en la BD", serieDocumental);
+            	                existe = serieRelacionadaExistent;
+            	            }
+            	        }
 
-                    while (itSerRel1.hasNext() && existe == null) {
-                        Serierelacionada serieRelacionadaExistent = itSerRel1.next();
-                        log.debug("serieRelacionadaExistent.tipusRelacio.id = " + serieRelacionadaExistent.getTipusRelacioSerie().getId());
-                        log.debug("serieRelacionadaExistent.serieDocumental2.id = " + (serieRelacionadaExistent.getAchSeriedocumental2() != null ? serieRelacionadaExistent.getAchSeriedocumental2().getId() : "null"));
-                        log.debug("serieDocumentalTarget.serie.id = " + serieDocumentalTarget.getSerieId());
-                        if (serieRelacionadaExistent.getTipusRelacioSerie().getId().equals(serieRelacionadaForm.getTipusRelacio().getId())
-                                && serieRelacionadaExistent.getAchSeriedocumental2() != null && serieRelacionadaExistent.getAchSeriedocumental2().getId().equals(serieDocumentalTarget.getSerieId())) {
-                            log.debug("Ya existe la serie documental en la BD!!!");
-                            existe = serieRelacionadaExistent;
-                        }
-                    }
+            	        // Si no existe en la BD, creamos la nueva entidad
+            	        if (existe == null) {
+            	            log.debug("Insertando nueva relación para serie ID: {}", serieDocumental);
+            	            
+            	            Serierelacionada serRel = new Serierelacionada();
+            	            serRel.setTipusRelacioSerie(tipusRelacioSerieEJB.getReference(serieRelacionadaForm.getTipusRelacio().getId()));
+            	            serRel.setAchSeriedocumental1(toPersist);
+            	            // Usamos el ID directamente para obtener la referencia
+            	            serRel.setAchSeriedocumental2(serieService.getReference(serieDocumental.getSerieId())); 
+            	            
+            	            toPersist.addAchSerierelacionadas1(serRel);
+            	        }
+            	    }
+            	}
 
-                    // No existeix encara la sèrie relacionada per aquest tipus de relació... inserir
-                    if (existe == null) {
-                        log.debug("Insertando la serie relacionada porque todavía no existe en BD");
-                        serieRelacionadaForm.setSeriedocumental(new SerieDocumentalObject(toPersist));
+            	Iterator<Serierelacionada> itlsr = toPersist.getAchSerierelacionadas1().iterator();
+            	log.debug("Analizando eliminaciones...");
 
-                        Serierelacionada serRel = new Serierelacionada();
-                        serRel.setTipusRelacioSerie(tipusRelacioSerieEJB.getReference(serieRelacionadaForm.getTipusRelacio().getId()));
-                        serRel.setAchSeriedocumental1(toPersist);
-                        serRel.setAchSeriedocumental2(serieService.getReference(serieDocumentalTarget.getSerieId()));
-                        toPersist.addAchSerierelacionadas1(serRel);
-                    }
-                }
-            }
-            // Eliminació de sèries que es trobaven a la BD i s'han deseleccionat del picklist...
-            Iterator<Serierelacionada> itlsr = toPersist.getAchSerierelacionadas1().iterator();
-            log.debug("Analizando qué ELIMINAR si se ha deseleccionado de la picklist");
-            log.debug("toPersist.serieRelacionadas1.size = " + toPersist.getAchSerierelacionadas1().size());
-            log.debug("toPersist.serieRelacionadas2.size = " + toPersist.getAchSerierelacionadas2().size());
-            while (itlsr.hasNext()) {
-                Serierelacionada item = itlsr.next();
-                if (item.getAchSerieargen() == null) {
-                    int id = seriesRelacionades.indexOf(new RelacioSerieObject(item));
-                    if (id < 0) {
-                        log.debug("El tipo de relación para la serie en cuestión ha dejado de existir... se elimina");
-                        itlsr.remove();
-                    } else {
-                        log.debug("El tipo de relación para la serie en cuestión sigue existiendo... Vamos a ver si sigue existiendo la serie");
-                        if (!seriesRelacionades.get(id).getDualListSeries().getTarget().contains(new SerieDocumentalObject(item.getAchSeriedocumental2()))) {
-                            itlsr.remove();
-                        }
-                    }
-                }
-            }
+            	while (itlsr.hasNext()) {
+            	    Serierelacionada itemBD = itlsr.next();
+            	    
+            	    if (itemBD.getAchSerieargen() == null) {
+            	        
+            	        RelacioSerieObject bloqueForm = seriesRelacionades.stream()
+            	            .filter(r -> r.getTipusRelacio().getId().equals(itemBD.getTipusRelacioSerie().getId()))
+            	            .findFirst()
+            	            .orElse(null);
 
+            	        if (bloqueForm == null) {
+            	            log.debug("El tipo de relación {} ha desaparecido, eliminando...", itemBD.getTipusRelacioSerie().getNom());
+            	            itlsr.remove();
+            	            
+            	        } else {
+            	        	Long idSerieDestinoBD = itemBD.getAchSeriedocumental2().getId();    
+            	            boolean todaviaExiste = bloqueForm.getSeriesRelacionades().stream()
+            	                .anyMatch(s -> s.getSerieId().equals(idSerieDestinoBD));
+
+            	            if (!todaviaExiste) {
+            	                log.debug("La serie ID {} ya no está en la selección, eliminando relación...", idSerieDestinoBD);
+            	                itlsr.remove();
+            	            }
+            	        }
+            	    }
+            	}
 
             log.debug("Series relacionades: " + toPersist.getAchSerierelacionadas1().size());
+            }
             ///////// ARGEN
             for (SerieArgenObject argen : argenRelateds) {
                 SerieArgen sargen = serieArgenService.getReference(argen.getId());
@@ -1106,7 +1189,7 @@ public class SerieFrontService {
             log.debug("Procediments comuns que han quedat al target: " + listaPrcsComuns);
             log.debug("Abans de començar. Procediments comuns de la sèrie: " + toPersist.getAchProcedimentsComuns().size());
             ///// ACH-033 Procediments comuns
-            for (ProcedimentObject na : listaPrcsComuns) {
+            for (ProcedimentVisorObject na : listaPrcsComuns) {
 
                 ProcedimentSerie existe = null;
                 Iterator<ProcedimentSerie> itPrcSerie = toPersist.getAchProcedimentsComuns().iterator();
@@ -1137,14 +1220,14 @@ public class SerieFrontService {
                 }
             }
 
-            toPersist.getAchProcedimentsComuns().removeIf(item -> !listaPrcsComuns.contains(new ProcedimentObject(item.getAchProcediment())));
+            toPersist.getAchProcedimentsComuns().removeIf(item -> !listaPrcsComuns.contains(new ProcedimentVisorObject(item.getAchProcediment())));
 
             log.debug("Procediments comuns queda amb: " + toPersist.getAchProcedimentsComuns().size());
             ///// Fi Procediments comuns
 
 
             for (LimitacioNormativaSerieObject lns : listaLNS) {
-                for (CausaLimitacioObject cl : lns.getDualListCausas().getTarget()) {
+                for (CausaLimitacioObject cl : lns.getListCausaLimitacio()) {
 
                     LimitacioNormativaSerie existe = null;
                     Iterator<LimitacioNormativaSerie> itnas = toPersist.getAchLimitacioNormativaSeries().iterator();
@@ -1179,41 +1262,14 @@ public class SerieFrontService {
                 if (id < 0) {
                     itlnsd.remove();
                 } else {
-                    if (!listaLNS.get(id).getDualListCausas().getTarget().contains(new CausaLimitacioObject(item.getAchCausalimitacio()))) {
+                    if (!listaLNS.get(id).getListCausaLimitacio().contains(new CausaLimitacioObject(item.getAchCausalimitacio()))) {
                         itlnsd.remove();
                     }
                 }
             }
 			
-			/*
-			 * toPersist.getAchLimitacioNormativaSeries().clear();
-			for(LimitacioNormativaSerieObject lns : listaLNS) {
-				for(CausaLimitacioObject cl: lns.getDualListCausas().getTarget()) {
-					lns.setSeriedocumental(new SerieDocumentalObject(toPersist));
-					LimitacioNormativaSerie lnsDB = lns.toDbObject();
-					lnsDB.getId().setCausalimitacioId(cl.getId());
-					
-					LimitacioNormativaSerie current = limitacioNormativaSerieService.getReference(lnsDB.getId());
-					if(current == null) {
-					
-					lnsDB.setInici(new Date());
-					} else {
-						lnsDB.setInici(current.getInici());
-					}
-					
-					lnsDB.setAchNormativa(normativaService.getReference(lnsDB.getId().getNormativaId()));
-					lnsDB.setAchCausalimitacio(causaLimitacioService.getReference(cl.getId()));
-					lnsDB.setAchSeriedocumental(toPersist);
-					toPersist.addAchLimitacioNormativaSery(lnsDB);
-				}
-				
-			}
-			 * 
-			 * 
-			 * */
-
             toPersist.getAchValoracios().clear();
-            if (valoracio != null && valoracio.getAchValorsecundari() != null && valoracio.hashValorPrimariSelected()) {
+            if (valoracio != null && valoracio.getAchValorsecundari() != null && Boolean.TRUE.equals(valoracio.hashValorPrimariSelected())) {
                 Valoracio v = (valoracio.getId() != null ? valoracioEJB.getReference(valoracio.getId()) : new Valoracio());
 
                 v.setAchSeriedocumental(toPersist);
@@ -1227,7 +1283,7 @@ public class SerieFrontService {
 
                 v.setAchValorsecundari(valorSecundariEJB.getReference(valoracio.getAchValorsecundari().getId()));
                 for (ValorPrimariObject vp : valoracio.getAchValorprimaris()) {
-                    if (vp.getSelected()) {
+                    if (Boolean.TRUE.equals(vp.getSelected())) {
                         Valorprimari valorPrimari = vp.toDbObject();
                         valorPrimari.setAchTipusvalor(tipusValorEJB.getReference(vp.getAchTipusvalor().getId()));
                         v.addAchValorprimari(valorPrimari);
@@ -1239,14 +1295,16 @@ public class SerieFrontService {
 
             log.debug("Llista de tipus documentals seleccionats: " + listaTDS.size());
             log.debug("Abans de començar. Llista de tipus a la sèrie: " + toPersist.getAchTipusdocumentSeries().size());
-            for (TipuDocumentalSerieObject tdpOb: listaTDS)
-            {
+            for (TipuDocumentalSerieObject tdpOb : listaTDS) {
+                if (tdpOb == null || tdpOb.getTipusDocumental() == null) {
+                    log.warn("Se ha encontrado un elemento nulo en listaTDS o el objeto tdpOb no tiene TipusDocumental asignado, saltando...");
+                    continue; 
+                }
 
                 log.debug("tdpOb: " + tdpOb);
                 TipusdocumentSerie tdpDB = tdpOb.toDbObject();
                 tdpDB.setAchTipusdocumental(tipusDocumentaEJB.getReference(tdpOb.getTipusDocumental().getId()));
-                log.debug("tdpDB: " + tdpDB);
-
+                
                 // Al ser un Set i no tener los checks (obligatori, multiple) no reflejaba los cambios de la pantalla en la BD
                 // Por eso, si ya existe, lo quitamos y lo volvemos a poner
                 if (toPersist.getAchTipusdocumentSeries().contains(tdpDB)) {
@@ -1345,4 +1403,124 @@ public class SerieFrontService {
             throw new I18NException("excepcion.general.Exception", this.getClass().getSimpleName(), "findAllTipoDocumental");
         }
     }
+    
+    	
+    
+    public SerieArgenObject findArgenById(Long id)  throws I18NException {
+        try {
+            SerieArgen s = this.serieArgenService.findById(id);
+
+            if (s != null) {
+                return new SerieArgenObject(s);
+            }
+            return null;
+        } catch (NullPointerException e) {
+            throw new I18NException("excepcion.general.NullPointerException", this.getClass().getSimpleName(), "findById");
+        } catch (Exception e) {
+            throw new I18NException("excepcion.general.Exception", this.getClass().getSimpleName(), "findById");
+        }
+    }
+    
+    
+    public List<NormativaAprobacioObject> buscarNormativaPorTexto(String texto) throws I18NException {
+    	 try {
+    	
+	    	List<NormativaAprobacioObject> listaNormativasObject = new ArrayList< >();
+	    	List<Normativa> listaNormativas = normativaService.buscarPorTexto(texto);
+	    	
+	    	for (Normativa n : listaNormativas) {
+	    		listaNormativasObject.add(new NormativaAprobacioObject(n));
+	    	}
+	    	return listaNormativasObject;
+    	 } catch(NullPointerException e) {
+             throw new I18NException("excepcion.general.NullPointerException", this.getClass().getSimpleName(), "buscarPorTexto");
+         } catch(Exception e) {
+             throw new I18NException("excepcion.general.Exception", this.getClass().getSimpleName(), "buscarPorTexto");
+         }
+    }
+    
+    public List<CausaLimitacioObject> buscarCausaLimitacioPorTexto(String texto) throws I18NException {
+   	 try {
+   	
+	    	List<CausaLimitacioObject> listaCausasObject = new ArrayList< >();
+	    	List<CausaLimitacio> listaCausas = causaLimitacioService.buscarPorTexto(texto);
+	    	
+	    	for (CausaLimitacio c : listaCausas) {
+	    		listaCausasObject.add(new CausaLimitacioObject(c));
+	    	}
+	    	return listaCausasObject;
+   	 } catch(NullPointerException e) {
+            throw new I18NException("excepcion.general.NullPointerException", this.getClass().getSimpleName(), "buscarPorTexto");
+        } catch(Exception e) {
+            throw new I18NException("excepcion.general.Exception", this.getClass().getSimpleName(), "buscarPorTexto");
+        }
+   }
+    
+    public List<AplicacioObject> buscarAplicacioPorTexto(String texto) throws I18NException {
+      	 try {
+      	
+   	    	List<AplicacioObject> listaAplicacionsObject = new ArrayList< >();
+   	    	List<Aplicacio> listaAplicacions = aplicacioService.buscarPorTexto(texto);
+   	    	
+   	    	for (Aplicacio a : listaAplicacions) {
+   	    		listaAplicacionsObject.add(new AplicacioObject(a));
+   	    	}
+   	    	return listaAplicacionsObject;
+      	 } catch(NullPointerException e) {
+               throw new I18NException("excepcion.general.NullPointerException", this.getClass().getSimpleName(), "buscarPorTexto");
+           } catch(Exception e) {
+               throw new I18NException("excepcion.general.Exception", this.getClass().getSimpleName(), "buscarPorTexto");
+           }
+      }
+    
+    public List<SerieDocumentalObject> buscarSerieDocumentalPorTexto(String texto) throws I18NException {
+     	 try {
+     	
+  	    	List<SerieDocumentalObject> listaSerieDocumentalObject = new ArrayList< >();
+  	    	List<Seriedocumental> listaSerieDocumental = serieService.buscarPorTexto(texto);
+  	    	
+  	    	for (Seriedocumental s : listaSerieDocumental) {
+  	    		listaSerieDocumentalObject.add(new SerieDocumentalObject(s));
+  	    	}
+  	    	return listaSerieDocumentalObject;
+     	 } catch(NullPointerException e) {
+              throw new I18NException("excepcion.general.NullPointerException", this.getClass().getSimpleName(), "buscarPorTexto");
+          } catch(Exception e) {
+              throw new I18NException("excepcion.general.Exception", this.getClass().getSimpleName(), "buscarPorTexto");
+          }
+     }
+    
+    public List<ProcedimentVisorObject> buscarProcedimentPorTexto(String texto) throws I18NException {
+    	 try {
+    	
+ 	    	List<ProcedimentVisorObject> listaProcedimentVisorObject = new ArrayList< >();
+ 	    	List<Procediment> listaProcediment = procedimientoService.buscarPorTexto(texto);
+ 	    	
+ 	    	for (Procediment p : listaProcediment) {
+ 	    		listaProcedimentVisorObject.add(new ProcedimentVisorObject(p));
+ 	    	}
+ 	    	return listaProcedimentVisorObject;
+    	 } catch(NullPointerException e) {
+             throw new I18NException("excepcion.general.NullPointerException", this.getClass().getSimpleName(), "buscarPorTexto");
+         } catch(Exception e) {
+             throw new I18NException("excepcion.general.Exception", this.getClass().getSimpleName(), "buscarPorTexto");
+         }
+    }
+    
+    public List<SerieArgenObject> buscarSerieArgenPorTexto(String texto) throws I18NException {
+   	 try {
+   	
+	    	List<SerieArgenObject> listaSerieArgenObject = new ArrayList< >();
+	    	List<SerieArgen> listaSerieArgen = serieArgenService.buscarPorTexto(texto);
+	    	
+	    	for (SerieArgen s : listaSerieArgen) {
+	    		listaSerieArgenObject.add(new SerieArgenObject(s));
+	    	}
+	    	return listaSerieArgenObject;
+   	 } catch(NullPointerException e) {
+            throw new I18NException("excepcion.general.NullPointerException", this.getClass().getSimpleName(), "buscarPorTexto");
+        } catch(Exception e) {
+            throw new I18NException("excepcion.general.Exception", this.getClass().getSimpleName(), "buscarPorTexto");
+        }
+   }
 }

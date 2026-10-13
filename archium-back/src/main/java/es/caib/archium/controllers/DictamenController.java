@@ -1,5 +1,30 @@
 package es.caib.archium.controllers;
 
+import java.io.InputStream;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.ResourceBundle;
+import java.util.Set;
+
+import javax.annotation.PostConstruct;
+import javax.faces.application.FacesMessage;
+import javax.faces.context.FacesContext;
+import javax.faces.view.ViewScoped;
+import javax.inject.Inject;
+import javax.inject.Named;
+
+import org.primefaces.PrimeFaces;
+import org.primefaces.model.DefaultStreamedContent;
+import org.primefaces.model.DefaultTreeNode;
+import org.primefaces.model.StreamedContent;
+import org.primefaces.model.TreeNode;
+import org.primefaces.util.SerializableSupplier;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import es.caib.archium.commons.i18n.I18NException;
 import es.caib.archium.ejb.service.TaulaValoracioService;
 import es.caib.archium.objects.DictamenObject;
@@ -12,28 +37,6 @@ import es.caib.archium.objects.TipuAccesObject;
 import es.caib.archium.objects.TipuDictamenObject;
 import es.caib.archium.services.DictamenFrontService;
 import es.caib.archium.utils.FrontExceptionTranslate;
-import org.primefaces.PrimeFaces;
-import org.primefaces.model.DefaultStreamedContent;
-import org.primefaces.model.DefaultTreeNode;
-import org.primefaces.model.StreamedContent;
-import org.primefaces.model.TreeNode;
-import org.primefaces.util.SerializableSupplier;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.annotation.PostConstruct;
-import javax.faces.application.FacesMessage;
-import javax.faces.context.FacesContext;
-import javax.faces.view.ViewScoped;
-import javax.inject.Inject;
-import javax.inject.Named;
-import java.io.InputStream;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.ResourceBundle;
 
 @Named("dictamenController")
 @ViewScoped
@@ -105,7 +108,7 @@ public class DictamenController implements Serializable {
 
     @PostConstruct
     public void init() {
-
+    	log.debug("Dentro del método 'init'");
         UNIDAD_PLAZO_DICTAMEN_DEFAULT_MESSAGE = messageBundle.getString("general.plazos.anys");
         Map<String, Object> viewMap = FacesContext.getCurrentInstance().getViewRoot().getViewMap();
         this.funcBean = (FuncionesController) viewMap.get("funciones");
@@ -115,13 +118,21 @@ public class DictamenController implements Serializable {
         this.nuevoDictamenVigente = null;
 
         try {
-            this.listaDictamen = this.serviceDictamen.findAll();
-            this.listaDocumental = this.serviceDictamen.findAllDocumental();
-            this.listatipuDictamen = this.serviceDictamen.findAllTipuDictamen();
-            this.listaTipuAcces = this.serviceDictamen.findAllTipuAcces();
-            this.listaEns = this.serviceDictamen.findAllEns();
-            this.listaLopd = this.serviceDictamen.findAllLopd();
-            this.listaNormativaAprovacio = this.serviceDictamen.findAllNormativaAprovacio();
+        	this.listaDictamen = new ArrayList();
+            this.listaDocumental = new ArrayList();
+            this.listatipuDictamen = new ArrayList();
+            this.listaTipuAcces = new ArrayList();
+            this.listaEns = new ArrayList();
+            this.listaLopd = new ArrayList();
+            this.listaNormativaAprovacio = new ArrayList();
+            
+//            this.listaDictamen = this.serviceDictamen.findAll();
+//            this.listaDocumental = this.serviceDictamen.findAllDocumental();
+//            this.listatipuDictamen = this.serviceDictamen.findAllTipuDictamen();
+//            this.listaTipuAcces = this.serviceDictamen.findAllTipuAcces();
+//            this.listaEns = this.serviceDictamen.findAllEns();
+//            this.listaLopd = this.serviceDictamen.findAllLopd();
+//            this.listaNormativaAprovacio = this.serviceDictamen.findAllNormativaAprovacio();
 
             this.plazos1.add(messageBundle.getString("general.plazos.hores"));
             this.plazos1.add(messageBundle.getString("general.plazos.dies"));
@@ -129,10 +140,11 @@ public class DictamenController implements Serializable {
             this.plazos1.add(messageBundle.getString("general.plazos.mesos"));
             this.plazos1.add(messageBundle.getString("general.plazos.anys"));
 
-        } catch (I18NException e) {
-            log.error(FrontExceptionTranslate.translate(e, funcBean.getLocale()));
+        } catch (Exception e) {
+//            log.error(FrontExceptionTranslate.translate(e, funcBean.getLocale()));
             funcBean.setError(true);
         }
+        log.debug("Saliendo del método 'init'");
     }
 
 
@@ -160,14 +172,32 @@ public class DictamenController implements Serializable {
                     this.estat
             );
 
-            TreeNode node = new DefaultTreeNode(new Document<DictamenObject>(newD.getId(), newD.getCodi(), newD.getAccioDictaminada(), "Dictamen", newD),
-                    funcBean.getNodeFromFunctionId(serieDocumental.getSerieId(), "Serie", "insert", null));
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(messageBundle.getString("dictamen.insert.ok")));
+            if (funcBean.getSearchText() != null && !funcBean.getSearchText().trim().isEmpty()) {
+                funcBean.filtrarTreeNode();
+            } else {
+                TreeNode serieNode = funcBean.getNodeFromFunctionId(
+                    serieDocumental.getSerieId(), "Serie", "insert", null
+                );
 
+                if (serieNode != null && serieNode != funcBean.getRoot()) {
+                    // Recargar todos los dictámenes del nodo serie desde BD
+                    // Esto elimina el DUMMY y carga newD junto a sus hermanos
+                    serieNode.getChildren().clear();
+                    funcBean.getServicesFunciones().expandSerie(
+                        funcBean.getCuadroSeleccionado(), serieNode, serieDocumental.getSerieId()
+                    );
+                    serieNode.setExpanded(true);
+                }
+            }
+
+            FacesContext.getCurrentInstance().addMessage(null,
+                new FacesMessage(messageBundle.getString("dictamen.insert.ok")));
 
         } catch (I18NException eee) {
             log.error(FrontExceptionTranslate.translate(eee, funcBean.getLocale()));
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, messageBundle.getString("dictamen.insert.error"), null));
+            FacesContext.getCurrentInstance().addMessage(null,
+                new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                    messageBundle.getString("dictamen.insert.error"), null));
         }
     }
 
@@ -183,7 +213,7 @@ public class DictamenController implements Serializable {
         }
 
         try {
-
+        	
             DictamenObject obj = new DictamenObject();
             obj.setId(this.getId());
             obj.setSerieDocumental(this.getSerieDocumental());
@@ -218,21 +248,37 @@ public class DictamenController implements Serializable {
     }
 
     public void deleteDictamen(Document<DictamenObject> d) {
-
         try {
-
             if (this.serviceDictamen.findById(d.getObject().getId()).getEstat().equals("Vigent")) {
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, messageBundle.getString("dictamen.delete.vigentError"), null));
+                FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                        messageBundle.getString("dictamen.delete.vigentError"), null));
             } else {
                 this.serviceDictamen.deleteDictamen(d.getId());
-                TreeNode node = funcBean.getNodeFromFunctionId(d.getId(), "Dictamen", "update", d);
-                node.getParent().getChildren().remove(node);
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(messageBundle.getString("dictamen.delete.ok")));
-            }
 
+                if (funcBean.getSearchText() != null && !funcBean.getSearchText().trim().isEmpty()) {
+                    funcBean.filtrarTreeNode();
+                } else {
+                	TreeNode node = funcBean.getNodeFromFunctionId(d.getId(), "Dictamen", "insert", null);
+                	if (node != null && node != funcBean.getRoot()) {
+                	    TreeNode seriePadre = node.getParent();
+                	    seriePadre.getChildren().remove(node);
+                	    
+                	    // Si la serie ya no tiene hijos reales, poner DUMMY para que recargue al re-expandir
+                	    if (seriePadre.getChildren().isEmpty()) {
+                	        new DefaultTreeNode("DUMMY", null, seriePadre);
+                	    }
+                	}
+                }
+
+                FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(messageBundle.getString("dictamen.delete.ok")));
+            }
         } catch (I18NException e) {
             log.error(FrontExceptionTranslate.translate(e, funcBean.getLocale()));
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, messageBundle.getString("dictamen.delete.error"), null));
+            FacesContext.getCurrentInstance().addMessage(null,
+                new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                    messageBundle.getString("dictamen.delete.error"), null));
         }
     }
 
@@ -305,7 +351,29 @@ public class DictamenController implements Serializable {
         }
     }
 
-    public void addDictamentfromSerie(Document<SerieDocumentalObject> obj) {
+    public void addDictamentfromSerie(Document<SerieDocumentalObject> obj) throws I18NException {
+    	
+//    	if (this.listaDictamen == null || this.listaDictamen.isEmpty()) {
+//    	    this.listaDictamen = this.serviceDictamen.findAll();
+//    	}
+//    	if (this.listaDocumental == null || this.listaDocumental.isEmpty()) {
+//    	    this.listaDocumental = this.serviceDictamen.findAllDocumental();
+//    	}
+    	if (this.listatipuDictamen == null || this.listatipuDictamen.isEmpty()) {
+    	    this.listatipuDictamen = this.serviceDictamen.findAllTipuDictamen();
+    	}
+    	if (this.listaTipuAcces == null || this.listaTipuAcces.isEmpty()) {
+    	    this.listaTipuAcces = this.serviceDictamen.findAllTipuAcces();
+    	}
+    	if (this.listaEns == null || this.listaEns.isEmpty()) {
+    	    this.listaEns = this.serviceDictamen.findAllEns();
+    	}
+    	if (this.listaLopd == null || this.listaLopd.isEmpty()) {
+    	    this.listaLopd = this.serviceDictamen.findAllLopd();
+    	}
+    	if (this.listaNormativaAprovacio == null || this.listaNormativaAprovacio.isEmpty()) {
+    	    this.listaNormativaAprovacio = this.serviceDictamen.findAllNormativaAprovacio();
+    	}
 
         this.setSerieDocumental(obj.getObject());
         this.id = null;
@@ -352,6 +420,28 @@ public class DictamenController implements Serializable {
 
     public void updateDictament(Document<DictamenObject> d) {
         try {
+        	
+//        	if (this.listaDictamen == null || this.listaDictamen.isEmpty()) {
+//        	    this.listaDictamen = this.serviceDictamen.findAll();
+//        	}
+//        	if (this.listaDocumental == null || this.listaDocumental.isEmpty()) {
+//        	    this.listaDocumental = this.serviceDictamen.findAllDocumental();
+//        	}
+        	if (this.listatipuDictamen == null || this.listatipuDictamen.isEmpty()) {
+        	    this.listatipuDictamen = this.serviceDictamen.findAllTipuDictamen();
+        	}
+        	if (this.listaTipuAcces == null || this.listaTipuAcces.isEmpty()) {
+        	    this.listaTipuAcces = this.serviceDictamen.findAllTipuAcces();
+        	}
+        	if (this.listaEns == null || this.listaEns.isEmpty()) {
+        	    this.listaEns = this.serviceDictamen.findAllEns();
+        	}
+        	if (this.listaLopd == null || this.listaLopd.isEmpty()) {
+        	    this.listaLopd = this.serviceDictamen.findAllLopd();
+        	}
+        	if (this.listaNormativaAprovacio == null || this.listaNormativaAprovacio.isEmpty()) {
+        	    this.listaNormativaAprovacio = this.serviceDictamen.findAllNormativaAprovacio();
+        	}
 
             DictamenObject obj;
             obj = this.serviceDictamen.findById(d.getId());
